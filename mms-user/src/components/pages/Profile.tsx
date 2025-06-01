@@ -24,7 +24,7 @@ const Profile = () => {
   const [bineficiaryName, setBeneficiaryName] = useState<string>('')
   const [bineficiaryIc, setBeneficiaryIc] = useState<string>('')
   const [bineficiaryRelationship, setBeneficiaryRelationship] = useState<string>('')
-  const [bineficiaryRelationshipList, setBeneficiaryRelationshipList] = useState<string[]>(['Father', 'Mother', 'Spouse', 'Child', 'Sibling'])
+  const bineficiaryRelationshipList = ['Father', 'Mother', 'Spouse', 'Child', 'Sibling']
   const [bineficiaryEmail, setBeneficiaryEmail] = useState<string>('')
   const [bineficiaryPhone, setBeneficiaryPhone] = useState<string>('')
 
@@ -92,6 +92,7 @@ const Profile = () => {
         const countryRes = await apiCountry
         setCountryList(countryRes)
 
+        console.log(country)
       } catch (error: any) {
         setLoading(true)
         console.error('Error fetching user data:', error)

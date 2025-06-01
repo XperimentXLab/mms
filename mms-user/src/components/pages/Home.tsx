@@ -42,6 +42,9 @@ const Home = () => {
         const response = await userDetails('MMS01EJ2')
         setUsername(response.username)
         setUserId(response.id)
+        setMasterP(0)
+        setProfitP(0)
+        setBonusP(0)
         // In a real app, you would fetch this from an API
         setMonthlyProfit(mockMonthlyProfit);
       } catch (error: any) {
@@ -59,6 +62,7 @@ const Home = () => {
   }, [])
 
   // Safe calculation functions
+  /*
   const calculateTotalProfit = () => {
     return monthlyProfit.reduce((sum, item) => sum + (item?.profit || 0), 0);
   };
@@ -68,7 +72,8 @@ const Home = () => {
     const totalGrowth = monthlyProfit.reduce((sum, item) => sum + (item?.growth || 0), 0);
     return totalGrowth / monthlyProfit.length;
   };
-
+  */
+ 
   //////////////////// Table Column //////////////////
   const tableColumns = [
     { 
