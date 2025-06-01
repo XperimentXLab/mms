@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
+import dj_database_url
 import os
 
 load_dotenv()
@@ -143,17 +144,22 @@ WSGI_APPLICATION = 'mmsserver.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL: 
+    DATABASES ={
+        'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+    } 
+else: 
+    DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv("DBNAME"),
         'USER': os.getenv("USER"),
         'PASSWORD': os.getenv("PASSWORD"),
         'HOST': os.getenv("HOST"),
         'PORT': os.getenv("PORT"),
+    
     }
-}
+
 
 
 
