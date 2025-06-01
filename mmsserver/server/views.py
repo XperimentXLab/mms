@@ -62,7 +62,7 @@ def login_verify(request):
       token,
       jwt_secret,
       algorithms=['HS256'],
-      audience='authenticated'
+      audience='authenticated',
       issuer='supabase'
     )
 
