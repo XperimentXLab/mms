@@ -4,10 +4,9 @@ import { userDetails } from "../auth/endpoints"
 import { FixedText } from "../props/Textt"
 import Tables from "../props/Tables"
 
-interface MonthlyProfitData {
-  month: string;
-  profit: number;
-  growth?: number;
+interface ProfitData {
+  type: string;
+  amount: number;
 }
 
 
@@ -20,18 +19,16 @@ const Home = () => {
   const [profitP, setProfitP] = useState<number>(0)
   const [BonusP, setBonusP] = useState<number>(0)
 
-  const [monthlyProfit, setMonthlyProfit] = useState<MonthlyProfitData[]>([]);
+  const [dailyProfit, setDailyProfit] = useState<ProfitData[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false)
 
   
-  // Mock data for monthly profit - replace with API call in production
-  const mockMonthlyProfit: MonthlyProfitData[] = [
-    { month: "January", profit: 500 /*growth: 5.2*/ }, 
-    { month: "February", profit: 200, /*growth: 13.6*/ },
-    { month: "March", profit: 800, /*growth: 11.3*/ },
-    { month: "April", profit: 500, /*growth: -14.6*/ },
-    { month: "May", profit: 200, /*growth: 27.4*/ },
+  // Mock data for profit - replace with API call in production
+  const mockProfit: ProfitData[] = [
+    { type: "Personal", amount: 0 }, 
+    { type: "Affliate", amount: 0 },
+    { type: "Fast Track", amount: 0 },
   ];
 
 
@@ -46,10 +43,10 @@ const Home = () => {
         setProfitP(0)
         setBonusP(0)
         // In a real app, you would fetch this from an API
-        setMonthlyProfit(mockMonthlyProfit);
+        setDailyProfit(mockProfit);
       } catch (error: any) {
         console.error('Error fetching user data:', error)
-        setMonthlyProfit([])
+        setDailyProfit([])
         if (error.response) {
           console.error('Response data:', error.response.data)
           console.error('Response status:', error.response.status)
@@ -77,13 +74,13 @@ const Home = () => {
   //////////////////// Table Column //////////////////
   const tableColumns = [
     { 
-      header: "Month", 
-      accessor: "month",
+      header: "Profit Type", 
+      accessor: "type",
       render: (value: string) => value || "-"
     },
     { 
-      header: "Profit ($)", 
-      accessor: "profit",
+      header: "Amount (USD)", 
+      accessor: "amount",
       render: (value: number) => value?.toLocaleString() || "0"
     },
     /*
@@ -116,12 +113,12 @@ const Home = () => {
         <FixedText label="Profit Point" text={profitP.toString()} />
         <FixedText label="Bonus Point" text={BonusP.toString()} />
 
-        <div className="border rounded-xl p-4">
-          <h2 className="font-bold text-lg mb-3">Monthly Summary Profit</h2>
+        <div className="border rounded-xl p-4 flex items-center flex-col shadow-2xl shadow-red-300 bg-white">
+          <h2 className="font-bold text-lg mb-3">Daily Summary Profit</h2>
           <div className="overflow-x-auto">
             <Tables 
               columns={tableColumns}
-              data={monthlyProfit}
+              data={dailyProfit}
               emptyMessage="No profit data available"
             />
           </div>

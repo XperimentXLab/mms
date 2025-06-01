@@ -50,9 +50,7 @@ const Others = () => {
 
   const [assetAmount, setAssetAmount] = useState(0)
   const [profitRate, setProfitRate] = useState(0) //need to be in %
-  const [totalProfit, setTotalProfit] = useState(0)
-  const [userShare, setUserShare] = useState(0);
-  const [mmsShare, setMmsShare] = useState(0);
+  const [userProfit, setUserProfit] = useState(0);
   const [sharingRatio, setSharingRatio] = useState("");
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -102,9 +100,7 @@ const Others = () => {
   const resetForm = () => {
     setAssetAmount(0)
     setProfitRate(0)
-    setTotalProfit(0)
-    setUserShare(0)
-    setMmsShare(0)
+    setUserProfit(0)
     setSharingRatio("")
   }
 
@@ -120,10 +116,9 @@ const Others = () => {
 
     // Calculate total profit
     const profit = assetAmount * (profitRate / 100); //to be %
-    setTotalProfit(profit);
 
     // Determine sharing ratio based on investment amount
-    let userPercentage, mmsPercentage;
+    let userPercentage, mmsPercentage
     if (assetAmount < 1000) {
       userPercentage = 0.7; // 70%
       mmsPercentage = 0.3; // 30%
@@ -135,8 +130,7 @@ const Others = () => {
     }
 
     // Calculate shares
-    setUserShare(profit * userPercentage);
-    setMmsShare(profit * mmsPercentage);
+    setUserProfit(profit * userPercentage);
 
     setLoading(false);
   };
@@ -207,13 +201,7 @@ const Others = () => {
                 <h2 className="font-semibold">Profit Sharing: <span className="font-normal">{sharingRatio}</span></h2>
               </div>
               <div className="border p-2 rounded-md">
-                <h2 className="font-semibold">Total Profit: <span className="font-normal">{totalProfit.toFixed(2)}</span></h2>
-              </div>
-              <div className="border p-2 rounded-md">
-                <h2 className="font-semibold">User Share: <span className="font-normal">{userShare.toFixed(2)}</span></h2>
-              </div>
-              <div className="border p-2 rounded-md">
-                <h2 className="font-semibold">MMS Share: <span className="font-normal">{mmsShare.toFixed(2)}</span></h2>
+                <h2 className="font-semibold">Profit: <span className="font-normal">{userProfit.toFixed(2)}</span></h2>
               </div>
             </>
           )}
