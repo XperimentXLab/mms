@@ -32,7 +32,7 @@ const Login = () => {
       // Send the token to your Django backend for verification
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
-        setErrorMessage('Authentication failed. Please try again.');
+        setErrorMessage('No user found. Please register or try again.');
         setLoading(false);
         return;
       }
@@ -69,7 +69,7 @@ const Login = () => {
       <div className="flex flex-col items-center p-4 justify-center gap-5">
         <h1 className="font-bold text-xl">Login</h1>
 
-        <form className="grid grid-row-3 gap-5 p-5 shadow-xl shadow-amber-600" onSubmit={toggleLogin}>
+        <form className="grid grid-row-3 gap-5 p-5 shadow-xl shadow-red-300" onSubmit={toggleLogin}>
           <div className="grid grid-row-2 gap-2">
             <span>Username</span>
             <input type="text" placeholder="Enter Username" 

@@ -76,7 +76,7 @@ const Register = () => {
     <div className="flex min-h-screen justify-center">
       <div className="flex flex-col items-center justify-center">
         <h1 className="font-bold text-xl">Register</h1>
-        <form className="grid grid-row-3 gap-5 p-5 shadow-xl shadow-amber-600" onSubmit={toggleRegister}>
+        <form className="grid grid-row-3 gap-5 p-5 shadow-xl shadow-red-300" onSubmit={toggleRegister}>
 
           <Inputss 
             type="text"
