@@ -118,19 +118,20 @@ const Others = () => {
     const profit = assetAmount * (profitRate / 100); //to be %
 
     // Determine sharing ratio based on investment amount
-    let userPercentage, mmsPercentage = 0
+    let userPercent = 0
+    let mmsPercent = 0
     if (assetAmount < 1000) {
-      userPercentage = 0.7; // 70%
-      mmsPercentage = 0.3; // 30%
+      userPercent = 0.7; // 70%
+      mmsPercent = 0.3; // 30%
       setSharingRatio("70/30");
     } else {
-      userPercentage = 0.8; // 80%
-      mmsPercentage = 0.2; // 20%
+      userPercent = 0.8; // 80%
+      mmsPercent = 0.2; // 20%
       setSharingRatio("80/20");
     }
 
     // Calculate shares
-    setUserProfit(profit * userPercentage);
+    setUserProfit(profit * userPercent);
 
     setLoading(false);
   };
