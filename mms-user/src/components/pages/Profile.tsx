@@ -8,7 +8,7 @@ import { apiCountry, type CountryType } from "../auth/api"
 
 const Profile = () => {
 
-  const  [refferralCode, setRefferralCode] = useState<string>('')
+  const [refferralCode, setRefferralCode] = useState<string>('')
   const [username, setUsername] = useState<string>('')
   const [email, setEmail] = useState<string>('')
   const [fullName, setFullName] = useState<string>('')
@@ -56,7 +56,7 @@ const Profile = () => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await userDetails('MMS01EJ2') // Replace with actual user ID
+        const response = await userDetails()
         setRefferralCode(response.id)
         setUsername(response.username)
         setEmail(response.email)
@@ -113,7 +113,6 @@ const Profile = () => {
     try {
       setLoading(true)
       await updateUserDetails({
-        user_id: 'MMS01EJ2', // Replace with actual user ID
         walletAddress: editWalletAddress,
       })
       alert('Wallet address updated successfully')
@@ -129,7 +128,6 @@ const Profile = () => {
     try {
       setLoading(true)
       await updateUserDetails({
-        user_id: 'MMS01EJ2', // Replace with actual user ID
         addressLine: editAddressLine,
         state: editState,
         city: editCity,
@@ -149,7 +147,6 @@ const Profile = () => {
     try {
       setLoading(true)
       await updateUserDetails({
-        user_id: 'MMS01EJ2', // Replace with actual user ID
         bineficiaryName: editBineficiaryName,
         bineficiaryRelationship: editBineficiaryRelationship,
         bineficiaryIc: editBineficiaryIc,
@@ -168,7 +165,6 @@ const Profile = () => {
     try {
       setLoading(true)
       await updateUserDetails({
-        user_id: 'MMS01EJ2', // Replace with actual user ID
         verificationStatus: verificationStatusChange,
       }, icDocument)
       alert('IC Document uploaded successfully.')
@@ -190,7 +186,6 @@ const Profile = () => {
     try {
       setLoading(true)
       await updatePassword({
-        user_id: 'MMS029FU', // Replace with actual user ID
         oldPassword,
         newPassword,
         newConfirmPassword: confirmPassword,

@@ -39,7 +39,7 @@ const Home = () => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await userDetails('MMS01EJ2')
+        const response = await userDetails()
         setUsername(response.username)
         setUserId(response.id)
         setMasterP(0)

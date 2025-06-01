@@ -2,8 +2,8 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import Loading from "../props/Loading"
-import supabase from "./supabase"
-import { verifyWithDjango } from "./endpoints"
+import { login } from "./endpoints"
+import Buttons from "../props/Buttons"
 
 const Login = () => {
 
@@ -24,22 +24,11 @@ const Login = () => {
   const toggleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      await supabase.auth.signInWithPassword({
-        email: username,
+      setLoading(true)
+      await login({
+        username,
         password
       })
-
-      // Send the token to your Django backend for verification
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        setErrorMessage('No user found. Please register or try again.');
-        setLoading(false);
-        return;
-      }
-      await verifyWithDjango(session.access_token)
-
-      setLoading(true)
-      console.log(`Login successful.`);
       resetForm()
       navigate('/')
     } catch (error: any) {
@@ -90,7 +79,7 @@ const Login = () => {
 
           {errorMessage && <span className="text-red-500 text-md">{errorMessage}</span>}
 
-          <button type="submit" className="bg-black text-white active:bg-amber-300 active:text-black hover:bg-amber-300 hover:text-black hover:cursor-pointer py-2 px-3 rounded-lg font-bold">Login</button>
+          <Buttons type="submit">Login</Buttons>
 
           <span className="text-sm text-amber-950 cursor-pointer" onClick={toggleResetPassword}>
             Forgot password?

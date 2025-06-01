@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router"
+import { reset_password_confirm } from "./endpoints"
+import Buttons from "../props/Buttons"
 
 const ResetPasswordConfirm = () => {
 
@@ -14,12 +16,12 @@ const ResetPasswordConfirm = () => {
     e.preventDefault()
     if (uidb64 && token) {
       try {
-        //await reset_password_confirm ({
-        //  uidb64: uidb64,
-        //  token: token,
-        //  password, 
-        //  password2
-        //})
+        await reset_password_confirm ({
+          uidb64: uidb64,
+          token: token,
+          password, 
+          password2
+        })
         alert('Password reset successfully')
         navigate('/login')
       } catch (error: any) {
@@ -43,8 +45,7 @@ const ResetPasswordConfirm = () => {
           onChange={e => setPassword2(e.target.value)}
           value={password2}
         />
-        <button type="submit" className="bg-black text-white active:bg-amber-300 active:text-white hover:bg-amber-300 hover:text-white
-         hover:cursor-pointer py-1 px-2 rounded-md">Submit</button>
+        <Buttons type="submit" >Submit</Buttons>
       </form>
     </div>
   )

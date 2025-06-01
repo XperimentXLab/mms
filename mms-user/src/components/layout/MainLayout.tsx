@@ -1,15 +1,16 @@
-import { useState } from "react"
-import { Outlet } from "react-router"
+import { useEffect, useState } from "react"
+import { Outlet, useNavigate } from "react-router"
 import { GiHamburgerMenu } from "react-icons/gi";
 import { NavLinkss } from "../props/theLinks";
-import supabase from "../auth/supabase";
 import Loading from "../props/Loading";
+import { logout, userDetails } from "../auth/endpoints";
 
 const MainLayout = () => {
 
   const date = new Date().toLocaleDateString()
   const time = new Date().toLocaleTimeString()
 
+  const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
 
   const [open, setOpen] = useState<boolean>(false)
@@ -24,8 +25,9 @@ const MainLayout = () => {
   const confirmLogout = async () => {
     try {
       setLoading(true)
-      await supabase.auth.signOut()
-      console.log('Logout successful.')
+      await logout()
+      alert('Logout successful.')
+      navigate('/login')
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
@@ -33,6 +35,19 @@ const MainLayout = () => {
       setLoading(false)
     }
   }
+
+  const [username, setUsername] = useState<string>('')
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await userDetails()
+        setUsername(response.username)
+      } catch (error) {
+        console.error('Error fetching user details:', error)
+      }
+    }
+    fetchData()
+  }, [])
 
   const Logout = () => {
     return (
@@ -68,7 +83,7 @@ const MainLayout = () => {
 
             <div className="flex flex-col cursor-default">
               <span className="font-semibold">Money Management Solution</span>
-              <span>Welcome, user</span>
+              <span>Welcome, {username}</span>
             </div>
 
           </div>   

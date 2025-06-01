@@ -26,10 +26,10 @@ const Network = () => {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const response = await userNetwork('MMS01EJ2')
+      const response = await userNetwork()
       setLevel1(response.level_1 || [])
       setLevel2(response.level_2 || [])
-      const resID = await userDetails('MMS01EJ2')
+      const resID = await userDetails()
       setUserId(resID.id)
     } catch (error) {
       console.error("Error fetching network data:", error)

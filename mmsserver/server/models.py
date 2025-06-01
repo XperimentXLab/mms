@@ -135,11 +135,27 @@ class User(AbstractUser):
       current_level_users = list(next_level_users)
       depth += 1
     return downline
+  
+  USERNAME_FIELD = 'username'
     
   class Meta:
     verbose_name = "User"
     verbose_name_plural = "Users"
     ordering = ['-created_at']
+
+
+#class RequestToAdmin(models.Model):
+#  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='request_to_admin')
+#  message = models.TextField()
+#  created_at = models.DateTimeField(auto_now_add=True)
+ 
+#  def __str__(self):
+#    return f"Request from {self.user.username}"
+  
+#  class Meta:
+#    verbose_name = "Request to Admin"
+#    verbose_name_plural = "Requests to Admin"
+#    ordering = ['-created_at']
   
 
 class Wallet(models.Model):

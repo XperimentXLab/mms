@@ -25,10 +25,34 @@ interface User {
 }
 
 interface updatePassData {
-  user_id: string;
   oldPassword: string;
   newPassword: string;
   newConfirmPassword: string;
+}
+
+interface LoginDataRes {
+  username: string
+  password: string
+}
+
+interface PasswordResetConfirmDataRes {
+  uidb64?: string
+  token?: string
+  password: string;
+  password2: string;
+}
+
+export const reset_password_request = async (email: string) => {
+  const response = await api.post('/password_reset/', {email: email})
+  return response.data
+}
+
+export const reset_password_confirm = async (DataConfirm: PasswordResetConfirmDataRes) => {
+  const { uidb64, token, password, password2 } = DataConfirm
+  const response = await api.post(`/password_reset_confirm/${uidb64}/${token}/`, {
+    password, password2
+  })
+  return response.data
 }
 
 export const register = async (userData: User) => {
@@ -45,34 +69,27 @@ export const register = async (userData: User) => {
   return response.data
 }
 
-
-export const verifyWithDjango = async (token: string) => {
-  try {
-    const response = await api.post('/login_verify/', {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    })
-    
-    if (!response.data.error) throw new Error('Verification failed')
-    
-    // Handle successful verification (e.g., redirect)
-  } catch (error) {
-    console.error('Verification error:', error)
-  }
+export const login = async (loginData: LoginDataRes) => {
+  const { username, password } = loginData
+  const response = await api.post('/login/', {
+    username, password
+  })
+  return response.data
 }
 
+export const logout = async () => {
+  const response = await api.post('/logout/')
+  return response.data
+}
 
 export const protectedView = async () => {
   const response = await api.get('/protected/')
   return response.data
 }
 
-
 export const updatePassword = async (passwordData: updatePassData) => {
-  const { oldPassword, newPassword, newConfirmPassword, user_id } = passwordData
-  const response = await api.post(`/update_password/${user_id}`, {
+  const { oldPassword, newPassword, newConfirmPassword} = passwordData
+  const response = await api.post(`/update_password/`, {
     old_password: oldPassword,
     new_password: newPassword,
     confirm_password: newConfirmPassword
@@ -80,19 +97,18 @@ export const updatePassword = async (passwordData: updatePassData) => {
   return response.data
 }
 
-export const userDetails = async (user_id: string) => {
-  const response = await api.get(`/user_details/${user_id}`)
+export const userDetails = async () => {
+  const response = await api.get(`/user_details/`)
   return response.data
 }
 
-export const userNetwork = async (user_id: string) => {
-  const response = await api.get(`/user_network/${user_id}`)
+export const userNetwork = async () => {
+  const response = await api.get(`/user_network/`)
   return response.data
 }
 
 export const updateUserDetails = async (userData: Partial<User>, icDocument?: File) => {
   const {
-    user_id,
     addressLine,
     state,
     city,
@@ -132,7 +148,7 @@ export const updateUserDetails = async (userData: Partial<User>, icDocument?: Fi
     })
     formData.append('ic_document', icDocument, icDocument.name)
 
-    return api.put(`/update_user/${user_id}`, formData, {
+    return api.put(`/update_user/`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Accept': 'application/json',
@@ -140,7 +156,7 @@ export const updateUserDetails = async (userData: Partial<User>, icDocument?: Fi
     })
 
    } else {
-    const response = await api.put(`/update_user/${user_id}`, {
+    const response = await api.put(`/update_user/`, {
       address_line: addressLine,
       address_state: state,
       address_city: city,

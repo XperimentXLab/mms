@@ -4,20 +4,26 @@ from .views import *
 urlpatterns = [
 
   #auth
+  path('token/refresh/', refresh_Token, name='token_refresh'),
   path('register/', register_user, name='register_user'),
-  path('login_verify', login_verify, name='login_verify'),
+  path('login/', login, name='login'),
+  path('logout/', logout, name='logout'),
   path('protected/', protected_view, name='protected_view'),
 
+  #forgot password
+  path('password_reset/', request_password_reset_email, name='password_reset'),
+  path('password_reset_confirm/<uidb64>/<token>/', password_reset_confirm, name='password_reset_confirm'),
+
   #get details
-  path('user_details/<str:user_id>', get_user, name='user_details'),
-  path('user_network/<str:user_id>', get_user_network, name='user_network'),
+  path('user_details/', get_user, name='user_details'),
+  path('user_network/', get_user_network, name='user_network'),
 
   #updating
-  path('update_password/<str:user_id>', update_password, name='update_password'),
-  path('update_user/<str:user_id>', update_user, name='update_user'),
+  path('update_password/', update_password, name='update_password'),
+  path('update_user/', update_user, name='update_user'),
 
   #admin only
-  path('all_network/<str:user_id>', get_all_network, name='all_network'),
+  path('all_network/', get_all_network, name='all_network'),
   
 
 ]

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
 import os
 
 load_dotenv()
@@ -19,9 +20,24 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Helper function to convert environment variable strings to booleans
+def env_to_bool(env_var_name, default=False):
+    value = os.environ.get(env_var_name)
+    if value is None:
+        return default
+    return value.lower() in ('true', '1', 't', 'yes')
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+# Helper function to get integer from environment variable
+def env_to_int(env_var_name, default=0):
+    value = os.environ.get(env_var_name)
+    if value is None:
+        return default
+    try:
+        # Attempt to remove trailing commas if present, common in .env files
+        return int(value.strip(','))
+    except ValueError:
+        return default
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -29,16 +45,27 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
+#Supabase
 SUPABASE_JWT_SECRET = os.getenv('SUPABASE_JWT_SECRET')
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
 
-CORS_ALLOW_ALL_ORIGINS = True
-#CORS_ALLOWED_ORIGINS = [
-#    "http://localhost:5173", # frontend origin
-#]
+#CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
+CORS_ALLOW_CREDENTIALS = True
+
+#CSRF Configuration
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS').split(',')
+SAME_DOMAIN = env_to_bool('SAME_DOMAIN', False)
+_samesite_env_val = os.environ.get('CSRF_COOKIE_SAMESITE', 'Lax') 
+CSRF_COOKIE_SAMESITE = None if _samesite_env_val.lower() == 'none' else _samesite_env_val
+SECURE_SSL_REDIRECT = env_to_bool('SECURE_SSL_REDIRECT', False)
+CSRF_COOKIE_SECURE = env_to_bool('CSRF_COOKIE_SECURE', False)
+CSRF_COOKIE_NAME = os.environ.get('CSRF_COOKIE_NAME', 'csrftoken')
+SESSION_COOKIE_SECURE = env_to_bool('SESSION_COOKIE_SECURE', False)
+CSRF_COOKIE_HTTPONLY = env_to_bool('CSRF_COOKIE_HTTPONLY', False) # Allow the frontend to access the token
 
 # Application definition
 
@@ -52,7 +79,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'server',
-    'django_countries',
+    'django_countries',    
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +94,32 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'server.authentication.JWTCookieAuthentication',
+   ]
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=env_to_int('ACCESS_TOKEN_LIFETIME_MINUTES', 60)),
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=env_to_int('REFRESH_TOKEN_LIFETIME_MINUTES', 1200)),
+    'ROTATE_REFRESH_TOKENS': env_to_bool('ROTATE_REFRESH_TOKENS', True),
+    'BLACKLIST_AFTER_ROTATION': env_to_bool('BLACKLIST_AFTER_ROTATION', True),
+    'AUTH_COOKIE_SECURE': env_to_bool('AUTH_COOKIE_SECURE', False),
+    'AUTH_COOKIE_SAMESITE': os.environ.get('AUTH_COOKIE_SAMESITE', 'Lax'),
+    'AUTH_COOKIE_PATH': '/',
+    'AUTH_COOKIE_HTTP_ONLY': env_to_bool('AUTH_COOKIE_HTTP_ONLY', True),
+    'AUTH_COOKIE_ACCESS': os.environ.get('AUTH_COOKIE_ACCESS', 'access_token'),
+    'AUTH_COOKIE_REFRESH': os.environ.get('AUTH_COOKIE_REFRESH', 'refresh_token'),
+    
+    #JWT Claims Configuration
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "JTI_CLAIM": "jti",
+}
 
 ROOT_URLCONF = 'mmsserver.urls'
 
