@@ -4,6 +4,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { NavLinkss } from "../props/theLinks";
 import Loading from "../props/Loading";
 import { logout, userDetails } from "../auth/endpoints";
+import Buttons from "../props/Buttons";
 
 const MainLayout = () => {
 
@@ -98,9 +99,9 @@ const MainLayout = () => {
           {/*<NavLinkss to={'/wallet'}>Wallet</NavLinkss>
           <NavLinkss to={'/asset'}>Asset</NavLinkss>*/}
           <NavLinkss to={'/others'}>Others</NavLinkss>
-          <button type="button" onClick={handleLogout}
+          <Buttons type="button" onClick={handleLogout}
             className="hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg cursor-pointer"
-          >Logout</button>
+          >Logout</Buttons>
         </nav>
         }
       </div>

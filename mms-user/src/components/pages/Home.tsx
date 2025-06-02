@@ -29,6 +29,7 @@ const Home = () => {
     { type: "Personal", amount: 0 }, 
     { type: "Affliate", amount: 0 },
     { type: "Fast Track", amount: 0 },
+    { type: "Total", amount: 0}
   ];
 
 
