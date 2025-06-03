@@ -66,6 +66,7 @@ SECURE_SSL_REDIRECT = env_to_bool('SECURE_SSL_REDIRECT', False)
 CSRF_COOKIE_SECURE = env_to_bool('CSRF_COOKIE_SECURE', False)
 CSRF_COOKIE_NAME = os.environ.get('CSRF_COOKIE_NAME', 'csrftoken')
 SESSION_COOKIE_SECURE = env_to_bool('SESSION_COOKIE_SECURE', False)
+SESSION_COOKIE_SAMESITE = env_to_bool('SESSION_COOKIE_SAMESITE', False)
 CSRF_COOKIE_HTTPONLY = env_to_bool('CSRF_COOKIE_HTTPONLY', False) # Allow the frontend to access the token
 
 # Application definition

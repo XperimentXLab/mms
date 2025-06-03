@@ -1,23 +1,24 @@
 import React, { useState } from "react"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
-import { Line } from "react-chartjs-2"
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
+import type { ChartOptions, ChartData } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels"
+import { Bar } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
+  BarElement,
+  ChartDataLabels,
   LinearScale,
-  PointElement,
-  LineElement,
   Title,
   Tooltip,
   Legend
@@ -46,6 +47,8 @@ const ValueCalculator: React.FC<CalculatorProps> = ({
   )
 }
 
+console.log(ChartJS.instances)
+
 const Others = () => {
 
   const [assetAmount, setAssetAmount] = useState(0)
@@ -56,48 +59,78 @@ const Others = () => {
   const [loading, setLoading] = useState<boolean>(false)
 
   //Performance Section
+  interface PerformanceData {
+    today: number;
+    weekly: number;
+    monthly: number;
+    yearly: number[];
+  }
   // = (mock data - in a real app, fetch this)
-  const [performanceData] = useState({
+  const [performanceData] = useState<PerformanceData>({
     today: 0.17,
     weekly: 0.39,
     monthly: 0.39,
     yearly: [
-      4000, //Jan
-      3500, //Feb
-      4200, //Mar
-      5800, //Apr
-      6500, //May
-      7200, //June
-      4500, //July
-      6200, //Aug
-      6000, //Sept
-      7500, //Oct
-      4000, //Nov
-      5500, //Dec
+      5.10, //Jan
+      3.10, //Feb
+      3.20, //Mar
+      3.40, //Apr
+      3.78, //May
+      0.39, //June
     ],
   });
 
   // Chart data for yearly profit
-  const chartData = {
+  const chartData: ChartData<'bar'> = {
     labels: [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      "Jan", "Feb", "Mar", "Apr", "May", 
+      "Jun"
     ],
     datasets: [
       {
-        label: "Yearly Profit",
+        label: "Yearly Profit Total - 18.58 %",
         data: performanceData.yearly,
         borderColor: "rgb(75, 192, 192)",
-        tension: 0.1,
-        fill: false,
+        borderWidth: 1,
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
       },
     ],
   };
 
-
+  const chartOptions: ChartOptions<'bar'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        type: 'linear',
+        beginAtZero: true,
+        ticks: {
+          callback: (value) => `${value}%`,
+        },
+      },
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.parsed.y}%`,
+        },
+      },
+      legend: {
+        position: 'top',
+      },
+      // This displays the data values above each bar
+      datalabels: {
+        display: true,
+        color: 'black',
+        anchor: 'end',
+        align: 'top',
+        formatter: (value: number) => `${value}%`,
+      }
+    },
+  };
   
   // Calculator Section
-  const resetForm = () => {
+  const resetForm = (): void => {
     setAssetAmount(0)
     setProfitRate(0)
     setUserProfit(0)
@@ -160,7 +193,7 @@ const Others = () => {
           <div className="mt-4">
             <h3 className="text-sm font-semibold mb-2">Yearly Profit Trend</h3>
             <div className="h-64">
-              <Line data={chartData} options={{ maintainAspectRatio: false }} />
+              <Bar id="YearlyPerformanceChart" data={chartData} options={chartOptions} />
           </div>
           </div>
         </div>
