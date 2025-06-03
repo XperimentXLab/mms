@@ -58,9 +58,9 @@ const Others = () => {
   //Performance Section
   // = (mock data - in a real app, fetch this)
   const [performanceData] = useState({
-    today: 250,
-    weekly: 750,
-    monthly: 7500,
+    today: 0.17,
+    weekly: 0.39,
+    monthly: 0.39,
     yearly: [
       4000, //Jan
       3500, //Feb
@@ -144,17 +144,17 @@ const Others = () => {
         <div className="grid grid-cols-1 gap-4">
           <div className="border p-3 rounded-lg">
             <h3 className="text-sm text-gray-500">Today's Profit</h3>
-            <p className="text-xl font-bold">${performanceData.today.toLocaleString()}</p>
+            <p className="text-xl font-bold">{performanceData.today.toLocaleString()} %</p>
           </div>
           
           <div className="border p-3 rounded-lg">
             <h3 className="text-sm text-gray-500">Weekly Profit</h3>
-            <p className="text-xl font-bold">${performanceData.weekly.toLocaleString()}</p>
+            <p className="text-xl font-bold">${performanceData.weekly.toLocaleString()} %</p>
           </div>
           
           <div className="border p-3 rounded-lg">
             <h3 className="text-sm text-gray-500">Monthly Profit</h3>
-            <p className="text-xl font-bold">${performanceData.monthly.toLocaleString()}</p>
+            <p className="text-xl font-bold">${performanceData.monthly.toLocaleString()} %</p>
           </div>
           
           <div className="mt-4">
