@@ -47,8 +47,6 @@ const ValueCalculator: React.FC<CalculatorProps> = ({
   )
 }
 
-console.log(ChartJS.instances)
-
 const Others = () => {
 
   const [assetAmount, setAssetAmount] = useState(0)

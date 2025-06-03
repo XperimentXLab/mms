@@ -58,15 +58,7 @@ const Register = () => {
       alert('User successfully register')
       navigate('/login')
     } catch (error: any) {
-      console.error(error.message)
-      console.error(error.request)
-      if (error.response && error.response.status === 400) {
-        setErrorMessage('User already exist')
-      } else if (error.response && error.response.status === 404) {
-        setErrorMessage('Network error. Please contact administrator')
-      } else {
-        setErrorMessage('Server error. Please contact administrator')
-      }
+        setErrorMessage(error.response.data.error)
     } finally {
       setLoading(false)
     }
