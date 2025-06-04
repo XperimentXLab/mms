@@ -90,8 +90,13 @@ def get_user(request):
 def register_user(request):
   serializer = UserSerializer(data=request.data)
   if serializer.is_valid():
-    user = serializer.save()
-    return Response({'message': f'{user.username} successfully created'}, status=201)
+    try:
+      user = serializer.save()
+      return Response(f'{user.username} successfully registered', status=201)
+    except Exception as e:
+      return Response({'error': list(str(e))}, status=400)
+  else:
+    return Response({'error': 'An error occurred during user registration.'}, status=500)
   
 
 @api_view(['POST'])
