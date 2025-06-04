@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.utils.crypto import get_random_string
 from django.core.validators import MinValueValidator
 from django.core.validators import RegexValidator
+from django.utils.timezone import datetime
 import string
 
 import logging
@@ -12,9 +13,10 @@ logger = logging.getLogger(__name__)
 
 class User(AbstractUser):
   id = models.CharField(max_length=8, primary_key=True)
+  username = models.CharField(max_length=255, unique=True)
   ic = models.CharField(max_length=12, unique=True, validators=[RegexValidator(r'^\d{12}$', 'IC must be 12 digits')])
   email = models.EmailField(unique=True)
-  wallet_address = models.CharField(max_length=255, unique=True, blank=True, null=True, verbose_name="Wallet Address (BEP20)")
+  wallet_address = models.CharField(max_length=255, blank=True, null=True, verbose_name="Wallet Address (BEP20)")
 
   address_line = models.CharField(max_length=255, blank=True, null=True)
   address_city = models.CharField(max_length=255, blank=True, null=True)
@@ -144,18 +146,11 @@ class User(AbstractUser):
     ordering = ['-created_at']
 
 
-#class RequestToAdmin(models.Model):
-#  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='request_to_admin')
-#  message = models.TextField()
-#  created_at = models.DateTimeField(auto_now_add=True)
- 
-#  def __str__(self):
-#    return f"Request from {self.user.username}"
-  
-#  class Meta:
-#    verbose_name = "Request to Admin"
-#    verbose_name_plural = "Requests to Admin"
-#    ordering = ['-created_at']
+# Verify IC, Depo master, Place Asset, WD profit
+class RequestStatus(models.Choices):
+  PENDING = 'Pending'
+  APPROVED = 'Approved'
+  REJECTED = 'Rejected'
   
 
 class Wallet(models.Model):
@@ -177,6 +172,7 @@ class Wallet(models.Model):
     verbose_name_plural = "Wallets"
 
 
+
 class Transaction(models.Model):
   TRANSACTION_TYPES = (
     ('DEPOSIT', 'Deposit'),
@@ -191,12 +187,12 @@ class Transaction(models.Model):
     ('AFFILIATE', 'Affiliate Point'),
   )
     
+  user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='transactions')
   wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
   transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
   point_type = models.CharField(max_length=20, choices=POINT_TYPES)
   amount = models.DecimalField(max_digits=15, decimal_places=2)
   description = models.TextField(blank=True)
-  status = models.CharField(max_length=20, default='PENDING')  # PENDING, COMPLETED, FAILED
   reference = models.CharField(max_length=100, blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
   
@@ -205,7 +201,7 @@ class Transaction(models.Model):
   converted_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
   
   def __str__(self):
-    return f"{self.get_transaction_type_display()} - {self.get_point_type_display()} - {self.amount}"
+    return f"{self.user.username} - {self.get_transaction_type_display()} - {self.get_point_type_display()} - {self.amount}"
   
   class Meta:
     ordering = ['-created_at']
@@ -214,17 +210,10 @@ class Transaction(models.Model):
 
 
 class WithdrawalRequest(models.Model):
-  STATUS_CHOICES = (
-    ('PENDING', 'Pending'),
-    ('APPROVED', 'Approved'),
-    ('REJECTED', 'Rejected'),
-    ('PROCESSED', 'Processed'),
-)
-  
   wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='withdrawal_requests')
   point_type = models.CharField(max_length=20, choices=Transaction.POINT_TYPES)
   amount = models.DecimalField(max_digits=15, decimal_places=2, validators=[MinValueValidator(50)])
-  status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+  request_status = models.CharField(max_length=20, choices=RequestStatus.choices, default=RequestStatus.PENDING, verbose_name="Request Status")
   transaction = models.OneToOneField(Transaction, on_delete=models.SET_NULL, null=True, blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
   processed_at = models.DateTimeField(null=True, blank=True)
@@ -240,6 +229,7 @@ class WithdrawalRequest(models.Model):
 
 class TransferRequest(models.Model):
   wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transfer_requests')
+  request_status = models.CharField(max_length=20, choices=RequestStatus.choices, default=RequestStatus.PENDING, verbose_name="Request Status")
   source_point_type = models.CharField(max_length=20, choices=Transaction.POINT_TYPES)
   target_point_type = models.CharField(max_length=20, choices=Transaction.POINT_TYPES)
   amount = models.DecimalField(
@@ -252,11 +242,11 @@ class TransferRequest(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
   
   def __str__(self):
-    return f"Transfer - {self.get_source_point_type_display()} to {self.get_target_point_type_display()}"
+    return f"Transfer - {self.get_source_point_type_display()} to {self.get_target_point_type_display()} - {self.amount}"
   
   class Meta:
     ordering = ['-created_at']
     verbose_name = "Transfer Request"
     verbose_name_plural = "Transfer Requests"
 
-  #integrate "Asset" related functionalities into your Django application, focusing on how the Wallet model in models.py can support these. Based on your requirements, "Asset Placement" seems to be a specific way of funding the master_point_balance, while "Asset Withdrawal" and "Asset Statement" are operations and views related to the wallet's funds.
+  #integrate "Asset" related functionalities into Django application, focusing on how the Wallet model in models.py can support these. Based on requirements, "Asset Placement" seems to be a specific way of funding the master_point_balance, while "Asset Withdrawal" and "Asset Statement" are operations and views related to the wallet's funds.

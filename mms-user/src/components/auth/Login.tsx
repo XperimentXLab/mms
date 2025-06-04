@@ -33,14 +33,10 @@ const Login = () => {
       navigate('/')
     } catch (error: any) {
       if (error.response && (error.response.status === 401 || error.response.status === 400)) {
-          // This is likely an authentication failure (e.g., wrong credentials, bad request for auth)
-          // Use the backend's detail message if available, otherwise the generic one
-          setErrorMessage(error.response.data?.detail || 'Invalid username or password.');
+          setErrorMessage('Invalid username or password.');
         } else if (error.response) {
-          // Other errors from the server (e.g., 500, 403, 404)
           setErrorMessage('A server error occurred. Please try again later or contact an administrator.');
         } else {
-          // Network errors or other Axios errors where no response was received
           setErrorMessage('Network error. Please check your connection or contact an administrator.');
         }
     } finally {

@@ -58,7 +58,7 @@ const Register = () => {
       navigate('/login')
     } catch (error: any) {
       if (error.response && (error.response.status === 400 || error.response.status === 401)) {
-        setErrorMessage('Invalid credentials. Please check your details and try again')
+        setErrorMessage('Username already exists. Please check your details and try again')
       } else {
         setErrorMessage('Network error. Please check your connection or contact an administrator.');
       }
