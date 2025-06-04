@@ -25,21 +25,24 @@ const Register = () => {
   const toggleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const validatePassword = (pass: string) => {
-      if (pass.length < 8) {
-        return setErrorMessage('Password must be at least 8 characters')
-      } else if (!/[A-Z]/.test(pass)) {
-        return setErrorMessage('Password must contain at least 1 uppercase letter')
-      } else if (!/[a-z]/.test(pass)) {
-        return setErrorMessage('Password must contain at least 1 lowercase letter')
-      } else if (!/[0-9]/.test(pass)) {
-        return setErrorMessage('Password must contain at least 1 number')
-      } else if (pass !== confirmPassword) {
-        return setErrorMessage('Password does not match')
-      }
-      return null
+    if (password.length < 8) {
+      return setErrorMessage('Password must be at least 8 characters')
+    } else if (!/[A-Z]/.test(password)) {
+      return setErrorMessage('Password must contain at least 1 uppercase letter')
+    } else if (!/[a-z]/.test(password)) {
+      return setErrorMessage('Password must contain at least 1 lowercase letter')
+    } else if (!/[0-9]/.test(password)) {
+      return setErrorMessage('Password must contain at least 1 number')
+    } else if (password !== confirmPassword) {
+      return setErrorMessage('Password does not match')
     }
-    const passwordError = validatePassword(password)
+    if (referredBy && !/^MMS.{5}$/.test(referredBy)) {
+      return setErrorMessage('Referral ID must be 8 characters starting with MMS')
+    }
+    if (ic.length !== 12) {
+      return setErrorMessage('IC number must be 12 digits')
+    }
+
     try {
       setLoading(true)
       await register({
@@ -55,11 +58,8 @@ const Register = () => {
       navigate('/login')
     } catch (error: any) {
       if (error.response && (error.response.status === 400 || error.response.status === 401)) {
-        setErrorMessage(error.response.data.error || passwordError)
-      } else if (error.response) {
-        setErrorMessage(error.response.data.error)
+        setErrorMessage('Invalid credentials. Please check your details and try again')
       } else {
-        // Network errors or other Axios errors where no response was received
         setErrorMessage('Network error. Please check your connection or contact an administrator.');
       }
     } finally {

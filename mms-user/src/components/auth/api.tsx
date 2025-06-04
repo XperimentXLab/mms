@@ -7,6 +7,7 @@ const tokenURL = `${baseURL}/token/refresh/`
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'; // This is the default, but good to be explicit
 axios.defaults.withCredentials = true // Include credentials (cookies) in requests
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 const api = axios.create({
   baseURL: baseURL,
