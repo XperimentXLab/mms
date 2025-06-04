@@ -65,16 +65,16 @@ const Others = () => {
   }
   // = (mock data - in a real app, fetch this)
   const [performanceData] = useState<PerformanceData>({
-    today: 0.17,
-    weekly: 0.39,
-    monthly: 0.39,
+    today: 0.18,
+    weekly: 0.57,
+    monthly: 0.57,
     yearly: [
       5.10, //Jan
       3.10, //Feb
       3.20, //Mar
       3.40, //Apr
       3.78, //May
-      0.39, //June
+      0.57, //June
     ],
   });
 

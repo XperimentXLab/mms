@@ -61,7 +61,7 @@ const Login = () => {
         <form className="grid grid-row-3 gap-5 p-5 shadow-xl shadow-red-300" onSubmit={toggleLogin}>
           <div className="grid grid-row-2 gap-2">
             <span>Username</span>
-            <input type="text" placeholder="Enter MMS Username" 
+            <input type="text" placeholder="Enter Username" 
               onChange={(e) => setUsername(e.target.value)}
               value={username}
               className="border py-1 px-2 rounded-md" 

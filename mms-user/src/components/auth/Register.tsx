@@ -39,11 +39,7 @@ const Register = () => {
       }
       return null
     }
-
     const passwordError = validatePassword(password)
-    if (passwordError) {
-      return passwordError
-    }
     try {
       setLoading(true)
       await register({
@@ -58,7 +54,14 @@ const Register = () => {
       alert('User successfully register')
       navigate('/login')
     } catch (error: any) {
+      if (error.response && (error.response.status === 400 || error.response.status === 401)) {
+        setErrorMessage(error.response.data.error || passwordError)
+      } else if (error.response) {
         setErrorMessage(error.response.data.error)
+      } else {
+        // Network errors or other Axios errors where no response was received
+        setErrorMessage('Network error. Please check your connection or contact an administrator.');
+      }
     } finally {
       setLoading(false)
     }
@@ -81,7 +84,7 @@ const Register = () => {
 
           <Inputss 
             type="text"
-            placeholder="Enter username"
+            placeholder="Enter MMS username"
             onChange={(e) => setUsername(e.target.value)}
             value={username}
             label="Username"
