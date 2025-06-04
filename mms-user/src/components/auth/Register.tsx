@@ -58,7 +58,7 @@ const Register = () => {
       navigate('/login')
     } catch (error: any) {
       if (error.response && (error.response.status === 400 || error.response.status === 401)) {
-        setErrorMessage('Username already exists. Please check your details and try again')
+        setErrorMessage(error.response.data.error)
       } else {
         setErrorMessage('Network error. Please check your connection or contact an administrator.');
       }
