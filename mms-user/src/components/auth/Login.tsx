@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router"
 import Loading from "../props/Loading"
 import { login } from "./endpoints"
 import Buttons from "../props/Buttons"
+import { Inputss } from "../props/Formss"
 
 const Login = () => {
 
@@ -56,19 +57,23 @@ const Login = () => {
 
         <form className="grid grid-row-3 gap-5 p-5 shadow-xl shadow-red-300" onSubmit={toggleLogin}>
           <div className="grid grid-row-2 gap-2">
-            <span>Username</span>
-            <input type="text" placeholder="Enter Username" 
+
+            <Inputss type="text" placeholder="Enter Username"
+              label="Username" 
               onChange={(e) => setUsername(e.target.value)}
               value={username}
+              required={true}
               className="border py-1 px-2 rounded-md" 
               />
           </div>
 
           <div className="grid grid-row-2 gap-2">
-            <span>Password</span>
-            <input type="password" placeholder="Enter password" 
+
+            <Inputss type="password" placeholder="Enter password"
+              label="Password" 
               onChange={(e) => setPassword(e.target.value)}
               value={password}
+              required={true}
               className="border py-1 px-2 rounded-md" 
             />
           </div>
