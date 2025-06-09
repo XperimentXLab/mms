@@ -26,6 +26,10 @@ class UserSerializer(serializers.ModelSerializer):
     return value
   
   def validate_ic(self, value):
+    if len(value) == 12 and value.isdigit():
+      return serializers.ValidationError('Invalid IC format')
+    if value.startswith('08'):
+      return serializers.ValidationError('User must be 18 years or older')
     if User.objects.filter(ic=value).exists():
       raise serializers.ValidationError('IC already in use')
     return value
@@ -49,9 +53,9 @@ class UserSerializer(serializers.ModelSerializer):
   
   def validate_referred_by(self, value):
     if not (isinstance(value, str) and len(value) == 8 and value.startswith('MMS')):
-      raise serializers.ValidationError(f'Invalid referrer format: {value}. Must be 8 characters starting with MMS.')
+      raise serializers.ValidationError(f'Invalid Referral ID format.')
     if not User.objects.filter(id=value).exists():
-      raise serializers.ValidationError(f'Referrer with ID {value} does not exist.')
+      raise serializers.ValidationError(f'Referral ID does not exist.')
     return value
   
   def validate_ic_document(self, value):

@@ -89,6 +89,7 @@ const Register = () => {
             label="Refferal ID"
             required={true}
           />
+          {renderError('referred_by')}
 
           <Inputss 
             type="text"
@@ -98,6 +99,7 @@ const Register = () => {
             label="Username"
             required={true}
           />
+          {renderError('username')}
 
           <Inputss 
             type="text"
@@ -125,6 +127,7 @@ const Register = () => {
             label="Email"
             required={true}
           />
+          {renderError('email')}
           
           <Inputss 
             type="number"
@@ -140,6 +143,7 @@ const Register = () => {
             required={true}
             maxLength={12}
           />
+          {renderError('ic')}
 
           <Inputss 
             type="password"
@@ -149,6 +153,7 @@ const Register = () => {
             label="Password"
             required={true}
           />
+          {renderError('password')}
           
           <Inputss 
             type="password"
@@ -159,11 +164,6 @@ const Register = () => {
             required={true}
           />
 
-          {renderError('referred_by')}
-          {renderError('username')}
-          {renderError('email')}
-          {renderError('ic')}
-          {renderError('password')}
           {renderError('error')}
 
           <Buttons type="submit">Register</Buttons>     
