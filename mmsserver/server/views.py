@@ -89,6 +89,10 @@ def get_user(request):
 @permission_classes([AllowAny])
 def register_user(request):
   serializer = UserSerializer(data=request.data)
+
+  if not serializer.is_valid():
+    return Response({'error': 'An error occurred during user registration. Please try again.'}, status=400)
+
   try:
     if serializer.is_valid():
 
@@ -129,8 +133,6 @@ def register_user(request):
       
       user = serializer.save()
       return Response({'message':f'{user.username} successfully registered'}, status=201)
-    else:
-      return Response({'error': 'An error occurred during user registration. Please try again.'}, status=400)
     
   except KeyError as e:
     return Response({'error': str(e)}, 400)

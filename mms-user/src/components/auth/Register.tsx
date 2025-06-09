@@ -58,7 +58,7 @@ const Register = () => {
       navigate('/login')
     } catch (error: any) {
       if (error.response && (error.response.status === 400 || error.response.status === 401)) {
-        //console.log(error.response.data.error)
+        console.log(error.response.data.error)
         setErrorMessage(error.response.data.error)
       } else {
         setErrorMessage(error.response.data.error);
