@@ -84,3 +84,52 @@ export const apiCountry: Promise<CountryType[]> = axios.get('https://restcountri
     return []
   })
 
+/*
+const getRecaptchaToken = async (action: string): Promise<string> => {
+  return new Promise((resolve) => {
+    window.grecaptcha.ready(() => {
+      window.grecaptcha.execute(import.meta.env.VITE_RECAPTCHA_SITE_KEY, { action }).then((token) => {
+        resolve(token);
+      });
+    });
+  });
+};
+
+Send Both CAPTCHA Tokens to Backend
+const handleSubmit = async () => {
+  const sliderPassed = true; // Set based on slider completion
+  const recaptchaToken = await getRecaptchaToken("login");
+
+  const response = await fetch("/api/verify-captchas", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sliderPassed, recaptchaToken }),
+  });
+
+  console.log("Server Response:", await response.json());
+};
+
+Verify CAPTCHA in Django Backend.. In views.py, verify both Slider CAPTCHA and reCAPTCHA v3:
+def verify_captchas(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        slider_passed = data.get("sliderPassed")
+        recaptcha_token = data.get("recaptchaToken")
+
+        if not slider_passed:
+            return JsonResponse({"error": "Slider CAPTCHA failed"}, status=400)
+
+        secret_key = settings.RECAPTCHA_SECRET_KEY
+        url = f"https://www.google.com/recaptcha/api/siteverify?secret={secret_key}&response={recaptcha_token}"
+        
+        responseCaptcha = requests.post(url)
+        resultCaptcha = responseCaptcha.json()
+
+        if not resultCaptcha.get("success") or resultCaptcha.get("score", 0) < 0.5:
+            return JsonResponse({"error": "reCAPTCHA verification failed"}, status=400)
+
+        return JsonResponse({"success": True, "message": "CAPTCHA verification passed!"})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+*/

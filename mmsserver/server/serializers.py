@@ -4,6 +4,7 @@ import re
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
+from datetime import date
 
 class UserSerializer(serializers.ModelSerializer):
   verification_status_display = serializers.SerializerMethodField()
@@ -26,10 +27,35 @@ class UserSerializer(serializers.ModelSerializer):
     return value
   
   def validate_ic(self, value):
-    if len(value) == 12 and value.isdigit():
+    if not (isinstance(value, str)) and len(value) == 12 and value.isdigit():
       return serializers.ValidationError('Invalid IC format')
-    if value.startswith('08'): #need fix 18+
-      return serializers.ValidationError('User must be 18 years or older')
+    
+    try:
+      yy_str = value[0:2]
+      mm_str = value[2:4]
+      dd_str = value[4:6]
+
+      year_val = int(yy_str)
+      month_val = int(mm_str)
+      day_val = int(dd_str)
+
+      current_dt = date.today()
+      if year_val <= (current_dt.year % 100):
+        birth_year = 2000 + year_val
+      else:
+        birth_year = 1900 + year_val
+
+      birth_date = date(birth_year, month_val, day_val)
+
+      if birth_date > current_dt:
+        raise serializers.ValidationError('Invalid date of birth')
+
+      age = current_dt.year - birth_date.year - ((current_dt.month, current_dt.day) < (birth_date.month, birth_date.day))
+      if age < 18:
+        raise serializers.ValidationError('User must be at least 18 years old')
+    except ValueError:
+      raise serializers.ValidationError('Invalid IC format. Please ensure only digits are used.')
+    
     if User.objects.filter(ic=value).exists():
       raise serializers.ValidationError('IC already in use')
     return value
