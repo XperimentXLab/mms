@@ -18,7 +18,7 @@ const Register = () => {
   const [referredBy, setReferredBy] = useState<string>('')
 
   const [loading, setLoading] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<string[]>([])
+  const [errorMessage, setErrorMessage] = useState<Record<string, string[]>>({})
 
   const navigate = useNavigate()
 
@@ -37,12 +37,13 @@ const Register = () => {
       return setErrorMessage('Password does not match')
     }
     if (referredBy && !/^MMS.{5}$/.test(referredBy)) {
-      return setErrorMessage('Referral ID must be 8 characters starting with MMS')
+      return setErrorMessage('Invalid Referral ID')
     }
     if (ic.length !== 12) {
       return setErrorMessage('IC number must be 12 digits')
     }
 */
+
     try {
       setLoading(true)
       await register({
@@ -66,6 +67,12 @@ const Register = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const renderError = (fName: string) => {
+    return errorMessage[fName]?.map((error, index) => (
+        <span key={index} className="text-red-500 text-md">{error}</span>
+      ))
   }
 
   return (
@@ -123,7 +130,7 @@ const Register = () => {
             type="number"
             placeholder="Enter I/C"
             onChange={(e) => {
-              const value = e.target.value.replace(/D/g, '') //remove non-digits
+              const value = e.target.value.replace(/\D/g, '') //remove non-digits
               if (value.length <= 12) {
                 setIc(value)
               }
@@ -152,10 +159,12 @@ const Register = () => {
             required={true}
           />
 
-          {errorMessage && 
-          errorMessage.map((error, index) => (
-            <span key={index} className="text-red-500 text-md">{error}</span>
-          ))}
+          {renderError('referred_by')}
+          {renderError('username')}
+          {renderError('email')}
+          {renderError('ic')}
+          {renderError('password')}
+          {renderError('error')}
 
           <Buttons type="submit">Register</Buttons>     
           

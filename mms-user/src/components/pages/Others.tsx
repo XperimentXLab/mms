@@ -67,14 +67,14 @@ const Others = () => {
   const [performanceData] = useState<PerformanceData>({
     today: 0.18,
     weekly: 0.18,
-    monthly: 0.92,
+    monthly: 1.10,
     yearly: [
       5.10, //Jan
       3.10, //Feb
       3.20, //Mar
       3.40, //Apr
       3.78, //May
-      0.92, //June
+      1.10, //June
     ],
   });
 
