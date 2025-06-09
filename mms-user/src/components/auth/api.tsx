@@ -2,6 +2,7 @@ import axios from "axios"
 
 export const baseURL = process.env.NEXT_PUBLIC_BASE_URL ||'http://127.0.0.1:8000/server'
 const tokenURL = `${baseURL}/token/refresh/`
+console.log("Base URL:", process.env.NEXT_PUBLIC_BASE_URL);
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'; // This is the default, but good to be explicit
