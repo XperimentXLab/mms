@@ -91,9 +91,11 @@ def register_user(request):
   serializer = UserSerializer(data=request.data)
 
   try:
-    if serializers.is_valid():
+    if serializer.is_valid():
       user = serializer.save()
       return Response({'message':f'{user.username} successfully registered'}, status=201)
+    else:
+      return Response({'error': serializer.errors}, status=400)
     
   except KeyError as e:
     return Response({'error': str(e)}, 400)
