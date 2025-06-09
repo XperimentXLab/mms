@@ -1,7 +1,6 @@
 import axios from "axios"
 
-export const baseURL = 'https://mms-0j89.onrender.com/server'
-//export const baseURL = 'http://127.0.0.1:8000/server' 
+export const baseURL = process.env.NEXT_PUBLIC_BASE_URL ||'http://127.0.0.1:8000/server'
 const tokenURL = `${baseURL}/token/refresh/`
 
 axios.defaults.xsrfCookieName = 'csrftoken';
