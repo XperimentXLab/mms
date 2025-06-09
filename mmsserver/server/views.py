@@ -91,48 +91,48 @@ def register_user(request):
   serializer = UserSerializer(data=request.data)
 
   if not serializer.is_valid():
-    return Response({'error': 'An error occurred during user registration. Please try again.'}, status=400)
+    return Response({'error': serializer.errors}, status=400)
 
   try:
-    if serializer.is_valid():
-
-      email = serializer.validated_data['email']
-      if User.objects.filter(email=email).exists():
-        return Response({'error','Email already in use'}, 400)
-
-      ic = serializer.validated_data['ic']
-      if User.objects.filter(ic=ic).exists():
-        return Response({'error', 'IC already in use'}, 400)
-      
-      username = serializer.validated_data['username']
-      if User.objects.filter(username=username).exists():
-        return Response({'error', 'Username already in use'}, 400)
+    validated_data = serializer.validated_data
     
-      #password need to have at least 1 uppercase 1 lowercase and a number for 8 characters
-      password = serializer.validated_data['password']
-      if len(password) < 8:
-        return Response({'error', 'Password must be at least 8 characters long'}, 400)
-      if not re.search(r"[a-z]", password):
-        return Response({'error', 'Password must contain at least one lowercase letter'}, 400)
-      if not re.search(r"[A-Z]", password):
-        return Response({'error', 'Password must contain at least one uppercase letter'}, 400)
-      if not re.search(r"[0-9]", password):
-        return Response({'error', 'Password must contain at least one number'}, 400)
-      
-      referred_by = serializer.validated_data['referred_by']
-      if not (isinstance(referred_by, str) and len(referred_by) == 8 and referred_by.startswith('MMS')):
-        return Response({'error', 'Invalid Referral ID format.'}, 400)
-      if not User.objects.filter(id=referred_by).exists():
-        return Response({'error', 'Referral ID does not exist.'}, 400)
-      
-      ic = serializer.validated_data['ic']
-      if not (isinstance(ic, str) and len(ic) == 12 and ic.isdigit()):
-        return Response({'error', 'Invalid IC format.'}, 400)
-      if ic.startswith('08'):
-        return Response({'error', 'User must be 18 years or older'}, 400)
-      
-      user = serializer.save()
-      return Response({'message':f'{user.username} successfully registered'}, status=201)
+    email = validated_data.get['email']
+    if User.objects.filter(email=email).exists():
+      return Response({'error','Email already in use'}, 400)
+
+    ic = validated_data.get['ic']
+    if User.objects.filter(ic=ic).exists():
+      return Response({'error', 'IC already in use'}, 400)
+    
+    username = validated_data.get['username']
+    if User.objects.filter(username=username).exists():
+      return Response({'error', 'Username already in use'}, 400)
+  
+    #password need to have at least 1 uppercase 1 lowercase and a number for 8 characters
+    password = validated_data.get['password']
+    if len(password) < 8:
+      return Response({'error', 'Password must be at least 8 characters long'}, 400)
+    if not re.search(r"[a-z]", password):
+      return Response({'error', 'Password must contain at least one lowercase letter'}, 400)
+    if not re.search(r"[A-Z]", password):
+      return Response({'error', 'Password must contain at least one uppercase letter'}, 400)
+    if not re.search(r"[0-9]", password):
+      return Response({'error', 'Password must contain at least one number'}, 400)
+    
+    referred_by = validated_data.get['referred_by']
+    if not (isinstance(referred_by, str) and len(referred_by) == 8 and referred_by.startswith('MMS')):
+      return Response({'error', 'Invalid Referral ID format.'}, 400)
+    if not User.objects.filter(id=referred_by).exists():
+      return Response({'error', 'Referral ID does not exist.'}, 400)
+    
+    ic = validated_data.get['ic']
+    if not (isinstance(ic, str) and len(ic) == 12 and ic.isdigit()):
+      return Response({'error', 'Invalid IC format.'}, 400)
+    if ic.startswith('08'):
+      return Response({'error', 'User must be 18 years or older'}, 400)
+    
+    user = serializer.save()
+    return Response({'message':f'{user.username} successfully registered'}, status=201)
     
   except KeyError as e:
     return Response({'error': str(e)}, 400)
