@@ -18,7 +18,7 @@ const Register = () => {
   const [referredBy, setReferredBy] = useState<string>('')
 
   const [loading, setLoading] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [errorMessage, setErrorMessage] = useState<string[]>([])
 
   const navigate = useNavigate()
 
@@ -152,7 +152,10 @@ const Register = () => {
             required={true}
           />
 
-          {errorMessage && <span className="text-red-500 text-md">{errorMessage}</span>}
+          {errorMessage && 
+          errorMessage.map((error, index) => (
+            <span key={index} className="text-red-500 text-md">{error}</span>
+          ))}
 
           <Buttons type="submit">Register</Buttons>     
           
