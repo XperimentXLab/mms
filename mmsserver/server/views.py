@@ -89,15 +89,52 @@ def get_user(request):
 @permission_classes([AllowAny])
 def register_user(request):
   serializer = UserSerializer(data=request.data)
-  if serializer.is_valid():
-    try:
-      user = serializer.save()
-      return Response(f'{user.username} successfully registered', status=201)
-    except Exception as e:
-      return Response({'error': list(str(e))}, status=400)
-  else:
-    return Response({'error': 'An error occurred during user registration.'}, status=500)
-  
+  try:
+    if serializer.is_valid():
+      try:
+        email = serializer.validated_data['email']
+        if User.objects.filter(email=email).exists():
+          return Response({'error','Email already in use'}, 400)
+
+        ic = serializer.validated_data['ic']
+        if User.objects.filter(ic=ic).exists():
+          return Response({'error', 'IC already in use'}, 400)
+        
+        username = serializer.validated_data['username']
+        if User.objects.filter(username=username).exists():
+          return Response({'error', 'Username already in use'}, 400)
+      
+        #password need to have at least 1 uppercase 1 lowercase and a number for 8 characters
+        password = serializer.validated_data['password']
+        if len(password) < 8:
+          return Response({'error', 'Password must be at least 8 characters long'}, 400)
+        if not re.search(r"[a-z]", password):
+          return Response({'error', 'Password must contain at least one lowercase letter'}, 400)
+        if not re.search(r"[A-Z]", password):
+          return Response({'error', 'Password must contain at least one uppercase letter'}, 400)
+        if not re.search(r"[0-9]", password):
+          return Response({'error', 'Password must contain at least one number'}, 400)
+        
+        referred_by = serializer.validated_data['referred_by']
+        if not (isinstance(referred_by, str) and len(referred_by) == 8 and referred_by.startswith('MMS')):
+          return Response({'error', 'Invalid Referral ID format.'}, 400)
+        if not User.objects.filter(id=referred_by).exists():
+          return Response({'error', 'Referral ID does not exist.'}, 400)
+        
+        ic = serializer.validated_data['ic']
+        if not (isinstance(ic, str) and len(ic) == 12 and ic.isdigit()):
+          return Response({'error', 'Invalid IC format.'}, 400)
+        if ic.startswith('08'):
+          return Response({'error', 'User must be 18 years or older'}, 400)
+      except:
+        user = serializer.save()
+        return Response(f'{user.username} successfully registered', status=201)
+    else:
+      return Response({'error': 'An error occurred during user registration. Please try again.'}, status=400)
+  except Exception as e:
+    logger.error(f"Unexpected error during user registration: {e}", 501)
+    return Response({'error': 'An unexpected error occurred. Please contact administrator'}, status=500)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

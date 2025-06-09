@@ -20,13 +20,11 @@ const Register = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
-  const errors: string[] = []
-
   const navigate = useNavigate()
 
   const toggleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
+/*
     if (password.length < 8) {
       return setErrorMessage('Password must be at least 8 characters')
     } else if (!/[A-Z]/.test(password)) {
@@ -44,7 +42,7 @@ const Register = () => {
     if (ic.length !== 12) {
       return setErrorMessage('IC number must be 12 digits')
     }
-
+*/
     try {
       setLoading(true)
       await register({
@@ -60,8 +58,8 @@ const Register = () => {
       navigate('/login')
     } catch (error: any) {
       if (error.response && (error.response.status === 400 || error.response.status === 401)) {
-        console.log(error.response.data)
-        //setErrorMessage(error.response.data.error)
+        //console.log(error.response.data.error)
+        setErrorMessage(error.response.data.error)
       } else {
         setErrorMessage(error.response.data.error);
       }

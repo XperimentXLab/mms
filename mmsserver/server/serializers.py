@@ -35,11 +35,6 @@ class UserSerializer(serializers.ModelSerializer):
       raise serializers.ValidationError('Username already in use')
     return value
   
-  def validate_wallet_address(self, value):
-    if User.objects.filter(wallet_address=value).exists():
-      raise serializers.ValidationError('Wallet address already in use')
-    return value
-  
   #password need to have at least 1 uppercase 1 lowercase and a number for 8 characters
   def validate_password(self, value):
     if len(value) < 8:
