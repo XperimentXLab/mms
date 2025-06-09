@@ -27,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
     return value
   
   def validate_ic(self, value):
-    if not (isinstance(value, str)) and len(value) == 12 and value.isdigit():
+    if not (isinstance(value, str)) and len(value) == 12:
       return serializers.ValidationError('Invalid IC format')
     
     try:
@@ -54,7 +54,7 @@ class UserSerializer(serializers.ModelSerializer):
       if age < 18:
         raise serializers.ValidationError('User must be at least 18 years old')
     except ValueError:
-      raise serializers.ValidationError('Invalid IC format. Please ensure only digits are used.')
+      raise serializers.ValidationError('Invalid IC format.')
     
     if User.objects.filter(ic=value).exists():
       raise serializers.ValidationError('IC already in use')
