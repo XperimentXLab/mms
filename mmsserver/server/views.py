@@ -128,7 +128,7 @@ def register_user(request):
         return Response({'error', 'User must be 18 years or older'}, 400)
       
       user = serializer.save()
-      return Response(f'{user.username} successfully registered', status=201)
+      return Response({'message':f'{user.username} successfully registered'}, status=201)
     else:
       return Response({'error': 'An error occurred during user registration. Please try again.'}, status=400)
     
