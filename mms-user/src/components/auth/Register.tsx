@@ -20,6 +20,8 @@ const Register = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
+  const errors: string[] = []
+
   const navigate = useNavigate()
 
   const toggleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -58,9 +60,10 @@ const Register = () => {
       navigate('/login')
     } catch (error: any) {
       if (error.response && (error.response.status === 400 || error.response.status === 401)) {
-        setErrorMessage(error.response.data.error)
+        console.log(error.response.data)
+        //setErrorMessage(error.response.data.error)
       } else {
-        setErrorMessage('Network error. Please check your connection or contact an administrator.');
+        setErrorMessage(error.response.data.error);
       }
     } finally {
       setLoading(false)
@@ -121,7 +124,12 @@ const Register = () => {
           <Inputss 
             type="number"
             placeholder="Enter I/C"
-            onChange={(e) => setIc(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value.replace(/D/g, '') //remove non-digits
+              if (value.length <= 12) {
+                setIc(value)
+              }
+            }}
             value={ic}
             label="I/C"
             required={true}
