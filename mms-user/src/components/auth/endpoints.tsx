@@ -1,3 +1,4 @@
+import axios from "axios";
 import api from "./api";
 
 
@@ -33,6 +34,7 @@ interface updatePassData {
 interface LoginDataRes {
   username: string
   password: string
+  recaptchaToken: string
 }
 
 interface PasswordResetConfirmDataRes {
@@ -70,11 +72,29 @@ export const register = async (userData: User) => {
 }
 
 export const login = async (loginData: LoginDataRes) => {
-  const { username, password } = loginData
+  const { username, password, recaptchaToken } = loginData
+  const captchaVerification = await axios.post('https://www.google.com/recaptcha/api/siteverify',
+    new URLSearchParams({
+      secret: import.meta.env.VITE_RECAPTCHA_SECRET_KEY as string,
+      response: recaptchaToken,
+    }),
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      }
+    }
+  )
+
+  if (!captchaVerification.data.success) {
+    throw new Error('CAPTCHA verification failed');
+  }
+  
   const response = await api.post('/login/', {
     username, password
   })
+
   return response.data
+
 }
 
 export const logout = async () => {

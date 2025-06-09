@@ -52,15 +52,17 @@ const MainLayout = () => {
 
   const Logout = () => {
     return (
-      <div className="inset-0 absolute flex justify-center items-center">
-        <div className="flex flex-col justify-center gap-3 p-8 z-30 border rounded-lg backdrop-blur-sm bg-white/30">
-          <h1 className="font-bold text-md">Are you sure to logout</h1>
-          <button type="button" onClick={confirmLogout}
-            className="cursor-pointer hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg border"          
-          >Logout</button>
-          <button type="button" onClick={handleLogout}
-            className="cursor-pointer hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg border"
-          >Cancel</button>
+      <div className="inset-0 flex fixed justify-center items-baseline mt-50">
+        <div className="flex">
+          <div className="flex flex-col gap-3 p-8 z-30 border rounded-lg backdrop-blur-sm bg-white/30">
+            <h1 className="font-bold text-md">Are you sure to logout</h1>
+            <button type="button" onClick={confirmLogout}
+              className="cursor-pointer hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg border"          
+            >Logout</button>
+            <button type="button" onClick={handleLogout}
+              className="cursor-pointer hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg border"
+            >Cancel</button>
+          </div>
         </div>
 
       </div>
