@@ -73,28 +73,10 @@ export const register = async (userData: User) => {
 
 export const login = async (loginData: LoginDataRes) => {
   const { username, password, recaptchaToken } = loginData
-  const captchaVerification = await axios.post('https://www.google.com/recaptcha/api/siteverify',
-    new URLSearchParams({
-      secret: import.meta.env.VITE_RECAPTCHA_SECRET_KEY as string,
-      response: recaptchaToken,
-    }),
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      }
-    }
-  )
-
-  if (!captchaVerification.data.success) {
-    throw new Error('CAPTCHA verification failed');
-  }
-  
   const response = await api.post('/login/', {
-    username, password
+    username, password, recaptchaToken
   })
-
   return response.data
-
 }
 
 export const logout = async () => {

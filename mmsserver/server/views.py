@@ -1,6 +1,7 @@
 from .models import *
 from .serializers import *
 from django.conf import settings
+import requests
 from rest_framework.authentication import authenticate
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -112,13 +113,25 @@ def login(request):
   user = authenticate(request, username=username, password=password)
 
   if user:
+    data = request.data
+    recaptcha_token = data.get('recaptchaToken')
+    if not recaptcha_token:
+      return Response({'error': 'reCAPTCHA token is missing'}, status=400)
+    secret_key = settings.RECAPTCHA_SECRET_KEY
+    url = f"https://www.google.com/recaptcha/api/siteverify?secret={secret_key}&response={recaptcha_token}"
+    responseCaptcha = requests.post(url)
+    resultCaptcha = responseCaptcha.json()
+
+    if not resultCaptcha.get("success") or resultCaptcha.get('score', 0) <= 0.5:
+      return Response({'error': 'CAPTCHA verification failed'}, status=400)
+
     refresh = RefreshToken.for_user(user)
     response = Response({'message': 'Login successful'})
     response.set_cookie(
       key='access_token',
       value=str(refresh.access_token),
       httponly=True,
-      secure=True, # True in prod (HTTPS)
+      secure=True,
       samesite='None',
       path='/'
     )
@@ -126,7 +139,7 @@ def login(request):
       key='refresh_token',
       value=str(refresh),
       httponly=True,
-      secure=True, # True in prod (HTTPS)
+      secure=True,
       samesite='None',
       path='/'
     )
