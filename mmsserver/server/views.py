@@ -134,9 +134,6 @@ def login(request):
     if not resultCaptcha.get("success"):
       return Response({'error': 'CAPTCHA verification failed'}, status=400)
 
-    if resultCaptcha.get('score', 0) <= 0.5:
-      print(f"CAPTCHA failed with score: {resultCaptcha.get('score')}")  # Log score value
-      return Response({'error': 'CAPTCHA verification failed: low score'}, status=400)
     # end new update
 
     refresh = RefreshToken.for_user(user)
