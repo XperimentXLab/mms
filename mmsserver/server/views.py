@@ -119,11 +119,20 @@ def login(request):
       return Response({'error': 'reCAPTCHA token is missing'}, status=400)
     secret_key = settings.RECAPTCHA_SECRET_KEY
     url = f"https://www.google.com/recaptcha/api/siteverify?secret={secret_key}&response={recaptcha_token}"
-    responseCaptcha = requests.post(url)
+
+    # Add user-agent header for reCAPTCHA request - new update
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36'
+    }
+    responseCaptcha = requests.post(url, headers=headers)
     resultCaptcha = responseCaptcha.json()
 
-    if not resultCaptcha.get("success") or resultCaptcha.get('score', 0) <= 0.5:
+    if responseCaptcha.status_code != 200:
+      return Response({'error': 'Error communicating with reCAPTCHA service'}, status=500)
+
+    if not resultCaptcha.get("success"):
       return Response({'error': 'CAPTCHA verification failed'}, status=400)
+    # end new update
 
     refresh = RefreshToken.for_user(user)
     response = Response({'message': 'Login successful'})
