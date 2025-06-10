@@ -122,10 +122,12 @@ def login(request):
 
     # Add user-agent header for reCAPTCHA request - new update
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36'
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
+      'Cache-Control': 'no-cache' # Prevent caching of the reCAPTCHA request
     }
     responseCaptcha = requests.post(url, headers=headers)
     resultCaptcha = responseCaptcha.json()
+    print("CAPTCHA Response:", resultCaptcha) # Add debugging tools
 
     if responseCaptcha.status_code != 200:
       return Response({'error': 'Error communicating with reCAPTCHA service'}, status=500)
