@@ -180,12 +180,12 @@ const Others = () => {
           
           <div className="border p-3 rounded-lg">
             <h3 className="text-sm text-gray-500">Weekly Profit</h3>
-            <p className="text-xl font-bold">${performanceData.weekly.toLocaleString()} %</p>
+            <p className="text-xl font-bold">{performanceData.weekly.toLocaleString()} %</p>
           </div>
           
           <div className="border p-3 rounded-lg">
             <h3 className="text-sm text-gray-500">Monthly Profit</h3>
-            <p className="text-xl font-bold">${performanceData.monthly.toLocaleString()} %</p>
+            <p className="text-xl font-bold">{performanceData.monthly.toLocaleString()} %</p>
           </div>
           
           <div className="mt-4">
