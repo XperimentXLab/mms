@@ -24,6 +24,10 @@ urlpatterns = [
 
   #admin only
   path('all_network/', get_all_network, name='all_network'),
+  path('manage_admin_point/', manage_admin_point, name='manage_admin_point'),
+  path('manage_operational_profit/', manage_operational_profit, name='manage_operational_profit'),
+  path('manage_monthly_finalized_profit/', manage_monthly_finalized_profit, name='manage_monthly_finalized_profit'),
+  path('get_yearly_profit_total/', get_yearly_profit_total, name='get_yearly_profit_total'),
   
 
 ]

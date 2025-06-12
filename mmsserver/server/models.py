@@ -2,9 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.utils.crypto import get_random_string
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import RegexValidator
-from django.utils.timezone import datetime
+from decimal import Decimal
+import calendar
 import string
 
 import logging
@@ -144,6 +145,88 @@ class User(AbstractUser):
     verbose_name = "User"
     verbose_name_plural = "Users"
     ordering = ['-created_at']
+
+
+
+
+class AdminPoint(models.Model):
+  capital_point = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), null=True, blank=True)
+  used_point = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), null=True, blank=True)
+  balance_point = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), null=True, blank=True)
+  last_updated = models.DateTimeField(auto_now=True)
+
+  def __str__(self):
+    return f'Admin Capital Point: {self.capital_point}'
+  
+  def save(self, *args, **kwargs):
+    self.balance_point = self.capital_point - self.used_point
+    super().save(*args, **kwargs)
+  
+  class Meta:
+    verbose_name = "Admin Point"
+    verbose_name_plural = "Admin Points"
+
+class OperationalProfit(models.Model):
+  daily_profit_rate = models.DecimalField(max_digits=7, decimal_places=4, default=Decimal('0.0000'), help_text='Manually update daily profit rate (e.g., enter 5.0 for 5.0%)')
+  weekly_profit_rate = models.DecimalField(max_digits=7, decimal_places=4, default=Decimal('0.0000'), help_text='Manually update weekly profit rate (e.g., enter 5.0 for 5.0%)')
+  current_month_profit = models.DecimalField(max_digits=7, decimal_places=4, default=Decimal('0.0000'), help_text='Manually update current month profit (e.g., enter 5.0 for 5.0%)')
+  active_month_profit = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], null=True, blank=True, help_text='The month (1-12) for which profit is currently active')
+  active_year_profit = models.IntegerField(help_text='The year for which profit is currently active', null=True, blank=True)
+
+  last_updated = models.DateTimeField(auto_now=True)
+
+  def __str__(self):
+    active_period = f'{calendar.month_name[self.active_month_profit] if self.active_month_profit else "N/A"} {self.active_year_profit if self.active_year_profit else "N/A" }'
+    return f'Operational Profit - Active Period: {active_period}: {self.current_month_profit}%'
+  
+  class Meta:
+    verbose_name = "Operational Profit"
+    verbose_name_plural = "Operational Profits"
+
+
+class MonthlyFinalizedProfit(models.Model):
+  year = models.IntegerField(db_index=True, help_text="The year of the finalized profit (e.g., 2024).")
+  month = models.IntegerField(
+    validators=[MinValueValidator(1), MaxValueValidator(12)], 
+    db_index=True, 
+    help_text="The month of the finalized profit (1 for January, 12 for December)."
+  )
+  finalized_profit_rate = models.DecimalField(
+    max_digits=7, decimal_places=4,
+    help_text="The percentage profit rate applied for this month (e.g., 5.0 for 5.0%)."
+  )
+
+  finalized_at = models.DateTimeField(
+    auto_now_add=True, 
+    help_text="Timestamp when this monthly profit was recorded/finalized."
+  )
+
+  class Meta:
+    unique_together = ('year', 'month')
+    ordering = ['-year', '-month']
+    verbose_name = "Monthly Finalized Profit"
+    verbose_name_plural = "Monthly Finalized Profits"
+
+  def __str__(self):
+    try:
+      month_name = calendar.month_name[self.month]
+    except IndexError: 
+      month_name = f"Month {self.month}"
+    return f"{month_name} {self.year}: {self.finalized_profit_rate}%)"
+
+  @classmethod
+  def get_total_yearly_profit(cls, year):
+    """
+    Calculates the sum of all finalized monthly profit rates for a given year.
+    Returns a Decimal value representing the total percentage.
+    """
+    total_rate = cls.objects.filter(year=year).aggregate(
+      total_profit_rate=models.Sum('finalized_profit_rate')
+    )['total_profit_rate']
+    return total_rate if total_rate is not None else Decimal('0.00')
+
+
+
 
 
 # Verify IC, Depo master, Place Asset, WD profit

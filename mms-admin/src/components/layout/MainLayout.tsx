@@ -3,8 +3,8 @@ import { Outlet, useNavigate } from "react-router"
 import { GiHamburgerMenu } from "react-icons/gi";
 import { NavLinkss } from "../props/theLinks";
 import Loading from "../props/Loading";
-import { logout, userDetails } from "../auth/endpoints";
 import Buttons from "../props/Buttons";
+import { logout } from "../auth/endpoints";
 
 const MainLayout = () => {
 
@@ -37,12 +37,12 @@ const MainLayout = () => {
     }
   }
 
-  const [username, setUsername] = useState<string>('')
+//  const [username, setUsername] = useState<string>('')
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await userDetails()
-        setUsername(response.username)
+//        const response = await userDetails()
+//        setUsername(response.username)
       } catch (error) {
         console.error('Error fetching user details:', error)
       }
@@ -73,7 +73,7 @@ const MainLayout = () => {
     <div className="flex flex-col relative">
 
       <div className="fixed top-0 left-0 right-0 z-20">
-        <header className="flex justify-between items-center py-2 px-3 bg-linear-to-r from-red-600 to-rose-300 bg-linear border border-black">
+        <header className="flex justify-between items-center border border-black py-2 px-3 bg-linear-to-r from-red-600 to-rose-300 bg-linear">
           <GiHamburgerMenu className="cursor-pointer" onClick={toggleOpen}/>
           <div className="flex items-center gap-4">
 
@@ -86,7 +86,7 @@ const MainLayout = () => {
 
             <div className="flex flex-col cursor-default">
               <span className="font-semibold">Money Management Solution</span>
-              <span>Welcome, {username}</span>
+              <span>Welcome, user</span>
             </div>
 
           </div>   
@@ -95,12 +95,13 @@ const MainLayout = () => {
         <div className="flex relative">
         {open && 
         <nav className="absolute flex flex-col w-fit h-fit gap-1 items-center bg-red-500 px-1 py-3">
-          <NavLinkss to={'/'} >Home</NavLinkss>
-          <NavLinkss to={'/profile'} >Profile</NavLinkss>
-          <NavLinkss to={'/network'}>Network</NavLinkss>
-          {/*<NavLinkss to={'/wallet'}>Wallet</NavLinkss>
-          <NavLinkss to={'/asset'}>Asset</NavLinkss>*/}
-          <NavLinkss to={'/others'}>Others</NavLinkss>
+          <NavLinkss to={'/'}>Dashboard</NavLinkss>
+          <NavLinkss to={'/operation'}>Operation</NavLinkss>
+          <NavLinkss to={'/users'}>Users</NavLinkss>
+          <NavLinkss to={'/verification'}>Verification</NavLinkss>
+          <NavLinkss to={'/requests'}>Requests</NavLinkss>
+          <NavLinkss to={'/transaction'}>Transaction</NavLinkss>
+          <NavLinkss to={'/settings'}>Settings</NavLinkss>
           <Buttons type="button" onClick={handleLogout}
             className="hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg cursor-pointer"
           >Logout</Buttons>

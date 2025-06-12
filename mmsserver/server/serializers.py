@@ -4,6 +4,7 @@ import re
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
+from decimal import Decimal
 from datetime import date
 
 class UserSerializer(serializers.ModelSerializer):
@@ -156,3 +157,36 @@ class SetNewPasswordSerializer(serializers.Serializer):
     
     attrs['user'] = self.user
     return attrs
+  
+
+class AdminPointSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = AdminPoint
+    fields = '__all__'
+    read_only_fields = ['balance_point', 'last_updated']
+
+class OperationalProfitSerializer(serializers.ModelSerializer):
+
+  daily_profit_rate = serializers.DecimalField(max_digits=7, decimal_places=4, min_value=Decimal('0.0000'), max_value=Decimal('3.0000'), help_text='Daily profit as a percentage (e.g., 5.0 for 5.0%)')
+  weekly_profit_rate = serializers.DecimalField(max_digits=7, decimal_places=4, min_value=Decimal('0.0000'), max_value=Decimal('7.0000'), help_text='Weekly profit as a percentage (e.g., 5.0 for 5.0%)')
+  current_month_profit = serializers.DecimalField(max_digits=7, decimal_places=4, min_value=Decimal('0.0000'), max_value=Decimal('15.0000'), help_text='Current month profit as a percentage (e.g., 5.0 for 5.0%)')
+
+
+  class Meta:
+    model = OperationalProfit
+    fields = [
+      'id',
+      'daily_profit_rate',
+      'weekly_profit_rate',
+      'active_month_profit', # Model validators (1-12) will be used
+      'active_year_profit',
+      'current_month_profit',
+      'last_updated'
+    ]
+    read_only_fields = ['id', 'last_updated']
+
+class MonthlyFinalizedProfitSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = MonthlyFinalizedProfit
+    fields = '__all__'
+    read_only_fields = ['id', 'finalized_at']
