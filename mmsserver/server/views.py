@@ -157,7 +157,7 @@ def manage_admin_point(request):
         
       elif request.method == 'PUT':
         if admin_point:
-          serializer = AdminPointSerializer(admin_point, data=request.data)
+          serializer = AdminPointSerializer(admin_point, data=request.data, partial=True)
           if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -197,7 +197,7 @@ def manage_operational_profit(request):
           return Response({'error': serializer.errors}, status=400)
       elif request.method == 'PUT':
         if operational_profit:
-          serializer = OperationalProfitSerializer(operational_profit, data=request.data)
+          serializer = OperationalProfitSerializer(operational_profit, data=request.data, partial=True)
           if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
@@ -245,7 +245,7 @@ def manage_monthly_finalized_profit(request):
         except MonthlyFinalizedProfit.DoesNotExist:
           return Response({'error': 'Profit record not found.'}, status=404)
 
-        serializer = MonthlyFinalizedProfitSerializer(instance, data=request.data)
+        serializer = MonthlyFinalizedProfitSerializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
           serializer.save()
           return Response(serializer.data, status=200)
