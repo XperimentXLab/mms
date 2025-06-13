@@ -8,4 +8,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  build: {
+    outDir: '../dist/admin',
+    emptyOutDir: true,       
+  },
 })
