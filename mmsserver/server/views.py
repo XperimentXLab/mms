@@ -79,6 +79,57 @@ def protected_view(request):
   
 ################### Admin ##################
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_admin(request):
+  username = request.data.get('username')
+  password = request.data.get('password')
+  user = authenticate(request, username=username, password=password)
+
+  try:
+    if user.is_staff:
+      data = request.data
+      recaptcha_token = data.get('recaptchaToken')
+      if not recaptcha_token:
+        return Response({'error': 'reCAPTCHA token is missing'}, status=400)
+      secret_key = settings.RECAPTCHA_SECRET_KEY
+      url = f"https://www.google.com/recaptcha/api/siteverify?secret={secret_key}&response={recaptcha_token}"
+      responseCaptcha = requests.post(url)
+      resultCaptcha = responseCaptcha.json()
+
+      if responseCaptcha.status_code != 200:
+        return Response({'error': 'Error communicating with reCAPTCHA service'}, status=500)
+
+      if not resultCaptcha.get("success"):
+        return Response({'error': 'CAPTCHA verification failed'}, status=400)
+
+      # end new update
+
+      refresh = RefreshToken.for_user(user)
+      response = Response({'message': 'Login successful'})
+      response.set_cookie(
+        key='access_token',
+        value=str(refresh.access_token),
+        httponly=True,
+        secure=True,
+        samesite='None',
+        path='/'
+      )
+      response.set_cookie(
+        key='refresh_token',
+        value=str(refresh),
+        httponly=True,
+        secure=True,
+        samesite='None',
+        path='/'
+      )
+      return response
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': f'Invalid credentials or {str(e)}' }, status=400)
+
+
 @api_view(['GET', 'PUT', 'POST'])
 @permission_classes([IsAuthenticated])
 def manage_admin_point(request):
@@ -128,14 +179,14 @@ def manage_operational_profit(request):
   user = request.user        
   operational_profit = OperationalProfit.objects.first()
   try:
+    if request.method == 'GET':
+      if operational_profit:
+        serializer = OperationalProfitSerializer(operational_profit)
+        return Response(serializer.data, status=200)
+      else:
+        return Response({'error': 'Operational profit not found'}, status=404)
     if user.is_staff:
-      if request.method == 'GET':
-        if operational_profit:
-          serializer = OperationalProfitSerializer(operational_profit)
-          return Response(serializer.data, status=200)
-        else:
-          return Response({'error': 'Operational profit not found'}, status=404)
-      elif request.method == 'POST':
+      if request.method == 'POST':
         if operational_profit:
           return Response({'error': 'OperationalProfit record already exists.'}, status=400)
         serializer = OperationalProfitSerializer(data=request.data)

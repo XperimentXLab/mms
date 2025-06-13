@@ -23,6 +23,7 @@ urlpatterns = [
   path('update_user/', update_user, name='update_user'),
 
   #admin only
+  path('login_admin/', login_admin, name='login_admin'),
   path('all_network/', get_all_network, name='all_network'),
   path('manage_admin_point/', manage_admin_point, name='manage_admin_point'),
   path('manage_operational_profit/', manage_operational_profit, name='manage_operational_profit'),

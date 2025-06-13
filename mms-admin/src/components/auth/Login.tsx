@@ -44,6 +44,8 @@ const Login = () => {
     } catch (error: any) {
       if (error.response && (error.response.status === 401 || error.response.status === 400)) {
           setErrorMessage('Invalid username or password.');
+        } else if (error.response && error.response.status === 403) {
+          setErrorMessage('Permission denied.')
         } else if (error.response) {
           setErrorMessage('A server error occurred. Please try again later or contact an administrator.');
         } else {

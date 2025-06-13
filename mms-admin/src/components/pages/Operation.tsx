@@ -100,9 +100,10 @@ const Operation = () => {
       <h1 className="text-2xl font-bold">Operational</h1>
 
       <form onSubmit={toggleUpdateProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
-        <span className="font-semibold">Update Profit</span>
+        <span className="font-semibold">Update Profit 
+          --- <span className="text-sm">Last Updated: {lastUpdated}</span> ---
+        </span>
 
-        <span className="text-sm">{lastUpdated}</span>
         <div className="grid grid-cols-2 items-center">
           <SelectMonth value={inputActiveMonth} 
             onChange={(e) => setInputActiveMonth(e.target.value)} />

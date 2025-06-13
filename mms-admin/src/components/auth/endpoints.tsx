@@ -22,7 +22,7 @@ export const protectedView = async () => {
 
 export const login = async (loginData: LoginRes) => {
   const { username, password, recaptchaToken } = loginData
-  const response = await api.post('/login/', {
+  const response = await api.post('/login_admin/', {
     username, password, recaptchaToken
   })
   return response.data
