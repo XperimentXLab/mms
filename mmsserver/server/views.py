@@ -238,7 +238,9 @@ def get_all_network(request):
       serializer = UserNetworkSerializer(all_network, many=True)
       return Response(serializer.data)
     else:
-      return Response({'error': f'{user} is not allowed to perform this action'}, status=403)
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=403)
   
 
 ############################################
