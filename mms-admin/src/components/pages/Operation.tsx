@@ -4,7 +4,6 @@ import { InputwithVal } from "../props/Formss"
 import { SelectMonth, SelectYear } from "../props/DropDown"
 import { create_profit, get_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
-import { FcNumericalSorting12 } from "react-icons/fc"
 
 const Operation = () => {
 
