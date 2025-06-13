@@ -79,7 +79,7 @@ export const create_monthly_finalized_profit = async (MonthlyProfitData: Monthly
   const response = await api.post('/manage_monthly_finalized_profit/', {
     month,
     year,
-    finalized_profit: finalizedProfit
+    finalized_profit_rate: finalizedProfit
   })
   return response.data
 }

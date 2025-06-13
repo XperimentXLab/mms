@@ -230,7 +230,7 @@ const Others = () => {
         </div>  
         
         <div className="mt-4 w-full">
-          <h3 className="text-lg font-semibold mb-2 text-center">Finalized Yearly Profit Trend</h3>
+          <h3 className="text-lg font-semibold mb-2 text-center">Yearly Profit Trend</h3>
           <div className="mb-4 mx-auto max-w-xs"> {/* Centering the dropdown */}
             <SelectYear 
               value={selectedChartYear} 
@@ -243,7 +243,7 @@ const Others = () => {
               <Bar id="YearlyPerformanceChart" data={chartData} options={chartOptions} />
             </div>
           ) : (
-            !loading && !chartError && <p className="text-center text-gray-500 my-2">No finalized profit data available for {selectedChartYear}.</p>
+            !loading && !chartError && <p className="text-center text-gray-500 my-2">No profit data available for {selectedChartYear}.</p>
           )}
         </div>
       </div>
