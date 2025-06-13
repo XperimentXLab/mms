@@ -17,8 +17,8 @@ const Operation = () => {
   const [todayProfit, setTodayProfit] = useState<number>(0)
   const [weeklyProfit, setWeeklyProfit] = useState<number>(0)
   const [monthlyProfit, setMonthlyProfit] = useState<number>(0)
-  const [inputActiveMonth, setInputActiveMonth] = useState<number>(0); 
-  const [inputActiveYear, setInputActiveYear] = useState<number>(0);
+  const [inputActiveMonth, setInputActiveMonth] = useState<string>(""); 
+  const [inputActiveYear, setInputActiveYear] = useState<string>("");
 
 
   //const [finalizedSelectedMonth, setFinalizedSelectedMonth] = useState<string>("");
@@ -72,8 +72,8 @@ const Operation = () => {
         dailyProfitRate: todayProfit,
         weeklyProfitRate: weeklyProfit,
         currentMonthProfit: monthlyProfit,
-        activeMonthProfit: inputActiveMonth,
-        activeYearProfit: inputActiveYear,
+        activeMonthProfit: Number(inputActiveMonth),
+        activeYearProfit: Number(inputActiveYear),
       })
       alert('Profit updated successfully')
 
@@ -101,9 +101,9 @@ const Operation = () => {
 
         <div className="grid grid-cols-2 items-center">
           <SelectMonth value={activeMonthProfit} 
-            onChange={(e) => setActiveMonthProfit(e.target.value)} />
+            onChange={(e) => setInputActiveMonth(e.target.value)} />
           <SelectYear value={activeYearProfit}
-            onChange={(e) => setActiveYearProfit(e.target.value)} />
+            onChange={(e) => setInputActiveYear(e.target.value)} />
         </div>
 
         <span className="text-sm">*Please fill in manually (e.g., enter 5.0 for 5.0%)</span>

@@ -1,6 +1,6 @@
 
 import { useState } from "react"
-import { Link, useNavigate } from "react-router"
+import { useNavigate } from "react-router"
 import Loading from "../props/Loading"
 import { login } from "./endpoints"
 import Buttons from "../props/Buttons"
@@ -100,10 +100,6 @@ const Login = () => {
 
           <span className="text-sm text-amber-950 cursor-pointer" onClick={toggleResetPassword}>
             Forgot password?
-          </span>
-
-          <span>
-            Don't have an account? <Link to={'/register'} className="text-blue-400 text-md">Click to Register</Link>
           </span>
 
         </form>
