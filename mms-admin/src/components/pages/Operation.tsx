@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import Buttons from "../props/Buttons"
 import { InputwithVal } from "../props/Formss"
 import { SelectMonth, SelectYear } from "../props/DropDown"
-import { create_profit, get_profit, update_profit } from "../auth/endpoints"
+import { create_monthly_finalized_profit, create_profit, get_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
 
 const Operation = () => {
@@ -110,6 +110,29 @@ const Operation = () => {
     }
   }
 
+
+  const toggleMFinalized = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!selectedMonth || !selectedYear) {
+      alert("Please select a month and year.");
+      return;
+    }
+    try {
+      setLoading(true)
+      await create_monthly_finalized_profit({
+        month: Number(selectedMonth),
+        year: Number(selectedYear),
+        finalizedProfit: currentMonthProfit
+      })
+    } catch (error: any) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+
   return (
     <div className="flex items-center p-4 flex-col gap-5">
       {loading && <Loading />}
@@ -158,7 +181,7 @@ const Operation = () => {
         <Buttons type="submit">Confirm</Buttons>
       </form>
 
-      <form className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800"> 
+      <form onSubmit={toggleMFinalized} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800"> 
         <span className="font-semibold">Finalized Monthly Profit</span>
 
         <div className="grid grid-cols-2 items-center">

@@ -14,6 +14,12 @@ interface ProfitRes {
   activeYearProfit?: number | null;
 }
 
+interface MonthlyProfitRes {
+  month?: number
+  year?: number
+  finalizedProfit?: number
+}
+
 
 export const protectedView = async () => {
   const response = await api.get('/protected/')
@@ -64,6 +70,16 @@ export const update_profit = async (profitData: ProfitRes) => {
     current_month_profit: currentMonthProfit,
     active_month_profit: activeMonthProfit,
     active_year_profit: activeYearProfit,
+  })
+  return response.data
+}
+
+export const create_monthly_finalized_profit = async (MonthlyProfitData: MonthlyProfitRes) => {
+  const { month, year, finalizedProfit } = MonthlyProfitData
+  const response = await api.post('/manage_monthly_finalized_profit/', {
+    month,
+    year,
+    finalized_profit: finalizedProfit
   })
   return response.data
 }
