@@ -192,7 +192,7 @@ class MonthlyFinalizedProfit(models.Model):
     help_text="The month of the finalized profit (1 for January, 12 for December)."
   )
   finalized_profit_rate = models.DecimalField(
-    max_digits=7, decimal_places=4,
+    max_digits=7, decimal_places=2, default=Decimal('0.00')
     help_text="The percentage profit rate applied for this month (e.g., 5.0 for 5.0%)."
   )
 
