@@ -124,6 +124,9 @@ const Operation = () => {
         year: Number(selectedYear),
         finalizedProfit: currentMonthProfit
       })
+      alert('Finalized profit updated successfully')
+      setSelectedMonth("")
+      setSelectedYear("")
     } catch (error: any) {
       console.log(error)
     } finally {
