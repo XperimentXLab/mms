@@ -57,7 +57,7 @@ const Operation = () => {
       }
     }
     fetchData()
-  }, [])
+  }, [lastUpdated])
 
   const toggleUpdateMY = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -120,6 +120,9 @@ const Operation = () => {
         finalizedProfit: inputFinalizedProfitRate
       })
       alert('Finalized profit updated successfully')
+      setFinalizedSelectedMonth("")
+      setFinalizedSelectedYear("")
+      setInputFinalizedProfitRate(0)
     } catch (error: any) {
       console.log(error)
     } finally {
