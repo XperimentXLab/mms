@@ -7,9 +7,9 @@ interface LoginRes {
 }
 
 interface ProfitRes {
-  dailyProfitRate: number
-  weeklyProfitRate: number
-  currentMonthProfit: number
+  dailyProfitRate?: number
+  weeklyProfitRate?: number
+  currentMonthProfit?: number
   activeMonthProfit?: number | null;
   activeYearProfit?: number | null;
 }
@@ -39,6 +39,18 @@ export const get_profit = async () => {
   return response.data
 }
 
+export const create_profit = async (profitData: ProfitRes) => {
+  const { 
+    activeMonthProfit, 
+    activeYearProfit
+  } = profitData
+  const response = await api.post('/manage_operational_profit/', {
+    active_month_profit: activeMonthProfit,
+    active_year_profit: activeYearProfit,
+  })
+  return response.data
+}
+
 export const update_profit = async (profitData: ProfitRes) => {
   const { 
     dailyProfitRate, 
@@ -47,7 +59,7 @@ export const update_profit = async (profitData: ProfitRes) => {
     activeMonthProfit, 
     activeYearProfit
   } = profitData
-  const response = await api.post('/manage_operational_profit/', {
+  const response = await api.put('/manage_operational_profit/', {
     daily_profit_rate: dailyProfitRate, 
     weekly_profit_rate: weeklyProfitRate, 
     current_month_profit: currentMonthProfit,

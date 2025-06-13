@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import Buttons from "../props/Buttons"
 import { InputwithVal } from "../props/Formss"
 import { SelectMonth, SelectYear } from "../props/DropDown"
-import { get_profit, update_profit } from "../auth/endpoints"
+import { create_profit, get_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
+import { FcNumericalSorting12 } from "react-icons/fc"
 
 const Operation = () => {
 
@@ -32,6 +33,7 @@ const Operation = () => {
   const [selectedYear, setSelectedYear] = useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>("")
 
 
   useEffect(()=>{
@@ -63,6 +65,21 @@ const Operation = () => {
     fetchData()
   }, [])
 
+  const toggleUpdateMY = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      await create_profit({
+        activeMonthProfit: Number(inputActiveMonth),
+        activeYearProfit: Number(inputActiveYear)
+      })
+    } catch (error: any) {
+      setErrorMessage(error.response.data.error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const toggleUpdateProfit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!inputActiveMonth || !inputActiveYear) {
@@ -87,7 +104,7 @@ const Operation = () => {
       setActiveYearProfit(String(inputActiveYear))
 
     } catch (error: any) {
-      console.error(error)
+      setErrorMessage(error.response.data.error)
       alert('Failed to update operational profit. Please try again.');
     } finally {
       setLoading(false)
@@ -100,16 +117,19 @@ const Operation = () => {
       <h1 className="text-2xl font-bold">Operational</h1>
 
       <form onSubmit={toggleUpdateProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
-        <span className="font-semibold">Update Profit 
+        <span>
+          <span className="font-semibold">Update Profit </span>
           --- <span className="text-sm">Last Updated: {lastUpdated}</span> ---
+          <span className="text-sm text-red">{errorMessage}</span>
         </span>
 
-        <div className="grid grid-cols-2 items-center">
+        <form className="grid grid-cols-3 items-center" onSubmit={toggleUpdateMY}>
           <SelectMonth value={inputActiveMonth} 
             onChange={(e) => setInputActiveMonth(e.target.value)} />
           <SelectYear value={inputActiveYear}
             onChange={(e) => setInputActiveYear(e.target.value)} />
-        </div>
+          <Buttons type="submit">Confirm</Buttons>
+        </form>
 
         <span className="text-sm">*Please fill in manually (e.g., enter 5.0 for 5.0%)</span>
         <InputwithVal 
