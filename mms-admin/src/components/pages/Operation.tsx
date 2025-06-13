@@ -83,7 +83,7 @@ const Operation = () => {
       setActiveMonthProfit(String(inputActiveMonth))
       setActiveYearProfit(String(inputActiveYear))
 
-
+      console.log(inputActiveMonth, inputActiveYear)
     } catch (error: any) {
       console.error(error)
       alert('Failed to update operational profit. Please try again.');
@@ -100,9 +100,9 @@ const Operation = () => {
       <form onSubmit={toggleUpdateProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
 
         <div className="grid grid-cols-2 items-center">
-          <SelectMonth value={activeMonthProfit} 
+          <SelectMonth value={inputActiveMonth} 
             onChange={(e) => setInputActiveMonth(e.target.value)} />
-          <SelectYear value={activeYearProfit}
+          <SelectYear value={inputActiveYear}
             onChange={(e) => setInputActiveYear(e.target.value)} />
         </div>
 
