@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
 import {
@@ -13,6 +13,9 @@ import {
 import type { ChartOptions, ChartData } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels"
 import { Bar } from "react-chartjs-2";
+import { get_profit, get_finalized_yearly_profits } from "../auth/endpoints";
+import type { FinalizedMonthlyProfit } from "../auth/endpoints";
+import { SelectYear } from "../props/DropDown";
 
 ChartJS.register(
   CategoryScale,
@@ -54,40 +57,77 @@ const Others = () => {
   const [userProfit, setUserProfit] = useState(0);
   const [sharingRatio, setSharingRatio] = useState("");
 
+  // States for operational profits (from get_profit -> manage_operational_profit)
+  const [todayOperationalProfit, setTodayOperationalProfit] = useState<number>(0)
+  const [weeklyOperationalProfit, setWeeklyOperationalProfit] = useState<number>(0)
+  const [monthlyOperationalProfit, setMonthlyOperationalProfit] = useState<number>(0)
+
+  // States for finalized yearly profits chart (from get_finalized_yearly_profits -> manage_monthly_finalized_profit)
+  const [finalizedYearlyProfits, setFinalizedYearlyProfits] = useState<FinalizedMonthlyProfit[]>([]);
+  const currentYear = new Date().getFullYear().toString();
+  const [selectedChartYear, setSelectedChartYear] = useState<string>(currentYear);
+  const [chartYearlyTotal, setChartYearlyTotal] = useState<number>(0);
+  const [chartError, setChartError] = useState<string>("");
+
+  //const [yearlyProfit, setYearlyProfit] = useState<number>(0)
+
   const [loading, setLoading] = useState<boolean>(false)
 
-  //Performance Section
-  interface PerformanceData {
-    today: number;
-    weekly: number;
-    monthly: number;
-    yearly: number[];
-  }
-  // = (mock data - in a real app, fetch this)
-  const [performanceData] = useState<PerformanceData>({
-    today: 0.15,
-    weekly: 0.88,
-    monthly: 1.80,
-    yearly: [
-      5.10, //Jan
-      3.10, //Feb
-      3.20, //Mar
-      3.40, //Apr
-      3.78, //May
-      1.80, //Jun
-    ],
-  });
+  // Fetch operational profits (today, weekly, monthly)
+  useEffect(() => {
+    const fetchOperationalData = async () => {
+      try {
+        setLoading(true)
+        const response = await get_profit()
+        setTodayOperationalProfit(response.daily_profit_rate || 0)
+        setWeeklyOperationalProfit(response.weekly_profit_rate || 0)
+        setMonthlyOperationalProfit(response.current_month_profit || 0)
+        //const responseYearlyProfit = await get_finalized_yearly_profits(Number(currentYear))
+      } catch (error: any) {
+        console.error('Error fetching operational profit data:', error);
+      } finally {
+        setLoading(false) // Be mindful if other fetches also use this
+      }
+    }
+    fetchOperationalData()
+  }, [])
+
+  // Fetch finalized yearly profits for the chart
+  useEffect(() => {
+    const fetchChartData = async () => {
+      if (!selectedChartYear) return;
+      setLoading(true);
+      setChartError("");
+      try {
+        const yearNum = parseInt(selectedChartYear, 10);
+        const data = await get_finalized_yearly_profits(yearNum);
+        setFinalizedYearlyProfits(data);
+        
+        const total = data.reduce((sum, item) => sum + (item.profit_rate || 0), 0);
+        setChartYearlyTotal(total);
+
+      } catch (error: any) {
+        console.error(`Error fetching finalized yearly profits for ${selectedChartYear}:`, error);
+        setChartError(`Failed to load profit data for ${selectedChartYear}.`);
+        setFinalizedYearlyProfits([]);
+        setChartYearlyTotal(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchChartData();
+  }, [selectedChartYear]);
+
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   // Chart data for yearly profit
   const chartData: ChartData<'bar'> = {
-    labels: [
-      "Jan", "Feb", "Mar", "Apr", "May", 
-      "Jun"
-    ],
+    labels: finalizedYearlyProfits.map(item => monthNames[item.month - 1]).filter(Boolean),
     datasets: [
       {
-        label: "Yearly Profit Total - 18.58 %",
-        data: performanceData.yearly,
+        label: `Finalized Profit ${selectedChartYear} - Total: ${chartYearlyTotal.toFixed(2)} %`,
+        data: finalizedYearlyProfits.map(item => item.profit_rate || 0),
         borderColor: "rgb(75, 192, 192)",
         borderWidth: 1,
         backgroundColor: "rgba(75, 192, 192, 0.2)",
@@ -172,28 +212,39 @@ const Others = () => {
       <div className="flex flex-col gap-3 justify-center items-center p-3 border rounded-xl w-full shadow-2xl shadow-red-300 bg-white">
         <span className="font-bold text-md">Performance</span>
 
-        <div className="grid grid-cols-1 gap-4">
-          <div className="border p-3 rounded-lg">
-            <h3 className="text-sm text-gray-500">Today's Profit</h3>
-            <p className="text-xl font-bold">{performanceData.today.toLocaleString()} %</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+          <div className="border p-3 rounded-lg text-center">
+            <h3 className="text-sm text-gray-500">Today's Operational Profit</h3>
+            <p className="text-xl font-bold">{todayOperationalProfit.toLocaleString()} %</p>
           </div>
           
-          <div className="border p-3 rounded-lg">
-            <h3 className="text-sm text-gray-500">Weekly Profit</h3>
-            <p className="text-xl font-bold">{performanceData.weekly.toLocaleString()} %</p>
+          <div className="border p-3 rounded-lg text-center">
+            <h3 className="text-sm text-gray-500">Weekly Operational Profit</h3>
+            <p className="text-xl font-bold">{weeklyOperationalProfit.toLocaleString()} %</p>
           </div>
           
-          <div className="border p-3 rounded-lg">
-            <h3 className="text-sm text-gray-500">Monthly Profit</h3>
-            <p className="text-xl font-bold">{performanceData.monthly.toLocaleString()} %</p>
+          <div className="border p-3 rounded-lg text-center">
+            <h3 className="text-sm text-gray-500">Monthly Operational Profit</h3>
+            <p className="text-xl font-bold">{monthlyOperationalProfit.toLocaleString()} %</p>
           </div>
-          
-          <div className="mt-4">
-            <h3 className="text-sm font-semibold mb-2">Yearly Profit Trend</h3>
-            <div className="h-64">
+        </div>  
+        
+        <div className="mt-4 w-full">
+          <h3 className="text-lg font-semibold mb-2 text-center">Finalized Yearly Profit Trend</h3>
+          <div className="mb-4 mx-auto max-w-xs"> {/* Centering the dropdown */}
+            <SelectYear 
+              value={selectedChartYear} 
+              onChange={(e: any) => setSelectedChartYear(e.target.value)} 
+            />
+          </div>
+          {chartError && <p className="text-red-500 text-center my-2">{chartError}</p>}
+          {finalizedYearlyProfits.length > 0 ? (
+            <div className="h-64 md:h-96"> {/* Responsive height */}
               <Bar id="YearlyPerformanceChart" data={chartData} options={chartOptions} />
-          </div>
-          </div>
+            </div>
+          ) : (
+            !loading && !chartError && <p className="text-center text-gray-500 my-2">No finalized profit data available for {selectedChartYear}.</p>
+          )}
         </div>
       </div>
 

@@ -175,3 +175,20 @@ export const updateUserDetails = async (userData: Partial<User>, icDocument?: Fi
     return response.data
   }
 }
+
+export const get_profit = async () => {
+  const response = await api.get('/manage_operational_profit/')
+  return response.data
+}
+
+export interface FinalizedMonthlyProfit {
+  id?: number; 
+  month: number; // e.g., 1 for January
+  year: number;
+  profit_rate: number; 
+}
+
+export const get_finalized_yearly_profits = async (year: number): Promise<FinalizedMonthlyProfit[]> => {
+  const response = await api.get('/manage_monthly_finalized_profit/', { params: { year } });
+  return response.data;
+}

@@ -33,7 +33,6 @@ export const logout = async () => {
   return response.data
 }
 
-
 export const get_profit = async () => {
   const response = await api.get('/manage_operational_profit/')
   return response.data

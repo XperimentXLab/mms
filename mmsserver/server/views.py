@@ -220,15 +220,17 @@ def manage_monthly_finalized_profit(request):
   month = request.data.get('month')
   year = request.data.get('year')
   try:
+    
+    if request.method == 'GET':
+      if year:
+        monthly_finalized_profit = MonthlyFinalizedProfit.objects.filter(year=year)
+      else:
+        monthly_finalized_profit = MonthlyFinalizedProfit.objects.all()
+      serializer = MonthlyFinalizedProfitSerializer(monthly_finalized_profit, many=True)
+      return Response(serializer.data, status=200)
+
     if user.is_staff:
-      if request.method == 'GET':
-        if year:
-          monthly_finalized_profit = MonthlyFinalizedProfit.objects.filter(year=year)
-        else:
-          monthly_finalized_profit = MonthlyFinalizedProfit.objects.all()
-        serializer = MonthlyFinalizedProfitSerializer(monthly_finalized_profit, many=True)
-        return Response(serializer.data, status=200)
-      elif request.method == 'POST':
+      if request.method == 'POST':
         serializer = MonthlyFinalizedProfitSerializer(data=request.data)
         if serializer.is_valid():
           if MonthlyFinalizedProfit.objects.filter(month=month, year=year).exists():
@@ -270,13 +272,25 @@ def manage_monthly_finalized_profit(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_yearly_profit_total(request):
-    user = request.user
-    if user.is_staff:
-      year = request.data.get('year')
+    # year = request.data.get('year') # Old way for POST-like GET
+    year_str = request.query_params.get('year') # Correct way for GET
+    if not year_str:
+        return Response({'error': 'Year query parameter is required.'}, status=400)
+    try:
+        year = int(year_str)
+    except ValueError:
+        return Response({'error': 'Year must be an integer.'}, status=400)
+
+    # Add permission check if necessary, e.g., if only staff can see this
+    # if not request.user.is_staff:
+    #     return Response({'error': 'Permission denied'}, status=403)
+
+    if year: # year is now an int
       total = MonthlyFinalizedProfit.get_total_yearly_profit(year)
       return Response({'year': year, 'total_profit_rate': float(total)})
     else:
-      return Response({'error': 'Permission denied'}, status=403)
+      # This case should ideally be caught by the 'not year_str' check above
+      return Response({'error': 'Error getting yearly total profit, year parameter missing or invalid.'}, status=400)
     
 
 @api_view(['POST'])
@@ -527,5 +541,3 @@ def process_withdrawal(request):
     logger.error(request, "Invalid password")
     return Response({'error': 'Invalid password'}, status=400)
   
-
-
