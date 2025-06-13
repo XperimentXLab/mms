@@ -116,10 +116,10 @@ const Operation = () => {
       <h1 className="text-2xl font-bold">Operational</h1>
 
       <form onSubmit={toggleUpdateProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
-        <span>
+        <span className="flex justify-between">
           <span className="font-semibold">Update Profit </span>
           --- <span className="text-sm">Last Updated: {lastUpdated}</span> ---
-          <span className="text-sm text-red">{errorMessage}</span>
+          <span className="text-sm text-red-500">{errorMessage}</span>
         </span>
 
         <form className="grid grid-cols-3 justify-center items-end border px-2 py-1 rounded-xl" onSubmit={toggleUpdateMY}>
