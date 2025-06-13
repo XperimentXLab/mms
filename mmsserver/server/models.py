@@ -203,7 +203,7 @@ class MonthlyFinalizedProfit(models.Model):
 
   class Meta:
     unique_together = ('year', 'month')
-    ordering = ['-year', '-month']
+    ordering = ['-year', 'month']
     verbose_name = "Monthly Finalized Profit"
     verbose_name_plural = "Monthly Finalized Profits"
 
