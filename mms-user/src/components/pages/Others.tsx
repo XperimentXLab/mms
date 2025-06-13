@@ -209,22 +209,22 @@ const Others = () => {
 
       <h1 className="font-bold text-xl">Others</h1>
 
-      <div className="flex flex-col gap-3 justify-center items-center p-3 border rounded-xl w-full shadow-2xl shadow-red-300 bg-white">
+      <div className="grid grid-cols-1 gap-3 justify-center items-center p-3 border rounded-xl w-full shadow-2xl shadow-red-300 bg-white">
         <span className="font-bold text-md">Performance</span>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
           <div className="border p-3 rounded-lg text-center">
-            <h3 className="text-sm text-gray-500">Today's Operational Profit</h3>
+            <h3 className="text-sm text-gray-500">Today's Profit</h3>
             <p className="text-xl font-bold">{todayOperationalProfit.toLocaleString()} %</p>
           </div>
           
           <div className="border p-3 rounded-lg text-center">
-            <h3 className="text-sm text-gray-500">Weekly Operational Profit</h3>
+            <h3 className="text-sm text-gray-500">Weekly Profit</h3>
             <p className="text-xl font-bold">{weeklyOperationalProfit.toLocaleString()} %</p>
           </div>
           
           <div className="border p-3 rounded-lg text-center">
-            <h3 className="text-sm text-gray-500">Monthly Operational Profit</h3>
+            <h3 className="text-sm text-gray-500">Monthly Profit</h3>
             <p className="text-xl font-bold">{monthlyOperationalProfit.toLocaleString()} %</p>
           </div>
         </div>  
