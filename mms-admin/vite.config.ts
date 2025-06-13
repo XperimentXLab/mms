@@ -6,9 +6,11 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(),
+    tailwindcss()
   ],
   build: {
-    emptyOutDir: true,       
+    cssCodeSplit: true, // Critical for CSS generation
+    emptyOutDir: true,    
+    manifest: true // Generates manifest.json for debugging   
   },
 })
