@@ -185,7 +185,7 @@ export interface FinalizedMonthlyProfit {
   id?: number; 
   month: number; // e.g., 1 for January
   year: number;
-  profit_rate: number; 
+  finalized_profit_rate: number; 
 }
 
 export const get_finalized_yearly_profits = async (year: number): Promise<FinalizedMonthlyProfit[]> => {
