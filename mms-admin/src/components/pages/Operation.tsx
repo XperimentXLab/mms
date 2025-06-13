@@ -51,6 +51,7 @@ const Operation = () => {
         setInputActiveMonth(response.active_month_profit);
         setInputActiveYear(response.active_year_profit);
 
+        console.log(activeMonthProfit, activeYearProfit)
       } catch (error: any) {
         console.error('Error fetching operational profit data:', error);
       } finally {
@@ -83,7 +84,6 @@ const Operation = () => {
       setActiveMonthProfit(String(inputActiveMonth))
       setActiveYearProfit(String(inputActiveYear))
 
-      console.log(inputActiveMonth, inputActiveYear)
     } catch (error: any) {
       console.error(error)
       alert('Failed to update operational profit. Please try again.');
