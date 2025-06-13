@@ -102,7 +102,7 @@ const Others = () => {
         const yearNum = parseInt(selectedChartYear, 10);
         const data = await get_finalized_yearly_profits(yearNum);
         setFinalizedYearlyProfits(data);
-        const total = data.reduce((sum, item) => sum + (item.finalized_profit_rate || 0), 0);
+        const total = (data.reduce((sum, item) => sum + (parseFloat(String(item.finalized_profit_rate)) || 0), 0));
         setChartYearlyTotal(total);
 
       } catch (error: any) {
@@ -125,7 +125,7 @@ const Others = () => {
     labels: finalizedYearlyProfits.map(item => monthNames[item.month - 1]).filter(Boolean),
     datasets: [
       {
-        label: `Profit ${selectedChartYear} - Total: ${chartYearlyTotal} %`,
+        label: `Profit ${selectedChartYear} - Total: ${chartYearlyTotal.toFixed(2)} %`,
         data: finalizedYearlyProfits.map(item => item.finalized_profit_rate || 0),
         borderColor: "rgb(75, 192, 192)",
         borderWidth: 1,
@@ -233,7 +233,7 @@ const Others = () => {
           <div className="mb-4 mx-auto max-w-xs">
             <SelectYear 
               value={selectedChartYear} 
-              onChange={(e: any) => setSelectedChartYear(e.target.value)} 
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedChartYear(e.target.value)} 
             />
           </div>
           {chartError && <p className="text-red-500 text-center my-2">{chartError}</p>}
