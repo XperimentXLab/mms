@@ -68,34 +68,34 @@ def refresh_Token(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def protected_view(request):
-  user = User.objects.get(id=request.user.id)
+  user = request.user
   try:
     if (user):
       return Response({'message': f'Hello, {user.username}!'})
     else:
       return Response({'error': 'Invalid credentials'}, status=400)
-  except User.DoesNotExist():
-    return Response({'error': 'User does not exist'}, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=400)
   
 ################### Admin ##################
 
 @api_view(['GET', 'PUT', 'POST'])
 @permission_classes([IsAuthenticated])
 def manage_admin_point(request):
-  user = User.objects.get(id=request.user.id)        
+  user = request.user       
   admin_point = AdminPoint.objects.first()
   try:
     if user.is_staff:
 
       if request.method == 'GET':
         if admin_point:
-          serializer = AdminPointSerializer(admin_point, many=True)
+          serializer = AdminPointSerializer(admin_point)
           return Response(serializer.data, status=200)
         else:
           return Response({'error': 'Admin point not found'}, status=404)
         
       elif request.method == 'POST':
-        if AdminPoint.objects.exists():
+        if admin_point:
           return Response({'error': 'AdminPoint record already exists.'}, status=400)
         serializer = AdminPointSerializer(data=request.data)
         if serializer.is_valid():
@@ -118,8 +118,6 @@ def manage_admin_point(request):
         return Response({'error': 'Method not allowed'}, status=405)
     else:
       return Response({'error': 'Permission denied'}, status=403)
-  except User.DoesNotExist():
-    return Response({'error': 'User does not exist'}, status=400)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
@@ -127,18 +125,18 @@ def manage_admin_point(request):
 @api_view(['GET', 'PUT', 'POST'])
 @permission_classes([IsAuthenticated])
 def manage_operational_profit(request):
-  user = User.objects.get(id=request.user.id)        
+  user = request.user        
   operational_profit = OperationalProfit.objects.first()
   try:
     if user.is_staff:
       if request.method == 'GET':
         if operational_profit:
-          serializer = OperationalProfitSerializer(operational_profit, many=True)
+          serializer = OperationalProfitSerializer(operational_profit)
           return Response(serializer.data, status=200)
         else:
           return Response({'error': 'Operational profit not found'}, status=404)
       elif request.method == 'POST':
-        if OperationalProfit.objects.exists():
+        if operational_profit:
           return Response({'error': 'OperationalProfit record already exists.'}, status=400)
         serializer = OperationalProfitSerializer(data=request.data)
         if serializer.is_valid():
@@ -160,8 +158,6 @@ def manage_operational_profit(request):
         return Response({'error': 'Method not allowed'}, status=405)
     else:
       return Response({'error': 'Permission denied'}, status=403)
-  except User.DoesNotExist():
-    return Response({'error': 'User does not exist'}, status=400)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
 
@@ -169,7 +165,7 @@ def manage_operational_profit(request):
 @api_view(['GET', 'PUT', 'POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def manage_monthly_finalized_profit(request):
-  user = User.objects.get(id=request.user.id)
+  user = request.user
   month = request.data.get('month')
   year = request.data.get('year')
   try:
@@ -211,21 +207,19 @@ def manage_monthly_finalized_profit(request):
           instance= MonthlyFinalizedProfit.objects.get(month=month, year=year)
           instance.delete()
           return Response(status=204)
-        except MonthlyFinalizedProfit.DoesNotExist():
+        except MonthlyFinalizedProfit.DoesNotExist:
           return Response({'error': 'Profit record not found.'}, status=404)
       else:
         return Response({'error': 'Method not allowed'}, status=405)
     else:
       return Response({'error': 'Permission denied'}, status=403)
-  except User.DoesNotExist():
-    return Response({'error': 'User does not exist'}, status=400)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_yearly_profit_total(request):
-    user = User.objects.get(id=request.user.id)
+    user = request.user
     if user.is_staff:
       year = request.data.get('year')
       total = MonthlyFinalizedProfit.get_total_yearly_profit(year)
@@ -237,7 +231,7 @@ def get_yearly_profit_total(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def get_all_network(request):
-  user = User.objects.get(id=request.user.id)
+  user = request.user
   try:
     if user.is_staff:
       all_network = user.get_all_network(include_self=True)
@@ -245,8 +239,6 @@ def get_all_network(request):
       return Response(serializer.data)
     else:
       return Response({'error': f'{user} is not allowed to perform this action'}, status=403)
-  except User.DoesNotExist():
-    return Response({'error': 'User does not exist'}, status=400)
   
 
 ############################################
@@ -255,7 +247,7 @@ def get_all_network(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user(request):
-  user = User.objects.get(id=request.user.id)
+  user = request.user
   serializer = UserSerializer(user)
   return Response(serializer.data)
 
@@ -339,7 +331,7 @@ def logout(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update_password(request):
-  user = User.objects.get(id=request.user.id)
+  user = request.user
   old_password = request.data.get('old_password')
   new_password = request.data.get('new_password')
   confirm_password = request.data.get('confirm_password')
@@ -427,7 +419,7 @@ def password_reset_confirm(request, uidb64, token):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_user(request):
-  user = User.objects.get(id=request.user.id)
+  user = request.user
   try:
     serializer = UserSerializer(user, data=request.data, partial=True)
     if serializer.is_valid():
@@ -435,14 +427,12 @@ def update_user(request):
       return Response({'message': f'{user.username} successfully updated'}, status=200)
     else:
       return Response(serializer.errors, status=400)
-  except User.DoesNotExist():
-    return Response({'error': 'User does not exist'}, status=400)
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_network(request):
-  user = User.objects.get(id=request.user.id)
+  user = request.user
 
   try:
     network_level = user.get_indirect_network()
