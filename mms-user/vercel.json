@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/mms-user/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
