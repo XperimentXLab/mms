@@ -122,7 +122,7 @@ const Operation = () => {
           <span className="text-sm text-red">{errorMessage}</span>
         </span>
 
-        <form className="grid grid-cols-3 items-end" onSubmit={toggleUpdateMY}>
+        <form className="grid grid-cols-3 justify-center items-center border px-2 py-1" onSubmit={toggleUpdateMY}>
           <SelectMonth value={inputActiveMonth} 
             onChange={(e) => setInputActiveMonth(e.target.value)} />
           <SelectYear value={inputActiveYear}
