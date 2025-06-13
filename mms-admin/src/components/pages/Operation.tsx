@@ -12,6 +12,7 @@ const Operation = () => {
   const [currentMonthProfit, setCurrentMonthProfit] = useState<number>(0)
   const [activeMonthProfit, setActiveMonthProfit] = useState<string>("")
   const [activeYearProfit, setActiveYearProfit] = useState<string>("")
+  const [lastUpdated, setLastUpdated] = useState<string>("")
 
 
   const [todayProfit, setTodayProfit] = useState<number>(0)
@@ -43,6 +44,7 @@ const Operation = () => {
         setCurrentMonthProfit(response.current_month_profit || 0)
         setActiveMonthProfit(response.active_month_profit || null)
         setActiveYearProfit(response.active_year_profit || null)
+        setLastUpdated(response.last_updated)
 
         // Initialize input states for the operational profit form
         setDailyProfitRate(response.daily_profit_rate || 0);
@@ -98,7 +100,9 @@ const Operation = () => {
       <h1 className="text-2xl font-bold">Operational</h1>
 
       <form onSubmit={toggleUpdateProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
+        <span className="font-semibold">Update Profit</span>
 
+        <span className="text-sm">{lastUpdated}</span>
         <div className="grid grid-cols-2 items-center">
           <SelectMonth value={inputActiveMonth} 
             onChange={(e) => setInputActiveMonth(e.target.value)} />

@@ -429,6 +429,9 @@ def update_user(request):
       return Response({'message': f'{user.username} successfully updated'}, status=200)
     else:
       return Response(serializer.errors, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=401)
+
 
 
 @api_view(['GET'])
