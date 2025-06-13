@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import Buttons from "../props/Buttons"
-import { InputwithVal } from "../props/Formss"
+import { Inputss, InputwithVal } from "../props/Formss"
 import { SelectMonth, SelectYear } from "../props/DropDown"
 import { create_monthly_finalized_profit, create_profit, get_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
@@ -188,7 +188,7 @@ const Operation = () => {
             onChange={(e) => setFinalizedSelectedYear(e.target.value)} />
         </div>
 
-        <InputwithVal
+        <Inputss
           label="Finalized Profit"
           type="number"
           placeholder="Please fill in finalized profit manually"

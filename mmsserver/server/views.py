@@ -218,24 +218,23 @@ def manage_operational_profit(request):
 def manage_monthly_finalized_profit(request):
   user = request.user
   month = request.data.get('month')
-  year = request.data.get('year')
-
-  get_year = request.query_params.get('year')
+  year = request.query_params.get('year')
 
   try:
     
     if request.method == 'GET':
+      queryset = MonthlyFinalizedProfit.objects.all()
+      year_filter = None
       if year:
-        monthly_finalized_profit = MonthlyFinalizedProfit.objects.filter(year=year)
-        queryset = MonthlyFinalizedProfit.objects.all()
-        year_filter = None
-      if get_year:
         try:
-          year_filter = int(get_year)
+          year_filter = int(year)
           queryset = queryset.filter(year=year_filter)
         except ValueError:
-          return Response({'error': 'Year query parameter must be an integer.'}, status=400)       
-      serializer = MonthlyFinalizedProfitSerializer(monthly_finalized_profit, many=True)
+          return Response({'error': 'Year query parameter must be an integer.'}, status=400)   
+      else:
+        queryset = MonthlyFinalizedProfit.objects.all()   
+      queryset = queryset.order_by('year', 'month') 
+      serializer = MonthlyFinalizedProfitSerializer(queryset, many=True)
       return Response(serializer.data, status=200)
 
     if user.is_staff:
