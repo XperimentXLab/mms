@@ -22,14 +22,9 @@ const Operation = () => {
   const [inputActiveYear, setInputActiveYear] = useState<string>("");
 
 
-  //const [finalizedSelectedMonth, setFinalizedSelectedMonth] = useState<string>("");
-  //const [finalizedSelectedYear, setFinalizedSelectedYear] = useState<string>("");
-  //const [inputFinalizedProfitRate, setInputFinalizedProfitRate] = useState<number>(0);
-
-
-
-  const [selectedMonth, setSelectedMonth] = useState<string>("");
-  const [selectedYear, setSelectedYear] = useState<string>("");
+  const [finalizedSelectedMonth, setFinalizedSelectedMonth] = useState<string>("");
+  const [finalizedSelectedYear, setFinalizedSelectedYear] = useState<string>("");
+  const [inputFinalizedProfitRate, setInputFinalizedProfitRate] = useState<number>(0);
 
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>("")
@@ -113,20 +108,18 @@ const Operation = () => {
 
   const toggleMFinalized = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!selectedMonth || !selectedYear) {
+    if (!finalizedSelectedMonth || !finalizedSelectedYear) {
       alert("Please select a month and year.");
       return;
     }
     try {
       setLoading(true)
       await create_monthly_finalized_profit({
-        month: Number(selectedMonth),
-        year: Number(selectedYear),
-        finalizedProfit: currentMonthProfit
+        month: Number(finalizedSelectedMonth),
+        year: Number(finalizedSelectedYear),
+        finalizedProfit: inputFinalizedProfitRate
       })
       alert('Finalized profit updated successfully')
-      setSelectedMonth("")
-      setSelectedYear("")
     } catch (error: any) {
       console.log(error)
     } finally {
@@ -145,8 +138,9 @@ const Operation = () => {
         <span className="flex justify-between">
           <span className="font-semibold">Update Profit </span>
           --- <span className="text-sm">Last Updated: {lastUpdated}</span> ---
-          <span className="text-sm text-red-500">{errorMessage}</span>
         </span>
+
+        {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
 
         <form className="grid grid-cols-3 justify-center items-end border px-2 py-1 rounded-xl" onSubmit={toggleUpdateMY}>
           <SelectMonth value={inputActiveMonth} 
@@ -188,10 +182,10 @@ const Operation = () => {
         <span className="font-semibold">Finalized Monthly Profit</span>
 
         <div className="grid grid-cols-2 items-center">
-          <SelectMonth value={selectedMonth} 
-            onChange={(e) => setSelectedMonth(e.target.value)} />
-          <SelectYear value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)} />
+          <SelectMonth value={finalizedSelectedMonth} 
+            onChange={(e) => setFinalizedSelectedMonth(e.target.value)} />
+          <SelectYear value={finalizedSelectedYear}
+            onChange={(e) => setFinalizedSelectedYear(e.target.value)} />
         </div>
 
         <InputwithVal
@@ -199,8 +193,8 @@ const Operation = () => {
           type="number"
           placeholder="Please fill in finalized profit manually"
           currentValue={monthlyProfit}
-          onChange={(e) => setCurrentMonthProfit(Number(e.target.value))}
-          value={currentMonthProfit}
+          onChange={(e) => setInputFinalizedProfitRate(Number(e.target.value))}
+          value={inputFinalizedProfitRate}
         />
 
         <Buttons type="submit">Finalized</Buttons>
