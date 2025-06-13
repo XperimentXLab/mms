@@ -125,7 +125,7 @@ const Others = () => {
     labels: finalizedYearlyProfits.map(item => monthNames[item.month - 1]).filter(Boolean),
     datasets: [
       {
-        label: `Profit ${selectedChartYear} - Total: ${chartYearlyTotal.toFixed(2)} %`,
+        label: `Profit ${selectedChartYear} - Total: ${chartYearlyTotal} %`,
         data: finalizedYearlyProfits.map(item => item.finalized_profit_rate || 0),
         borderColor: "rgb(75, 192, 192)",
         borderWidth: 1,

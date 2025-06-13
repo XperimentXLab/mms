@@ -186,6 +186,9 @@ class OperationalProfitSerializer(serializers.ModelSerializer):
     read_only_fields = ['id', 'last_updated']
 
 class MonthlyFinalizedProfitSerializer(serializers.ModelSerializer):
+
+  finalized_profit_rate = serializers.DecimalField(max_digits=7, decimal_places=2, min_value=Decimal('0.00'), max_value=Decimal('15.00'), help_text='Finalized profit as a percentage (e.g., 5.0 for 5.0%)')
+
   class Meta:
     model = MonthlyFinalizedProfit
     fields = '__all__'
