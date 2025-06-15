@@ -161,6 +161,7 @@ const Operation = () => {
           currentValue={dailyProfitRate}
           onChange={(e) => setTodayProfit(Number(e.target.value))}
           value={todayProfit}
+          required={true}
         />
         <InputwithVal
           label="Weekly Profit"
@@ -169,6 +170,7 @@ const Operation = () => {
           currentValue={weeklyProfitRate}
           onChange={(e) => setWeeklyProfit(Number(e.target.value))}
           value={weeklyProfit}
+          required={true}
         />
         <InputwithVal
           label="Monthly Profit"
@@ -177,6 +179,7 @@ const Operation = () => {
           currentValue={currentMonthProfit}
           onChange={(e) => setMonthlyProfit(Number(e.target.value))}
           value={monthlyProfit}
+          required={true}
         />
         <Buttons type="submit">Confirm</Buttons>
       </form>
@@ -198,6 +201,7 @@ const Operation = () => {
           currentValue={monthlyProfit}
           onChange={(e) => setInputFinalizedProfitRate(Number(e.target.value))}
           value={inputFinalizedProfitRate}
+          required={true}
         />
 
         <Buttons type="submit">Finalized</Buttons>
