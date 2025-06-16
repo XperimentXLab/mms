@@ -53,7 +53,7 @@ const ValueCalculator: React.FC<CalculatorProps> = ({
 const Others = () => {
 
   const [assetAmount, setAssetAmount] = useState(0)
-  const [profitRate, setProfitRate] = useState(0) //need to be in %
+  const [profitRate, setProfitRate] = useState(0)
   const [userProfit, setUserProfit] = useState(0);
   const [sharingRatio, setSharingRatio] = useState("");
 
