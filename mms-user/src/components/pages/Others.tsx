@@ -189,7 +189,7 @@ const Others = () => {
 
     // Determine sharing ratio based on investment amount
     let userPercent = 0
-    if (assetAmount < 1000) {
+    if (assetAmount < 10000) {
       userPercent = 0.7; // 70%
       setSharingRatio("70/30");
     } else {
