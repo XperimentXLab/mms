@@ -27,8 +27,8 @@ const Home = () => {
   // Mock data for profit - replace with API call in production
   const mockProfit: ProfitData[] = [
     { type: "Personal", amount: 0 }, 
-    { type: "Affliate", amount: 0 },
-    { type: "Fast Track", amount: 0 },
+    { type: "Affiliate", amount: 0 },
+    { type: "Bonus", amount: 0 },
     { type: "Total", amount: 0}
   ];
 
@@ -111,8 +111,8 @@ const Home = () => {
         <FixedText label="USERNAME" text={username} />
         <FixedText label="USER ID" text={userId} />
         <FixedText label="Master Point" text={masterP.toString()} />
-        <FixedText label="Profit Point" text={profitP.toString()} />
-        <FixedText label="Bonus Point" text={BonusP.toString()} />
+        <FixedText label="Profit" text={profitP.toString()} />
+        <FixedText label="Commission" text={BonusP.toString()} />
 
         <div className="border rounded-xl p-4 flex items-center flex-col shadow-2xl shadow-red-300 bg-white">
           <h2 className="font-bold text-lg mb-3">Daily Summary Profit</h2>
