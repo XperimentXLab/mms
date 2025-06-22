@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import Buttons from "../props/Buttons"
 import { Inputss, InputwithVal } from "../props/Formss"
 import { SelectMonth, SelectYear } from "../props/DropDown"
-import { create_profit, get_profit, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
+import { get_profit, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
 
 const Operation = () => {
@@ -58,8 +58,9 @@ const Operation = () => {
       }
     }
     fetchData()
-  }, [lastUpdated])
+  }, [])
 
+  /*
   const toggleUpdateMY = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
@@ -73,7 +74,7 @@ const Operation = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }*/
 
   const toggleUpdateProfit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -151,13 +152,11 @@ const Operation = () => {
 
         {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
 
-        <form className="grid grid-cols-3 justify-center items-end border px-2 py-1 rounded-xl" onSubmit={toggleUpdateMY}>
-          <SelectMonth value={inputActiveMonth} 
-            onChange={(e) => setInputActiveMonth(e.target.value)} />
-          <SelectYear value={inputActiveYear}
-            onChange={(e) => setInputActiveYear(e.target.value)} />
-          <Buttons type="submit">Confirm</Buttons>
-        </form>
+        <SelectMonth value={inputActiveMonth} 
+          onChange={(e) => setInputActiveMonth(e.target.value)} />
+        <SelectYear value={inputActiveYear}
+          onChange={(e) => setInputActiveYear(e.target.value)} />
+        <Buttons type="submit">Confirm</Buttons>
 
         <span className="text-sm">*Please fill in manually (e.g., enter 5.0 for 5.0%)</span>
         <InputwithVal 

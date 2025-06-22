@@ -149,7 +149,8 @@ def manage_operational_profit(request):
 def manage_monthly_finalized_profit(request):
   user = request.user
   month = request.data.get('month')
-  year = request.query_params.get('year')
+  year_ = request.data.get('year')
+  year = year_
 
   try:
     
@@ -172,7 +173,7 @@ def manage_monthly_finalized_profit(request):
       if request.method == 'POST':
         serializer = MonthlyFinalizedProfitSerializer(data=request.data)
         if serializer.is_valid():
-          if MonthlyFinalizedProfit.objects.filter(month=month, year=year).exists():
+          if MonthlyFinalizedProfit.objects.filter(month=month, year=year_).exists():
             return Response({'error': 'Profit record already exists.'}, status=409)
           serializer.save()
           return Response(serializer.data, status=201)
@@ -182,7 +183,7 @@ def manage_monthly_finalized_profit(request):
         if not year or not month:
           return Response({'error': 'Month and year are required.'}, status=400)
         try:
-          instance, created = MonthlyFinalizedProfit.objects.get_or_create(month=month, year=year)
+          instance, created = MonthlyFinalizedProfit.objects.get_or_create(month=month, year=year_)
         except MonthlyFinalizedProfit.DoesNotExist:
           return Response({'error': 'Profit record not found.'}, status=404)
 
@@ -196,7 +197,7 @@ def manage_monthly_finalized_profit(request):
         if not year or not month:
           return Response({'error': 'Month and year are required.'}, status=400)
         try:
-          instance= MonthlyFinalizedProfit.objects.get(month=month, year=year)
+          instance= MonthlyFinalizedProfit.objects.get(month=month, year=year_)
           instance.delete()
           return Response(status=204)
         except MonthlyFinalizedProfit.DoesNotExist:
