@@ -107,22 +107,15 @@ def manage_admin_point(request):
 @api_view(['GET', 'PUT', 'POST'])
 @permission_classes([IsAuthenticated])
 def manage_operational_profit(request):
-  user = request.user     
-  month = request.data.get('month')
-  year = request.data.get('year')   
+  user = request.user       
 
   try:
-    operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=month, active_year_profit=year)
+    operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=timezone.now().month, active_year_profit=timezone.now().year)
     if request.method == 'GET':
-      if operational_profit:
-        serializer = OperationalProfitSerializer(operational_profit)
-        return Response(serializer.data, status=200)
-      else:
-        return Response({'error': 'Operational profit not found'}, status=404)
+      serializer = OperationalProfitSerializer(operational_profit)
+      return Response(serializer.data, status=200)
     if user.is_staff:
       if request.method == 'POST':
-        if operational_profit:
-          return Response({'error': 'OperationalProfit record already exists.'}, status=400)
         serializer = OperationalProfitSerializer(data=request.data)
         if serializer.is_valid():
           serializer.save()
@@ -130,15 +123,12 @@ def manage_operational_profit(request):
         else:
           return Response({'error': serializer.errors}, status=400)
       elif request.method == 'PUT':
-        if operational_profit:
-          serializer = OperationalProfitSerializer(operational_profit, data=request.data, partial=True)
-          if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=200)
-          else:
-            return Response({'error': serializer.errors}, status=400)
+        serializer = OperationalProfitSerializer(operational_profit, data=request.data, partial=True)
+        if serializer.is_valid():
+          serializer.save()
+          return Response(serializer.data, status=200)
         else:
-          return Response({'error': 'Operational profit not found'}, status=404)
+          return Response({'error': serializer.errors}, status=400)
       else:
         return Response({'error': 'Method not allowed'}, status=405)
     else:
