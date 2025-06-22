@@ -147,10 +147,8 @@ const Operation = () => {
       <form onSubmit={toggleUpdateProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
         <span className="flex justify-between">
           <span className="font-semibold">Update Profit </span>
-          --- <span className="text-sm">Last Updated: {lastUpdated}</span> ---
+          <span className="text-sm">Last Updated: {lastUpdated}</span>
         </span>
-
-        {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
 
         <span className="text-sm">*Please fill in manually (e.g., enter 5.0 for 5.0%)</span>
 
@@ -167,7 +165,7 @@ const Operation = () => {
           placeholder="Please fill in today profit manually"
           currentValue={dailyProfitRate}
           onChange={(e) => setTodayProfit(Number(e.target.value))}
-          value={todayProfit}
+          value={String(todayProfit)}
           required={true}
         />
         <InputwithVal
@@ -176,7 +174,7 @@ const Operation = () => {
           placeholder="Please fill in weekly profit manually"
           currentValue={weeklyProfitRate}
           onChange={(e) => setWeeklyProfit(Number(e.target.value))}
-          value={weeklyProfit}
+          value={String(weeklyProfit)}
           required={true}
         />
         <InputwithVal
@@ -185,7 +183,7 @@ const Operation = () => {
           placeholder="Please set monthly profit manually"
           currentValue={currentMonthProfit}
           onChange={(e) => setMonthlyProfit(Number(e.target.value))}
-          value={monthlyProfit}
+          value={String(monthlyProfit)}
           required={true}
         />
         {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
@@ -208,7 +206,7 @@ const Operation = () => {
           placeholder="Please fill in finalized profit manually"
           currentValue={monthlyProfit}
           onChange={(e) => setInputFinalizedProfitRate(Number(e.target.value))}
-          value={inputFinalizedProfitRate}
+          value={String(inputFinalizedProfitRate)}
           required={true}
         />
         {errorMessageF && <span className="text-sm text-red-500">{errorMessageF}</span>}

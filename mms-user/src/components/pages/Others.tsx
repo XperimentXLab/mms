@@ -32,7 +32,7 @@ interface CalculatorProps {
   label: string
   placeholder?: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  value: number
+  value: number | string
 }
 
 const ValueCalculator: React.FC<CalculatorProps> = ({
@@ -259,7 +259,7 @@ const Others = () => {
             onChange={(e) => {
               setAssetAmount(Number(e.target.value));
             }}
-            value={assetAmount}
+            value={String(assetAmount)}
           />
           <ValueCalculator
             label="Profit Rate (%)"
@@ -267,7 +267,7 @@ const Others = () => {
             onChange={(e) => {
               setProfitRate(Number(e.target.value));
             }}
-            value={profitRate}
+            value={String(profitRate)}
           />
           <Buttons type="submit">Calculate</Buttons>
           <Buttons type="button" onClick={resetForm}>
