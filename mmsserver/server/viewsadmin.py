@@ -173,7 +173,7 @@ def manage_monthly_finalized_profit(request):
         else:
           return Response({'error': serializer.errors}, status=400)
       elif request.method == 'PUT':
-        if not year or not month:
+        if not year_ or not month:
           return Response({'error': 'Month and year are required.'}, status=400)
         try:
           instance, created = MonthlyFinalizedProfit.objects.get_or_create(month=month, year=year_)
