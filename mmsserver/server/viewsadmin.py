@@ -107,9 +107,12 @@ def manage_admin_point(request):
 @api_view(['GET', 'PUT', 'POST'])
 @permission_classes([IsAuthenticated])
 def manage_operational_profit(request):
-  user = request.user        
-  operational_profit = OperationalProfit.objects.first()
+  user = request.user     
+  month = request.data.get('month')
+  year = request.data.get('year')   
+
   try:
+    operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=month, active_year_profit=year)
     if request.method == 'GET':
       if operational_profit:
         serializer = OperationalProfitSerializer(operational_profit)
@@ -150,7 +153,7 @@ def manage_monthly_finalized_profit(request):
   user = request.user
   month = request.data.get('month')
   year_ = request.data.get('year')
-  year = year_
+  year = request.query_params.get('year')  # Use query_params for GET requests
 
   try:
     

@@ -152,13 +152,15 @@ const Operation = () => {
 
         {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
 
-        <SelectMonth value={inputActiveMonth} 
-          onChange={(e) => setInputActiveMonth(e.target.value)} />
-        <SelectYear value={inputActiveYear}
-          onChange={(e) => setInputActiveYear(e.target.value)} />
-        <Buttons type="submit">Confirm</Buttons>
-
         <span className="text-sm">*Please fill in manually (e.g., enter 5.0 for 5.0%)</span>
+
+        <div className="grid grid-cols-2 items-center">
+          <SelectMonth value={inputActiveMonth} 
+            onChange={(e) => setInputActiveMonth(e.target.value)} />
+          <SelectYear value={inputActiveYear}
+            onChange={(e) => setInputActiveYear(e.target.value)} />
+        </div>
+
         <InputwithVal 
           label="Today Profit"
           type="number"
