@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import Buttons from "../props/Buttons"
 import { Inputss, InputwithVal } from "../props/Formss"
 import { SelectMonth, SelectYear } from "../props/DropDown"
-import { create_monthly_finalized_profit, create_profit, get_profit, update_profit } from "../auth/endpoints"
+import { create_profit, get_profit, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
 
 const Operation = () => {
@@ -28,6 +28,7 @@ const Operation = () => {
 
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>("")
+  const [errorMessageF, setErrorMessageF] = useState<string>("")
 
 
   useEffect(()=>{
@@ -114,7 +115,7 @@ const Operation = () => {
     }
     try {
       setLoading(true)
-      await create_monthly_finalized_profit({
+      await update_monthly_finalized_profit({
         month: Number(finalizedSelectedMonth),
         year: Number(finalizedSelectedYear),
         finalizedProfit: inputFinalizedProfitRate
@@ -125,6 +126,11 @@ const Operation = () => {
       setInputFinalizedProfitRate(0)
     } catch (error: any) {
       console.log(error)
+      if (error.response && error.response.status === 400) {
+        setErrorMessageF(error.response.data.error)
+      } else {
+        setErrorMessageF("An unexpected error occurred. Please try again later.");
+      }
     } finally {
       setLoading(false)
     }
@@ -181,6 +187,7 @@ const Operation = () => {
           value={monthlyProfit}
           required={true}
         />
+        {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
         <Buttons type="submit">Confirm</Buttons>
       </form>
 
@@ -203,8 +210,8 @@ const Operation = () => {
           value={inputFinalizedProfitRate}
           required={true}
         />
-
-        <Buttons type="submit">Finalized</Buttons>
+        {errorMessageF && <span className="text-sm text-red-500">{errorMessageF}</span>}
+        <Buttons type="submit">Update Finalized</Buttons>
 
       </form>
 
