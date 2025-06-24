@@ -5,7 +5,7 @@ import Spannn from "../props/Textt"
 import { InputNormal, InputRef } from "../props/Formss"
 import { FaChevronUp } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
-import Tables, { type TableColumn } from "../props/Tables"
+import { Tables, type TableColumn } from "../props/Tables"
 import { InfoWithdraw } from "../props/Info"
 import { convertCommissionToMaster, convertProfitToMaster, getWallet, transferMasterPoint, userDetails, withdrawProfit } from "../auth/endpoints"
 

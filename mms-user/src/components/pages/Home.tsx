@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import Loading from "../props/Loading"
 import { userDetails } from "../auth/endpoints"
 import { FixedText } from "../props/Textt"
-import Tables from "../props/Tables"
+import { Tables } from "../props/Tables";
 
 interface ProfitData {
   type: string;
