@@ -69,7 +69,7 @@ const Others = () => {
   const [chartError, setChartError] = useState<string>("");
 
   const month = new Date().toLocaleDateString('en-US', { month: 'numeric' });
-  const year = new Date().toLocaleDateString('en-US', { month: 'numeric' })
+  const year = new Date().toLocaleDateString('en-US', { year: 'numeric' })
 
   const [loading, setLoading] = useState<boolean>(false)
 
