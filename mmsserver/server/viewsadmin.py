@@ -108,8 +108,8 @@ def manage_admin_point(request):
 @permission_classes([IsAuthenticated])
 def manage_operational_profit(request):
   user = request.user       
-  month = request.data.get('month')
-  year = request.data.get('year')
+  month = request.query_params.get('active_month_profit')
+  year = request.query_params.get('active_year_profit')
 
   try:
     operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=month, active_year_profit=year)

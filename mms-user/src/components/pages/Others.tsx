@@ -68,8 +68,8 @@ const Others = () => {
   const [chartYearlyTotal, setChartYearlyTotal] = useState<number>(0);
   const [chartError, setChartError] = useState<string>("");
 
-  const month = new Date().toLocaleDateString('en-US', { month: 'numeric' });
-  const year = new Date().toLocaleDateString('en-US', { year: 'numeric' })
+  const activeMonth = new Date().toLocaleDateString('en-US', { month: 'numeric' });
+  const activeYear = new Date().toLocaleDateString('en-US', { year: 'numeric' })
 
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -79,8 +79,8 @@ const Others = () => {
       try {
         setLoading(true)
         const response = await getProfit({
-          month,
-          year
+          activeMonth: Number(activeMonth),
+          activeYear : Number(activeYear),
         })
         setTodayOperationalProfit(response.daily_profit_rate || 0)
         setWeeklyOperationalProfit(response.weekly_profit_rate || 0)
