@@ -13,11 +13,10 @@ export interface Data {
   reference?: string;
 }
 
-
-const [loading, setLoading] = useState(false);
-const [errorMessage, setErrorMessage] = useState("");
-
 export const ProfitStatement = () => {
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -61,6 +60,9 @@ export const ProfitStatement = () => {
 
 export const CommissionStatement = () => {
 
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   useEffect(()=>{
     const fetchData = async () => {
       try {
@@ -90,15 +92,21 @@ export const CommissionStatement = () => {
 
   return (
     <div>
+      {loading && <Loading />}
       <span className="font-semibold">
         Commission Statement
       </span>
+      {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
+      
       <Tables columns={columns} data={data} />
     </div>
   )
 }
 
 export const TransferStatement = () => {
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -142,6 +150,9 @@ export const TransferStatement = () => {
 
 export const ConvertStatement = () => {
 
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   useEffect(()=>{
     const fetchData = async () => {
       try {
@@ -182,6 +193,9 @@ export const ConvertStatement = () => {
 }
 
 export const WithdrawalWalletStatement = () => {
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(()=>{
     const fetchData = async () => {

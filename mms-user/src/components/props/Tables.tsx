@@ -9,7 +9,7 @@ export interface TableColumn {
 
 interface TablesProps {
   columns: TableColumn[];
-  data: any[] | null;
+  data: any[];
   emptyMessage?: string;
 }
 

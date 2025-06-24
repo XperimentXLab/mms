@@ -5,10 +5,11 @@ import { getAssetStatement, getDepositLock } from "../auth/endpoints"
 import type { Data } from "./WalletStatement"
 import Loading from "../props/Loading"
 
-const [loading, setLoading] = useState(false);
-const [errorMessage, setErrorMessage] = useState("");
 
 export const AssetStatement = () => {
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -63,6 +64,9 @@ export const AssetStatement = () => {
 
 
 export const WithdrawalAssetStatement = () => {
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(()=>{
     const fetchData = async () => {
