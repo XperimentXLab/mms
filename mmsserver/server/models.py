@@ -299,7 +299,7 @@ class Transaction(models.Model):
     ('CONVERT', 'Convert'), #Profit, Commission >> Master Point
     ('TRANSFER', 'Transfer'), #Master Point > User Master Point
     ('DISTRIBUTION', 'Distribution'), #Admin > Profit Point
-    ('AFFILIATE_BONUS', 'Affiliate Bonus') #Admin > Commission Point
+    ('AFFILIATE_BONUS', 'Affiliate Bonus'), #Admin > Commission Point
     ('INTRODUCER_BONUS', 'Introducer Bonus'), #Admin > Commission Point
     ('ASSET_PLACEMENT', 'Asset Placement'), #Master Point >> Asset
     ('ASSET_WITHDRAWAL', 'Asset Withdrawal'), #Asset > Profit Point
@@ -314,11 +314,11 @@ class Transaction(models.Model):
   )
     
   user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='transactions')
-  wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
-  asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='transactions')
+  wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions', null=True)
+  asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='transactions', null=True)
   transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
   point_type = models.CharField(max_length=20, choices=POINT_TYPES)
-  request_status = models.CharField(max_length=20, choices=RequestStatus.choices, verbose_name="Request Status")
+  request_status = models.CharField(max_length=20, choices=RequestStatus.choices, verbose_name="Request Status", null=True)
   amount = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   description = models.TextField(blank=True)
   reference = models.CharField(max_length=100, blank=True)
