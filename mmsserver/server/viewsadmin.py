@@ -108,9 +108,11 @@ def manage_admin_point(request):
 @permission_classes([IsAuthenticated])
 def manage_operational_profit(request):
   user = request.user       
+  month = request.data.get('month')
+  year = request.data.get('year')
 
   try:
-    operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=timezone.now().month, active_year_profit=timezone.now().year)
+    operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=month, active_year_profit=year)
     if request.method == 'GET':
       serializer = OperationalProfitSerializer(operational_profit)
       return Response(serializer.data, status=200)
@@ -118,6 +120,8 @@ def manage_operational_profit(request):
       if request.method == 'POST':
         serializer = OperationalProfitSerializer(data=request.data)
         if serializer.is_valid():
+          if OperationalProfit.objects.filter(month=month, year=year).exists():
+            return Response({'error': 'Profit record already exists.'}, status=409)
           serializer.save()
           return Response(serializer.data, status=201)
         else:

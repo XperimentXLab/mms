@@ -303,7 +303,7 @@ const Wallet = () => {
             <InputNormal placeholder="Enter amount" 
               type="number"
               onChange={e => setCommissionPoint(Number(e.target.value))}
-              value={String(commissionPoint)}
+              value={String(commissionPoint.toFixed(2))}
               required={true}
             />
             <Buttons type="submit">Withdraw</Buttons>       

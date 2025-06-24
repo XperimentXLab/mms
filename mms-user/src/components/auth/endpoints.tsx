@@ -177,9 +177,16 @@ export const updateUserDetails = async (userData: Partial<User>, icDocument?: Fi
   }
 }
 
+interface profitDataRes {
+  month: string
+  year: string
+}
 
-export const getProfit = async () => {
-  const response = await api.get('/manage_operational_profit/')
+export const getProfit = async (profitData: profitDataRes) => {
+  const { month, year } = profitData
+  const response = await api.get('/manage_operational_profit/', {
+    params: { month, year }
+  })
   return response.data
 }
 
