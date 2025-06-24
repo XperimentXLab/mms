@@ -68,9 +68,6 @@ const Others = () => {
   const [chartYearlyTotal, setChartYearlyTotal] = useState<number>(0);
   const [chartError, setChartError] = useState<string>("");
 
-  const activeMonth = new Date().toLocaleDateString('en-US', { month: 'numeric' });
-  const activeYear = new Date().toLocaleDateString('en-US', { year: 'numeric' })
-
   const [loading, setLoading] = useState<boolean>(false)
 
   // Fetch operational profits (today, weekly, monthly)
@@ -78,10 +75,7 @@ const Others = () => {
     const fetchOperationalData = async () => {
       try {
         setLoading(true)
-        const response = await getProfit({
-          activeMonth: Number(activeMonth),
-          activeYear : Number(activeYear),
-        })
+        const response = await getProfit()
         setTodayOperationalProfit(response.daily_profit_rate || 0)
         setWeeklyOperationalProfit(response.weekly_profit_rate || 0)
         setMonthlyOperationalProfit(response.current_month_profit || 0)

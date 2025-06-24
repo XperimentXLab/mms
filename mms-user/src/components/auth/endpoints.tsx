@@ -177,17 +177,14 @@ export const updateUserDetails = async (userData: Partial<User>, icDocument?: Fi
   }
 }
 
-interface profitDataRes {
-  activeMonth: number
-  activeYear: number
-}
 
-export const getProfit = async (profitData: profitDataRes) => {
-  const { activeMonth, activeYear } = profitData
+const activeMonth = new Date().toLocaleDateString('en-US', { month: 'numeric' });
+const activeYear = new Date().toLocaleDateString('en-US', { year: 'numeric' })
+export const getProfit = async () => {
   const response = await api.get('/manage_operational_profit/', {
     params: {
-      active_month_profit: activeMonth,
-      active_year_profit: activeYear
+      active_month_profit: Number(activeMonth),
+      active_year_profit: Number(activeYear)
     }
   })
   return response.data
