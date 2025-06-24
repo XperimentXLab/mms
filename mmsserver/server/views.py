@@ -1,5 +1,6 @@
 from .models import *
 from .serializers import *
+from .utils import *
 from django.conf import settings
 import requests
 from rest_framework.authentication import authenticate
@@ -77,244 +78,7 @@ def protected_view(request):
   except Exception as e:
     return Response({'error': str(e)}, status=400)
   
-################### Admin ##################
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login_admin(request):
-  username = request.data.get('username')
-  password = request.data.get('password')
-  user = authenticate(request, username=username, password=password)
-
-  try:
-    if user.is_staff:
-      data = request.data
-      recaptcha_token = data.get('recaptchaToken')
-      if not recaptcha_token:
-        return Response({'error': 'reCAPTCHA token is missing'}, status=400)
-      secret_key = settings.RECAPTCHA_SECRET_KEY
-      url = f"https://www.google.com/recaptcha/api/siteverify?secret={secret_key}&response={recaptcha_token}"
-      responseCaptcha = requests.post(url)
-      resultCaptcha = responseCaptcha.json()
-
-      if responseCaptcha.status_code != 200:
-        return Response({'error': 'Error communicating with reCAPTCHA service'}, status=500)
-
-      if not resultCaptcha.get("success"):
-        return Response({'error': 'CAPTCHA verification failed'}, status=400)
-
-      # end new update
-
-      refresh = RefreshToken.for_user(user)
-      response = Response({'message': 'Login successful'})
-      response.set_cookie(
-        key='access_token',
-        value=str(refresh.access_token),
-        httponly=True,
-        secure=True,
-        samesite='None',
-        path='/'
-      )
-      response.set_cookie(
-        key='refresh_token',
-        value=str(refresh),
-        httponly=True,
-        secure=True,
-        samesite='None',
-        path='/'
-      )
-      return response
-    else:
-      return Response({'error': 'Permission denied'}, status=403)
-  except Exception as e:
-    return Response({'error': f'Invalid credentials or {str(e)}' }, status=400)
-
-
-@api_view(['GET', 'PUT', 'POST'])
-@permission_classes([IsAuthenticated])
-def manage_admin_point(request):
-  user = request.user       
-  admin_point = AdminPoint.objects.first()
-  try:
-    if user.is_staff:
-
-      if request.method == 'GET':
-        if admin_point:
-          serializer = AdminPointSerializer(admin_point)
-          return Response(serializer.data, status=200)
-        else:
-          return Response({'error': 'Admin point not found'}, status=404)
-        
-      elif request.method == 'POST':
-        if admin_point:
-          return Response({'error': 'AdminPoint record already exists.'}, status=400)
-        serializer = AdminPointSerializer(data=request.data)
-        if serializer.is_valid():
-          serializer.save()
-          return Response(serializer.data, status=201)
-        else:
-          return Response({'error': serializer.errors}, status=400)
-        
-      elif request.method == 'PUT':
-        if admin_point:
-          serializer = AdminPointSerializer(admin_point, data=request.data, partial=True)
-          if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=200)
-          else:
-            return Response({'error': serializer.errors}, status=400)
-        else:
-          return Response({'error': 'Admin point not found'}, status=404)
-      else:
-        return Response({'error': 'Method not allowed'}, status=405)
-    else:
-      return Response({'error': 'Permission denied'}, status=403)
-  except Exception as e:
-    return Response({'error': str(e)}, status=500)
-  
-
-@api_view(['GET', 'PUT', 'POST'])
-@permission_classes([IsAuthenticated])
-def manage_operational_profit(request):
-  user = request.user        
-  operational_profit = OperationalProfit.objects.first()
-  try:
-    if request.method == 'GET':
-      if operational_profit:
-        serializer = OperationalProfitSerializer(operational_profit)
-        return Response(serializer.data, status=200)
-      else:
-        return Response({'error': 'Operational profit not found'}, status=404)
-    if user.is_staff:
-      if request.method == 'POST':
-        if operational_profit:
-          return Response({'error': 'OperationalProfit record already exists.'}, status=400)
-        serializer = OperationalProfitSerializer(data=request.data)
-        if serializer.is_valid():
-          serializer.save()
-          return Response(serializer.data, status=201)
-        else:
-          return Response({'error': serializer.errors}, status=400)
-      elif request.method == 'PUT':
-        if operational_profit:
-          serializer = OperationalProfitSerializer(operational_profit, data=request.data, partial=True)
-          if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=200)
-          else:
-            return Response({'error': serializer.errors}, status=400)
-        else:
-          return Response({'error': 'Operational profit not found'}, status=404)
-      else:
-        return Response({'error': 'Method not allowed'}, status=405)
-    else:
-      return Response({'error': 'Permission denied'}, status=403)
-  except Exception as e:
-    return Response({'error': str(e)}, status=500)
-
-
-@api_view(['GET', 'PUT', 'POST', 'DELETE'])
-@permission_classes([IsAuthenticated])
-def manage_monthly_finalized_profit(request):
-  user = request.user
-  month = request.data.get('month')
-  year = request.query_params.get('year')
-
-  try:
-    
-    if request.method == 'GET':
-      queryset = MonthlyFinalizedProfit.objects.all()
-      year_filter = None
-      if year:
-        try:
-          year_filter = int(year)
-          queryset = queryset.filter(year=year_filter)
-        except ValueError:
-          return Response({'error': 'Year query parameter must be an integer.'}, status=400)   
-      else:
-        queryset = MonthlyFinalizedProfit.objects.all()   
-      queryset = queryset.order_by('year', 'month') 
-      serializer = MonthlyFinalizedProfitSerializer(queryset, many=True)
-      return Response(serializer.data, status=200)
-
-    if user.is_staff:
-      if request.method == 'POST':
-        serializer = MonthlyFinalizedProfitSerializer(data=request.data)
-        if serializer.is_valid():
-          if MonthlyFinalizedProfit.objects.filter(month=month, year=year).exists():
-            return Response({'error': 'Profit record already exists.'}, status=409)
-          serializer.save()
-          return Response(serializer.data, status=201)
-        else:
-          return Response({'error': serializer.errors}, status=400)
-      elif request.method == 'PUT':
-        if not year or not month:
-          return Response({'error': 'Month and year are required.'}, status=400)
-        try:
-          instance = MonthlyFinalizedProfit.objects.get(month=month, year=year)
-        except MonthlyFinalizedProfit.DoesNotExist:
-          return Response({'error': 'Profit record not found.'}, status=404)
-
-        serializer = MonthlyFinalizedProfitSerializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-          serializer.save()
-          return Response(serializer.data, status=200)
-        else:
-          return Response({'error': serializer.errors}, status=400)
-      elif request.method == 'DELETE':
-        if not year or not month:
-          return Response({'error': 'Month and year are required.'}, status=400)
-        try:
-          instance= MonthlyFinalizedProfit.objects.get(month=month, year=year)
-          instance.delete()
-          return Response(status=204)
-        except MonthlyFinalizedProfit.DoesNotExist:
-          return Response({'error': 'Profit record not found.'}, status=404)
-      else:
-        return Response({'error': 'Method not allowed'}, status=405)
-    else:
-      return Response({'error': 'Permission denied'}, status=403)
-  except Exception as e:
-    return Response({'error': str(e)}, status=500)
-  
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_yearly_profit_total(request):
-    # year = request.data.get('year') # Old way for POST-like GET
-    year_str = request.query_params.get('year') # Correct way for GET
-    if not year_str:
-        return Response({'error': 'Year query parameter is required.'}, status=400)
-    try:
-        year = int(year_str)
-    except ValueError:
-        return Response({'error': 'Year must be an integer.'}, status=400)
-
-    # Add permission check if necessary, e.g., if only staff can see this
-    # if not request.user.is_staff:
-    #     return Response({'error': 'Permission denied'}, status=403)
-
-    if year: # year is now an int
-      total = MonthlyFinalizedProfit.get_total_yearly_profit(year)
-      return Response({'year': year, 'total_profit_rate': float(total)})
-    else:
-      # This case should ideally be caught by the 'not year_str' check above
-      return Response({'error': 'Error getting yearly total profit, year parameter missing or invalid.'}, status=400)
-    
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def get_all_network(request):
-  user = request.user
-  try:
-    if user.is_staff:
-      all_network = user.get_all_network(include_self=True)
-      serializer = UserNetworkSerializer(all_network, many=True)
-      return Response(serializer.data)
-    else:
-      return Response({'error': 'Permission denied'}, status=403)
-  except Exception as e:
-    return Response({'error': str(e)}, status=403)
-  
 
 ############################################
 
@@ -368,8 +132,6 @@ def login(request):
 
     if not resultCaptcha.get("success"):
       return Response({'error': 'CAPTCHA verification failed'}, status=400)
-
-    # end new update
 
     refresh = RefreshToken.for_user(user)
     response = Response({'message': 'Login successful'})
@@ -471,7 +233,7 @@ def request_password_reset_email(request):
 
       logger.info(f"Password reset link for {user.email}: {reset_link}")
       print(f"DEBUG: Password reset link for {user.email}: {reset_link}")
-      return Response({'message': 'If an account with this email, a password reset link will be sent.'}, status=200)
+      return Response({'message': 'If an account with this email, a password reset link will be sent.', 'reset_link': reset_link}, status=200)
     except User.DoesNotExist:
       return Response({'message': 'If an account with this email exists, a password reset link has been sent.'}, status=200)
     except Exception as e:
@@ -506,7 +268,6 @@ def update_user(request):
     return Response({'error': str(e)}, status=401)
 
 
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_network(request):
@@ -530,22 +291,361 @@ def get_user_network(request):
   except Exception as e:
     return Response({'Error getting network': str(e)}, status=400)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_wallet(request):
+  user = request.user
+  try:
+    wallet, _ = Wallet.objects.get_or_create(user=user)
+    serializer = WalletSerializer(wallet)
+    return Response(serializer.data, status=200)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_asset(request):
+  user = request.user
+  try:
+    asset, _ = Asset.objects.get_or_create(user=user)
+    serializer = AssetSerializer(asset)
+    return Response(serializer.data, status=200)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profit_transaction(request):
+  user = request.user
+  try:
+    profit_tx = Transaction.objects.filter(user=user, point_type='profit')
+    serializer = TransactionSerializer(profit_tx, many=True)
+    return Response(serializer.data, status=200)
+  except Transaction.DoesNotExist:
+    return Response({'error': 'Profit Transaction not found'}, status=404)
+  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_commission_transaction(request):
+  user = request.user
+  try:
+    commission_tx = Transaction.objects.filter(user=user, point_type='commission')
+    serializer = TransactionSerializer(commission_tx, many=True)
+    return Response(serializer.data, status=200)
+  except Transaction.DoesNotExist:
+    return Response({'error': 'Commission Transaction not found'}, status=404)
+  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_transfer_transaction(request):
+  user = request.user
+  try:
+    transfer_tx = Transaction.objects.filter(user=user, point_type='master', transaction_type='transfer')
+    serializer = TransactionSerializer(transfer_tx, many=True)
+    return Response(serializer.data, status=200)
+  except Transaction.DoesNotExist:
+    return Response({'error': 'Transfer Transaction not found'}, status=404)
+  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_convert_deposit_transaction(request):
+  user = request.user
+  try:
+    convert_tx = Transaction.objects.filter(user=user, transaction_type__in=['convert', 'deposit'])
+    serializer = TransactionSerializer(convert_tx, many=True)
+    return Response(serializer.data, status=200)
+  except Transaction.DoesNotExist:
+    return Response({'error': 'Convert Transaction not found'}, status=404)
+  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profit_commission_wd_transaction(request):
+  user = request.user
+  try:
+    profit_commission_wd_tx = Transaction.objects.filter(user=user, point_type__in=['profit', 'commission'], transaction_type='withdrawal')
+    serializer = TransactionSerializer(profit_commission_wd_tx, many=True)
+    return Response(serializer.data, status=200)
+  except Transaction.DoesNotExist:
+    return Response({'error': 'Profit/Commission Withdrawal Transaction not found'}, status=404)
+  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_asset_transaction(request):
+  user = request.user
+  try:
+    asset_tx = Transaction.objects.filter(user=user, transaction_type__in=['asset_placement', 'asset_withdrawal', 'free_campro_grant'])
+    serializer = TransactionSerializer(asset_tx, many=True)
+    return Response(serializer.data, status=200)
+  except Transaction.DoesNotExist:
+    return Response({'error': 'Asset Transaction not found'}, status=404)
 
-#Check back with model
+  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_deposit_lock(request):
+  user = request.user
+  try:
+    deposit_lock = DepositLock.objects.get(user=user)
+    serializer = DepositLockSerializer(deposit_lock)
+    return Response(serializer.data, status=200)
+  except DepositLock.DoesNotExist:
+    return Response({'error': 'Deposit lock not found'}, status=404)
+  
+
+## Wallet ##
 @api_view(['POST'])  
 @permission_classes([IsAuthenticated])
-def process_withdrawal(request):
-  amount = request.POST.get('amount')
-  point_type = request.POST.get('point_type')
-  password = request.POST.get('password')
+def deposit_master(request):
+  user = request.user
+  amount = request.data.get('amount', '0.00'),
+  description = request.data.get('description', f'Master Point Deposit: {amount}'),
+  reference = request.data.get('reference', '')
+
+  if not amount:
+    return Response({'error': 'Amount is required'}, status=400)
+  try:
+    amount = Decimal(amount)
+  except:
+    return Response({'error': 'Amount must be in number'}, status=400)
+
+  try:
+    wallet, _ = Wallet.objects.get_or_create(user=user)
+    result = WalletService.deposit_master_point(
+      user,
+      amount,
+      description,
+      reference
+    )
+    serializer = WalletSerializer(result)
+    return Response(serializer.data, status=200)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
   
-  # Verify password
-  user = authenticate(username=request.user.username, password=password)
-  if user is not None:
-    # Process withdrawal
-    pass
-  else:
-    logger.error(request, "Invalid password")
-    return Response({'error': 'Invalid password'}, status=400)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def transfer_master(request):
+  sender = request.user
+  receiver = request.data.get('receiver') # This should be the username of the receiver
+  amount = request.data.get('amount')
+  description = request.data.get('description', f'{sender.id}, {sender.username} transfer to {receiver.id}, {receiver.username}: {amount}')
+  reference = request.data.get('reference', '')
+
+  if not receiver or not amount:
+    return Response({'error': 'Receiver ID and amount are required'}, status=400)
+  try:
+    amount = Decimal(amount)
+  except:
+    return Response({'error': 'Amount must be in number'}, status=400)
+
+  try:
+    if not User.objects.filter(username=receiver).exists():
+      return Response({'error': 'Receiver username does not exist'}, status=404)
+    result = WalletService.transfer_master_point(
+      sender,
+      receiver,
+      amount,
+      description,
+      reference
+    )
+    serializer = WalletSerializer(result)
+    return Response(serializer.data, status=200)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+  
+api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def place_asset(request):
+  user = request.user
+  amount = request.data.get('amount', '0.00')
+  description = request.data.get('description', f'Asset Placement: {amount}')
+  reference = request.data.get('reference', '')
+
+  if not amount:
+    return Response({'error': 'Amount is required'}, status=400)
+  try:
+    amount = Decimal(amount)
+  except:
+    return Response({'error': 'Amount must be in number'}, status=400)
+
+  try:
+    result = WalletService.place_asset(
+      user,
+      amount,
+      description,
+      reference
+    )
+    wallet = result.wallet
+    asset = result.asset
+    serializer_wallet = WalletSerializer(wallet)
+    serializer_asset = AssetSerializer(asset)
+    return Response({
+      'wallet': serializer_wallet.data,
+      'asset': serializer_asset.data
+    }, status=200)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+  
+
+## Profit ##
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def withdraw_profit(request):
+  user = request.user
+  amount = request.data.get('amount', '0.00')
+  reference = request.data.get('reference', '')
+
+  if not amount:
+    return Response({'error': 'Amount is required'}, status=400)
+  try:
+    amount = Decimal(amount)
+  except:
+    return Response({'error': 'Amount must be in number'}, status=400)
+
+  try:
+    result = ProfitService.request_withdrawal(
+      user,
+      amount,
+      reference
+    )
+    wallet = result.wallet
+    withdrawal_request = result.withdrawal_request
+    serializer_wallet = WalletSerializer(wallet)
+    serializer_withdrawal_request = WithdrawalRequestSerializer(withdrawal_request)
+    return Response({
+      'wallet': serializer_wallet.data,
+      'withdrawal_request': serializer_withdrawal_request.data
+    }, status=200)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+  
+api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def convert_profit_to_master(request):
+  user = request.user
+  amount = request.data.get('amount', '0.00')
+  description = request.data.get('description', f"Convert Profit Point to Master Point : {amount}")
+  reference = request.data.get('reference', '')
+
+  if not amount:
+    return Response({'error': 'Amount is required'}, status=400)
+  try:
+    amount = Decimal(amount)
+  except:
+    return Response({'error': 'Amount must be in number'}, status=400)
+
+  try:
+    result = ProfitService.convert_to_master_point(
+      user,
+      amount,
+      description,
+      reference
+    )
+    serializer = WalletSerializer(result)
+    return Response(serializer.data, status=200)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+  
+
+## Commision ##
+api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def withdraw_commission(request):
+  user = request.user
+  amount = request.data.get('amount', '0.00')
+  reference = request.data.get('reference', '')
+
+  if not amount:
+    return Response({'error': 'Amount is required'}, status=400)
+  try:
+    amount = Decimal(amount)
+  except:
+    return Response({'error': 'Amount must be in number'}, status=400)
+
+  try:
+    result = CommissionService.request_withdrawal(
+      user,
+      amount,
+      reference
+    )
+    wallet = result.wallet
+    withdrawal_request = result.withdrawal_request
+    serializer_wallet = WalletSerializer(wallet)
+    serializer_withdrawal_request = WithdrawalRequestSerializer(withdrawal_request)
+    return Response({
+      'wallet': serializer_wallet.data,
+      'withdrawal_request': serializer_withdrawal_request.data
+    }, status=200)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+  
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def convert_commission_to_master(request):
+  user = request.user
+  amount = request.data.get('amount', '0.00')
+  description = request.data.get('description', f"Convert Commission Point to Master Point: {amount}")
+  reference = request.data.get('reference', '')
+
+  if not amount:
+    return Response({'error': 'Amount is required'}, status=400)
+  try:
+    amount = Decimal(amount)
+  except: 
+    return Response({'error': 'Amount must be in number'}, status=400)
+
+  try:
+    result = CommissionService.convert_to_master_point(
+      user,
+      amount,
+      description,
+      reference
+    )
+    serializer = WalletSerializer(result)
+    return Response(serializer.data, status=200)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=500)
+
+
+## Asset ##
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def withdraw_asset(request):
+  user = request.user
+  amount = request.data.get('amount', '0.00')
+  description = request.data.get('description', f'Asset Withdrawal: {amount}')
+  reference = request.data.get('reference', '')
+
+  if not amount:
+    return Response({'error': 'Amount is required'}, status=400)
+  try:
+    amount = Decimal(amount)
+  except:
+    return Response({'error': 'Amount must be in number'}, status=400)
+
+  try:
+    asset, _ = Asset.objects.get_or_create(user=user)
+    result = AssetService.withdraw_asset(
+      user,
+      amount,
+      description,
+      reference
+    )
+    serializer = AssetSerializer(result)
+    return Response(serializer.data, status=200)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
   

@@ -109,6 +109,7 @@ export const userNetwork = async () => {
   return response.data
 }
 
+
 export const updateUserDetails = async (userData: Partial<User>, icDocument?: File) => {
   const {
     addressLine,
@@ -176,7 +177,8 @@ export const updateUserDetails = async (userData: Partial<User>, icDocument?: Fi
   }
 }
 
-export const get_profit = async () => {
+
+export const getProfit = async () => {
   const response = await api.get('/manage_operational_profit/')
   return response.data
 }
@@ -188,7 +190,131 @@ export interface FinalizedMonthlyProfit {
   finalized_profit_rate: number; 
 }
 
-export const get_finalized_yearly_profits = async (year: number): Promise<FinalizedMonthlyProfit[]> => {
+export const getFinalizedYearlyProfits = async (year: number): Promise<FinalizedMonthlyProfit[]> => {
   const response = await api.get('/manage_monthly_finalized_profit/', { params: { year } });
   return response.data;
+}
+
+export const getProfitStatement = async () => {
+  const response = await api.get('/user_profit_tx/')
+  return response.data
+}
+
+export const getCommissionStatement = async () => {
+  const response = await api.get('/user_commission_tx/')
+  return response.data
+}
+
+export const getTransferStatement = async () => {
+  const response = await api.get('/user_transfer_tx/')
+  return response.data
+}
+
+export const getConvertDepositStatement = async () => {
+  const response = await api.get('/user_convert_deposit_tx/')
+  return response.data
+}
+
+export const getProfitCommissionWDStatement = async () => {
+  const response = await api.get('/user_profit_commission_wd_tx/')
+  return response.data
+}
+
+export const getAssetStatement = async () => {
+  const response = await api.get('/user_asset_tx/')
+  return response.data
+}
+
+export const getWallet = async () => {
+  const response = await api.get('/user_wallet/')
+  return response.data
+}
+
+export const getAsset = async () => {
+  const response = await api.get('/user_asset/')
+  return response.data
+}
+
+export const getDepositLock = async () => {
+  const response = await api.get('/user_deposit_lock/')
+  return response.data
+}
+
+
+interface TransferMasterData {
+  amount: number
+  receiver: string  // This should be the username of the receiver
+  reference?: string
+}
+
+export const transferMasterPoint = async (transferMasterData: TransferMasterData) => {
+  const { amount, receiver, reference } = transferMasterData
+  const response = await api.post('/transfer_master_to_user/', {
+    amount, receiver, reference
+  })
+  return response.data
+}
+
+
+interface TransData {
+  amount: number
+  reference?: string
+}
+
+export const convertProfitToMaster = async (convertProfitData: TransData) => {
+  const { amount, reference } = convertProfitData
+  const response = await api.post('/convert_profit/', {
+    amount, reference
+  })
+  return response.data
+}
+
+export const convertCommissionToMaster = async (convertCommissionData: TransData) => {
+  const { amount, reference } = convertCommissionData
+  const response = await api.post('/convert_commission/', {
+    amount, reference
+  })
+  return response.data
+}
+
+export const depositMaster = async (depositMasterData: TransData) => {
+  const { amount, reference } = depositMasterData
+  const response = await api.post('/deposit_master/', {
+    amount, reference
+  })
+  return response.data
+}
+
+////////////////////// Need admin approval ////////////////////////
+
+export const placeAsset = async (placeAssetData: TransData) => {
+  const { amount, reference } = placeAssetData
+  const response = await api.post('/place_asset/', {
+    amount, reference
+  })
+  return response.data
+}
+
+export const withdrawProfit = async (withdrawProfitData: TransData) => {
+  const { amount, reference } = withdrawProfitData
+  const response = await api.post('/withdraw_profit/', {
+    amount, reference
+  })
+  return response.data
+}
+
+export const withdrawCommission = async (withdrawCommissionData: TransData) => {
+  const { amount, reference } = withdrawCommissionData
+  const response = await api.post('/withdraw_commission/', {
+    amount, reference
+  })
+  return response.data
+}
+
+export const withdrawAsset = async (withdrawAssetData: TransData) => {
+  const { amount, reference } = withdrawAssetData
+  const response = await api.post('/withdraw_asset/', {
+    amount, reference
+  })
+  return response.data
 }

@@ -82,7 +82,7 @@ const MainLayout = () => {
               <span className="text-xs">{time}</span>
             </div>
 
-            <img src="./mmsventure.jpeg" alt="MMS Logo" className="w-10 h-10 rounded-full" />
+            <img src="../mmsventure.jpeg" alt="MMS Logo" className="w-10 h-10 rounded-full" />
 
             <div className="flex flex-col cursor-default">
               <span className="font-semibold">Money Management Solution</span>
@@ -95,11 +95,11 @@ const MainLayout = () => {
         <div className="flex relative">
         {open && 
         <nav className="absolute flex flex-col w-fit h-fit gap-1 items-center bg-red-500 px-1 py-3">
-          <NavLinkss to={'/'} >Home</NavLinkss>
+          <NavLinkss to={'/'}>Home</NavLinkss>
           <NavLinkss to={'/profile'} >Profile</NavLinkss>
           <NavLinkss to={'/network'}>Network</NavLinkss>
-          {/*<NavLinkss to={'/wallet'}>Wallet</NavLinkss>
-          <NavLinkss to={'/asset'}>Asset</NavLinkss>*/}
+          <NavLinkss to={'/wallet'}>Wallet</NavLinkss>
+          <NavLinkss to={'/asset'}>Asset</NavLinkss>
           <NavLinkss to={'/others'}>Others</NavLinkss>
           <Buttons type="button" onClick={handleLogout}
             className="hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg cursor-pointer"

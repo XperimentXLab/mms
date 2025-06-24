@@ -1,6 +1,7 @@
+import type React from "react";
 import type { LevelProps } from "../pages/Network"
 
-interface TableColumn {
+export interface TableColumn {
   header: string;
   accessor: string;
   render?: (value: any) => React.ReactNode;
@@ -12,7 +13,7 @@ interface TablesProps {
   emptyMessage?: string;
 }
 
-const Tables = ({ columns, data, emptyMessage = "No data available" }: TablesProps) => {
+export const Tables = ({ columns, data, emptyMessage = "No data available" }: TablesProps) => {
   return (
     <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
@@ -20,7 +21,7 @@ const Tables = ({ columns, data, emptyMessage = "No data available" }: TablesPro
           {columns.map((column) => (
             <th
               key={column.accessor}
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b"
             >
               {column.header}
             </th>
@@ -50,7 +51,6 @@ const Tables = ({ columns, data, emptyMessage = "No data available" }: TablesPro
   );
 };
 
-export default Tables;
 
 export const LevelDisplay: React.FC<LevelProps> = ({ users }) => {
     if (users.length === 0) {
@@ -82,3 +82,48 @@ export const LevelDisplay: React.FC<LevelProps> = ({ users }) => {
       </div>
     )
   }
+
+
+interface AssetWithdrawalProps {
+  columns: TableColumn[];
+  data: any[];
+  emptyMessage?: string;
+}
+
+export const TableAssetWithdrawal = ({columns, data, emptyMessage = "No data available"}: AssetWithdrawalProps) => {
+  return (
+    <div className="w-full overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-2000">
+        <thead>
+          <tr className="bg-gray-50">
+            {columns.map((column) => (
+              <th key={column.accessor} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                {column.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {data.length > 0 ? (
+            data.map((row, rowIndex) => (
+              <tr key={rowIndex} className="hover:bg-gray-50">
+                {columns.map((column) => (
+                  <td key={`${rowIndex}-${column.accessor}`} className="px-6 py-4 whitespace-nowrap">
+                    {column.render ? column.render(row[column.accessor]) : row[column.accessor]}
+                  </td>
+                ))}
+              </tr>
+
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columns.length} className="px-6 py-4 text-center text-gray-500">
+                {emptyMessage}
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+}

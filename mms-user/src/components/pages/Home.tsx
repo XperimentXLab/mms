@@ -106,13 +106,15 @@ const Home = () => {
         <h1 className="font-bold text-xl">Home</h1>
       </div>
 
-      <div className="grid grid-rows-2 gap-3">
+      <div className="grid grid-cols-1 gap-3">
 
-        <FixedText label="USERNAME" text={username} />
-        <FixedText label="USER ID" text={userId} />
-        <FixedText label="Master Point" text={masterP.toString()} />
-        <FixedText label="Profit" text={profitP.toString()} />
-        <FixedText label="Commission" text={BonusP.toString()} />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-5 sm:items-start sm:justify-center">
+          <FixedText label="USERNAME" text={username} />
+          <FixedText label="USER ID" text={userId} />
+          <FixedText label="Master Point" text={masterP.toString()} />
+          <FixedText label="Profit" text={profitP.toString()} />
+          <FixedText label="Commission" text={BonusP.toString()} />
+          </div>
 
         <div className="border rounded-xl p-4 flex items-center flex-col shadow-2xl shadow-red-300 bg-white">
           <h2 className="font-bold text-lg mb-3">Daily Summary Profit</h2>

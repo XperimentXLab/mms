@@ -52,7 +52,7 @@ def _distribute_affiliate_bonus_for_user(
                         user=upline_l1_wallet.user,
                         wallet=upline_l1_wallet,
                         transaction_type='AFFILIATE_BONUS', # Using new specific type
-                        point_type='AFFILIATE',
+                        point_type='COMMISSION',
                         amount=l1_bonus_amount,
                         description=(
                             f"L1 Affiliate bonus (5%) from {downline_user.username}'s profit of {profit_earned_by_downline:.2f}. "
@@ -91,7 +91,7 @@ def _distribute_affiliate_bonus_for_user(
                                     user=upline_l2_wallet.user,
                                     wallet=upline_l2_wallet,
                                     transaction_type='AFFILIATE_BONUS',
-                                    point_type='AFFILIATE',
+                                    point_type='COMMISSION',
                                     amount=l2_bonus_amount,
                                     description=(
                                         f"L2 Affiliate bonus (2%) from {downline_user.username}'s profit of {profit_earned_by_downline:.2f} (via {upline_l1_wallet.user.username}). "
@@ -202,7 +202,7 @@ def distribute_profit_manually():
                     Transaction(
                         user=downline_user,
                         wallet=wallet_instance,
-                        transaction_type='PROFIT_DISTRIBUTION',
+                        transaction_type='DISTRIBUTION',
                         point_type='PROFIT',
                         amount=user_profit_amount,
                         description=(
@@ -275,6 +275,25 @@ def distribute_profit_manually():
         raise Exception(f"An error occurred: {e}")
 
 
+def grant_introducer(user, amount, description="", reference=""):
+    
+    wallet = user.wallet
+    with db_transaction.atomic():
+        wallet.bonus_point_balance += Decimal(amount)
+        wallet.save()
+        
+        Transaction.objects.create(
+            user=user,
+            wallet=wallet,
+            transaction_type='INTRODUCER_BONUS',
+            point_type='COMMISSION',
+            amount=amount,
+            description=description,
+            reference=reference
+        )
+    return wallet
+
+
 class WalletService:
     @staticmethod
     def deposit_master_point(user, amount, description="", reference=""):
@@ -328,7 +347,7 @@ class WalletService:
             Transaction.objects.create(
                 user=sender,
                 wallet=sender_wallet,
-                transaction_type='WITHDRAWAL',
+                transaction_type='TRANSFER',
                 point_type='MASTER',
                 amount=amount,
                 description=description, 
@@ -338,7 +357,7 @@ class WalletService:
             Transaction.objects.create(
                 user=receiver,
                 wallet=receiver_wallet,
-                transaction_type='DEPOSIT',
+                transaction_type='TRANSFER',
                 point_type='MASTER',
                 amount=amount,
                 description=f"Transfer from {sender.username}: {description}",
@@ -460,7 +479,7 @@ class AssetService:
             f"Only {total_withdrawable} is withdrawable (50% after 6M, 100% after 1Y)"
         )
        
-        transaction = Transaction.objects.create(
+        Transaction.objects.create(
                 user=user,
                 asset=asset,
                 transaction_type='ASSET_WITHDRAWAL',
@@ -528,6 +547,7 @@ class AssetService:
             
 
 class ProfitService:
+
     @staticmethod
     def request_withdrawal(user, amount, reference=""):
         """Request Profit Point withdrawal (min 50 USDT, 3% fee)"""
@@ -688,7 +708,7 @@ class CommissionService:
                 user=user,
                 wallet=wallet,
                 transaction_type='WITHDRAWAL',
-                point_type='COMMISION',
+                point_type='COMMISSION',
                 amount=amount,
                 request_status=RequestStatus.PENDING,
                 description=f"Withdrawal request #{withdrawal_request.id} (Pending): {amount}",
@@ -776,7 +796,7 @@ class CommissionService:
                 user=user,
                 wallet=wallet,
                 transaction_type='CONVERT',
-                point_type='COMMISION',
+                point_type='COMMISSION',
                 target_point_type='MASTER',
                 amount=amount,
                 converted_amount=amount,

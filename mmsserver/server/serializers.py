@@ -193,3 +193,82 @@ class MonthlyFinalizedProfitSerializer(serializers.ModelSerializer):
     model = MonthlyFinalizedProfit
     fields = '__all__'
     read_only_fields = ['id', 'finalized_at']
+
+
+class WalletSerializer(serializers.ModelSerializer):
+
+  master_point_balance = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  profit_point_balance = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  affiliate_point_balance = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  bonus_point_balance = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+
+  class Meta:
+    model = Wallet
+    fields = '__all__'
+    read_only_fields = ['id', 'created_at', 'updated_at']
+
+class AssetSerializer(serializers.ModelSerializer):
+
+  class Meta:
+    model = Asset
+    fields = '__all__'
+    read_only_fields = [ 'id' ]
+
+class TransactionSerializer(serializers.ModelSerializer):
+
+  request_status_display = serializers.SerializerMethodField()
+
+  class Meta:
+    model = Transaction
+    fields = '__all__'
+    read_only_fields = [
+      'id', 
+      'created_at', 
+      'amount', 
+      'transaction_type', 
+      'point_type',
+      'converted_amount'
+    ]
+    extra_kwargs = {
+      'request_status_display': {'read_only': True}
+    }
+
+class WithdrawalRequestSerializer(serializers.ModelSerializer):
+
+  request_status_display = serializers.SerializerMethodField()
+
+  class Meta:
+    model = WithdrawalRequest
+    fields = '__all__'
+    read_only_fields = [
+      'id',
+      'created_at',
+      'processed_at',
+      'amount',
+      'actual_amount',
+      'fee',
+      'fee_rate',
+      'point_type'
+    ]
+    extra_kwargs = {
+      'request_status_display': {'read_only': True}
+    }
+
+class DepositLockSerializer(serializers.ModelSerializer):
+
+  request_status_display = serializers.SerializerMethodField()
+
+  class Meta:
+    model = DepositLock
+    fields = '__all__'
+    read_only_fields = [
+      'id',
+      'deposit'
+      'amount_6m_unlocked',
+      'amount_1y_unlocked',
+      'created_at',
+      'days_until_6m',
+      'days_until_1y',
+      'withdrawable_now',
+    ]
+    

@@ -96,12 +96,12 @@ const MainLayout = () => {
         {open && 
         <nav className="absolute flex flex-col w-fit h-fit gap-1 items-center bg-red-500 px-1 py-3">
           <NavLinkss to={'/'}>Dashboard</NavLinkss>
+          <NavLinkss to={'/setup'}>Setup</NavLinkss>
           <NavLinkss to={'/operation'}>Operation</NavLinkss>
           <NavLinkss to={'/users'}>Users</NavLinkss>
           <NavLinkss to={'/verification'}>Verification</NavLinkss>
           <NavLinkss to={'/requests'}>Requests</NavLinkss>
           <NavLinkss to={'/transaction'}>Transaction</NavLinkss>
-          <NavLinkss to={'/settings'}>Settings</NavLinkss>
           <Buttons type="button" onClick={handleLogout}
             className="hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg cursor-pointer"
           >Logout</Buttons>

@@ -5,6 +5,7 @@ from django.utils.crypto import get_random_string
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import RegexValidator
 from decimal import Decimal
+from datetime import timedelta, timezone
 import calendar
 import string
 
@@ -30,6 +31,7 @@ class User(AbstractUser):
   is_active = models.BooleanField(default=True)
   is_staff = models.BooleanField(default=False)
   is_superuser = models.BooleanField(default=False)
+  is_campro = models.BooleanField(default=False)
 
   beneficiary_name = models.CharField(max_length=255, blank=True, null=True)
   beneficiary_ic = models.CharField(max_length=12, blank=True, null=True, validators=[RegexValidator(r'^\d{12}$', 'IC must be 12 digits')])
@@ -227,8 +229,6 @@ class MonthlyFinalizedProfit(models.Model):
 
 
 
-
-
 # Verify IC, Depo master, Place Asset, WD profit
 class RequestStatus(models.Choices):
   PENDING = 'Pending'
@@ -240,12 +240,28 @@ class Wallet(models.Model):
   user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wallet')
   
   # Point balances
-  master_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-  profit_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-  affiliate_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+  master_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  profit_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  #Commision Point
+  affiliate_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  bonus_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
+
+  @classmethod
+  def get_or_create_wallet(cls, user):
+      """Lazy-creates a Wallet if it doesn't exist."""
+      wallet, created = cls.objects.get_or_create(
+        user=user,
+        defaults={
+          'master_point_balance': Decimal('0.00'),
+          'profit_point_balance': Decimal('0.00'),
+          'affiliate_point_balance': Decimal('0.00'),
+          'bonus_point_balance': Decimal('0.00')
+        }
+      )
+      return wallet
   
   def __str__(self):
     return f"{self.user.username}'s Wallet"
@@ -255,26 +271,55 @@ class Wallet(models.Model):
     verbose_name_plural = "Wallets"
 
 
+class Asset(models.Model):
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assets')
+  amount = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  is_free_campro = models.BooleanField(default=False)
+
+  @classmethod
+  def get_or_create_asset(cls, user):
+      asset, created = cls.objects.get_or_create(
+          user=user,
+          defaults={'amount': Decimal('0.00')}  # Default value for new records
+      )
+      return asset
+
+  class Meta:
+    verbose_name = "Asset"
+    verbose_name_plural = "Assets"
+
+  def __str__(self):
+    return f"{self.user.username}'s Asset - {self.amount}"
+
 
 class Transaction(models.Model):
   TRANSACTION_TYPES = (
-    ('DEPOSIT', 'Deposit'),
-    ('WITHDRAWAL', 'Withdrawal'),
-    ('TRANSFER', 'Transfer'),
-    ('BONUS', 'Bonus'),
+    ('DEPOSIT', 'Deposit'), # >> Master Point
+    ('WITHDRAWAL', 'Withdrawal'), #Master Point, Profit, Commission >>
+    ('CONVERT', 'Convert'), #Profit, Commission >> Master Point
+    ('TRANSFER', 'Transfer'), #Master Point > User Master Point
+    ('DISTRIBUTION', 'Distribution'), #Admin > Profit Point
+    ('AFFILIATE_BONUS', 'Affiliate Bonus') #Admin > Commission Point
+    ('INTRODUCER_BONUS', 'Introducer Bonus'), #Admin > Commission Point
+    ('ASSET_PLACEMENT', 'Asset Placement'), #Master Point >> Asset
+    ('ASSET_WITHDRAWAL', 'Asset Withdrawal'), #Asset > Profit Point
+    ('FREE_CAMPRO_GRANT', 'Free 100 USDT') #Admin > Asset
   )
     
   POINT_TYPES = (
     ('MASTER', 'Master Point'),
     ('PROFIT', 'Profit Point'),
-    ('AFFILIATE', 'Affiliate Point'),
+    ('COMMISSION', 'Commission Point'),
+    ('ASSET', 'Asset Point')
   )
     
   user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='transactions')
   wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions')
+  asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='transactions')
   transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
   point_type = models.CharField(max_length=20, choices=POINT_TYPES)
-  amount = models.DecimalField(max_digits=15, decimal_places=2)
+  request_status = models.CharField(max_length=20, choices=RequestStatus.choices, verbose_name="Request Status")
+  amount = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   description = models.TextField(blank=True)
   reference = models.CharField(max_length=100, blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
@@ -287,7 +332,7 @@ class Transaction(models.Model):
     return f"{self.user.username} - {self.get_transaction_type_display()} - {self.get_point_type_display()} - {self.amount}"
   
   class Meta:
-    ordering = ['-created_at']
+    ordering = ['-created_at', 'request_status', 'transaction_type', 'user']
     verbose_name = "Transaction"
     verbose_name_plural = "Transactions"
 
@@ -296,7 +341,10 @@ class WithdrawalRequest(models.Model):
   wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='withdrawal_requests')
   point_type = models.CharField(max_length=20, choices=Transaction.POINT_TYPES)
   amount = models.DecimalField(max_digits=15, decimal_places=2, validators=[MinValueValidator(50)])
+  actual_amount = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   request_status = models.CharField(max_length=20, choices=RequestStatus.choices, default=RequestStatus.PENDING, verbose_name="Request Status")
+  fee = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  fee_rate = models.DecimalField(max_digits=2, decimal_places=2, default=Decimal('0.00'))
   transaction = models.OneToOneField(Transaction, on_delete=models.SET_NULL, null=True, blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
   processed_at = models.DateTimeField(null=True, blank=True)
@@ -310,26 +358,60 @@ class WithdrawalRequest(models.Model):
     verbose_name_plural = "Withdrawal Requests"
 
 
-class TransferRequest(models.Model):
-  wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transfer_requests')
-  request_status = models.CharField(max_length=20, choices=RequestStatus.choices, default=RequestStatus.PENDING, verbose_name="Request Status")
-  source_point_type = models.CharField(max_length=20, choices=Transaction.POINT_TYPES)
-  target_point_type = models.CharField(max_length=20, choices=Transaction.POINT_TYPES)
-  amount = models.DecimalField(
+class DepositLock(models.Model):
+  deposit = models.OneToOneField(  # Links to the original deposit transaction
+    Transaction,
+    on_delete=models.CASCADE,
+    related_name='lock_info'
+  )
+  amount_6m_unlocked = models.DecimalField(  # Tracks how much of the 50% is withdrawn
     max_digits=15, 
     decimal_places=2, 
-    validators=[MinValueValidator(50)],
-    help_text="Amount must be in multiples of 50"
+    default=Decimal('0.00')
   )
-  transaction = models.OneToOneField(Transaction, on_delete=models.SET_NULL, null=True, blank=True)
+  amount_1y_unlocked = models.DecimalField(  # Tracks how much of the remaining 50% is withdrawn
+    max_digits=15, 
+    decimal_places=2, 
+    default=Decimal('0.00')
+  )
+  is_free_campro = models.BooleanField(default=False)
+  request_status = models.CharField(max_length=20, choices=RequestStatus.choices, default=RequestStatus.PENDING, verbose_name="Request Status")
   created_at = models.DateTimeField(auto_now_add=True)
-  
-  def __str__(self):
-    return f"Transfer - {self.get_source_point_type_display()} to {self.get_target_point_type_display()} - {self.amount}"
-  
-  class Meta:
-    ordering = ['-created_at']
-    verbose_name = "Transfer Request"
-    verbose_name_plural = "Transfer Requests"
 
-  #integrate "Asset" related functionalities into Django application, focusing on how the Wallet model in models.py can support these. Based on requirements, "Asset Placement" seems to be a specific way of funding the master_point_balance, while "Asset Withdrawal" and "Asset Statement" are operations and views related to the wallet's funds.
+  @property
+  def days_until_6m(self):
+    """Returns days left until 6-month unlock."""
+    delta = (self.deposit.created_at + timedelta(days=180)) - timezone.now()
+    return max(0, delta.days)
+
+  @property
+  def days_until_1y(self):
+    """Returns days left until 1-year unlock."""
+    delta = (self.deposit.created_at + timedelta(days=365)) - timezone.now()
+    return max(0, delta.days)
+
+  @property
+  def withdrawable_now(self):
+    """Calculates currently withdrawable amount."""
+    age = timezone.now() - self.deposit.created_at
+
+    # Free CAMPRO (marked by is_free_campro on DepositLock) can ONLY be withdrawn after 1 year
+    if self.is_free_campro:
+      if age >= timedelta(days=365):
+        return (self.deposit.amount - self.amount_1y_unlocked) # Use self.deposit.amount
+      else:
+        return Decimal('0.00')
+            
+    if age >= timedelta(days=365):
+      return (self.deposit.amount - self.amount_6m_unlocked - self.amount_1y_unlocked) # Use self.deposit.amount
+    elif age >= timedelta(days=180):
+      return (self.deposit.amount / 2) - self.amount_6m_unlocked # Use self.deposit.amount
+    else:
+      return Decimal('0.00')
+
+  def __str__(self):
+    return f"Lock for {self.deposit.amount} (Deposit: {self.deposit.created_at})"
+
+  class Meta:
+    verbose_name = "Deposit Lock"
+    verbose_name_plural = "Deposit Locks"

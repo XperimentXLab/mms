@@ -12,23 +12,55 @@ import ForgotPassword from "./components/auth/ForgotPassword"
 import ResetPasswordConfirm from "./components/auth/ResetPasswordConfirm"
 import Network from "./components/pages/Network"
 import ProtectedRoute from "./components/auth/ProtectedRoute"
+import WalletLayout from "./components/layout/WalletLayout"
+import AssetLayout from "./components/layout/AssetLayout"
+import { AssetStatement, WithdrawalAssetStatement } from "./components/pages/AssetStatement"
+import { CommissionStatement, ConvertStatement, ProfitStatement, TransferStatement, WithdrawalWalletStatement } from "./components/pages/WalletStatement"
+//import Updating from "./components/auth/Updating"
 
 function App() {
 
   const router = createBrowserRouter(createRoutesFromElements(
     <Route>
+      {/*<Route path="/" element={<Updating />} />*/}
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<MainLayout />} >
           <Route index element={<Home />} />
           <Route path="profile" element={
             <Profile />
           } />
+
           <Route path='wallet' element={
-            <Wallet />
-          } />
+            <WalletLayout />
+          }>
+            <Route index element={
+              <Wallet />
+            } />
+            <Route path="statement" >
+              <Route path="profit" element={<ProfitStatement />} />
+              <Route path="commission" element={<CommissionStatement />} />
+              <Route path="transfer" element={<TransferStatement />} />
+              <Route path="convert" element={<ConvertStatement />} />
+              <Route path="withdrawal" element={<WithdrawalWalletStatement />} />
+            </Route>
+          </Route>
+
           <Route path="asset" element={
-            <Assets />
-          } />
+            <AssetLayout />
+          } >
+            <Route index element={
+              <Assets />
+            } />
+            <Route path="statement">
+              <Route index 
+                element={<AssetStatement />}
+              />
+              <Route path="withdrawal" element={
+                <WithdrawalAssetStatement />} 
+                />
+            </Route>
+          </Route>
+
           <Route path="network" element={
             <Network />
           } />
@@ -47,6 +79,7 @@ function App() {
         element={<ResetPasswordConfirm />} 
       />
       
+
       <Route path="*" element={<NotFound />} />
     </Route>
   ))

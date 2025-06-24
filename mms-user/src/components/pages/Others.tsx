@@ -13,8 +13,7 @@ import {
 import type { ChartOptions, ChartData } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels"
 import { Bar } from "react-chartjs-2";
-import { get_profit, get_finalized_yearly_profits } from "../auth/endpoints";
-import type { FinalizedMonthlyProfit } from "../auth/endpoints";
+import { getFinalizedYearlyProfits, getProfit, type FinalizedMonthlyProfit } from "../auth/endpoints";
 import { SelectYear } from "../props/DropDown";
 
 ChartJS.register(
@@ -78,7 +77,7 @@ const Others = () => {
     const fetchOperationalData = async () => {
       try {
         setLoading(true)
-        const response = await get_profit()
+        const response = await getProfit()
         setTodayOperationalProfit(response.daily_profit_rate || 0)
         setWeeklyOperationalProfit(response.weekly_profit_rate || 0)
         setMonthlyOperationalProfit(response.current_month_profit || 0)
@@ -100,7 +99,7 @@ const Others = () => {
       setChartError("");
       try {
         const yearNum = parseInt(selectedChartYear, 10);
-        const data = await get_finalized_yearly_profits(yearNum);
+        const data = await getFinalizedYearlyProfits(yearNum);
         setFinalizedYearlyProfits(data);
         const total = (data.reduce((sum, item) => sum + (parseFloat(String(item.finalized_profit_rate)) || 0), 0));
         setChartYearlyTotal(total);

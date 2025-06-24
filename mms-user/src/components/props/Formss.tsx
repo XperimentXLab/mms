@@ -1,24 +1,17 @@
 import type React from "react";
 
-const Formss = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
-
 type InputP = 'text' | 'email' | 'password' | 'number';
 
 interface InputssProps {
   type: InputP;
-  placeholder: string;
+  placeholder?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value: string;
-  label: string;
+  value: string | number;
+  label?: string;
   required?: boolean;
   className?: string;
   maxLength?: number;
+  reference?: string;
 }
 
 export const Inputss: React.FC<InputssProps> = ({
@@ -45,4 +38,31 @@ export const Inputss: React.FC<InputssProps> = ({
   )
 }
 
-export default Formss
+
+export const InputNormal: React.FC<InputssProps> = ({
+  placeholder, onChange, value, required, type
+}) => {
+  return (
+    <input placeholder={placeholder} 
+      type={type}
+      className="border py-1 px-2 rounded-md w-full"
+      onChange={onChange}
+      value={value}
+      required={required}
+    />
+  )
+}
+
+export const InputRef: React.FC<InputssProps> = ({
+  onChange, value, required, type
+}) => {
+  return (
+    <input placeholder={'Reference (optional)'} 
+      type={type}
+      className="border py-1 px-2 rounded-md"
+      onChange={onChange}
+      value={value}
+      required={required}
+    />
+  )
+}

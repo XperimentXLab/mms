@@ -347,6 +347,27 @@ def grant_free_campro(request):
     return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
+  
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def grant_bonus(request):
+  user = request.user
+  receiver = request.data.get('receiver')
+  amount = request.data.get('amount')
+  description = request.data.get('description', f'Intoducer bonus for {receiver}')
+  reference = request.data.get('reference', '')
+  try:
+    if user.is_staff:
+      result = grant_introducer(user=receiver, amount=amount, description=description, reference=reference)
+      serializer = TransactionSerializer(result)
+      return Response(serializer.data, status=200)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
 
 
 @api_view(['POST'])
@@ -420,7 +441,7 @@ def process_withdrawal_profit(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def process_withdrawal_commision(request):
+def process_withdrawal_commission(request):
   user = request.user
   request_id = request.data.get('request_id')
   action = request.data.get('action')

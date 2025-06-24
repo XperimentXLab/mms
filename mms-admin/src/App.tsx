@@ -13,12 +13,12 @@ const router = createBrowserRouter(createRoutesFromElements(
       <Route element={<MainLayout />}>
 
         <Route path="/" /> {/*Dashboard*/ }
+        <Route path="/setup" /> 
         <Route path="/operation" element={<Operation />}/> 
         <Route path="/users" />
         <Route path="/verification" />
         <Route path="/requests" /> 
         <Route path="/transaction" /> 
-        <Route path="/settings" /> 
 
       </Route>
 
