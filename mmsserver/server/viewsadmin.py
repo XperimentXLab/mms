@@ -120,11 +120,22 @@ def manage_operational_profit(request):
         return Response({'error': 'Operational profit not found'}, status=404)
       serializer = OperationalProfitSerializer(operational_profit)
       return Response(serializer.data, status=200)
+    
     if user.is_staff:
-      if request.method == 'PUT': 
+      if request.method == 'POST':
+        if OperationalProfit.objects.filter(active_month_profit=month, active_year_profit=year).exists():
+          return Response({'error': 'Operational profit record already exists.'}, status=400)
+        serializer = OperationalProfitSerializer(data=request.data)
+        if serializer.is_valid(): 
+          serializer.save()
+          return Response(serializer.data, status=201)
+        else:
+          return Response({'error': serializer.errors}, status=400)
+        
+      elif request.method == 'PUT': 
         if not daily:
           return Response({'error': 'Daily profit rate is required.'}, status=400)
-        operational_profit, created = OperationalProfit.objects.get(active_month_profit=month, active_year_profit=year)
+        operational_profit = OperationalProfit.objects.get(active_month_profit=month, active_year_profit=year)
         serializer = OperationalProfitSerializer(operational_profit, data=request.data, partial=True)
         if serializer.is_valid():
           serializer.save()
