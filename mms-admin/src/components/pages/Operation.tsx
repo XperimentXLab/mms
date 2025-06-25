@@ -30,6 +30,9 @@ const Operation = () => {
   const [errorMessage, setErrorMessage] = useState<string>("")
   const [errorMessageF, setErrorMessageF] = useState<string>("")
 
+  const month = new Date().toLocaleDateString('en-US', { month: 'numeric' });
+  const year = new Date().toLocaleDateString('en-US', { year: 'numeric' })
+
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -47,8 +50,8 @@ const Operation = () => {
         setDailyProfitRate(response.daily_profit_rate || 0);
         setWeeklyProfitRate(response.weekly_profit_rate || 0);
         setCurrentMonthProfit(response.current_month_profit || 0);
-        setInputActiveMonth(response.active_month_profit);
-        setInputActiveYear(response.active_year_profit);
+        setInputActiveMonth(month);
+        setInputActiveYear(year);
 
         console.log(activeMonthProfit, activeYearProfit)
       } catch (error: any) {
@@ -153,9 +156,9 @@ const Operation = () => {
         <span className="text-sm">*Please fill in manually (e.g., enter 5.0 for 5.0%)</span>
 
         <div className="grid grid-cols-2 items-center">
-          <SelectMonth value={inputActiveMonth} 
+          <SelectMonth value={month} 
             onChange={(e) => setInputActiveMonth(e.target.value)} />
-          <SelectYear value={inputActiveYear}
+          <SelectYear value={year}
             onChange={(e) => setInputActiveYear(e.target.value)} />
         </div>
 
