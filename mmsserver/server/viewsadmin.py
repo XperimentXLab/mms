@@ -111,8 +111,6 @@ def manage_operational_profit(request):
   month = request.query_params.get('active_month_profit')
   year = request.query_params.get('active_year_profit')
   daily = request.data.get('daily_profit_rate')
-  weekly = request.data.get('weekly_profit_rate')
-  monthly = request.data.get('current_month_profit')
 
   try:
     if request.method == 'GET':
@@ -126,7 +124,7 @@ def manage_operational_profit(request):
       if request.method == 'PUT': 
         if not daily:
           return Response({'error': 'Daily profit rate is required.'}, status=400)
-        operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=month, active_year_profit=year)
+        operational_profit, created = OperationalProfit.objects.get(active_month_profit=month, active_year_profit=year)
         serializer = OperationalProfitSerializer(operational_profit, data=request.data, partial=True)
         if serializer.is_valid():
           serializer.save()
