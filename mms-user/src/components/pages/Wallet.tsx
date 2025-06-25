@@ -66,7 +66,7 @@ const Wallet = () => {
         setCommissionAmount(affiliateBalance+bonusBalance || 0)
 
         // Request Deposit Master Point
-        setUserID(resUserDetails.user_id)
+        setUserID(resUserDetails.id)
         setUsername(resUserDetails.username)
       } catch (error: any) {
         console.error('Error fetching user data:', error)

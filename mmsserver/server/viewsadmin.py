@@ -112,21 +112,13 @@ def manage_operational_profit(request):
   year = request.query_params.get('active_year_profit')
 
   try:
-    operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=month, active_year_profit=year)
     if request.method == 'GET':
+      operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=month, active_year_profit=year)
       serializer = OperationalProfitSerializer(operational_profit)
       return Response(serializer.data, status=200)
     if user.is_staff:
-      if request.method == 'POST':
-        serializer = OperationalProfitSerializer(data=request.data)
-        if serializer.is_valid():
-          if OperationalProfit.objects.filter(month=month, year=year).exists():
-            return Response({'error': 'Profit record already exists.'}, status=409)
-          serializer.save()
-          return Response(serializer.data, status=201)
-        else:
-          return Response({'error': serializer.errors}, status=400)
-      elif request.method == 'PUT':
+      if request.method == 'PUT':
+        operational_profit, created = OperationalProfit.objects.update_or_create(active_month_profit=month, active_year_profit=year)
         serializer = OperationalProfitSerializer(operational_profit, data=request.data, partial=True)
         if serializer.is_valid():
           serializer.save()

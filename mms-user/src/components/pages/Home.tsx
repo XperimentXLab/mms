@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import Loading from "../props/Loading"
-import { userDetails } from "../auth/endpoints"
+import { getAsset, getWallet, userDetails } from "../auth/endpoints"
 import { FixedText } from "../props/Textt"
 import { Tables } from "../props/Tables";
 
@@ -17,7 +17,8 @@ const Home = () => {
 
   const [masterP, setMasterP] = useState<number>(0)
   const [profitP, setProfitP] = useState<number>(0)
-  const [BonusP, setBonusP] = useState<number>(0)
+  const [commissionP, setCommissionP] = useState<number>(0)
+  const [assetP, setAssetP] = useState<number>(0)
 
   const [dailyProfit, setDailyProfit] = useState<ProfitData[]>([]);
 
@@ -37,12 +38,15 @@ const Home = () => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await userDetails()
-        setUsername(response.username)
-        setUserId(response.id)
-        setMasterP(0)
-        setProfitP(0)
-        setBonusP(0)
+        const respUserDetails = await userDetails()
+        const resWallet = await getWallet()
+        const resAsset = await getAsset()
+        setUsername(respUserDetails.username)
+        setUserId(respUserDetails.id)
+        setMasterP(resWallet.master_point_balance || 0)
+        setProfitP(resWallet.profit_point_balance || 0)
+        setCommissionP(resWallet.affiliate_point_balance+resWallet.bonus_point_balance || 0)
+        setAssetP(resAsset.amount || 0)
         // In a real app, you would fetch this from an API
         setDailyProfit(mockProfit);
       } catch (error: any) {
@@ -113,7 +117,8 @@ const Home = () => {
           <FixedText label="USER ID" text={userId} />
           <FixedText label="Master Point" text={masterP.toString()} />
           <FixedText label="Profit" text={profitP.toString()} />
-          <FixedText label="Commission" text={BonusP.toString()} />
+          <FixedText label="Commission" text={commissionP.toString()} />
+          <FixedText label="Asset" text={assetP.toString()} />
           </div>
 
         <div className="border rounded-xl p-4 flex items-center flex-col shadow-2xl shadow-red-300 bg-white">

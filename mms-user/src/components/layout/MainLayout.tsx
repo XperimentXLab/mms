@@ -52,7 +52,7 @@ const MainLayout = () => {
 
   const Logout = () => {
     return (
-      <div className="inset-0 flex fixed justify-center items-baseline mt-50">
+      <div className="inset-0 flex fixed justify-center items-baseline mt-50 z-50">
         <div className="flex">
           <div className="flex flex-col gap-3 p-8 z-30 border rounded-lg backdrop-blur-sm bg-white/30">
             <h1 className="font-bold text-md">Are you sure to logout</h1>
