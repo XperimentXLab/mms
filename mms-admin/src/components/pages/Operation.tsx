@@ -42,8 +42,8 @@ const Operation = () => {
         setDailyProfitRate(response.daily_profit_rate || 0)
         setWeeklyProfitRate(response.weekly_profit_rate || 0)
         setCurrentMonthProfit(response.current_month_profit || 0)
-        setActiveMonthProfit(response.active_month_profit || null)
-        setActiveYearProfit(response.active_year_profit || null)
+        setActiveMonthProfit(month)
+        setActiveYearProfit(year)
         setLastUpdated(response.last_updated)
 
         // Initialize input states for the operational profit form
@@ -81,10 +81,6 @@ const Operation = () => {
 
   const toggleUpdateProfit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!inputActiveMonth || !inputActiveYear) {
-      alert("Please select an active month and year.");
-      return;
-    }
     try {
       setLoading(true)
       await update_profit({
