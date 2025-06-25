@@ -45,7 +45,8 @@ const Home = () => {
         setUserId(respUserDetails.id)
         setMasterP(resWallet.master_point_balance || 0)
         setProfitP(resWallet.profit_point_balance || 0)
-        setCommissionP(resWallet.affiliate_point_balance+resWallet.bonus_point_balance || 0)
+        const commissionTotal = resWallet.affiliate_point_balance+resWallet.bonus_point_balance
+        setCommissionP(commissionTotal || 0)
         setAssetP(resAsset.amount || 0)
         // In a real app, you would fetch this from an API
         setDailyProfit(mockProfit);
