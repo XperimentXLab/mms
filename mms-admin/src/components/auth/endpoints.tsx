@@ -39,8 +39,15 @@ export const logout = async () => {
   return response.data
 }
 
+const activeMonth = new Date().toLocaleDateString('en-US', { month: 'numeric' });
+const activeYear = new Date().toLocaleDateString('en-US', { year: 'numeric' })
 export const get_profit = async () => {
-  const response = await api.get('/manage_operational_profit/')
+  const response = await api.get('/manage_operational_profit/', {
+    params: {
+      active_month_profit: Number(activeMonth),
+      active_year_profit: Number(activeYear)
+    }
+  })
   return response.data
 }
 

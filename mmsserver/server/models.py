@@ -182,6 +182,8 @@ class OperationalProfit(models.Model):
     return f'Operational Profit - Active Period: {active_period}: {self.current_month_profit}%'
   
   class Meta:
+    unique_together = ('active_month_profit', 'active_year_profit')
+    ordering = ['-active_year_profit', '-active_month_profit']
     verbose_name = "Operational Profit"
     verbose_name_plural = "Operational Profits"
 
