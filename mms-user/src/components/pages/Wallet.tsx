@@ -63,7 +63,7 @@ const Wallet = () => {
         setProfitBalance(resWallet.profit_point_balance || 0)
         setAffiliateBalance(resWallet.affiliate_point_balance || 0)
         setBonusBalance(resWallet.bonus_point_balance || 0)
-        setCommissionAmount(affiliateBalance+bonusBalance || 0)
+        setCommissionAmount(Number(affiliateBalance)+Number(bonusBalance) || 0)
 
         // Request Deposit Master Point
         setUserID(resUserDetails.id)

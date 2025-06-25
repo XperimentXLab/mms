@@ -45,7 +45,7 @@ const Home = () => {
         setUserId(respUserDetails.id)
         setMasterP(resWallet.master_point_balance || 0)
         setProfitP(resWallet.profit_point_balance || 0)
-        const commissionTotal = resWallet.affiliate_point_balance+resWallet.bonus_point_balance
+        const commissionTotal = Number(resWallet.affiliate_point_balance)+Number(resWallet.bonus_point_balance)
         setCommissionP(commissionTotal || 0)
         setAssetP(resAsset.amount || 0)
         // In a real app, you would fetch this from an API
@@ -118,7 +118,7 @@ const Home = () => {
           <FixedText label="USER ID" text={userId} />
           <FixedText label="Master Point" text={masterP.toString()} />
           <FixedText label="Profit" text={profitP.toString()} />
-          <FixedText label="Commission" text={commissionP.toString()} />
+          <FixedText label="Commission" text={commissionP.toFixed(2).toString()} />
           <FixedText label="Asset" text={assetP.toString()} />
           </div>
 
