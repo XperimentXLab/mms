@@ -48,7 +48,7 @@ const Wallet = () => {
   ]
   const data = [
     { type: 'Affiliate', amount: affiliateBalance },
-    { type: 'Bonus', amount: bonusBalance }
+    { type: 'Introducer', amount: bonusBalance }
   ]
 
 
@@ -105,7 +105,7 @@ const Wallet = () => {
     }
   }
 
-
+/*
   const handleDeposit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
@@ -116,7 +116,7 @@ const Wallet = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }*/
 
   const handleWithdrawProfit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -250,7 +250,7 @@ const Wallet = () => {
             <Buttons type="submit">Transfer</Buttons>
           </form>
 
-          <form className="flex flex-row gap-1.5" onSubmit={handleDeposit}>
+          {/*<form className="flex flex-row gap-1.5" onSubmit={handleDeposit}>
             <InputNormal 
               type="number"
               placeholder="Enter amount"
@@ -258,9 +258,9 @@ const Wallet = () => {
               required={true}
               value={String(depositPoint)}
             />
-            <Buttons type="submit">Request Deposit</Buttons> {/* Link to ws */}
+            <Buttons type="submit">Request Deposit</Buttons>
 
-          </form>
+          </form>*/}
 
         </div>
 

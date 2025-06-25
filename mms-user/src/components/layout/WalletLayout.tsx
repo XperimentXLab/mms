@@ -21,11 +21,11 @@ const WalletLayout = () => {
       </nav>
 
       {open && <nav className="absolute flex flex-col sm:flex-row bg-gray-200 p-2 rounded-2xl gap-2 justify-center w-fit mt-8 z-20">
-        <NavLinkss to="statement/profit">Profit Statement</NavLinkss>
-        <NavLinkss to="statement/commission">Commission Statement</NavLinkss>
-        <NavLinkss to="statement/transfer">Transfer Statement</NavLinkss>
-        <NavLinkss to="statement/convert">Convert Statement</NavLinkss>
-        <NavLinkss to="statement/withdrawal">Withdrawal Statement</NavLinkss>
+        <NavLinkss to="statement/profit">Personal Profit</NavLinkss>
+        <NavLinkss to="statement/commission">Commission</NavLinkss>
+        <NavLinkss to="statement/transfer">Transfer</NavLinkss>
+        <NavLinkss to="statement/convert">Convert</NavLinkss>
+        <NavLinkss to="statement/withdrawal">Withdrawal</NavLinkss>
       </nav>}
 
       <div className="w-full my-4">

@@ -29,7 +29,7 @@ const Home = () => {
   const mockProfit: ProfitData[] = [
     { type: "Personal", amount: 0 }, 
     { type: "Affiliate", amount: 0 },
-    { type: "Bonus", amount: 0 },
+    { type: "Introducer", amount: 0 },
     { type: "Total", amount: 0}
   ];
 
