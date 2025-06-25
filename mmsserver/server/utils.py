@@ -442,7 +442,7 @@ class AssetService:
                 transaction_type='FREE_CAMPRO_GRANT',
                 point_type='ASSET',
                 amount=Decimal('100.00'),
-                description="Free 100 USDT", #locked for 1 year
+                description="Welcome Bonus", #locked for 1 year
                 reference=""
             )
 

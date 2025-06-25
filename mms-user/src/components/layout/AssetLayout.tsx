@@ -21,8 +21,8 @@ const AssetLayout = () => {
       </nav>
 
       {open && <nav className="absolute mt-8 flex items-center justify-centerflex-wrap bg-gray-200 p-2 rounded-2xl gap-2">
-        <NavLinkss to='statement'>Asset Statement</NavLinkss>
-        <NavLinkss to='statement/withdrawal'>Withdrawal Statement</NavLinkss>
+        <NavLinkss to='statement'>Asset</NavLinkss>
+        <NavLinkss to='statement/withdrawal'>Withdrawal</NavLinkss>
       </nav>}
 
       <div className="w-full my-4">

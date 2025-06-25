@@ -7,7 +7,7 @@ interface User {
   id: string
   username: string
   referred_by: string
-  address_country: string | undefined
+  asset_amount: string | undefined
 }
 
 export interface LevelProps {

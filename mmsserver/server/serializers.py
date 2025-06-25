@@ -98,16 +98,24 @@ class UserSerializer(serializers.ModelSerializer):
     return user
 
 class UserNetworkSerializer(serializers.ModelSerializer):
+
+  asset_amount = serializers.SerializerMethodField()
+
   class Meta:
     model = User
-    fields = ['id', 'username','referred_by', 'address_country']
+    fields = ['id', 'username','referred_by', 'asset_amount']
     extra_kwargs = {
       'id': {'read_only': True},
       'username': {'read_only': True},
       'referred_by': {'read_only': True},
-      'address_country': {'read_only': True},
     }
-  
+
+  def get_asset_amount(self, obj):
+    asset = Asset.objects.filter(user=obj).first()
+    if asset:
+      return asset.amount
+    return None
+
 class PasswordResetSerializer(serializers.Serializer):
   email = serializers.EmailField(required=True)
 

@@ -19,6 +19,7 @@ const MainLayout = () => {
     return setOpen(!open)
   }
 
+
   const [openLogout, setOpenLogout] = useState<boolean>(false)
   const handleLogout = () => {
     setOpenLogout(!openLogout)
@@ -69,6 +70,14 @@ const MainLayout = () => {
     )
   }
 
+  //const toggleMenu = document.getElementById('toggleMenu');
+/*
+  document.addEventListener('click', (event) => {
+    if (!toggleMenu.contains(event.target)) {
+      toggleMenu.classList.add('hidden'); // Tailwind handles hiding it
+    }
+  });
+*/
   return (
     <div className="flex flex-col relative">
 
@@ -94,7 +103,7 @@ const MainLayout = () => {
 
         <div className="flex relative">
         {open && 
-        <nav className="absolute flex flex-col w-fit h-fit gap-1 items-center bg-red-500 px-1 py-3">
+        <nav className="absolute flex flex-col w-fit h-fit gap-1 items-center bg-red-500 px-1 py-3" id="toggleMenu">
           <NavLinkss to={'/'}>Home</NavLinkss>
           <NavLinkss to={'/profile'} >Profile</NavLinkss>
           <NavLinkss to={'/network'}>Network</NavLinkss>

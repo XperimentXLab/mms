@@ -64,7 +64,7 @@ export const LevelDisplay: React.FC<LevelProps> = ({ users }) => {
             <tr className="bg-gray-100">
               <th className="py-2 px-4 border-b">User ID</th>
               <th className="py-2 px-4 border-b">Username</th>
-              <th className="py-2 px-4 border-b">Country</th>
+              <th className="py-2 px-4 border-b">Asset</th>
               <th className="py-2 px-4 border-b">Referred By</th>
             </tr>
           </thead>
@@ -73,7 +73,7 @@ export const LevelDisplay: React.FC<LevelProps> = ({ users }) => {
               <tr key={user.id} className="hover:bg-gray-50">
                 <td className="py-2 px-4 border-b text-center">{user.id}</td>
                 <td className="py-2 px-4 border-b text-center">{user.username}</td>
-                <td className="py-2 px-4 border-b text-center">{user.address_country ? user.address_country : 'N/A'}</td>
+                <td className="py-2 px-4 border-b text-center">{user.asset_amount ? user.asset_amount : 'N/A'}</td>
                 <td className="py-2 px-4 border-b text-center">{user.referred_by}</td>
               </tr>
             ))}
