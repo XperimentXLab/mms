@@ -15,8 +15,8 @@ const Wallet = () => {
   const [loading, setLoading] = useState<boolean>(true)
 
   // fetch from db
-  const [userID, setUserID] = useState<string>('')
-  const [username, setUsername] = useState<string>('')
+  //const [userID, setUserID] = useState<string>('')
+  //const [username, setUsername] = useState<string>('')
   const [masterBalance, setMasterBalance] = useState<number>(0)
   const [profitBalance, setProfitBalance] = useState<number>(0)
   const [affiliateBalance, setAffiliateBalance] = useState<number>(0)
@@ -31,7 +31,7 @@ const Wallet = () => {
   const [receiver, setReceiver] = useState<string>('')
   const [masterPoint, setMasterPoint] = useState<number>(0)
   const [profitPoint, setProfitPoint] = useState<number>(0)
-  const [depositPoint, setDepositPoint] = useState<number>(0)
+  //const [depositPoint, setDepositPoint] = useState<number>(0)
   const [convertProfit, setConvertProfit] = useState<number>(0)
   const [convertCommision, setCovertCommision] = useState<number>(0)
   // reference
@@ -66,8 +66,8 @@ const Wallet = () => {
         setCommissionAmount(Number(affiliateBalance)+Number(bonusBalance) || 0)
 
         // Request Deposit Master Point
-        setUserID(resUserDetails.id)
-        setUsername(resUserDetails.username)
+        //setUserID(resUserDetails.id)
+        //setUsername(resUserDetails.username)
       } catch (error: any) {
         console.error('Error fetching user data:', error)
       } finally {
