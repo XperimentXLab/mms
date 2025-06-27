@@ -274,9 +274,50 @@ def distribute_profit_manually():
         logger.error(f"Error during manual profit/affiliate distribution: {e}", exc_info=True)
         raise Exception(f"An error occurred: {e}")
 
+class UserService:
+    @staticmethod
+    def setup_user(user_id, master_amount, profit_amount, commission_amount):
+        user = User.objects.get(id=user_id)
+        wallet = Wallet.objects.get_or_create(id=user_id)
+        
+        with db_transaction.atomic():
+            wallet.master_point_balance += master_amount
+            wallet.profit_point_balance += profit_amount
+            wallet.commission_point_balance += commission_amount
+            wallet.save()
 
+            Transaction.objects.create(
+                user=user,
+                wallet=wallet,
+                transaction_type='MIGRATION',
+                point_type='PROFIT',
+                amount=profit_amount,
+                description="Migration",
+            )
+
+            Transaction.objects.create(
+                user=user,
+                wallet=wallet,
+                transaction_type='MIGRATION',
+                point_type='COMMISSION',
+                amount=profit_amount,
+                description="Migration"
+            )
+
+            Transaction.objects.create(
+                user=user,
+                wallet=wallet,
+                transaction_type='MIGRATION',
+                point_type='MASTER',
+                amount=master_amount,
+                description="Migration",
+            )
+
+        return wallet 
+
+
+# need change .. introducer get bonus every time level 1 place asset 
 def grant_introducer(user, amount, description="", reference=""):
-    
     wallet = user.wallet
     with db_transaction.atomic():
         wallet.bonus_point_balance += Decimal(amount)
@@ -295,35 +336,6 @@ def grant_introducer(user, amount, description="", reference=""):
 
 
 class WalletService:
-    @staticmethod
-    def deposit_master_point(user, amount, description="", reference=""):
-        """
-            Deposit Master Point to user's wallet
-            Admin manually:
-                Changes status from PENDING → APPROVED.
-                Manually updates wallet.master_point_balance.
-        """
-
-        if amount < 200:
-            raise ValidationError("Minimum deposit is 200")
-        if amount % 10 != 0:
-            raise ValidationError("Deposit can only be 10s (e.g. 210, 220, 230)")    
-    
-        wallet = user.wallet
-        with db_transaction.atomic():
-            
-            Transaction.objects.create(
-                user=user,
-                wallet=wallet,
-                transaction_type='DEPOSIT',
-                point_type='MASTER',
-                request_status=RequestStatus.PENDING,
-                amount=amount,
-                description=description,
-                reference=reference
-            )
-        return wallet
-
     @staticmethod
     def transfer_master_point(sender, receiver, amount, description="", reference=""):
         """Transfer Master Point between users"""

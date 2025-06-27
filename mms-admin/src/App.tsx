@@ -3,6 +3,9 @@ import ProtectedRoute from "./components/auth/ProtectedRoute"
 import MainLayout from "./components/layout/MainLayout"
 import Login from "./components/auth/Login"
 import Operation from "./components/pages/Operation"
+import Dashboard from "./components/pages/Dashboard"
+import Setup from "./components/pages/Setup"
+import Requests from "./components/pages/Requests"
 
 
 const router = createBrowserRouter(createRoutesFromElements(
@@ -12,12 +15,12 @@ const router = createBrowserRouter(createRoutesFromElements(
     <Route element={<ProtectedRoute />} >
       <Route element={<MainLayout />}>
 
-        <Route path="/" /> {/*Dashboard*/ }
-        <Route path="/setup" /> 
+        <Route path="/" element={<Dashboard />}/>
+        <Route path="/setup" element={<Setup />} /> 
         <Route path="/operation" element={<Operation />}/> 
         <Route path="/users" />
         <Route path="/verification" />
-        <Route path="/requests" /> 
+        <Route path="/requests" element={<Requests />}/> 
         <Route path="/transaction" /> 
 
       </Route>

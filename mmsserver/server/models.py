@@ -149,25 +149,6 @@ class User(AbstractUser):
     ordering = ['-created_at']
 
 
-
-
-class AdminPoint(models.Model):
-  capital_point = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), null=True, blank=True)
-  used_point = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), null=True, blank=True)
-  balance_point = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'), null=True, blank=True)
-  last_updated = models.DateTimeField(auto_now=True)
-
-  def __str__(self):
-    return f'Admin Capital Point: {self.capital_point}'
-  
-  def save(self, *args, **kwargs):
-    self.balance_point = self.capital_point - self.used_point
-    super().save(*args, **kwargs)
-  
-  class Meta:
-    verbose_name = "Admin Point"
-    verbose_name_plural = "Admin Points"
-
 class OperationalProfit(models.Model):
   daily_profit_rate = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'), help_text='Manually update daily profit rate (e.g., enter 5.0 for 5.0%)')
   weekly_profit_rate = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'), help_text='Manually update weekly profit rate (e.g., enter 5.0 for 5.0%)')
@@ -245,8 +226,8 @@ class Wallet(models.Model):
   master_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   profit_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   #Commision Point
-  affiliate_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
-  bonus_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  commission_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  introducer_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
@@ -259,8 +240,8 @@ class Wallet(models.Model):
         defaults={
           'master_point_balance': Decimal('0.00'),
           'profit_point_balance': Decimal('0.00'),
-          'affiliate_point_balance': Decimal('0.00'),
-          'bonus_point_balance': Decimal('0.00')
+          'commission_point_balance': Decimal('0.00'),
+          'introducer_point_balance': Decimal('0.00')
         }
       )
       return wallet
@@ -296,23 +277,24 @@ class Asset(models.Model):
 
 class Transaction(models.Model):
   TRANSACTION_TYPES = (
-    ('DEPOSIT', 'Deposit'), # >> Master Point
     ('WITHDRAWAL', 'Withdrawal'), #Master Point, Profit, Commission >>
     ('CONVERT', 'Convert'), #Profit, Commission >> Master Point
     ('TRANSFER', 'Transfer'), #Master Point > User Master Point
     ('DISTRIBUTION', 'Distribution'), #Admin > Profit Point
-    ('AFFILIATE_BONUS', 'Affiliate Bonus'), #Admin > Commission Point
+    ('COMMISSION_BONUS', 'Commission Bonus'), #Admin > Commission Point
     ('INTRODUCER_BONUS', 'Introducer Bonus'), #Admin > Commission Point
     ('ASSET_PLACEMENT', 'Asset Placement'), #Master Point >> Asset
     ('ASSET_WITHDRAWAL', 'Asset Withdrawal'), #Asset > Profit Point
-    ('FREE_CAMPRO_GRANT', 'Free 100 USDT') #Admin > Asset
+    ('FREE_CAMPRO_GRANT', 'Welcome Bonus'), #Admin > Asset
+    ('MIGRATION', 'Migration')
   )
     
   POINT_TYPES = (
     ('MASTER', 'Master Point'),
-    ('PROFIT', 'Profit Point'),
-    ('COMMISSION', 'Commission Point'),
-    ('ASSET', 'Asset Point')
+    ('PROFIT', 'Profit'),
+    ('COMMISSION', 'Commission'),
+    ('INTRODUCER', 'Introducer'),
+    ('ASSET', 'Asset')
   )
     
   user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='transactions')

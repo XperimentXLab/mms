@@ -106,3 +106,36 @@ export const distribute_profit = async () => {
   const response = await api.post('/distribute_profit/')
   return response.data
 }
+
+interface SetupUserRes {
+  userID: string
+  username: string
+  masterAmount: number
+  profitAmount: number
+  commissionAmount: number
+}
+export const setupUser = async (SetupUserData: SetupUserRes) => {
+  const { userID, username, masterAmount, profitAmount, commissionAmount } = SetupUserData
+  const response = await api.post('/setup_user/', {
+    user_id: userID,
+    username,
+    master_amount: masterAmount,
+    profit_amount: profitAmount,
+    commission_amount: commissionAmount
+  })
+  return response.data
+}
+
+
+export const getPendingTX = async () => {
+  const response = await api.get('/get_pending_transaction/')
+  return response.data
+}
+
+
+export const updateProfitSharing = async (amount: number) => {
+  const response = await api.put('/update_profit_sharing/', {
+    amount
+  })
+  return response.data
+}

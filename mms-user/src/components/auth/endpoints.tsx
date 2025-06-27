@@ -217,8 +217,8 @@ export const getTransferStatement = async () => {
   return response.data
 }
 
-export const getConvertDepositStatement = async () => {
-  const response = await api.get('/user_convert_deposit_tx/')
+export const getConvertStatement = async () => {
+  const response = await api.get('/user_convert_tx/')
   return response.data
 }
 

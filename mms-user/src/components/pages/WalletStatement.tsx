@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Tables } from "../props/Tables";
-import { getCommissionStatement, getConvertDepositStatement, getProfitCommissionWDStatement, getProfitStatement, getTransferStatement } from "../auth/endpoints";
+import { getCommissionStatement, getConvertStatement, getProfitCommissionWDStatement, getProfitStatement, getTransferStatement } from "../auth/endpoints";
 import Loading from "../props/Loading";
 
 export interface Data {
@@ -157,7 +157,7 @@ export const ConvertStatement = () => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await getConvertDepositStatement()
+        const response = await getConvertStatement()
         setData(response)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {

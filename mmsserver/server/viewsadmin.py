@@ -61,45 +61,34 @@ def login_admin(request):
     return Response({'error': f'Invalid credentials or {str(e)}' }, status=400)
 
 
-@api_view(['GET', 'PUT', 'POST'])
+@api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
-def manage_admin_point(request):
-  user = request.user       
-  admin_point = AdminPoint.objects.first()
+def manage_admin_mp(request):
+  user = request.user 
+      
   try:
     if user.is_staff:
-
       if request.method == 'GET':
-        if admin_point:
-          serializer = AdminPointSerializer(admin_point)
-          return Response(serializer.data, status=200)
-        else:
-          return Response({'error': 'Admin point not found'}, status=404)
-        
-      elif request.method == 'POST':
-        if admin_point:
-          return Response({'error': 'AdminPoint record already exists.'}, status=400)
-        serializer = AdminPointSerializer(data=request.data)
-        if serializer.is_valid():
-          serializer.save()
-          return Response(serializer.data, status=201)
-        else:
-          return Response({'error': serializer.errors}, status=400)
-        
+        wallet, created = Wallet.objects.get_or_create(user=user)
+        serializer = WalletSerializer(wallet)
+        return Response(serializer.data, status=200)
       elif request.method == 'PUT':
-        if admin_point:
-          serializer = AdminPointSerializer(admin_point, data=request.data, partial=True)
+        if user.is_superuser:
+          wallet = Wallet.objects.get(user=user)
+          serializer = WalletSerializer(wallet, data=request.data)
           if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
           else:
             return Response({'error': serializer.errors}, status=400)
         else:
-          return Response({'error': 'Admin point not found'}, status=404)
+          return Response({'error': 'Only super can access'}, status=403)
       else:
         return Response({'error': 'Method not allowed'}, status=405)
     else:
       return Response({'error': 'Permission denied'}, status=403)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
@@ -285,6 +274,20 @@ def get_all_transaction(request):
   
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def get_pending_transaction(request):
+  user = request.user
+  try:
+    if user.is_staff:
+      pending_transaction = Transaction.objects.filter(request_status='PENDING')
+      serializer= TransactionSerializer(pending_transaction, many=True)
+      return Response(serializer.data, status=200)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=400)
+  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_all_withdrawal_request(request):
   user = request.user
   try:
@@ -325,6 +328,63 @@ def get_total_asset_balance(request):
     return Response({'error': str(e)}, status=400)
   
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def setup_user(request):
+  user = request.user
+  user_id = request.data.get('user_id')
+  username = request.data.get('username')
+  master_amount = request.data.get('master_amount')
+  profit_amount = request.data.get('profit_amount')
+  commission_amount = request.data.get('commission_amount')
+
+  try:
+    if not user_id or not username:
+      return Response({'error': 'User ID and username are required'}, status=400)
+    
+    try:
+      user = User.objects.get(id=user_id, username=username)
+    except User.DoesNotExist:
+      return Response({'error': 'User not found'}, status=404)
+
+    if user.is_staff:
+      wallet = UserService.setup_user(user_id, master_amount, profit_amount, commission_amount)
+      serializer = WalletSerializer(wallet)
+      return Response(serializer.data, status=200)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+      
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=400)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+  
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_profit_sharing (request):
+  user = request.user
+  amount = request.data.get('amount')
+  if not amount:
+    return Response({'error': 'Amount is required'}, status=400)
+  try:
+    if user.is_staff:
+      userSuper = User.objects.get(is_superuser=True)
+      wallet = Wallet.objects.get_or_create(user=userSuper)
+      wallet.profit_point_balance += amount
+      wallet.save()
+      serializer = WalletSerializer(wallet, data=request.data, partial=True)
+      if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=200)
+      else:
+        return Response(serializer.errors, status=401)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -364,6 +424,7 @@ def grant_free_campro(request):
     return Response({'error': str(e)}, status=500)
   
 
+# need change .. introducer get bonus every time level 1 place asset 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def grant_bonus(request):

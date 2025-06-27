@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react"
 import Buttons from "../props/Buttons"
 import { Inputss, InputwithVal } from "../props/Formss"
 import { SelectMonth, SelectYear } from "../props/DropDown"
-import { get_profit, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
+import { distribute_profit, get_profit, update_monthly_finalized_profit, update_profit, updateProfitSharing } from "../auth/endpoints"
 import Loading from "../props/Loading"
+import { FixedText } from "../props/Textt"
 
 const Operation = () => {
 
@@ -138,82 +139,130 @@ const Operation = () => {
   }
 
 
+  const toggleDistributeProfit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      await distribute_profit()
+      alert('Profit distributed successfully')
+    } catch (error: any) {
+      alert('Failed to distribute profit. Please try again.');
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+  const [amountShare, setAmountShare] = useState<number>(0)
+  const toggleUpdateSharing = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      await updateProfitSharing(amountShare)
+      alert('Profit sharing updated successfully')
+    } catch (error: any) {
+      alert('Failed to update profit sharing. Please try again.');
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
 
   return (
-    <div className="flex items-center p-4 flex-col gap-5">
+    <div className="flex flex-col items-center p-4 gap-5">
       {loading && <Loading />}
       <h1 className="text-2xl font-bold">Operational</h1>
 
-      <form onSubmit={toggleUpdateProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
-        <span className="flex justify-between">
-          <span className="font-semibold">Update Profit </span>
-          <span className="text-sm">Last Updated: {lastUpdated}</span>
-        </span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={toggleUpdateProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
+          <span className="flex justify-between">
+            <span className="font-semibold">Update Profit </span>
+            <span className="text-sm">Last Updated: {lastUpdated}</span>
+          </span>
 
-        <span className="text-sm">*Please fill in manually (e.g., enter 5.0 for 5.0%)</span>
+          <span className="text-sm">*Please fill in manually (e.g., enter 5.0 for 5.0%)</span>
 
-        <div className="grid grid-cols-2 items-center">
-          <SelectMonth value={inputActiveMonth} 
-            onChange={(e) => setInputActiveMonth(e.target.value)} />
-          <SelectYear value={inputActiveYear}
-            onChange={(e) => setInputActiveYear(e.target.value)} />
-        </div>
+          <div className="grid grid-cols-2 items-center">
+            <SelectMonth value={inputActiveMonth} 
+              onChange={(e) => setInputActiveMonth(e.target.value)} />
+            <SelectYear value={inputActiveYear}
+              onChange={(e) => setInputActiveYear(e.target.value)} />
+          </div>
 
-        <InputwithVal 
-          label="Today Profit"
-          type="number"
-          placeholder="Please fill in today profit manually"
-          currentValue={dailyProfitRate}
-          onChange={(e) => setTodayProfit(Number(e.target.value))}
-          value={String(todayProfit)}
-          required={true}
-        />
-        <InputwithVal
-          label="Weekly Profit"
-          type="number"
-          placeholder="Please fill in weekly profit manually"
-          currentValue={weeklyProfitRate}
-          onChange={(e) => setWeeklyProfit(Number(e.target.value))}
-          value={String(weeklyProfit)}
-          required={true}
-        />
-        <InputwithVal
-          label="Monthly Profit"
-          type="number"
-          placeholder="Please set monthly profit manually"
-          currentValue={currentMonthProfit}
-          onChange={(e) => setMonthlyProfit(Number(e.target.value))}
-          value={String(monthlyProfit)}
-          required={true}
-        />
-        {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
-        <Buttons type="submit">Confirm</Buttons>
-      </form>
+          <InputwithVal 
+            label="Today Profit"
+            type="number"
+            placeholder="Please fill in today profit manually"
+            currentValue={dailyProfitRate}
+            onChange={(e) => setTodayProfit(Number(e.target.value))}
+            value={String(todayProfit)}
+            required={true}
+          />
+          <InputwithVal
+            label="Weekly Profit"
+            type="number"
+            placeholder="Please fill in weekly profit manually"
+            currentValue={weeklyProfitRate}
+            onChange={(e) => setWeeklyProfit(Number(e.target.value))}
+            value={String(weeklyProfit)}
+            required={true}
+          />
+          <InputwithVal
+            label="Monthly Profit"
+            type="number"
+            placeholder="Please set monthly profit manually"
+            currentValue={currentMonthProfit}
+            onChange={(e) => setMonthlyProfit(Number(e.target.value))}
+            value={String(monthlyProfit)}
+            required={true}
+          />
+          {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
+          <Buttons type="submit">Confirm</Buttons>
+        </form>
 
-      <form onSubmit={toggleMFinalized} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800"> 
-        <span className="font-semibold">Finalized Monthly Profit</span>
+        <form onSubmit={toggleMFinalized} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800"> 
+          <span className="font-semibold">Finalized Monthly Profit</span>
 
-        <div className="grid grid-cols-2 items-center">
-          <SelectMonth value={finalizedSelectedMonth} 
-            onChange={(e) => setFinalizedSelectedMonth(e.target.value)} />
-          <SelectYear value={finalizedSelectedYear}
-            onChange={(e) => setFinalizedSelectedYear(e.target.value)} />
-        </div>
+          <div className="grid grid-cols-2 items-center">
+            <SelectMonth value={finalizedSelectedMonth} 
+              onChange={(e) => setFinalizedSelectedMonth(e.target.value)} />
+            <SelectYear value={finalizedSelectedYear}
+              onChange={(e) => setFinalizedSelectedYear(e.target.value)} />
+          </div>
 
-        <Inputss
-          label="Finalized Profit"
-          type="number"
-          placeholder="Please fill in finalized profit manually"
-          currentValue={monthlyProfit}
-          onChange={(e) => setInputFinalizedProfitRate(Number(e.target.value))}
-          value={String(inputFinalizedProfitRate)}
-          required={true}
-        />
-        {errorMessageF && <span className="text-sm text-red-500">{errorMessageF}</span>}
-        <Buttons type="submit">Update Finalized</Buttons>
+          <Inputss
+            label="Finalized Profit"
+            type="number"
+            placeholder="Please fill in finalized profit manually"
+            currentValue={monthlyProfit}
+            onChange={(e) => setInputFinalizedProfitRate(Number(e.target.value))}
+            value={String(inputFinalizedProfitRate)}
+            required={true}
+          />
+          {errorMessageF && <span className="text-sm text-red-500">{errorMessageF}</span>}
+          <Buttons type="submit">Update Finalized</Buttons>
 
-      </form>
+        </form>
 
+        <form onSubmit={toggleDistributeProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
+          <span className="font-semibold">Process Profit Distribution </span>
+          <FixedText label="Today Profit" text={String(todayProfit)}/>
+          <Buttons type="submit">Distribute Profit</Buttons>
+        </form>
+
+        <form onSubmit={toggleUpdateSharing} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
+          <Inputss 
+            label="Profit Sharing Amount"
+            type="number"
+            placeholder="Please fill in manually"
+            onChange={e => setAmountShare(Number(e.target.value))}
+            value={amountShare}
+            required={true}
+          />
+          <Buttons type="submit">Update</Buttons>
+        </form>
+      </div>
     </div>
   )
 }

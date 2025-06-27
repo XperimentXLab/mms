@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Outlet, useNavigate } from "react-router"
 import { GiHamburgerMenu } from "react-icons/gi";
 import { NavLinkss } from "../props/theLinks";
@@ -37,7 +37,25 @@ const MainLayout = () => {
     }
   }
 
-//  const [username, setUsername] = useState<string>('')
+
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    const handleClickOutside = (event: Event) => {
+       if (menuRef.current && event.target && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [])
+
+
+  //  const [username, setUsername] = useState<string>('')
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -94,7 +112,7 @@ const MainLayout = () => {
 
         <div className="flex relative">
         {open && 
-        <nav className="absolute flex flex-col w-fit h-fit gap-1 items-center bg-red-500 px-1 py-3">
+        <nav ref={menuRef} className="absolute flex flex-col w-fit h-fit gap-1 items-center bg-red-500 px-1 py-3">
           <NavLinkss to={'/'}>Dashboard</NavLinkss>
           <NavLinkss to={'/setup'}>Setup</NavLinkss>
           <NavLinkss to={'/operation'}>Operation</NavLinkss>

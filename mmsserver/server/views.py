@@ -348,10 +348,10 @@ def get_transfer_transaction(request):
   
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_convert_deposit_transaction(request):
+def get_convert_transaction(request):
   user = request.user
   try:
-    convert_tx = Transaction.objects.filter(user=user, transaction_type__in=['convert', 'deposit'])
+    convert_tx = Transaction.objects.filter(user=user, transaction_type__in=['convert'])
     serializer = TransactionSerializer(convert_tx, many=True)
     return Response(serializer.data, status=200)
   except Transaction.DoesNotExist:
@@ -393,35 +393,6 @@ def get_deposit_lock(request):
   
 
 ## Wallet ##
-@api_view(['POST'])  
-@permission_classes([IsAuthenticated])
-def deposit_master(request):
-  user = request.user
-  amount = request.data.get('amount', '0.00'),
-  description = request.data.get('description', f'Master Point Deposit: {amount}'),
-  reference = request.data.get('reference', '')
-
-  if not amount:
-    return Response({'error': 'Amount is required'}, status=400)
-  try:
-    amount = Decimal(amount)
-  except:
-    return Response({'error': 'Amount must be in number'}, status=400)
-
-  try:
-    wallet, _ = Wallet.objects.get_or_create(user=user)
-    result = WalletService.deposit_master_point(
-      user,
-      amount,
-      description,
-      reference
-    )
-    serializer = WalletSerializer(result)
-    return Response(serializer.data, status=200)
-  except ValidationError as e:
-    return Response({'error': list(e.messages)}, status=400)
-  except Exception as e:
-    return Response({'error': str(e)}, status=500)
   
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
