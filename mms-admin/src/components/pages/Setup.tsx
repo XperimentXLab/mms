@@ -18,32 +18,31 @@ const Setup = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
 
-  useEffect(()=>{
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        await setupUser({
-          userID,
-          username,
-          masterAmount: Number(masterAmount),
-          profitAmount: Number(profitAmount),
-          commissionAmount: Number(commissionAmount)
-        })
-      } catch (error: any) {
-        setErrorMessage(error.message)
-      } finally {
-        setLoading(false)
-      }
+  const toggleSetupUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      await setupUser({
+        userID,
+        username,
+        masterAmount: Number(masterAmount),
+        profitAmount: Number(profitAmount),
+        commissionAmount: Number(commissionAmount)
+      })
+    } catch (error: any) {
+      setErrorMessage(error.message)
+    } finally {
+      setLoading(false)
     }
-    fetchData()
-  }, [])
+  }
+
 
   return (
     <div className="flex flex-col items-center justify-center m-5 gap-3">
 
       {loading && <Loading />}
 
-      <form className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">        
+      <form onSubmit={toggleSetupUser} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">        
         <span className="font-semibold">Setup User Master Wallet</span>
 
         {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
