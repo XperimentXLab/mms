@@ -226,7 +226,7 @@ class Wallet(models.Model):
   master_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   profit_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   #Commision Point
-  commission_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  affiliate_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   introducer_point_balance = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   
   created_at = models.DateTimeField(auto_now_add=True)
@@ -240,7 +240,7 @@ class Wallet(models.Model):
         defaults={
           'master_point_balance': Decimal('0.00'),
           'profit_point_balance': Decimal('0.00'),
-          'commission_point_balance': Decimal('0.00'),
+          'affiliate_point_balance': Decimal('0.00'),
           'introducer_point_balance': Decimal('0.00')
         }
       )
@@ -277,12 +277,12 @@ class Asset(models.Model):
 
 class Transaction(models.Model):
   TRANSACTION_TYPES = (
-    ('WITHDRAWAL', 'Withdrawal'), #Master Point, Profit, Commission >>
-    ('CONVERT', 'Convert'), #Profit, Commission >> Master Point
+    ('WITHDRAWAL', 'Withdrawal'), #Master Point, Profit, Affiliate, Introducer >>
+    ('CONVERT', 'Convert'), #Profit, Affiliate, Introducer >> Master Point
     ('TRANSFER', 'Transfer'), #Master Point > User Master Point
     ('DISTRIBUTION', 'Distribution'), #Admin > Profit Point
-    ('COMMISSION_BONUS', 'Commission Bonus'), #Admin > Commission Point
-    ('INTRODUCER_BONUS', 'Introducer Bonus'), #Admin > Commission Point
+    ('AFFILIATE_BONUS', 'Affiliate Bonus'), #Admin > Affiliate Point
+    ('INTRODUCER_BONUS', 'Introducer Bonus'), #Admin > Affiliate Point
     ('ASSET_PLACEMENT', 'Asset Placement'), #Master Point >> Asset
     ('ASSET_WITHDRAWAL', 'Asset Withdrawal'), #Asset > Profit Point
     ('FREE_CAMPRO_GRANT', 'Welcome Bonus'), #Admin > Asset
@@ -293,7 +293,6 @@ class Transaction(models.Model):
     ('MASTER', 'Master Point'),
     ('PROFIT', 'Profit'),
     ('COMMISSION', 'Commission'),
-    ('INTRODUCER', 'Introducer'),
     ('ASSET', 'Asset')
   )
     
