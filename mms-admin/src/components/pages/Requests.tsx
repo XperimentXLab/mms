@@ -59,7 +59,7 @@ const Requests = () => {
 
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span> }
 
-      <Tables columns={columns} data={data}/>
+      <Tables columns={columns ? columns : []} data={data}/>
     </div>
   )
 }
