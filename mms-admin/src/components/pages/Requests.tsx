@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import Tables, { type Data } from "../props/Tables"
+import Tables from "../props/Tables"
 import Loading from "../props/Loading"
 import { getPendingTX } from "../auth/endpoints"
 
