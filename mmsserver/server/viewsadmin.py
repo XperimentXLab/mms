@@ -350,10 +350,7 @@ def setup_user(request):
     if user.is_staff:
       wallet = UserService.setup_user(user_id, master_amount, profit_amount, commission_amount)
       serializer = WalletSerializer(wallet)
-      if serializer.is_valid():
-        return Response(serializer.data, status=200)
-      else:
-        return Response(serializer.errors, status=400)
+      return Response(serializer.data, status=200)
     else:
       return Response({'error': 'Permission denied'}, status=403)
       

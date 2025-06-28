@@ -30,7 +30,11 @@ const Setup = () => {
         commissionAmount: Number(commissionAmount)
       })
     } catch (error: any) {
-      setErrorMessage(error.message)
+      if (error.response && error.response.status === 500) {
+        setErrorMessage('An unexpected error occurred. Please try again later.');
+      } else {
+        setErrorMessage(error.response.data.error)
+      }
     } finally {
       setLoading(false)
     }
