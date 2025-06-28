@@ -259,8 +259,9 @@ const Operation = () => {
             onChange={e => setAmountShare(Number(e.target.value))}
             value={amountShare}
             required={true}
+            className="bg-gray-200 p-2 rounded-md focus:border-none"
           />
-          <Buttons type="submit">Update</Buttons>
+          <Buttons type="submit">Distribute</Buttons>
         </form>
       </div>
     </div>
