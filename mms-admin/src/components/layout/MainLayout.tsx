@@ -4,7 +4,8 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { NavLinkss } from "../props/theLinks";
 import Loading from "../props/Loading";
 import Buttons from "../props/Buttons";
-import { logout } from "../auth/endpoints";
+import { logout, userDetails } from "../auth/endpoints";
+
 
 const MainLayout = () => {
 
@@ -55,12 +56,12 @@ const MainLayout = () => {
   }, [])
 
 
-  //  const [username, setUsername] = useState<string>('')
+  const [username, setUsername] = useState<string>('')
   useEffect(() => {
     const fetchData = async () => {
       try {
-//        const response = await userDetails()
-//        setUsername(response.username)
+        const response = await userDetails()
+        setUsername(response.username)
       } catch (error) {
         console.error('Error fetching user details:', error)
       }
@@ -104,7 +105,7 @@ const MainLayout = () => {
 
             <div className="flex flex-col cursor-default">
               <span className="font-semibold">Money Management Solution</span>
-              <span>Welcome, user</span>
+              <span>Welcome, {username}</span>
             </div>
 
           </div>   

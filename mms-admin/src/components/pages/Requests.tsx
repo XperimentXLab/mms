@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import Tables from "../props/Tables"
 import Loading from "../props/Loading"
 import { getPendingTX } from "../auth/endpoints"
+import Buttons from "../props/Buttons";
 
 
 interface Transaction {
@@ -101,13 +102,14 @@ const data = transactions.map(tx => ({
               onChange={(e) => handleReasonChange(tx.id, e.target.value)}
               className="border p-1 rounded text-sm"
             />
-            <button
+            <Buttons
+              type="submit"
               onClick={() => handleReject(tx.id)}
               disabled={!rejectionReasons[tx.id]}
               className={`px-3 py-1 rounded ${rejectionReasons[tx.id] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-300 cursor-not-allowed'}`}
             >
               Reject
-            </button>
+            </Buttons>
           </>
         ) : tx.request_status === 'rejected' ? (
           <span className="text-red-500">Rejected</span>

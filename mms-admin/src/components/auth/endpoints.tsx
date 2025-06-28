@@ -39,6 +39,12 @@ export const logout = async () => {
   return response.data
 }
 
+
+export const userDetails = async () => {
+  const response = await api.get('/user_details/')
+  return response.data
+}
+
 const activeMonth = new Date().toLocaleDateString('en-US', { month: 'numeric' });
 const activeYear = new Date().toLocaleDateString('en-US', { year: 'numeric' })
 export const get_profit = async () => {
