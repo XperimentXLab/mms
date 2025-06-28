@@ -29,6 +29,7 @@ const Setup = () => {
         profitAmount: Number(profitAmount),
         commissionAmount: Number(commissionAmount)
       })
+      alert('User setup success !')
     } catch (error: any) {
       if (error.response && error.response.status === 500) {
         setErrorMessage('An unexpected error occurred. Please try again later.');
