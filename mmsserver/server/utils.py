@@ -320,7 +320,7 @@ class UserService:
 def grant_introducer(user, amount, description="", reference=""):
     wallet = user.wallet
     with db_transaction.atomic():
-        wallet.bonus_point_balance += Decimal(amount)
+        wallet.introducer_point_balance += Decimal(amount)
         wallet.save()
         
         Transaction.objects.create(
@@ -685,7 +685,7 @@ class CommissionService:
             raise ValidationError("Minimum withdrawal amount is 50 USDT")
         
         wallet = user.wallet
-        commission_point = wallet.affiliate_point_balance + wallet.bonus_point_balance
+        commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
         if commission_point < amount:
             raise ValidationError("Insufficient Commission Point balance")
         
@@ -712,7 +712,7 @@ class CommissionService:
                 wallet.affiliate_point_balance -= Decimal(amount)
             else:
                 wallet.affiliate_point_balance = Decimal('0.00')
-                wallet.bonus_point_balance -= Decimal(balance_deduct)
+                wallet.introducer_point_balance -= Decimal(balance_deduct)
             wallet.save()
             
             # Create pending transaction
@@ -763,7 +763,7 @@ class CommissionService:
                 ori_bounus_deduct = refund_amount - ori_affiliate_deduct
 
                 wallet.affiliate_point_balance += ori_affiliate_deduct
-                wallet.bonus_point_balance += ori_bounus_deduct
+                wallet.introducer_point_balance += ori_bounus_deduct
                 wallet.save()
                 
                 # Update request status
@@ -783,7 +783,7 @@ class CommissionService:
     def convert_to_master_point(user, amount, reference="", description=""):
         """Convert Commission Point to Master Point (must be multiple of 10)"""
         wallet = user.wallet
-        commission_point = wallet.affiliate_point_balance + wallet.bonus_point_balance
+        commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
 
         if amount % 10 != 0:
             raise ValidationError("Amount must be a multiple of 10")
@@ -798,9 +798,9 @@ class CommissionService:
                 wallet.affiliate_point_balance -= Decimal(amount)
             else:
                 wallet.affiliate_point_balance = Decimal('0.00')
-                if wallet.bonus_point_balance < convert_balance:
+                if wallet.introducer_point_balance < convert_balance:
                     raise ValidationError("Insufficient Commission Point balance(bonus insufficient)")
-                wallet.bonus_point_balance -= convert_balance
+                wallet.introducer_point_balance -= convert_balance
             wallet.master_point_balance += Decimal(amount)
             wallet.save()
             

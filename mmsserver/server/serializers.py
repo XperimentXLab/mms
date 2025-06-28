@@ -199,7 +199,7 @@ class WalletSerializer(serializers.ModelSerializer):
 
   master_point_balance = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   profit_point_balance = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
-  commission_point_balance = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  affiliate_point_balance = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   introducer_point_balance = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
 
   class Meta:
