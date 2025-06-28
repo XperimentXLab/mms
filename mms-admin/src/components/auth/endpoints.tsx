@@ -112,16 +112,16 @@ interface SetupUserRes {
   username: string
   masterAmount: number
   profitAmount: number
-  commissionAmount: number
+  affiliateAmount: number
 }
 export const setupUser = async (SetupUserData: SetupUserRes) => {
-  const { userID, username, masterAmount, profitAmount, commissionAmount } = SetupUserData
+  const { userID, username, masterAmount, profitAmount, affiliateAmount } = SetupUserData
   const response = await api.post('/setup_user/', {
     user_id: userID,
     username,
     master_amount: masterAmount,
     profit_amount: profitAmount,
-    commission_amount: commissionAmount
+    affiliate_amount: affiliateAmount
   })
   return response.data
 }

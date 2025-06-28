@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Inputss } from "../props/Formss"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
@@ -12,38 +12,42 @@ const Setup = () => {
   const [username, setUsername] = useState<string>('')
   const [masterAmount, setMasterAmount] = useState<string>('')
   const [profitAmount, setProfitAmount] = useState<string>('')
-  const [commissionAmount, setCommissionAmount] = useState<string>('')
+  const [affiliateAmount, setAffiliateAmount] = useState<string>('')
 
 
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
 
-  useEffect(()=>{
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        await setupUser({
-          userID,
-          username,
-          masterAmount: Number(masterAmount),
-          profitAmount: Number(profitAmount),
-          commissionAmount: Number(commissionAmount)
-        })
-      } catch (error: any) {
-        setErrorMessage(error.message)
-      } finally {
-        setLoading(false)
+  const toggleSetupUser = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      await setupUser({
+        userID,
+        username,
+        masterAmount: Number(masterAmount),
+        profitAmount: Number(profitAmount),
+        affiliateAmount: Number(affiliateAmount)
+      })
+      alert('User setup success !')
+    } catch (error: any) {
+      if (error.response && error.response.status === 500) {
+        setErrorMessage('An unexpected error occurred. Please try again later.');
+      } else {
+        setErrorMessage(error.response.data.error)
       }
+    } finally {
+      setLoading(false)
     }
-    fetchData()
-  }, [])
+  }
+
 
   return (
     <div className="flex flex-col items-center justify-center m-5 gap-3">
 
       {loading && <Loading />}
 
-      <form className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">        
+      <form onSubmit={toggleSetupUser} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">        
         <span className="font-semibold">Setup User Master Wallet</span>
 
         {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
@@ -62,7 +66,7 @@ const Setup = () => {
           required={true}
         />
         
-        <Inputss label="Master Point" placeholder="Enter master point"
+        <Inputss label="Master Point" placeholder="Enter master point amount"
           type="text" 
           onChange={e => setMasterAmount(e.target.value)}
           value={masterAmount}
@@ -74,10 +78,10 @@ const Setup = () => {
           value={profitAmount}
         />
 
-        <Inputss label="Commission" placeholder="Enter commission amount"
+        <Inputss label="Affiliate" placeholder="Enter affiliate bonus amount"
           type="text" 
-          onChange={e => setCommissionAmount(e.target.value)}
-          value={commissionAmount}  
+          onChange={e => setAffiliateAmount(e.target.value)}
+          value={affiliateAmount}  
         />
 
         <Buttons type="submit">Submit</Buttons>
