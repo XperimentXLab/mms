@@ -246,9 +246,9 @@ const Operation = () => {
         </form>
 
         <form onSubmit={toggleDistributeProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
-          <span className="font-semibold">Process Profit Distribution </span>
-          <FixedText label="Today Profit" text={String(todayProfit)}/>
-          <Buttons type="submit">Distribute Profit</Buttons>
+          <span className="font-semibold">Profit Distribution </span>
+          <FixedText label="Today Profit" text={String(dailyProfitRate)}/>
+          <Buttons type="submit">Distribute</Buttons>
         </form>
 
         <form onSubmit={toggleUpdateSharing} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
