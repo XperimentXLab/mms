@@ -278,7 +278,7 @@ class UserService:
     @staticmethod
     def setup_user(user_id, master_amount, profit_amount, commission_amount):
         user = User.objects.get(id=user_id)
-        wallet = Wallet.objects.get_or_create(user=user)
+        wallet, created = Wallet.objects.get_or_create(user=user)
         
         with db_transaction.atomic():
             wallet.master_point_balance += master_amount
