@@ -66,7 +66,7 @@ const Setup = () => {
           required={true}
         />
         
-        <Inputss label="Master Point" placeholder="Enter master point"
+        <Inputss label="Master Point" placeholder="Enter master point amount"
           type="text" 
           onChange={e => setMasterAmount(e.target.value)}
           value={masterAmount}
@@ -78,7 +78,7 @@ const Setup = () => {
           value={profitAmount}
         />
 
-        <Inputss label="Commission" placeholder="Enter commission amount"
+        <Inputss label="Affiliate" placeholder="Enter affiliate bonus amount"
           type="text" 
           onChange={e => setCommissionAmount(e.target.value)}
           value={commissionAmount}  

@@ -276,14 +276,14 @@ def distribute_profit_manually():
 
 class UserService:
     @staticmethod
-    def setup_user(user_id, master_amount, profit_amount, commission_amount):
+    def setup_user(user_id, master_amount, profit_amount, affiliate_amount):
         user = User.objects.get(id=user_id)
         wallet, created = Wallet.objects.get_or_create(user=user)
         
         with db_transaction.atomic():
             wallet.master_point_balance += master_amount
             wallet.profit_point_balance += profit_amount
-            wallet.commission_point_balance += commission_amount
+            wallet.affiliate_point_balance += affiliate_amount
             wallet.save()
 
             Transaction.objects.create(
@@ -292,7 +292,7 @@ class UserService:
                 transaction_type='MIGRATION',
                 point_type='PROFIT',
                 amount=profit_amount,
-                description="Migration",
+                description="Migration of profit",
             )
 
             Transaction.objects.create(
@@ -300,8 +300,8 @@ class UserService:
                 wallet=wallet,
                 transaction_type='MIGRATION',
                 point_type='COMMISSION',
-                amount=profit_amount,
-                description="Migration"
+                amount=affiliate_amount,
+                description="Migration of affiliate bonus"
             )
 
             Transaction.objects.create(
@@ -310,7 +310,7 @@ class UserService:
                 transaction_type='MIGRATION',
                 point_type='MASTER',
                 amount=master_amount,
-                description="Migration",
+                description="Migration of master point",
             )
 
         return wallet 

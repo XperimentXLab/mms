@@ -336,7 +336,7 @@ def setup_user(request):
   username = request.data.get('username')
   master_amount = request.data.get('master_amount')
   profit_amount = request.data.get('profit_amount')
-  commission_amount = request.data.get('commission_amount')
+  affiliate_amount = request.data.get('affiliate_amount')
 
   if not user_id or not username:
     return Response({'error': 'User ID and username are required'}, status=400)
@@ -348,7 +348,7 @@ def setup_user(request):
   
   try:
     if user.is_staff:
-      wallet = UserService.setup_user(user_id, master_amount, profit_amount, commission_amount)
+      wallet = UserService.setup_user(user_id, master_amount, profit_amount, affiliate_amount)
       serializer = WalletSerializer(wallet)
       return Response(serializer.data, status=200)
     else:
