@@ -443,12 +443,12 @@ class WalletService:
             if action == 'Approve':
                 asset.amount += Decimal(amount)
                 asset.save()
-                trx.request_status = RequestStatus.APPROVED
+                trx.request_status = 'APPROVED'
                 trx.save()
             elif action == 'Reject':
                 wallet.master_point_balance += Decimal(amount)
                 wallet.save()
-                trx.request_status = RequestStatus.REJECTED
+                trx.request_status = 'REJECTED'
                 trx.save()
             return trx
         
@@ -569,11 +569,11 @@ class AssetService:
                 wallet.save()
 
                 # Mark as approved
-                trx.request_status = RequestStatus.APPROVED
+                trx.request_status = 'APPROVED'
                 trx.save()
 
             elif action == 'Reject':
-                trx.request_status = RequestStatus.REJECTED
+                trx.request_status = 'REJECTED'
                 trx.save()
 
             return trx
@@ -640,7 +640,7 @@ class ProfitService:
         with db_transaction.atomic():
             if action == 'APPROVE':
                 # Update request status
-                withdrawal_request.request_status = RequestStatus.APPROVED
+                withdrawal_request.request_status = 'APPROVED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
                 
@@ -655,7 +655,7 @@ class ProfitService:
                 wallet.save()
                 
                 # Update request status
-                withdrawal_request.request_status = RequestStatus.REJECTED
+                withdrawal_request.request_status = 'REJECTED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
                 
@@ -765,7 +765,7 @@ class CommissionService:
         with db_transaction.atomic():
             if action == 'Approve':
                 # Update request status
-                withdrawal_request.request_status = RequestStatus.APPROVED
+                withdrawal_request.request_status = 'APPROVED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
                 
@@ -786,7 +786,7 @@ class CommissionService:
                 wallet.save()
                 
                 # Update request status
-                withdrawal_request.request_status = RequestStatus.REJECTED
+                withdrawal_request.request_status = 'REJECTED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
                 
