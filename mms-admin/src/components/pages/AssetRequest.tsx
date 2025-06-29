@@ -9,14 +9,14 @@ interface Transaction {
   id: string;
   created_date: string;
   amount: number;
-  request_status: 'pending' | 'approved' | 'rejected';
+  request_status: 'PENDING' | 'APPROVED' | 'REJECTED';
   point_type: string;
   transaction_type: string;
   description: string;
   reference?: string; // Reason for rejection
 }
 
-const Requests = () => {
+const AssetRequest = () => {
 
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
@@ -44,7 +44,7 @@ const Requests = () => {
 
   const handleApprove = (id: string) => {
     setTransactions(prev => prev.map(tx => 
-      tx.id === id ? { ...tx, request_status: 'approved' } : tx
+      tx.id === id ? { ...tx, request_status: 'APPROVED' } : tx
     ))
     // call an API to update the status
   }
@@ -52,7 +52,7 @@ const Requests = () => {
   const handleReject = (id: string) => {
     const reason = rejectionReasons[id] || 'No reason provided'
     setTransactions(prev => prev.map(tx => 
-      tx.id === id ? { ...tx, request_status: 'rejected', reference: reason } : tx
+      tx.id === id ? { ...tx, request_status: 'REJECTED', reference: reason } : tx
     ))
     // call an API to update the status
   }
@@ -70,7 +70,7 @@ const Requests = () => {
 
 
   const columns = [
-    { header: 'Created Date', accessor: 'createdDate' },
+    { header: 'Created Date', accessor: 'created_date' },
     { header: 'Amount', accessor: 'amount' },
     { header: 'Request Status', accessor: 'request_status' },
     { header: 'Point', accessor: 'point_type' },
@@ -85,7 +85,7 @@ const data = transactions.map(tx => ({
     ...tx,
     action: (
       <div className="flex gap-2">
-        {tx.request_status === 'pending' && isOneHourPassed(tx.created_date) && (
+        {tx.request_status === 'PENDING' && isOneHourPassed(tx.created_date) && (
           <button 
             onClick={() => handleApprove(tx.id)}
             className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
@@ -93,7 +93,7 @@ const data = transactions.map(tx => ({
             Approve
           </button>
         )}
-        {tx.request_status === 'pending' ? (
+        {tx.request_status === 'PENDING' ? (
           <>
             <input
               type="text"
@@ -111,10 +111,10 @@ const data = transactions.map(tx => ({
               Reject
             </Buttons>
           </>
-        ) : tx.request_status === 'rejected' ? (
-          <span className="text-red-500">Rejected</span>
+        ) : tx.request_status === 'REJECTED' ? (
+          <span className="text-red-500">Reject</span>
         ) : (
-          <span className="text-green-500">Approved</span>
+          <span className="text-green-500">Approve</span>
         )}
       </div>
     )
@@ -134,4 +134,4 @@ const data = transactions.map(tx => ({
   )
 }
 
-export default Requests
+export default AssetRequest

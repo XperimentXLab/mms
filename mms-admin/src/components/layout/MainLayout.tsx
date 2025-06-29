@@ -119,7 +119,8 @@ const MainLayout = () => {
           <NavLinkss to={'/operation'}>Operation</NavLinkss>
           <NavLinkss to={'/users'}>Users</NavLinkss>
           <NavLinkss to={'/verification'}>Verification</NavLinkss>
-          <NavLinkss to={'/requests'}>Requests</NavLinkss>
+          <NavLinkss to={'/asset/requests'}>Asset Request</NavLinkss>
+          <NavLinkss to={'/withdraw/requests'}>Withdraw Request</NavLinkss>
           <NavLinkss to={'/transaction'}>Transaction</NavLinkss>
           <Buttons type="button" onClick={handleLogout}
             className="hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg cursor-pointer"

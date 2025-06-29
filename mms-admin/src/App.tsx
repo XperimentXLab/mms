@@ -5,7 +5,8 @@ import Login from "./components/auth/Login"
 import Operation from "./components/pages/Operation"
 import Dashboard from "./components/pages/Dashboard"
 import Setup from "./components/pages/Setup"
-import Requests from "./components/pages/Requests"
+import AssetRequest from "./components/pages/AssetRequest"
+
 
 
 const router = createBrowserRouter(createRoutesFromElements(
@@ -20,7 +21,8 @@ const router = createBrowserRouter(createRoutesFromElements(
         <Route path="/operation" element={<Operation />}/> 
         <Route path="/users" />
         <Route path="/verification" />
-        <Route path="/requests" element={<Requests />}/> 
+        <Route path="/asset/requests" element={<AssetRequest />}/> 
+        <Route path="/withdraw/requests" /> 
         <Route path="/transaction" /> 
 
       </Route>

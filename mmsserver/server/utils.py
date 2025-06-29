@@ -316,25 +316,6 @@ class UserService:
         return wallet 
 
 
-# need change .. introducer get bonus every time level 1 place asset 
-def grant_introducer(user, amount, description="", reference=""):
-    wallet = user.wallet
-    with db_transaction.atomic():
-        wallet.introducer_point_balance += Decimal(amount)
-        wallet.save()
-        
-        Transaction.objects.create(
-            user=user,
-            wallet=wallet,
-            transaction_type='INTRODUCER_BONUS',
-            point_type='COMMISSION',
-            amount=amount,
-            description=description,
-            reference=reference
-        )
-    return wallet
-
-
 class WalletService:
     @staticmethod
     def transfer_master_point(sender, receiver, amount, description="", reference=""):
@@ -377,7 +358,7 @@ class WalletService:
             )
         return sender_wallet, receiver_wallet
 
-    @staticmethod #need admin approval (wait boss zaemy)
+    @staticmethod 
     def place_asset(user, amount, description="", reference=""):
         """Place asset from Master Point"""
 
@@ -420,15 +401,15 @@ class WalletService:
             asset = trx.asset
             amount = trx.converted_amount
 
-            if action == 'APPROVE':
+            if action == 'Approve':
                 asset.amount += Decimal(amount)
                 asset.save()
-                trx.request_status = 'APPROVED'
+                trx.request_status = RequestStatus.APPROVED
                 trx.save()
-            elif action == 'REJECT':
+            elif action == 'Reject':
                 wallet.master_point_balance += Decimal(amount)
                 wallet.save()
-                trx.request_status = 'REJECTED'
+                trx.request_status = RequestStatus.REJECTED
                 trx.save()
             return trx
         
@@ -512,7 +493,7 @@ class AssetService:
                 request_status=RequestStatus.PENDING
             )
             
-            if action == 'APPROVE':
+            if action == 'Approve':
                 # Deduct from locks and balance
                 locks = DepositLock.objects.filter(
                     deposit__user=trx.user
@@ -548,11 +529,11 @@ class AssetService:
                 wallet.save()
 
                 # Mark as approved
-                trx.request_status = 'APPROVED'
+                trx.request_status = RequestStatus.APPROVED
                 trx.save()
 
-            elif action == 'REJECT':
-                trx.request_status = 'REJECTED'
+            elif action == 'Reject':
+                trx.request_status = RequestStatus.REJECTED
                 trx.save()
 
             return trx
