@@ -44,12 +44,11 @@ export const AssetStatement = () => {
   const columns = [
     { header: "Date", accessor: "created_date" },
     { header: "Time", accessor: "created_time" },
-    { header: "Amount Locked (6M)", accessor: "amount_6m_locked" },
-    { header: 'Amount Unlock (6M)', accessor: 'amount_6m_unlocked' },
-    { header: 'Days Left (6M)', accessor: 'days_until_6m'},
-    { header: "Amount Locked (1Y)", accessor: "amount_1y_locked" },
-    { header: 'Amount Unlock (1Y)', accessor: 'amount_1y_unlocked' },
-    { header: 'Days Left (1Y)', accessor: 'days_until_1y'},
+    { header: 'Status', accessor: 'request_status_display'},
+    { header: "Amount Locked", accessor: "amount_6m_locked" },
+    { header: 'Days Left', accessor: 'days_until_6m'},
+    { header: "Amount Locked", accessor: "amount_1y_locked" },
+    { header: 'Days Left', accessor: 'days_until_1y'},
     { header: "Available Withdraw", accessor: "withdrawable_now" },
     { header: "Action", accessor: "action" },
   ]
@@ -109,15 +108,12 @@ const data = dataRes.map(asset => ({
     <div>
       {loading && <Loading />}
       <span className="font-semibold">
-      Asset Statement
+        Asset Statement
       </span>
+
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      {dataRes.some(asset => asset.request_status === 'APPROVED') ? (
-      <TableAssetWithdrawal columns={columns} data={data} />
-      ) : (
-      <Tables columns={columns} data={[]} />
-      )}
+      <Tables columns={columns} data={data} />
     </div>
   )
 }
@@ -133,7 +129,15 @@ export const WithdrawalAssetStatement = () => {
       try {
         setLoading(true)
         const response = await getAssetStatement()
-        setData(response)
+        const formattedData = response.map((user: any) => {
+          const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
+          return {
+            ...user,
+            created_date: dt.format("YYYY-MM-DD"),
+            created_time: dt.format("HH:mm:ss"),
+          }
+        });
+        setData(formattedData)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
           setErrorMessage(error.response.data.error)
@@ -147,8 +151,9 @@ export const WithdrawalAssetStatement = () => {
 
   const columns = [
     { header: "Date", accessor: "created_date" },
+    { header: "Time", accessor: "created_time" },
     { header: "Amount", accessor: "amount" },
-    { header: "Type", accessor: "type" },
+    { header: "Type", accessor: "transaction_type" },
     { header: "Description", accessor: "description" },
     { header: 'Status', accessor: 'request_status_display'}
   ]

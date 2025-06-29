@@ -41,7 +41,7 @@ const AssetRequest = () => {
           ...user,
           created_date: dt.format("YYYY-MM-DD"),
           created_time: dt.format("HH:mm:ss"),
-          username: user.username
+          username: user.username,
         }
       });
         setTransactions(formattedData)
@@ -93,7 +93,7 @@ const AssetRequest = () => {
   const columns = [
     { header: 'Date', accessor: 'created_date' },
     { header: 'Time', accessor: 'created_time' },
-    { header: 'User ID', accessor: 'user_id' },
+    { header: 'User ID', accessor: 'user' },
     { header: 'Username', accessor: 'username' },
     { header: 'Amount', accessor: 'amount' },
     { header: 'Request Status', accessor: 'request_status' },

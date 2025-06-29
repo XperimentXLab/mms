@@ -250,12 +250,14 @@ class AssetSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
 
   request_status_display = serializers.SerializerMethodField()
+  username = serializers.CharField(source='user.username', read_only=True)
 
   class Meta:
     model = Transaction
     fields = [
       'id',
       'user',
+      'username',
       'amount',
       'transaction_type',
       'point_type',
