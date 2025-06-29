@@ -41,6 +41,7 @@ const AssetRequest = () => {
           ...user,
           created_date: dt.format("YYYY-MM-DD"),
           created_time: dt.format("HH:mm:ss"),
+          created_datetime: dt.format("YYYY-MM-DD HH:mm:ss"),
           username: user.username,
         }
       });
@@ -110,12 +111,12 @@ const AssetRequest = () => {
     return diffInHours >= 1
   }*/
 
-  const isFiveMinutesPassed = (createdDate: string) => {
-  const created = new Date(createdDate)
-  const now = new Date()
-  const diffInMinutes = (now.getTime() - created.getTime()) / (1000 * 60)
-  return diffInMinutes >= 5
-}
+  const isFiveMinutesPassed = (created_datetime: string) => {
+    const created = new Date(created_datetime)
+    const now = new Date()
+    const diffInMinutes = (now.getTime() - created.getTime()) / (1000 * 60)
+    return diffInMinutes >= 5
+  }
 
 
   const columns = [
