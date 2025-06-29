@@ -62,7 +62,7 @@ const Wallet = () => {
         setMasterBalance(resWallet.master_point_balance || 0)
         setProfitBalance(resWallet.profit_point_balance || 0)
         setAffiliateBalance(resWallet.affiliate_point_balance || 0)
-        setIntroducerBalance(resWallet.intoducer_point_balance || 0)
+        setIntroducerBalance(resWallet.introducer_point_balance || 0)
         setCommissionAmount(Number(affiliateBalance)+Number(introducerBalance) || 0)
 
         // Request Deposit Master Point

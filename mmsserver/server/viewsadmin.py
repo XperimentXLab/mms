@@ -336,26 +336,27 @@ def setup_user(request):
   profit_amount = request.data.get('profit_amount')
   affiliate_amount = request.data.get('affiliate_amount')
 
-  if not user_id or not username:
-    return Response({'error': 'User ID and username are required'}, status=400)
-  
-  try:
-    user = User.objects.get(id=user_id, username=username)
-  except User.DoesNotExist:
-    return Response({'error': 'User not found'}, status=404)
-  
-  try:
-    if user.is_staff:
+  if user.is_staff:
+    if not user_id or not username:
+      return Response({'error': 'User ID and username are required'}, status=400)
+    
+    try:
+      user = User.objects.get(id=user_id, username=username)
+    except User.DoesNotExist:
+      return Response({'error': 'User not found'}, status=404)
+    
+    try:
       wallet = UserService.setup_user(user_id, master_amount, profit_amount, affiliate_amount)
       serializer = WalletSerializer(wallet)
       return Response(serializer.data, status=200)
-    else:
-      return Response({'error': 'Permission denied'}, status=403)
+    except ValidationError as e:
+      return Response({'error': list(e.messages)}, status=400)
+    except Exception as e:
+      return Response({'error': str(e)}, status=500)
+  else:
+    return Response({'error': 'Permission denied'}, status=403)
       
-  except ValidationError as e:
-    return Response({'error': list(e.messages)}, status=400)
-  except Exception as e:
-    return Response({'error': str(e)}, status=500)
+
   
 
 @api_view(['PUT'])
