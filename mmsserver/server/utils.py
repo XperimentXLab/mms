@@ -47,6 +47,7 @@ def _distribute_affiliate_bonus_for_user(
                 # Add wallet to update list (set will handle uniqueness later)
                 wallets_needing_affiliate_update_list.append(upline_l1_wallet)
 
+                current_time = timezone.now()
                 affiliate_transactions_list.append(
                     Transaction(
                         user=upline_l1_wallet.user,
@@ -58,7 +59,7 @@ def _distribute_affiliate_bonus_for_user(
                             f"L1 Affiliate bonus (5%) from {downline_user.username}'s profit of {profit_earned_by_downline:.2f}. "
                             f"Old AP Bal: {original_affiliate_balance_l1:.2f}, New AP Bal: {upline_l1_wallet.affiliate_point_balance:.2f}."
                         ),
-                        reference=f"AffL1_{downline_user.id}_{timezone.now().strftime('%Y%m%d')}"
+                        reference=f"AffL1_{downline_user.id}_{current_time.strftime('%Y%m%d')}"
                     )
                 )
 
@@ -86,6 +87,7 @@ def _distribute_affiliate_bonus_for_user(
                             
                             wallets_needing_affiliate_update_list.append(upline_l2_wallet)
 
+                            current_time = timezone.now()
                             affiliate_transactions_list.append(
                                 Transaction(
                                     user=upline_l2_wallet.user,
@@ -97,7 +99,7 @@ def _distribute_affiliate_bonus_for_user(
                                         f"L2 Affiliate bonus (2%) from {downline_user.username}'s profit of {profit_earned_by_downline:.2f} (via {upline_l1_wallet.user.username}). "
                                         f"Old AP Bal: {original_affiliate_balance_l2:.2f}, New AP Bal: {upline_l2_wallet.affiliate_point_balance:.2f}."
                                     ),
-                                    reference=f"AffL2_{downline_user.id}_{timezone.now().strftime('%Y%m%d')}"
+                                    reference=f"AffL2_{downline_user.id}_{current_time.strftime('%Y%m%d')}"
                                 )
                             )
                     elif upline_l2_wallet and not upline_l2_wallet.user.is_active:
@@ -198,6 +200,7 @@ def distribute_profit_manually():
                 metrics['users_with_profit'] += 1
                 metrics['total_profit_distributed'] += user_profit_amount
 
+                current_time = timezone.now()
                 user_profit_transactions_to_create.append(
                     Transaction(
                         user=downline_user,
@@ -210,7 +213,7 @@ def distribute_profit_manually():
                             f"Rule: {sharing_rule_desc}. User share: {user_profit_amount:.2f}. "
                             f"Old PP Bal: {original_profit_balance:.2f}, New PP Bal: {wallet_instance.profit_point_balance:.2f}."
                         ),
-                        reference=f"ProfitDist_{timezone.now().strftime('%Y%m%d')}"
+                        reference=f"ProfitDist_{current_time.strftime('%Y%m%d')}"
                     )
                 )
                 
@@ -371,7 +374,8 @@ class WalletService:
             wallet.save()
             
             asset = Asset.get_or_create_asset(user)
-            
+
+            current_time = timezone.now()
             deposit_trx = Transaction.objects.create(
                 user=user,
                 wallet=wallet,
@@ -379,7 +383,7 @@ class WalletService:
                 transaction_type='ASSET_PLACEMENT',
                 point_type='MASTER',
                 amount=amount,
-                created_at=timezone.now(),
+                created_at=current_time,
                 request_status=RequestStatus.PENDING,
                 description=description,
                 reference=reference
@@ -387,6 +391,7 @@ class WalletService:
 
             DepositLock.objects.create(deposit=deposit_trx)
         
+        current_time = timezone.now()
         ## Introducer Bonus ##
         if user.referred_by:
             try:
@@ -412,7 +417,7 @@ class WalletService:
                         point_type='COMMISSION',
                         amount=bonus_amount,
                         description=f"Introducer bonus for {user.username} asset placement ({amount})",
-                        reference=f"INTRODUCER_BONUS {user.id}_{timezone.now().strftime('%Y%m%d')}"
+                        reference=f"INTRODUCER_BONUS {user.id}_{current_time.strftime('%Y%m%d')}"
                     )
             except User.DoesNotExist:
                 pass # Referrer not found, skip bonus
@@ -537,7 +542,7 @@ class AssetService:
 
                     available = lock.withdrawable_now
                     deduct_amount = min(available, remaining_to_deduct)
-
+                    
                     if deduct_amount > 0:
                         age = timezone.now() - lock.deposit.created_at
                         if age >= timedelta(days=365):
