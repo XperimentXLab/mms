@@ -427,7 +427,7 @@ def transfer_master(request):
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
-api_view(['POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def place_asset(request):
   user = request.user
@@ -497,7 +497,7 @@ def withdraw_profit(request):
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
-api_view(['POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def convert_profit_to_master(request):
   user = request.user
@@ -528,7 +528,7 @@ def convert_profit_to_master(request):
   
 
 ## Commision ##
-api_view(['POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def withdraw_commission(request):
   user = request.user
