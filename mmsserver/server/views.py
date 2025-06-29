@@ -445,14 +445,12 @@ def place_asset(request):
     return Response({'error': 'Amount must be in number'}, status=400)
 
   try:
-    result = WalletService.place_asset(
+    wallet, asset = WalletService.place_asset(
       user,
       amount,
       description,
       reference
     )
-    wallet = result.wallet
-    asset = result.asset
     serializer_wallet = WalletSerializer(wallet)
     serializer_asset = AssetSerializer(asset)
     return Response({
@@ -481,13 +479,11 @@ def withdraw_profit(request):
     return Response({'error': 'Amount must be in number'}, status=400)
 
   try:
-    result = ProfitService.request_withdrawal(
+    wallet, withdrawal_request  = ProfitService.request_withdrawal(
       user,
       amount,
       reference
     )
-    wallet = result.wallet
-    withdrawal_request = result.withdrawal_request
     serializer_wallet = WalletSerializer(wallet)
     serializer_withdrawal_request = WithdrawalRequestSerializer(withdrawal_request)
     return Response({
@@ -545,13 +541,11 @@ def withdraw_commission(request):
     return Response({'error': 'Amount must be in number'}, status=400)
 
   try:
-    result = CommissionService.request_withdrawal(
+    wallet, withdrawal_request = CommissionService.request_withdrawal(
       user,
       amount,
       reference
     )
-    wallet = result.wallet
-    withdrawal_request = result.withdrawal_request
     serializer_wallet = WalletSerializer(wallet)
     serializer_withdrawal_request = WithdrawalRequestSerializer(withdrawal_request)
     return Response({
@@ -608,7 +602,6 @@ def withdraw_asset(request):
     return Response({'error': 'Amount must be in number'}, status=400)
 
   try:
-    asset, _ = Asset.objects.get_or_create(user=user)
     result = AssetService.withdraw_asset(
       user,
       amount,

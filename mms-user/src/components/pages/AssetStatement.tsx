@@ -34,7 +34,7 @@ export const AssetStatement = () => {
     { header: '6 Month Status', accessor: 'days_until_6m'},
     { header: 'Unlock 1 Year', accessor: 'amount_1y_unlocked' },
     { header: '1 Year Status', accessor: 'days_until_1y'},
-    { header: "Status", accessor: "request_status" },
+    { header: "Status", accessor: "request_status_display" },
     { header: "Available Withdraw", accessor: "withdrawable_now" },
     { header: "Action", accessor: "action" },
   ]

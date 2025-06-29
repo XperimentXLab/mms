@@ -275,8 +275,9 @@ class TransactionSerializer(serializers.ModelSerializer):
       'converted_amount',
       'request_status_display'
     ]
-    def get_request_status_display(self, obj):
-      return obj.get_request_status_display()
+    
+  def get_request_status_display(self, obj):
+    return obj.get_request_status_display()
 
 class WithdrawalRequestSerializer(serializers.ModelSerializer):
 
@@ -310,8 +311,9 @@ class WithdrawalRequestSerializer(serializers.ModelSerializer):
       'point_type'
       'request_status_display',
     ]
-    def get_request_status_display(self, obj):
-      return obj.get_request_status_display()
+
+  def get_request_status_display(self, obj):
+    return obj.get_request_status_display()
 
 class DepositLockSerializer(serializers.ModelSerializer):
 
@@ -345,6 +347,7 @@ class DepositLockSerializer(serializers.ModelSerializer):
       'withdrawable_now',
       'request_status_display',
     ]
-    def get_request_status_display(self, obj):
-      return obj.get_request_status_display()
+
+  def get_request_status_display(self, obj):
+    return obj.get_request_status_display()
     
