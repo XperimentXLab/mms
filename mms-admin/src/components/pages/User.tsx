@@ -8,21 +8,24 @@ const User = () => {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
-  const columns = [
+  const columnsUserDetails = [
     { header: 'User ID', accessor: 'id' },
     { header: 'Username', accessor: 'username' },
     { header: 'I/C', accessor: 'ic' },
     { header: 'Email', accessor: 'email' },
+    { header: 'Joined Date', accessor: 'created_at' },
+    { header: 'Asset', accessor: 'user.asset.amount' },
+    { header: 'Verification', accessor: 'verification_status' },
+    { header: 'I/C Document', accessor: 'ic_document' },
   ]
-
-  const [data, setData] = useState<Data[]>([])
+  const [dataUserDetails, setDataUserDetails] = useState<Data[]>([])
 
   useEffect(()=>{
     const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await getAllUsers()
-        setData(response)
+        const resUserDetails = await getAllUsers()
+        setDataUserDetails(resUserDetails)
       } catch (error: any) {
         setErrorMessage(error.response.data.error)
       } finally {
@@ -38,8 +41,10 @@ const User = () => {
 
       <span>All Users</span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
-      <Tables columns={columns} data={data}/>
-      
+      <div>
+        <Tables columns={columnsUserDetails} data={dataUserDetails}/>
+      </div>
+
     </div>
   )
 }
