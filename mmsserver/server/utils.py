@@ -385,7 +385,7 @@ class WalletService:
                 amount=amount,
                 created_at=current_time,
                 description=description,
-                request_status=RequestStatus.PENDING,
+                request_status='PENDING',
                 reference=reference
             )
 
@@ -520,7 +520,7 @@ class AssetService:
                 point_type='ASSET',
                 amount=amount,
                 description=description,
-                request_status=RequestStatus.PENDING,
+                request_status='PENDING',
                 reference=reference,
             )
         return asset
@@ -617,7 +617,7 @@ class ProfitService:
                 point_type='PROFIT',
                 amount=amount,
                 description=f"Profit Withdrawal request #{withdrawal_request.id} (Pending): {amount}",
-                request_status=RequestStatus.PENDING,
+                request_status='PENDING',
                 reference=reference
             )
             
@@ -632,7 +632,7 @@ class ProfitService:
 
         withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
         
-        if withdrawal_request.request_status != RequestStatus.PENDING:
+        if withdrawal_request.request_status != 'PENDING':
             raise ValidationError("This request has already been processed")
         
         wallet = withdrawal_request.wallet
@@ -742,7 +742,7 @@ class CommissionService:
                 point_type='COMMISSION',
                 amount=amount,
                 description=f"Withdrawal request #{withdrawal_request.id} (Pending): {amount}",
-                request_status=RequestStatus.PENDING,
+                request_status='PENDING',
                 reference=reference
             )
             
@@ -757,7 +757,7 @@ class CommissionService:
 
         withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
         
-        if withdrawal_request.request_status != RequestStatus.PENDING:
+        if withdrawal_request.request_status != 'PENDING':
             raise ValidationError("This request has already been processed")
         
         wallet = withdrawal_request.wallet

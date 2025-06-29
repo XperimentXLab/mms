@@ -30,10 +30,12 @@ export const AssetStatement = () => {
 
   const columns = [
     { header: "Date", accessor: "created_at" },
-    { header: 'Unlock 6 Month', accessor: 'amount_6m_unlocked' },
-    { header: '6 Month Status', accessor: 'days_until_6m'},
-    { header: 'Unlock 1 Year', accessor: 'amount_1y_unlocked' },
-    { header: '1 Year Status', accessor: 'days_until_1y'},
+    { header: "Amount Locked (6M)", accessor: "amount_6m_locked" },
+    { header: 'Amount Unlock (6M)', accessor: 'amount_6m_unlocked' },
+    { header: 'Days Left (6M)', accessor: 'days_until_6m'},
+    { header: "Amount Locked (1Y)", accessor: "amount_1y_locked" },
+    { header: 'Amount Unlock (1Y)', accessor: 'amount_1y_unlocked' },
+    { header: 'Days Left (1Y)', accessor: 'days_until_1y'},
     { header: "Status", accessor: "request_status_display" },
     { header: "Available Withdraw", accessor: "withdrawable_now" },
     { header: "Action", accessor: "action" },
