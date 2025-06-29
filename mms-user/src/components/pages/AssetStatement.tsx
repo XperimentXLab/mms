@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react"
-//import Buttons from "../props/Buttons"
 import { TableAssetWithdrawal, Tables } from "../props/Tables"
 import { getAssetStatement, getDepositLock } from "../auth/endpoints"
 import type { Data } from "./WalletStatement"
 import Loading from "../props/Loading"
+import Buttons from "../props/Buttons"
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 
 export const AssetStatement = () => {
@@ -16,7 +21,15 @@ export const AssetStatement = () => {
       try {
         setLoading(true)
         const response = await getDepositLock()
-        setData(response)
+        const formattedData = response.map((user: any) => {
+          const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
+          return {
+            ...user,
+            created_date: dt.format("YYYY-MM-DD"),
+            created_time: dt.format("HH:mm:ss"),
+          }
+        });
+        setDataRes(formattedData)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
           setErrorMessage(error.response.data.error)
@@ -29,19 +42,55 @@ export const AssetStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_at" },
+    { header: "Date", accessor: "created_date" },
+    { header: "Time", accessor: "created_time" },
     { header: "Amount Locked (6M)", accessor: "amount_6m_locked" },
     { header: 'Amount Unlock (6M)', accessor: 'amount_6m_unlocked' },
     { header: 'Days Left (6M)', accessor: 'days_until_6m'},
     { header: "Amount Locked (1Y)", accessor: "amount_1y_locked" },
     { header: 'Amount Unlock (1Y)', accessor: 'amount_1y_unlocked' },
     { header: 'Days Left (1Y)', accessor: 'days_until_1y'},
-    { header: "Status", accessor: "request_status_display" },
     { header: "Available Withdraw", accessor: "withdrawable_now" },
     { header: "Action", accessor: "action" },
   ]
   //const depositLock = true
-  const [data, setData] = useState<Data[]>([])
+  interface AssetState {
+    id: string;
+    created_date: string;
+    amount_6m_locked: number;
+    amount_6m_unlocked: number;
+    amount_1y_locked: number;
+    amount_1y_unlocked: number;
+    days_until_6m: number;
+    days_until_1y: number;
+    withdrawable_now: number;
+  }
+
+  const handleWithdraw = (id: string) => {
+    setDataRes(prev => prev.map(asset => 
+      asset.id === id ? { ...asset, action: asset.days_until_6m > 0 || asset.days_until_1y > 0 } : asset
+    ))
+    // call an API to update the status
+  }
+
+const [dataRes, setDataRes] = useState<AssetState[]>([])
+
+const data = dataRes.map(asset => ({
+    ...asset,
+    action: (
+      <div className="flex gap-2">
+        {asset.days_until_6m > 0 || asset.days_until_1y > 0  && (
+          <Buttons 
+            type="button"
+            onClick={() => handleWithdraw(asset.id)}
+            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Withdraw
+          </Buttons>
+        )}
+      </div>
+    )
+  }))
 
   /*
   const dataM = [
@@ -95,7 +144,8 @@ export const WithdrawalAssetStatement = () => {
     { header: "Date", accessor: "created_date" },
     { header: "Amount", accessor: "amount" },
     { header: "Type", accessor: "type" },
-    { header: "Description", accessor: "description" }
+    { header: "Description", accessor: "description" },
+    { header: 'Status', accessor: 'request_status_display'}
   ]
 
   const [data, setData] = useState<Data[]>([])

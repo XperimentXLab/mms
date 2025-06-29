@@ -84,12 +84,14 @@ const data = transactions.map(tx => ({
     action: (
       <div className="flex gap-2">
         {tx.request_status === 'PENDING' && isOneHourPassed(tx.created_date) && (
-          <button 
+          <Buttons 
+            type="button"
+            disabled={tx.request_status !== 'PENDING'}
             onClick={() => handleApprove(tx.id)}
             className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
           >
             Approve
-          </button>
+          </Buttons>
         )}
         {tx.request_status === 'PENDING' ? (
           <>
