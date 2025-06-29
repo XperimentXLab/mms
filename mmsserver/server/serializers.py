@@ -9,10 +9,34 @@ from datetime import date
 
 class UserSerializer(serializers.ModelSerializer):
   verification_status_display = serializers.SerializerMethodField()
+  asset_amount = serializers.SerializerMethodField()
+
   class Meta:
     address_country = serializers.StringRelatedField()
     model = User
-    fields = '__all__'
+    fields = [
+      'id',
+      'username',
+      'ic',
+      'email',
+      'referred_by',
+      'wallet_address',
+      'address_line',
+      'address_city',
+      'address_state',
+      'address_postcode',
+      'address_country',
+      'beneficiary_name',
+      'beneficiary_ic',   
+      'beneficiary_relationship',
+      'beneficiary_phone',
+      'beneficiary_email',
+      'ic_document',
+      'verification_status',
+      'verification_status_display',
+      'asset_amount',
+      'created_at',
+    ]
     extra_kwargs = {
       'password': {'write_only': True},
       'id': {'read_only': True},
@@ -20,8 +44,15 @@ class UserSerializer(serializers.ModelSerializer):
       'ic_document': {'required': False},
       'verification_status': {'required': False},
       'verification_status_display': {'read_only': True},
+      'created_at': {'read_only': True},
+      'asset_amount': {'read_only': True},
     }
-
+  def get_asset_amount(self, obj):
+    asset = Asset.objects.filter(user=obj).first()
+    if asset:
+      return asset.amount
+    return None
+    
   def validate_email(self, value):
     if User.objects.filter(email=value).exists():
       raise serializers.ValidationError('Email already in use')

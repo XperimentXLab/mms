@@ -20,7 +20,7 @@ const User = () => {
     { header: 'Email', accessor: 'email' },
     { header: 'Joined Date', accessor: 'joined_date' },
     { header: 'Joined Time', accessor: 'joined_time' },
-    { header: 'Asset', accessor: 'user.asset.amount' },
+    { header: 'Asset', accessor: 'asset_amount' },
     { header: 'Verification', accessor: 'verification_status' },
     { header: 'I/C Document', accessor: 'ic_document' },
   ]
