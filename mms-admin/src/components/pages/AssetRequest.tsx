@@ -56,10 +56,6 @@ const AssetRequest = () => {
 
 
   const handleApprove = (id: string) => {
-    setTransactions(prev => prev.map(tx => 
-      tx.id === id ? { ...tx, request_status: 'APPROVED' } : tx
-    ))
-
     const fetchData = async () => {
       try {
         setLoading(true)
@@ -67,6 +63,10 @@ const AssetRequest = () => {
           tx_id: id,
           action: 'Approve'
         })
+        setTransactions(prev => prev.map(tx => 
+          tx.id === id ? { ...tx, request_status: 'APPROVED' } : tx
+        ))
+        alert('Transaction approved')
       } catch (error: any) {
         setErrorMessage(error.response.data.error)
       } finally {
@@ -78,9 +78,6 @@ const AssetRequest = () => {
 
   const handleReject = (id: string) => {
     const reason = rejectionReasons[id] || 'No reason provided'
-    setTransactions(prev => prev.map(tx => 
-      tx.id === id ? { ...tx, request_status: 'REJECTED', reference: reason } : tx
-    ))
     const fetchData = async () => {
       try {
         setLoading(true)
@@ -88,6 +85,10 @@ const AssetRequest = () => {
           tx_id: id,
           action: 'Reject'
         })
+        setTransactions(prev => prev.map(tx => 
+          tx.id === id ? { ...tx, request_status: 'REJECTED', reference: reason } : tx
+        ))
+        alert('Transaction rejected')
       } catch (error: any) {
         setErrorMessage(error.response.data.error)
       } finally {
