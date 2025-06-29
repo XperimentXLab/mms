@@ -48,7 +48,7 @@ class User(AbstractUser):
     verbose_name="IC/Driving License"
   )
   verification_status = models.CharField(
-    max_length=20,
+    max_length=40,
     choices=[
       ('REQUIRES_ACTION', 'Requires Action'),
       ('UNDER_REVIEW', 'Under Review'),
@@ -309,7 +309,7 @@ class Transaction(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
   
   # For Transfers
-  target_point_type = models.CharField(max_length=20, choices=POINT_TYPES, blank=True, null=True)
+  target_point_type = models.CharField(max_length=40, choices=POINT_TYPES, blank=True, null=True)
   converted_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
   
   def __str__(self):

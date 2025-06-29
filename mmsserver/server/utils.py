@@ -714,7 +714,7 @@ class CommissionService:
             # Create withdrawal request
             withdrawal_request = WithdrawalRequest.objects.create(
                 wallet=wallet,
-                point_type='COMMISION',
+                point_type='COMMISSION',
                 amount=amount,
                 actual_amount=actual_amount,
                 fee=fee,
@@ -761,7 +761,7 @@ class CommissionService:
         wallet = withdrawal_request.wallet
 
         with db_transaction.atomic():
-            if action == 'APPROVED':
+            if action == 'Approve':
                 # Update request status
                 withdrawal_request.request_status = RequestStatus.APPROVED
                 withdrawal_request.processed_at = timezone.now()
@@ -772,7 +772,7 @@ class CommissionService:
                 txn.description = f"Withdrawal request #{withdrawal_request.id} (Approved)"
                 txn.save()
 
-            elif action == 'REJECTED':
+            elif action == 'Reject':
                 # Refund the amount back to wallet
                 refund_amount = withdrawal_request.amount
                 affiliate_balance = wallet.affiliate_point_balance
