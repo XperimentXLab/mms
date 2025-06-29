@@ -402,7 +402,13 @@ def transfer_master(request):
   sender = request.user
   receiver = request.data.get('receiver') # This should be the username of the receiver
   amount = request.data.get('amount')
-  description = request.data.get('description', f'{sender.id}, {sender.username} transfer to {receiver.id}, {receiver.username}: {amount}')
+  # Fetch the receiver User object
+  try:
+      receiver_user = User.objects.get(username=receiver)
+  except User.DoesNotExist:
+      return Response({'error': 'Receiver username does not exist'}, status=404)
+
+  description = request.data.get('description', f'{sender.id}, {sender.username} transfer to {receiver.id}, {receiver}: {amount}')
   reference = request.data.get('reference', '')
 
   if not receiver or not amount:
@@ -413,11 +419,9 @@ def transfer_master(request):
     return Response({'error': 'Amount must be in number'}, status=400)
 
   try:
-    if not User.objects.filter(username=receiver).exists():
-      return Response({'error': 'Receiver username does not exist'}, status=404)
     result = WalletService.transfer_master_point(
       sender,
-      receiver,
+      receiver_user,
       amount,
       description,
       reference

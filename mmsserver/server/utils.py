@@ -162,12 +162,10 @@ def distribute_profit_manually():
         # Iterate over the values of the map (the wallet objects)
         for wallet_instance in all_wallets_map.values():
             downline_user = wallet_instance.user
-            asset = Asset.objects.filter(user=downline_user).first().amount
-
-            if not asset:
+            asset_obj = Asset.objects.filter(user=downline_user).first()
+            if not asset_obj or asset_obj.amount is None:
                 continue
-
-            asset_balance = asset
+            asset_balance = asset_obj.amount
             
             if asset_balance <= Decimal('0.00'):
                 metrics['skipped_users'] += 1
@@ -245,7 +243,7 @@ def distribute_profit_manually():
             if wallets_to_update_affiliate_balance_list:
                 # Use set to get unique wallet objects, then convert back to list
                 # This ensures each wallet is updated once with its final accumulated affiliate bonus.
-                unique_wallets_for_affiliate_update = list(set(wallets_to_update_affiliate_balance_list))
+                unique_wallets_for_affiliate_update = {w.pk: w for w in wallets_to_update_affiliate_balance_list}.values()
                 for w_instance in unique_wallets_for_affiliate_update:
                     w_instance.updated_at = current_time
                 Wallet.objects.bulk_update(unique_wallets_for_affiliate_update, ['affiliate_point_balance', 'updated_at'])
@@ -325,7 +323,7 @@ class WalletService:
         """Transfer Master Point between users"""
 
         if amount <= 0:
-            raise ValidationError("Amount must be greater than zero")
+            raise ValidationError("Amount is needed")
         
         sender_wallet = sender.wallet
         if sender_wallet.master_point_balance < amount:
@@ -365,12 +363,16 @@ class WalletService:
     def place_asset(user, amount, description="", reference=""):
         """Place asset from Master Point"""
 
+        if amount <= 50:
+            raise ValidationError("Minimum placement amount is 50 USDT")
+
         wallet = Wallet.objects.get(user=user)
         if wallet.master_point_balance < amount:
             raise ValidationError("Insufficient Master Point balance")
         
         with db_transaction.atomic():
-            wallet.master_point_balance -= Decimal(amount)
+            amount = Decimal(amount)
+            wallet.master_point_balance -= amount
             wallet.save()
             
             asset = Asset.objects.get(user=user)
@@ -391,8 +393,8 @@ class WalletService:
 
             DepositLock.objects.create(
                 deposit=deposit_trx,
-                amount_6m_locked=amount / 2,  # 50 (for 6m)
-                amount_1y_locked=amount / 2,  # 50 (for 1y)
+                amount_6m_locked=amount / Decimal('2'),  # 50 (for 6m)
+                amount_1y_locked=amount / Decimal('2'),  # 50 (for 1y)
                 )
         
         current_time = timezone.now()
@@ -508,7 +510,7 @@ class AssetService:
             deposit__transaction_type='ASSET_PLACEMENT'
         ).select_related('deposit').order_by('deposit__created_at')
 
-        total_withdrawable = sum(lock.withdrawable_now for lock in locks)
+        total_withdrawable = sum(lock.withdrawable_now or Decimal('0.00') for lock in locks)        
         if amount > total_withdrawable:
             raise ValidationError(
             f"Only {total_withdrawable} is withdrawable (50% after 6M, 100% after 1Y)"
