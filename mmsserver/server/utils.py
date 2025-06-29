@@ -385,6 +385,7 @@ class WalletService:
                 amount=amount,
                 created_at=current_time,
                 description=description,
+                request_status=RequestStatus.PENDING,
                 reference=reference
             )
 
@@ -481,6 +482,8 @@ class AssetService:
             DepositLock.objects.create(
                 deposit=trx,
                 is_free_campro=True,  # <-- Mark as free CAMPRO (special lock)
+                amount_6m_locked=Decimal('0.00'),  # Initially locked
+                amount_1y_locked=Decimal('100.00'),   # Initially locked
                 amount_6m_unlocked=Decimal('0.00'),  # No 6-month withdrawal
                 amount_1y_unlocked=Decimal('0.00')   # Initially locked
             )
@@ -517,6 +520,7 @@ class AssetService:
                 point_type='ASSET',
                 amount=amount,
                 description=description,
+                request_status=RequestStatus.PENDING,
                 reference=reference,
             )
         return asset
@@ -613,6 +617,7 @@ class ProfitService:
                 point_type='PROFIT',
                 amount=amount,
                 description=f"Profit Withdrawal request #{withdrawal_request.id} (Pending): {amount}",
+                request_status=RequestStatus.PENDING,
                 reference=reference
             )
             
@@ -737,6 +742,7 @@ class CommissionService:
                 point_type='COMMISSION',
                 amount=amount,
                 description=f"Withdrawal request #{withdrawal_request.id} (Pending): {amount}",
+                request_status=RequestStatus.PENDING,
                 reference=reference
             )
             
