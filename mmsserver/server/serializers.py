@@ -272,11 +272,11 @@ class TransactionSerializer(serializers.ModelSerializer):
       'amount', 
       'transaction_type', 
       'point_type',
-      'converted_amount'
+      'converted_amount',
+      'request_status_display'
     ]
-    extra_kwargs = {
-      'request_status_display': {'read_only': True}
-    }
+    def get_request_status_display(self, obj):
+      return obj.get_request_status_display()
 
 class WithdrawalRequestSerializer(serializers.ModelSerializer):
 
@@ -312,6 +312,8 @@ class WithdrawalRequestSerializer(serializers.ModelSerializer):
     extra_kwargs = {
       'request_status_display': {'read_only': True}
     }
+    def get_request_status_display(self, obj):
+      return obj.get_request_status_display()
 
 class DepositLockSerializer(serializers.ModelSerializer):
 
@@ -324,6 +326,8 @@ class DepositLockSerializer(serializers.ModelSerializer):
       'deposit',
       'amount_6m_unlocked',
       'amount_1y_unlocked',
+      'amount_6m_locked',
+      'amount_1y_locked',
       'created_at',
       'days_until_6m',
       'days_until_1y',
@@ -335,6 +339,8 @@ class DepositLockSerializer(serializers.ModelSerializer):
       'deposit'
       'amount_6m_unlocked',
       'amount_1y_unlocked',
+      'amount_6m_locked',
+      'amount_1y_locked',
       'created_at',
       'days_until_6m',
       'days_until_1y',
@@ -343,4 +349,6 @@ class DepositLockSerializer(serializers.ModelSerializer):
     extra_kwargs = {
       'request_status_display': {'read_only': True}
     }
+    def get_request_status_display(self, obj):
+      return obj.get_request_status_display()
     

@@ -368,7 +368,7 @@ def update_profit_sharing (request):
   try:
     if user.is_staff:
       userSuper = User.objects.get(is_superuser=True)
-      wallet = Wallet.objects.get_or_create(user=userSuper)
+      wallet, created = Wallet.objects.get_or_create(user=userSuper)
       wallet.profit_point_balance += amount
       wallet.save()
       serializer = WalletSerializer(wallet, data=request.data, partial=True)
