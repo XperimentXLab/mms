@@ -1,2 +1,4 @@
 .env
 verification_documents
+
+auth_backup.json
