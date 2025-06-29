@@ -61,12 +61,20 @@ const AssetRequest = () => {
     setRejectionReasons(prev => ({ ...prev, [id]: reason }))
   }
 
+  /*
   const isOneHourPassed = (createdDate: string) => {
     const created = new Date(createdDate)
     const now = new Date()
     const diffInHours = (now.getTime() - created.getTime()) / (1000 * 60 * 60)
     return diffInHours >= 1
-  }
+  }*/
+
+  const isFiveMinutesPassed = (createdDate: string) => {
+  const created = new Date(createdDate)
+  const now = new Date()
+  const diffInMinutes = (now.getTime() - created.getTime()) / (1000 * 60)
+  return diffInMinutes >= 5
+}
 
 
   const columns = [
@@ -83,7 +91,7 @@ const data = transactions.map(tx => ({
     ...tx,
     action: (
       <div className="flex gap-2">
-        {tx.request_status === 'PENDING' && isOneHourPassed(tx.created_date) && (
+        {tx.request_status === 'PENDING' && isFiveMinutesPassed(tx.created_date) && (
           <Buttons 
             type="button"
             disabled={tx.request_status !== 'PENDING'}
