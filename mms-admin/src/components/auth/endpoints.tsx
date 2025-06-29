@@ -145,3 +145,9 @@ export const updateProfitSharing = async (amount: number) => {
   })
   return response.data
 }
+
+
+export const getAllUsers = async () => {
+  const response = await api.get('/all_users/')
+  return response.data
+}
