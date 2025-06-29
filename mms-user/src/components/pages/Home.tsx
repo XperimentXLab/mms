@@ -113,7 +113,7 @@ const Home = () => {
 
       <div className="grid grid-cols-1 gap-3">
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-5 sm:items-start sm:justify-center">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-start sm:justify-center">
           <FixedText label="USERNAME" text={username} />
           <FixedText label="USER ID" text={userId} />
           <FixedText label="Master Point" text={masterP.toString()} />

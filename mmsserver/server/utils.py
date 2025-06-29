@@ -388,7 +388,11 @@ class WalletService:
                 reference=reference
             )
 
-            DepositLock.objects.create(deposit=deposit_trx)
+            DepositLock.objects.create(
+                deposit=deposit_trx,
+                amount_6m_locked=amount / 2,  # 50 (for 6m)
+                amount_1y_locked=amount / 2,  # 50 (for 1y)
+                )
         
         current_time = timezone.now()
         ## Introducer Bonus ##

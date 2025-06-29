@@ -348,6 +348,12 @@ class DepositLock(models.Model):
     on_delete=models.CASCADE,
     related_name='lock_info'
   )
+  amount_6m_locked = models.DecimalField(  # Tracks the 50% for 6m unlock
+    max_digits=15, decimal_places=2, default=Decimal('0.00')  
+  )
+  amount_1y_locked = models.DecimalField(  # Tracks the 50% for 1y unlock
+    max_digits=15, decimal_places=2, default=Decimal('0.00')  
+  )
   amount_6m_unlocked = models.DecimalField(  # Tracks how much of the 50% is withdrawn
     max_digits=15, 
     decimal_places=2, 
@@ -382,19 +388,15 @@ class DepositLock(models.Model):
     current_time = timezone.now()
     age = current_time - self.deposit.created_at
 
-    # Free CAMPRO (marked by is_free_campro on DepositLock) can ONLY be withdrawn after 1 year
-    if self.is_free_campro:
-      if age >= timedelta(days=365):
-        return (self.deposit.amount - self.amount_1y_unlocked) # Use self.deposit.amount
-      else:
-        return Decimal('0.00')
-            
-    if age >= timedelta(days=365):
-      return (self.deposit.amount - self.amount_6m_unlocked - self.amount_1y_unlocked) # Use self.deposit.amount
-    elif age >= timedelta(days=180):
-      return (self.deposit.amount / 2) - self.amount_6m_unlocked # Use self.deposit.amount
+    if self.is_free_campro:  # Full lock for 1 year
+        return (self.deposit.amount - self.amount_1y_unlocked) if age >= timedelta(days=365) else Decimal('0.00')
+
+    if age >= timedelta(days=365):  # Both 6m & 1y unlocked
+        return (self.amount_6m_locked - self.amount_6m_unlocked) + (self.amount_1y_locked - self.amount_1y_unlocked)
+    elif age >= timedelta(days=180):  # Only 6m unlocked
+        return (self.amount_6m_locked - self.amount_6m_unlocked)
     else:
-      return Decimal('0.00')
+        return Decimal('0.00')
 
   def __str__(self):
     return f"Lock for {self.deposit.amount} (Deposit: {self.deposit.created_at})"

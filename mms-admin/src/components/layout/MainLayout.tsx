@@ -133,7 +133,7 @@ const MainLayout = () => {
 
       {openLogout && <Logout />}
 
-      <div className="h-full mt-15 mb-5 md:bg-[url(../BG-MMS-DESKTOP.png)] bg-[url(../BG-MMS-MOBILE.png)]">
+      <div className="text-white mt-15 mb-5 bg-auto md:bg-[url(../BG-MMS-DESKTOP.png)] bg-[url(../BG-MMS-MOBILE.png)]">
         <Outlet />
       </div>
 

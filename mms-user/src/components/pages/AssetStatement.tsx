@@ -29,9 +29,13 @@ export const AssetStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "date" },
-    { header: "Amount", accessor: "amount" },
-    { header: 'Unlock Date', accessor: 'unlock_date' },
+    { header: "Date", accessor: "created_at" },
+    { header: 'Unlock 6 Month', accessor: 'amount_6m_unlocked' },
+    { header: '6 Month Status', accessor: 'days_until_6m'},
+    { header: 'Unlock 1 Year', accessor: 'amount_1y_unlocked' },
+    { header: '1 Year Status', accessor: 'days_until_1y'},
+    { header: "Status", accessor: "request_status" },
+    { header: "Available Withdraw", accessor: "withdrawable_now" },
     { header: "Action", accessor: "action" },
   ]
   //const depositLock = true
