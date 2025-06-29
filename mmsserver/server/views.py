@@ -209,14 +209,14 @@ def request_password_reset_email(request):
       uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
       token = default_token_generator.make_token(user)
 
-      #frontend_url = getattr(settings, 'CSRF_TRUSTED_ORIGINS')
-      reset_link = f"http://localhost:5173/reset-password-confirm/{uidb64}/{token}/"
+      frontend_url = 'https://mmsventure.io'
+      reset_link = f"{frontend_url}/reset-password-confirm/{uidb64}/{token}/"
       
       subject = 'Password Reset Requested'
       reset_password_template = "password_reset_email.html"
       c = {
           "email": user.email,
-          "domain": request.get_host(), # or your frontend domain
+          "domain": frontend_url, # or your frontend domain
           "site_name": "Test1-Project",
           "uid": uidb64,
           "user": user,
@@ -234,7 +234,7 @@ def request_password_reset_email(request):
       # print(f"DEBUG: Password reset link for {user.email}: {reset_link}") # For local testing if email is not set up
 
       logger.info(f"Password reset link for {user.email}: {reset_link}")
-      print(f"DEBUG: Password reset link for {user.email}: {reset_link}")
+      print(f"Password reset link for {user.email}: {reset_link}")
       return Response({'message': 'If an account with this email, a password reset link will be sent.', 'reset_link': reset_link}, status=200)
     except User.DoesNotExist:
       return Response({'message': 'If an account with this email exists, a password reset link has been sent.'}, status=200)
