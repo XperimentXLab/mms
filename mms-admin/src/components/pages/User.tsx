@@ -18,6 +18,7 @@ const User = () => {
     { header: 'Username', accessor: 'username' },
     { header: 'I/C', accessor: 'ic' },
     { header: 'Email', accessor: 'email' },
+    { header: 'Referral ID', accessor: 'referred_by' },
     { header: 'Joined Date', accessor: 'joined_date' },
     { header: 'Joined Time', accessor: 'joined_time' },
     { header: 'Asset', accessor: 'asset_amount' },
