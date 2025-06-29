@@ -63,6 +63,7 @@ export const AssetStatement = () => {
     amount_1y_unlocked: number;
     days_until_6m: number;
     days_until_1y: number;
+    request_status: string;
     withdrawable_now: number;
   }
 
@@ -76,20 +77,20 @@ export const AssetStatement = () => {
 const [dataRes, setDataRes] = useState<AssetState[]>([])
 
 const data = dataRes.map(asset => ({
-    ...asset,
-    action: (
-      <div className="flex gap-2">
-        {asset.days_until_6m > 0 || asset.days_until_1y > 0  && (
-          <Buttons 
-            type="button"
-            onClick={() => handleWithdraw(asset.id)}
-            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            Withdraw
-          </Buttons>
-        )}
-      </div>
-    )
+  ...asset,
+  action: (
+    <div className="flex gap-2">
+      {asset.days_until_6m > 0 || asset.days_until_1y > 0  && (
+        <Buttons 
+          type="button"
+          onClick={() => handleWithdraw(asset.id)}
+          className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+        >
+          Withdraw
+        </Buttons>
+      )}
+    </div>
+  )
   }))
 
   /*
@@ -108,11 +109,15 @@ const data = dataRes.map(asset => ({
     <div>
       {loading && <Loading />}
       <span className="font-semibold">
-        Asset Statement
+      Asset Statement
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
+      {dataRes.some(asset => asset.request_status === 'APPROVED') ? (
       <TableAssetWithdrawal columns={columns} data={data} />
+      ) : (
+      <Tables columns={columns} data={[]} />
+      )}
     </div>
   )
 }
