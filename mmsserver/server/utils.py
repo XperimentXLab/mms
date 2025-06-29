@@ -373,7 +373,7 @@ class WalletService:
             wallet.master_point_balance -= Decimal(amount)
             wallet.save()
             
-            asset, created = Asset.get_or_create_asset(user)
+            asset = Asset.objects.get(user=user)
 
             current_time = timezone.now()
             deposit_trx = Transaction.objects.create(

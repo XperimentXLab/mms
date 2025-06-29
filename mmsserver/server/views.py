@@ -387,7 +387,7 @@ def get_asset_transaction(request):
 def get_deposit_lock(request):
   user = request.user
   try:
-    deposit_lock = DepositLock.objects.get(user=user)
+    deposit_lock = DepositLock.objects.get(deposit__user=user)
     serializer = DepositLockSerializer(deposit_lock)
     return Response(serializer.data, status=200)
   except DepositLock.DoesNotExist:
