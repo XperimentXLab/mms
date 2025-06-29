@@ -21,7 +21,6 @@ const AssetRequest = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
-
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [rejectionReasons, setRejectionReasons] = useState<Record<string, string>>({})
 
@@ -38,7 +37,7 @@ const AssetRequest = () => {
         setLoading(false)
       }
     }
-    fetchData
+    fetchData()
   }, [])
 
 
