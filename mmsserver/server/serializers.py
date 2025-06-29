@@ -308,10 +308,8 @@ class WithdrawalRequestSerializer(serializers.ModelSerializer):
       'fee',
       'fee_rate',
       'point_type'
+      'request_status_display',
     ]
-    extra_kwargs = {
-      'request_status_display': {'read_only': True}
-    }
     def get_request_status_display(self, obj):
       return obj.get_request_status_display()
 
@@ -345,10 +343,8 @@ class DepositLockSerializer(serializers.ModelSerializer):
       'days_until_6m',
       'days_until_1y',
       'withdrawable_now',
+      'request_status_display',
     ]
-    extra_kwargs = {
-      'request_status_display': {'read_only': True}
-    }
     def get_request_status_display(self, obj):
       return obj.get_request_status_display()
     

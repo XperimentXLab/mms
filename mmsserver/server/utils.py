@@ -365,7 +365,7 @@ class WalletService:
     def place_asset(user, amount, description="", reference=""):
         """Place asset from Master Point"""
 
-        wallet = Wallet.objects.get(id=user.id)
+        wallet = Wallet.objects.get(user=user)
         if wallet.master_point_balance < amount:
             raise ValidationError("Insufficient Master Point balance")
         
