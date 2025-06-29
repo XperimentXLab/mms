@@ -304,4 +304,7 @@ class DepositLockSerializer(serializers.ModelSerializer):
       'days_until_1y',
       'withdrawable_now',
     ]
+    extra_kwargs = {
+      'request_status_display': {'read_only': True}
+    }
     
