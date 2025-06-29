@@ -253,7 +253,19 @@ class TransactionSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Transaction
-    fields = '__all__'
+    fields = [
+      'id',
+      'user',
+      'amount',
+      'transaction_type',
+      'point_type',
+      'created_at',
+      'converted_amount',
+      'request_status',
+      'request_status_display',
+      'reference',
+      'description'
+    ]
     read_only_fields = [
       'id', 
       'created_at', 
@@ -272,7 +284,21 @@ class WithdrawalRequestSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = WithdrawalRequest
-    fields = '__all__'
+    fields = [
+      'id',
+      'user',
+      'amount',
+      'actual_amount',
+      'fee',
+      'fee_rate',
+      'point_type',
+      'created_at',
+      'processed_at',
+      'request_status',
+      'request_status_display',
+      'reference',
+      'description'
+    ]
     read_only_fields = [
       'id',
       'created_at',
@@ -293,7 +319,17 @@ class DepositLockSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = DepositLock
-    fields = '__all__'
+    fields = [
+      'id',
+      'deposit',
+      'amount_6m_unlocked',
+      'amount_1y_unlocked',
+      'created_at',
+      'days_until_6m',
+      'days_until_1y',
+      'withdrawable_now',
+      'request_status_display'
+    ]
     read_only_fields = [
       'id',
       'deposit'
