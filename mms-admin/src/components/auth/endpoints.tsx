@@ -39,6 +39,12 @@ export const logout = async () => {
   return response.data
 }
 
+
+export const userDetails = async () => {
+  const response = await api.get('/user_details/')
+  return response.data
+}
+
 const activeMonth = new Date().toLocaleDateString('en-US', { month: 'numeric' });
 const activeYear = new Date().toLocaleDateString('en-US', { year: 'numeric' })
 export const get_profit = async () => {
@@ -112,16 +118,16 @@ interface SetupUserRes {
   username: string
   masterAmount: number
   profitAmount: number
-  commissionAmount: number
+  affiliateAmount: number
 }
 export const setupUser = async (SetupUserData: SetupUserRes) => {
-  const { userID, username, masterAmount, profitAmount, commissionAmount } = SetupUserData
+  const { userID, username, masterAmount, profitAmount, affiliateAmount } = SetupUserData
   const response = await api.post('/setup_user/', {
     user_id: userID,
     username,
     master_amount: masterAmount,
     profit_amount: profitAmount,
-    commission_amount: commissionAmount
+    affiliate_amount: affiliateAmount
   })
   return response.data
 }
@@ -137,5 +143,11 @@ export const updateProfitSharing = async (amount: number) => {
   const response = await api.put('/update_profit_sharing/', {
     amount
   })
+  return response.data
+}
+
+
+export const getAllUsers = async () => {
+  const response = await api.get('/all_users/')
   return response.data
 }

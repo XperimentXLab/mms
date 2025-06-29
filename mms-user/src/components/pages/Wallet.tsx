@@ -20,10 +20,10 @@ const Wallet = () => {
   const [masterBalance, setMasterBalance] = useState<number>(0)
   const [profitBalance, setProfitBalance] = useState<number>(0)
   const [affiliateBalance, setAffiliateBalance] = useState<number>(0)
-  const [bonusBalance, setBonusBalance] = useState<number>(0)
+  const [introducerBalance, setIntroducerBalance] = useState<number>(0)
   const [walletAddress, setWalletAddress] = useState<string | undefined>(undefined)
 
-  // affiliate + bonus
+  // affiliate + introducer
   const [commissionBalance, setCommissionAmount] = useState<number>(0)
   const [commissionPoint, setCommissionPoint] = useState<number>(0)
 
@@ -48,7 +48,7 @@ const Wallet = () => {
   ]
   const data = [
     { type: 'Affiliate', amount: affiliateBalance },
-    { type: 'Introducer', amount: bonusBalance }
+    { type: 'Introducer', amount: introducerBalance }
   ]
 
 
@@ -62,8 +62,8 @@ const Wallet = () => {
         setMasterBalance(resWallet.master_point_balance || 0)
         setProfitBalance(resWallet.profit_point_balance || 0)
         setAffiliateBalance(resWallet.affiliate_point_balance || 0)
-        setBonusBalance(resWallet.bonus_point_balance || 0)
-        setCommissionAmount(Number(affiliateBalance)+Number(bonusBalance) || 0)
+        setIntroducerBalance(resWallet.intoducer_point_balance || 0)
+        setCommissionAmount(Number(affiliateBalance)+Number(introducerBalance) || 0)
 
         // Request Deposit Master Point
         //setUserID(resUserDetails.id)
@@ -294,7 +294,7 @@ const Wallet = () => {
         <div className="flex flex-col border-gray-500 gap-1.5 border py-2 px-4 rounded-xl shadow-lg shadow-red-600 bg-white">
 
           <div className="flex justify-between">
-            <Spannn label="Commision">{commissionBalance}</Spannn>
+            <Spannn label="Commision">{commissionBalance.toFixed(2)}</Spannn>
             <span className="cursor-pointer" onClick={toggleBonusUpDown}>{bonusUpDown ? <FaChevronUp /> : <FaChevronDown />}</span>
           </div>
           <Spannn label="Wallet Address">{walletAddress === undefined ? 'Not set' : walletAddress}</Spannn>
@@ -303,7 +303,7 @@ const Wallet = () => {
             <InputNormal placeholder="Enter amount" 
               type="number"
               onChange={e => setCommissionPoint(Number(e.target.value))}
-              value={String(commissionPoint.toFixed(2))}
+              value={String(commissionPoint)}
               required={true}
             />
             <Buttons type="submit">Withdraw</Buttons>       

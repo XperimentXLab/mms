@@ -12,7 +12,7 @@ const Setup = () => {
   const [username, setUsername] = useState<string>('')
   const [masterAmount, setMasterAmount] = useState<string>('')
   const [profitAmount, setProfitAmount] = useState<string>('')
-  const [commissionAmount, setCommissionAmount] = useState<string>('')
+  const [affiliateAmount, setAffiliateAmount] = useState<string>('')
 
 
   const [errorMessage, setErrorMessage] = useState<string>('')
@@ -27,7 +27,7 @@ const Setup = () => {
         username,
         masterAmount: Number(masterAmount),
         profitAmount: Number(profitAmount),
-        commissionAmount: Number(commissionAmount)
+        affiliateAmount: Number(affiliateAmount)
       })
       alert('User setup success !')
     } catch (error: any) {
@@ -80,8 +80,8 @@ const Setup = () => {
 
         <Inputss label="Affiliate" placeholder="Enter affiliate bonus amount"
           type="text" 
-          onChange={e => setCommissionAmount(e.target.value)}
-          value={commissionAmount}  
+          onChange={e => setAffiliateAmount(e.target.value)}
+          value={affiliateAmount}  
         />
 
         <Buttons type="submit">Submit</Buttons>

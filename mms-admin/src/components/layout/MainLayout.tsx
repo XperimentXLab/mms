@@ -4,7 +4,8 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { NavLinkss } from "../props/theLinks";
 import Loading from "../props/Loading";
 import Buttons from "../props/Buttons";
-import { logout } from "../auth/endpoints";
+import { logout, userDetails } from "../auth/endpoints";
+
 
 const MainLayout = () => {
 
@@ -55,12 +56,12 @@ const MainLayout = () => {
   }, [])
 
 
-  //  const [username, setUsername] = useState<string>('')
+  const [username, setUsername] = useState<string>('')
   useEffect(() => {
     const fetchData = async () => {
       try {
-//        const response = await userDetails()
-//        setUsername(response.username)
+        const response = await userDetails()
+        setUsername(response.username)
       } catch (error) {
         console.error('Error fetching user details:', error)
       }
@@ -104,7 +105,7 @@ const MainLayout = () => {
 
             <div className="flex flex-col cursor-default">
               <span className="font-semibold">Money Management Solution</span>
-              <span>Welcome, user</span>
+              <span>Welcome, {username}</span>
             </div>
 
           </div>   
@@ -118,7 +119,8 @@ const MainLayout = () => {
           <NavLinkss to={'/operation'}>Operation</NavLinkss>
           <NavLinkss to={'/users'}>Users</NavLinkss>
           <NavLinkss to={'/verification'}>Verification</NavLinkss>
-          <NavLinkss to={'/requests'}>Requests</NavLinkss>
+          <NavLinkss to={'/asset/requests'}>Asset Request</NavLinkss>
+          <NavLinkss to={'/withdraw/requests'}>Withdraw Request</NavLinkss>
           <NavLinkss to={'/transaction'}>Transaction</NavLinkss>
           <Buttons type="button" onClick={handleLogout}
             className="hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg cursor-pointer"
@@ -131,7 +133,7 @@ const MainLayout = () => {
 
       {openLogout && <Logout />}
 
-      <div className="mt-15 mb-5">
+      <div className="h-full mt-15 mb-5 md:bg-[url(../BG-MMS-DESKTOP.png)] bg-[url(../BG-MMS-MOBILE.png)]">
         <Outlet />
       </div>
 

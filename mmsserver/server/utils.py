@@ -316,25 +316,6 @@ class UserService:
         return wallet 
 
 
-# need change .. introducer get bonus every time level 1 place asset 
-def grant_introducer(user, amount, description="", reference=""):
-    wallet = user.wallet
-    with db_transaction.atomic():
-        wallet.bonus_point_balance += Decimal(amount)
-        wallet.save()
-        
-        Transaction.objects.create(
-            user=user,
-            wallet=wallet,
-            transaction_type='INTRODUCER_BONUS',
-            point_type='COMMISSION',
-            amount=amount,
-            description=description,
-            reference=reference
-        )
-    return wallet
-
-
 class WalletService:
     @staticmethod
     def transfer_master_point(sender, receiver, amount, description="", reference=""):
@@ -377,7 +358,7 @@ class WalletService:
             )
         return sender_wallet, receiver_wallet
 
-    @staticmethod #need admin approval (wait boss zaemy)
+    @staticmethod 
     def place_asset(user, amount, description="", reference=""):
         """Place asset from Master Point"""
 
@@ -405,6 +386,37 @@ class WalletService:
             )
 
             DepositLock.objects.create(deposit=deposit_trx)
+        
+        ## Introducer Bonus ##
+        if user.referred_by:
+            try:
+                introducer = User.objects.get(id=user.referred_by)
+                introducer_wallet = introducer.wallet
+                # Determine bonus rate
+                if 200 <= amount <= 999:
+                    bonus_rate = Decimal('0.02')
+                elif 1000 <= amount <= 9999:
+                    bonus_rate = Decimal('0.025')
+                elif amount > 10000:
+                    bonus_rate = Decimal('0.03')
+                else:
+                    bonus_rate = Decimal('0.00')
+                if bonus_rate > 0:
+                    bonus_amount = (Decimal(amount) * bonus_rate).quantize(Decimal('0.01'))
+                    introducer_wallet.introducer_point_balance += bonus_amount
+                    introducer_wallet.save()
+                    Transaction.objects.create(
+                        user=introducer,
+                        wallet=introducer_wallet,
+                        transaction_type='INTRODUCER_BONUS',
+                        point_type='COMMISSION',
+                        amount=bonus_amount,
+                        description=f"Introducer bonus for {user.username} asset placement ({amount})",
+                        reference=f"INTRODUCER_BONUS {user.id}_{timezone.now().strftime('%Y%m%d')}"
+                    )
+            except User.DoesNotExist:
+                pass # Referrer not found, skip bonus
+                    
         return wallet, asset
 
     @staticmethod
@@ -420,15 +432,15 @@ class WalletService:
             asset = trx.asset
             amount = trx.converted_amount
 
-            if action == 'APPROVE':
+            if action == 'Approve':
                 asset.amount += Decimal(amount)
                 asset.save()
-                trx.request_status = 'APPROVED'
+                trx.request_status = RequestStatus.APPROVED
                 trx.save()
-            elif action == 'REJECT':
+            elif action == 'Reject':
                 wallet.master_point_balance += Decimal(amount)
                 wallet.save()
-                trx.request_status = 'REJECTED'
+                trx.request_status = RequestStatus.REJECTED
                 trx.save()
             return trx
         
@@ -512,7 +524,7 @@ class AssetService:
                 request_status=RequestStatus.PENDING
             )
             
-            if action == 'APPROVE':
+            if action == 'Approve':
                 # Deduct from locks and balance
                 locks = DepositLock.objects.filter(
                     deposit__user=trx.user
@@ -548,11 +560,11 @@ class AssetService:
                 wallet.save()
 
                 # Mark as approved
-                trx.request_status = 'APPROVED'
+                trx.request_status = RequestStatus.APPROVED
                 trx.save()
 
-            elif action == 'REJECT':
-                trx.request_status = 'REJECTED'
+            elif action == 'Reject':
+                trx.request_status = RequestStatus.REJECTED
                 trx.save()
 
             return trx
@@ -685,7 +697,7 @@ class CommissionService:
             raise ValidationError("Minimum withdrawal amount is 50 USDT")
         
         wallet = user.wallet
-        commission_point = wallet.affiliate_point_balance + wallet.bonus_point_balance
+        commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
         if commission_point < amount:
             raise ValidationError("Insufficient Commission Point balance")
         
@@ -712,7 +724,7 @@ class CommissionService:
                 wallet.affiliate_point_balance -= Decimal(amount)
             else:
                 wallet.affiliate_point_balance = Decimal('0.00')
-                wallet.bonus_point_balance -= Decimal(balance_deduct)
+                wallet.introducer_point_balance -= Decimal(balance_deduct)
             wallet.save()
             
             # Create pending transaction
@@ -763,7 +775,7 @@ class CommissionService:
                 ori_bounus_deduct = refund_amount - ori_affiliate_deduct
 
                 wallet.affiliate_point_balance += ori_affiliate_deduct
-                wallet.bonus_point_balance += ori_bounus_deduct
+                wallet.introducer_point_balance += ori_bounus_deduct
                 wallet.save()
                 
                 # Update request status
@@ -783,7 +795,7 @@ class CommissionService:
     def convert_to_master_point(user, amount, reference="", description=""):
         """Convert Commission Point to Master Point (must be multiple of 10)"""
         wallet = user.wallet
-        commission_point = wallet.affiliate_point_balance + wallet.bonus_point_balance
+        commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
 
         if amount % 10 != 0:
             raise ValidationError("Amount must be a multiple of 10")
@@ -798,9 +810,9 @@ class CommissionService:
                 wallet.affiliate_point_balance -= Decimal(amount)
             else:
                 wallet.affiliate_point_balance = Decimal('0.00')
-                if wallet.bonus_point_balance < convert_balance:
+                if wallet.introducer_point_balance < convert_balance:
                     raise ValidationError("Insufficient Commission Point balance(bonus insufficient)")
-                wallet.bonus_point_balance -= convert_balance
+                wallet.introducer_point_balance -= convert_balance
             wallet.master_point_balance += Decimal(amount)
             wallet.save()
             
