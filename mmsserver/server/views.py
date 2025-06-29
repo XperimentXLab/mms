@@ -400,18 +400,18 @@ def get_deposit_lock(request):
 @permission_classes([IsAuthenticated])
 def transfer_master(request):
   sender = request.user
-  receiver = request.data.get('receiver') # This should be the username of the receiver
+  receiver_username = request.data.get('receiver') # This should be the username of the receiver
   amount = request.data.get('amount')
   # Fetch the receiver User object
   try:
-      receiver_user = User.objects.get(username=receiver)
+      receiver_user = User.objects.get(username=receiver_username)
   except User.DoesNotExist:
       return Response({'error': 'Receiver username does not exist'}, status=404)
 
-  description = request.data.get('description', f'{sender.id}, {sender.username} transfer to {receiver.id}, {receiver}: {amount}')
+  description = request.data.get('description', f'{sender.id}, {sender.username} transfer to {receiver_user.id}, {receiver_user.id}: {amount}')
   reference = request.data.get('reference', '')
 
-  if not receiver or not amount:
+  if not receiver_username or not amount:
     return Response({'error': 'Receiver ID and amount are required'}, status=400)
   try:
     amount = Decimal(amount)
