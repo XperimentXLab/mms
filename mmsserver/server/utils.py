@@ -144,8 +144,8 @@ def distribute_profit_manually():
         # We operate on these wallet objects directly.
         eligible_users = User.objects.filter(
             is_active=True,
-            wallet__isnull=False,  # Has a wallet
-            asset__amount__gt=0    # Has assets > 0
+            wallet__isnull=False,
+            assets__amount__gt=0  # Use 'assets' (the related_name)
         ).select_related('wallet').prefetch_related('asset')
         all_wallets_map = {user.id: user.wallet for user in eligible_users if hasattr(user, 'wallet')}
         all_asset_map = {user.id: user.assets.filter(amount__gt=Decimal('0.00')).first() for user in eligible_users}
@@ -438,15 +438,16 @@ class WalletService:
             
             wallet = trx.wallet
             asset = trx.asset
-            amount = trx.amount
+            amount = trx.amount if trx.amount is not None else Decimal('0.00')
+
 
             if action == 'Approve':
-                asset.amount += Decimal((trx.converted_amount or trx.amount or '0.00'))
+                asset.amount += Decimal(amount)
                 asset.save()
                 trx.request_status = 'APPROVED'
                 trx.save()
             elif action == 'Reject':
-                wallet.master_point_balance += Decimal((trx.converted_amount or trx.amount or '0.00'))
+                wallet.master_point_balance += Decimal(amount)
                 wallet.save()
                 trx.request_status = 'REJECTED'
                 trx.save()
