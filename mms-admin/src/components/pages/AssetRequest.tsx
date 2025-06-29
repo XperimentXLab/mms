@@ -81,7 +81,20 @@ const AssetRequest = () => {
     setTransactions(prev => prev.map(tx => 
       tx.id === id ? { ...tx, request_status: 'REJECTED', reference: reason } : tx
     ))
-    // call an API to update the status
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        await processPlaceAsset({
+          tx_id: id,
+          action: 'Reject'
+        })
+      } catch (error: any) {
+        setErrorMessage(error.response.data.error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
   }
 
   const handleReasonChange = (id: string, reason: string) => {
