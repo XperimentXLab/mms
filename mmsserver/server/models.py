@@ -365,19 +365,22 @@ class DepositLock(models.Model):
   @property
   def days_until_6m(self):
     """Returns days left until 6-month unlock."""
-    delta = (self.deposit.created_at + timedelta(days=180)) - timezone.now()
+    current_time = timezone.now()
+    delta = (self.deposit.created_at + timedelta(days=180)) - current_time
     return max(0, delta.days)
 
   @property
   def days_until_1y(self):
     """Returns days left until 1-year unlock."""
-    delta = (self.deposit.created_at + timedelta(days=365)) - timezone.now()
+    current_time = timezone.now()
+    delta = (self.deposit.created_at + timedelta(days=365)) - current_time
     return max(0, delta.days)
 
   @property
   def withdrawable_now(self):
     """Calculates currently withdrawable amount."""
-    age = timezone.now() - self.deposit.created_at
+    current_time = timezone.now()
+    age = current_time - self.deposit.created_at
 
     # Free CAMPRO (marked by is_free_campro on DepositLock) can ONLY be withdrawn after 1 year
     if self.is_free_campro:
