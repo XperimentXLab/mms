@@ -462,7 +462,7 @@ class AssetService:
         
         with db_transaction.atomic():
             # 1. Add 100 to user's Asset
-            asset, created = Asset.get_or_create_asset(user)
+            asset, created = Asset.objects.get_or_create(user=user)
             asset.amount += Decimal('100.00')
             asset.is_free_campro = True  # Mark as received
             asset.save()
