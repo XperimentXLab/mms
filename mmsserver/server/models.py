@@ -302,7 +302,7 @@ class Transaction(models.Model):
   asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='transactions', null=True)
   transaction_type = models.CharField(max_length=40, choices=TRANSACTION_TYPES)
   point_type = models.CharField(max_length=40, choices=POINT_TYPES)
-  request_status = models.CharField(max_length=20, choices=RequestStatus.choices, verbose_name="Request Status", null=True)
+  request_status = models.CharField(max_length=40, choices=RequestStatus.choices, verbose_name="Request Status", null=True)
   amount = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   description = models.TextField(blank=True)
   reference = models.CharField(max_length=100, blank=True)
