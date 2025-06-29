@@ -62,7 +62,7 @@ export const AssetStatement = () => {
     amount_1y_unlocked: number;
     days_until_6m: number;
     days_until_1y: number;
-    request_status: string;
+    request_status_display: string;
     withdrawable_now: number;
   }
 
