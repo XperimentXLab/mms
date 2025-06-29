@@ -146,7 +146,7 @@ def distribute_profit_manually():
             is_active=True,
             wallet__isnull=False,
             assets__amount__gt=0  # Use 'assets' (the related_name)
-        ).select_related('wallet').prefetch_related('asset')
+        ).select_related('wallet').prefetch_related('assets')
         all_wallets_map = {user.id: user.wallet for user in eligible_users if hasattr(user, 'wallet')}
         all_asset_map = {user.id: user.assets.filter(amount__gt=Decimal('0.00')).first() for user in eligible_users}
 
