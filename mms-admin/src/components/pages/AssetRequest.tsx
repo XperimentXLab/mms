@@ -3,6 +3,11 @@ import Tables from "../props/Tables"
 import Loading from "../props/Loading"
 import { getPendingTX } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
+import dayjs from "dayjs";
+import utc from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 
 interface Transaction {
@@ -30,7 +35,16 @@ const AssetRequest = () => {
       try {
         setLoading(true)
         const response = await getPendingTX()
-        setTransactions(response)
+        const formattedData = response.map((user: any) => {
+        const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
+        return {
+          ...user,
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss"),
+          username: user.username
+        }
+      });
+        setTransactions(formattedData)
       } catch (error: any) {
         setErrorMessage(error.response.data.error)
       } finally {
@@ -78,8 +92,9 @@ const AssetRequest = () => {
 
   const columns = [
     { header: 'Date', accessor: 'created_date' },
-    { header: 'User ID', accessor: 'user.id' },
-    { header: 'Username', accessor: 'user.username' },
+    { header: 'Time', accessor: 'created_time' },
+    { header: 'User ID', accessor: 'user_id' },
+    { header: 'Username', accessor: 'username' },
     { header: 'Amount', accessor: 'amount' },
     { header: 'Request Status', accessor: 'request_status' },
     { header: 'Action', accessor: 'action' }
