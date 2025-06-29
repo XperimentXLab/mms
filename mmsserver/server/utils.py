@@ -438,15 +438,15 @@ class WalletService:
             
             wallet = trx.wallet
             asset = trx.asset
-            amount = trx.converted_amount
+            amount = trx.amount
 
             if action == 'Approve':
-                asset.amount += Decimal(amount)
+                asset.amount += Decimal((trx.converted_amount or trx.amount or '0.00'))
                 asset.save()
                 trx.request_status = 'APPROVED'
                 trx.save()
             elif action == 'Reject':
-                wallet.master_point_balance += Decimal(amount)
+                wallet.master_point_balance += Decimal((trx.converted_amount or trx.amount or '0.00'))
                 wallet.save()
                 trx.request_status = 'REJECTED'
                 trx.save()
