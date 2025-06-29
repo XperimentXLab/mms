@@ -417,7 +417,7 @@ class WalletService:
                         point_type='COMMISSION',
                         amount=bonus_amount,
                         description=f"Introducer bonus for {user.username} asset placement ({amount})",
-                        reference=f"INTRODUCER_BONUS {user.id}_{current_time.strftime('%Y%m%d')}"
+                        reference=f"INTRODUCER_BONUS from {user.id}"
                     )
             except User.DoesNotExist:
                 pass # Referrer not found, skip bonus
