@@ -70,13 +70,11 @@ const AssetRequest = () => {
 
 
   const columns = [
-    { header: 'Created Date', accessor: 'created_date' },
+    { header: 'Date', accessor: 'created_date' },
+    { header: 'User ID', accessor: 'user.id' },
+    { header: 'Username', accessor: 'user.username' },
     { header: 'Amount', accessor: 'amount' },
     { header: 'Request Status', accessor: 'request_status' },
-    { header: 'Point', accessor: 'point_type' },
-    { header: 'Transaction', accessor: 'transaction_type' },
-    { header: 'Description', accessor: 'description' },
-    { header: 'Reference', accessor: 'reference' },
     { header: 'Action', accessor: 'action' }
   ]
 
@@ -125,7 +123,7 @@ const data = transactions.map(tx => ({
     <div className="flex m-5 justify-center flex-col">
       { loading && <Loading />}
 
-      <span className="font-semibold">Requests</span>
+      <span className="font-semibold">Place Asset Request</span>
 
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span> }
 
