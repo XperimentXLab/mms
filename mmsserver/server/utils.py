@@ -373,7 +373,7 @@ class WalletService:
             wallet.master_point_balance -= Decimal(amount)
             wallet.save()
             
-            asset = Asset.get_or_create_asset(user)
+            asset, created = Asset.get_or_create_asset(user)
 
             current_time = timezone.now()
             deposit_trx = Transaction.objects.create(
@@ -384,7 +384,6 @@ class WalletService:
                 point_type='MASTER',
                 amount=amount,
                 created_at=current_time,
-                request_status=RequestStatus.PENDING,
                 description=description,
                 reference=reference
             )
@@ -430,7 +429,6 @@ class WalletService:
         with db_transaction.atomic():
             trx = Transaction.objects.select_for_update().get(
                 id=transaction_id,
-                request_status=RequestStatus.PENDING
             )
             
             wallet = trx.wallet
@@ -459,7 +457,7 @@ class AssetService:
         
         with db_transaction.atomic():
             # 1. Add 100 to user's Asset
-            asset = Asset.get_or_create_asset(user)
+            asset, created = Asset.get_or_create_asset(user)
             asset.amount += Decimal('100.00')
             asset.is_free_campro = True  # Mark as received
             asset.save()
@@ -516,7 +514,6 @@ class AssetService:
                 amount=amount,
                 description=description,
                 reference=reference,
-                request_status=RequestStatus.PENDING
             )
         return asset
     
@@ -526,7 +523,6 @@ class AssetService:
         with db_transaction.atomic():
             trx = Transaction.objects.select_for_update().get(
                 id=transaction_id,
-                request_status=RequestStatus.PENDING
             )
             
             if action == 'Approve':
@@ -603,7 +599,6 @@ class ProfitService:
                 actual_amount=actual_amount,
                 fee=fee,
                 fee_rate=fee_rate,
-                request_status=RequestStatus.PENDING
             )
             
             # Create pending transaction
@@ -613,7 +608,6 @@ class ProfitService:
                 transaction_type='WITHDRAWAL',
                 point_type='PROFIT',
                 amount=amount,
-                request_status=RequestStatus.PENDING,
                 description=f"Profit Withdrawal request #{withdrawal_request.id} (Pending): {amount}",
                 reference=reference
             )
@@ -719,7 +713,6 @@ class CommissionService:
                 actual_amount=actual_amount,
                 fee=fee,
                 fee_rate=fee_rate,
-                request_status=RequestStatus.PENDING
             )
             
             # Reserve the amount by deducting from balance
@@ -739,7 +732,6 @@ class CommissionService:
                 transaction_type='WITHDRAWAL',
                 point_type='COMMISSION',
                 amount=amount,
-                request_status=RequestStatus.PENDING,
                 description=f"Withdrawal request #{withdrawal_request.id} (Pending): {amount}",
                 reference=reference
             )
