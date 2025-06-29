@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import Tables from "../props/Tables"
 import Loading from "../props/Loading"
-import { getPendingTX } from "../auth/endpoints"
+import { getPendingTX, processPlaceAsset } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
 import dayjs from "dayjs";
 import utc from "dayjs";
@@ -59,7 +59,21 @@ const AssetRequest = () => {
     setTransactions(prev => prev.map(tx => 
       tx.id === id ? { ...tx, request_status: 'APPROVED' } : tx
     ))
-    // call an API to update the status
+
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        await processPlaceAsset({
+          tx_id: id,
+          action: 'Approve'
+        })
+      } catch (error: any) {
+        setErrorMessage(error.response.data.error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
   }
 
   const handleReject = (id: string) => {

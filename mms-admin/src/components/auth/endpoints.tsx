@@ -151,3 +151,17 @@ export const getAllUsers = async () => {
   const response = await api.get('/all_users/')
   return response.data
 }
+
+
+interface processPlaceAssetRes {
+  tx_id: string
+  action: string
+}
+export const processPlaceAsset = async (dataRes: processPlaceAssetRes) => {
+  const { tx_id, action } = dataRes
+  const response = await api.post('/process_place_asset/',{
+    transaction_id: tx_id,
+    action
+  })
+  return response.data
+}
