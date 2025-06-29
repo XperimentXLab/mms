@@ -638,7 +638,7 @@ class ProfitService:
         wallet = withdrawal_request.wallet
         
         with db_transaction.atomic():
-            if action == RequestStatus.APPROVED:
+            if action == 'APPROVE':
                 # Update request status
                 withdrawal_request.request_status = RequestStatus.APPROVED
                 withdrawal_request.processed_at = timezone.now()
@@ -649,7 +649,7 @@ class ProfitService:
                 txn.description = f"Withdrawal request #{withdrawal_request.id} (Approved)"
                 txn.save()
                 
-            elif action == RequestStatus.REJECTED:
+            elif action == 'REJECTED':
                 # Refund the amount back to wallet
                 wallet.profit_point_balance += withdrawal_request.amount
                 wallet.save()

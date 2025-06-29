@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { TableAssetWithdrawal, Tables } from "../props/Tables"
+import { Tables } from "../props/Tables"
 import { getAssetStatement, getDepositLock } from "../auth/endpoints"
 import type { Data } from "./WalletStatement"
 import Loading from "../props/Loading"
@@ -45,14 +45,14 @@ export const AssetStatement = () => {
     { header: "Date", accessor: "created_date" },
     { header: "Time", accessor: "created_time" },
     { header: 'Status', accessor: 'request_status_display'},
-    { header: "Amount Locked", accessor: "amount_6m_locked" },
+    { header: "Amount Locked (50%)", accessor: "amount_6m_locked" },
     { header: 'Days Left', accessor: 'days_until_6m'},
-    { header: "Amount Locked", accessor: "amount_1y_locked" },
+    { header: "Amount Locked (50%)", accessor: "amount_1y_locked" },
     { header: 'Days Left', accessor: 'days_until_1y'},
     { header: "Available Withdraw", accessor: "withdrawable_now" },
     { header: "Action", accessor: "action" },
   ]
-  //const depositLock = true
+  
   interface AssetState {
     id: string;
     created_date: string;

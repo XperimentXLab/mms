@@ -365,7 +365,7 @@ class DepositLock(models.Model):
     default=Decimal('0.00')
   )
   is_free_campro = models.BooleanField(default=False)
-  request_status = models.CharField(max_length=40, choices=RequestStatus.choices, default=RequestStatus.PENDING, verbose_name="Request Status")
+  request_status = models.CharField(max_length=40, choices=RequestStatus.choices, default='PENDING', verbose_name="Request Status")
   created_at = models.DateTimeField(auto_now_add=True)
 
   @property
