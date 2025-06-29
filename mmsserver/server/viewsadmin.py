@@ -124,8 +124,6 @@ def manage_operational_profit(request):
           return Response({'error': serializer.errors}, status=400)
         
       elif request.method == 'PUT': 
-        if not daily:
-          return Response({'error': 'Daily profit rate is required.'}, status=400)
         operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=month_, active_year_profit=year_)
         serializer = OperationalProfitSerializer(operational_profit, data=request.data, partial=True)
         if serializer.is_valid():
