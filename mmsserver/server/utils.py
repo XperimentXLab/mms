@@ -386,6 +386,37 @@ class WalletService:
             )
 
             DepositLock.objects.create(deposit=deposit_trx)
+        
+        ## Introducer Bonus ##
+        if user.referred_by:
+            try:
+                introducer = User.objects.get(id=user.referred_by)
+                introducer_wallet = introducer.wallet
+                # Determine bonus rate
+                if 200 <= amount <= 999:
+                    bonus_rate = Decimal('0.02')
+                elif 1000 <= amount <= 9999:
+                    bonus_rate = Decimal('0.025')
+                elif amount > 10000:
+                    bonus_rate = Decimal('0.03')
+                else:
+                    bonus_rate = Decimal('0.00')
+                if bonus_rate > 0:
+                    bonus_amount = (Decimal(amount) * bonus_rate).quantize(Decimal('0.01'))
+                    introducer_wallet.introducer_point_balance += bonus_amount
+                    introducer_wallet.save()
+                    Transaction.objects.create(
+                        user=introducer,
+                        wallet=introducer_wallet,
+                        transaction_type='INTRODUCER_BONUS',
+                        point_type='COMMISSION',
+                        amount=bonus_amount,
+                        description=f"Introducer bonus for {user.username} asset placement ({amount})",
+                        reference=f"INTRODUCER_BONUS {user.id}_{timezone.now().strftime('%Y%m%d')}"
+                    )
+            except User.DoesNotExist:
+                pass # Referrer not found, skip bonus
+                    
         return wallet, asset
 
     @staticmethod
