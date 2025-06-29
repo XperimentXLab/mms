@@ -5,7 +5,8 @@ from django.utils.crypto import get_random_string
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import RegexValidator
 from decimal import Decimal
-from datetime import timedelta, timezone
+from django.utils import timezone
+from datetime import timedelta
 import calendar
 import string
 
