@@ -127,10 +127,7 @@ class UserSerializer(serializers.ModelSerializer):
     return obj.get_verification_status_display()
 
   def create(self, validated_data):
-    password = validated_data.pop('password')
-    user = User(**validated_data)
-    user.set_password(password)  # hashes the password properly
-    user.save()
+    user = User.objects.create_user(**validated_data)
     return user
 
 class UserNetworkSerializer(serializers.ModelSerializer):
