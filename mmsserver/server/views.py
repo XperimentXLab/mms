@@ -409,7 +409,7 @@ def transfer_master(request):
   except User.DoesNotExist:
       return Response({'error': 'Receiver username does not exist'}, status=404)
 
-  description = request.data.get('description', f'{sender.id}, {sender.username} transfer to {receiver_user.id}, {receiver_user.id}: {amount}')
+  description = request.data.get('description', f'Transfer to {receiver_user.username}, {receiver_user.id}: {amount}')
   reference = request.data.get('reference', '')
 
   if not receiver_username or not amount:

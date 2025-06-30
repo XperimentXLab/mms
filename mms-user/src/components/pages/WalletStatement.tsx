@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { Tables } from "../props/Tables";
 import { getCommissionStatement, getConvertStatement, getProfitCommissionWDStatement, getProfitStatement, getTransferStatement } from "../auth/endpoints";
 import Loading from "../props/Loading";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export interface Data {
   created_at: string;
@@ -23,7 +28,15 @@ export const ProfitStatement = () => {
       try {
         setLoading(true)
         const response = await getProfitStatement()
-        setData(response)
+        const formattedData = response.map((user: any) => {
+        const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
+        return {
+          ...user,
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss"),
+        }
+        });
+        setData(formattedData)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
           setErrorMessage(error.response.data.error)
@@ -36,9 +49,9 @@ export const ProfitStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_at" },
+    { header: "Date", accessor: "created_date" },
+    { header: "Time", accessor: "created_time" },
     { header: "Amount", accessor: "amount" },
-    { header: "Type", accessor: "transaction_type" },
     { header: "Description", accessor: "description" }
   ];
 
@@ -67,7 +80,15 @@ export const CommissionStatement = () => {
       try {
         setLoading(true)
         const response = await getCommissionStatement()
-        setData(response)
+        const formattedData = response.map((user: any) => {
+        const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
+        return {
+          ...user,
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss"),
+        }
+        });
+        setData(formattedData)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
           setErrorMessage(error.response.data.error)
@@ -80,7 +101,8 @@ export const CommissionStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_at" },
+    { header: "Date", accessor: "created_date" },
+    { header: "Time", accessor: "created_time" },
     { header: "Amount", accessor: "amount" },
     { header: "Type", accessor: "transaction_type" },
     { header: "Description", accessor: "description" }
