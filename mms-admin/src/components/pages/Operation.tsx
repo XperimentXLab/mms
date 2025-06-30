@@ -143,8 +143,24 @@ const Operation = () => {
     e.preventDefault()
     try {
       setLoading(true)
-      await distribute_profit()
-      alert('Profit distributed successfully')
+      const response = await distribute_profit()
+      alert(response.message)
+      alert(response.metrics)
+      /*
+      {
+        "metrics": {
+            "users_with_profit": ..,
+            "total_profit_distributed": ..,
+            "l1_bonuses_paid": ..,
+            "l2_bonuses_paid": ..,
+            "skipped_users": ..
+        },
+        "profit_wallets_updated": 14,
+        "affiliate_wallets_updated": 9,
+        "profit_tx_created": 14,
+        "affiliate_tx_created": 25
+      }
+      */
     } catch (error: any) {
       alert('Failed to distribute profit. Please try again.');
     } finally {

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def _distribute_affiliate_bonus_for_user(
     downline_user: User,
-    profit_earned_by_downline: Decimal,
+    daily_rate_percentage: Decimal,
     wallets_needing_affiliate_update_list: list,
     affiliate_transactions_list: list,
     all_wallets_map: dict, # Map of {user_id: wallet_instance}
@@ -22,9 +22,6 @@ def _distribute_affiliate_bonus_for_user(
     Calculates and prepares affiliate bonuses for L1 and L2 uplines.
     Modifies wallet objects in-place and appends to transaction list.
     """
-    
-    if not profit_earned_by_downline or profit_earned_by_downline <= Decimal('0.00'):
-        return
 
     # Level 1 Upline
     if downline_user.referred_by:
@@ -33,10 +30,11 @@ def _distribute_affiliate_bonus_for_user(
         # but we primarily need their wallet from the map.
         upline_l1_wallet = all_wallets_map.get(upline_l1_id)
         upline_l1_asset = all_asset_map.get(upline_l1_id)
+        downline_asset = all_asset_map.get(downline_user.id)
 
         if upline_l1_wallet and upline_l1_wallet.user.is_active and upline_l1_asset and upline_l1_asset.amount > Decimal('0.00'): # Check if L1 user is active and has place asset
-            l1_bonus_percentage = Decimal('0.0625')  # 6.25%
-            l1_bonus_amount = (profit_earned_by_downline * l1_bonus_percentage).quantize(Decimal('0.01'))
+            l1_bonus_percentage = Decimal('0.05')  # 5%
+            l1_bonus_amount = (downline_asset.amount * daily_rate_percentage * l1_bonus_percentage).quantize(Decimal('0.01'))
 
             if l1_bonus_amount > Decimal('0.00'):
                 original_affiliate_balance_l1 = upline_l1_wallet.affiliate_point_balance
@@ -56,8 +54,7 @@ def _distribute_affiliate_bonus_for_user(
                         point_type='COMMISSION',
                         amount=l1_bonus_amount,
                         description=(
-                            f"L1 Affiliate bonus from {downline_user.username}'s profit"
-                            f"Old AP Bal: {original_affiliate_balance_l1:.2f}, New AP Bal: {upline_l1_wallet.affiliate_point_balance:.2f}."
+                            f"L1 Affiliate bonus from {downline_user.username}'s profit. Old AP Bal: {original_affiliate_balance_l1:.2f}, New AP Bal: {upline_l1_wallet.affiliate_point_balance:.2f}."
                         ),
                         reference=f"AffL1_{downline_user.id}_{current_time.strftime('%Y%m%d')}"
                     )
@@ -75,9 +72,9 @@ def _distribute_affiliate_bonus_for_user(
                     upline_l2_asset = all_asset_map.get(upline_l2_id)
 
                     if upline_l2_wallet and upline_l2_wallet.user.is_active and upline_l1_asset and upline_l2_asset.amount > Decimal('0.00'): # Check if L2 user is active and has place asset
-                        l2_bonus_percentage = Decimal('0.025')  # 2.5%
+                        l2_bonus_percentage = Decimal('0.02')  # 2%
                         # L2 bonus is also based on the original downline's earned profit
-                        l2_bonus_amount = (profit_earned_by_downline * l2_bonus_percentage).quantize(Decimal('0.01'))
+                        l2_bonus_amount = (downline_asset.amount * daily_rate_percentage * l2_bonus_percentage).quantize(Decimal('0.01'))
 
                         if l2_bonus_amount > Decimal('0.00'):
                             original_affiliate_balance_l2 = upline_l2_wallet.affiliate_point_balance
@@ -96,8 +93,7 @@ def _distribute_affiliate_bonus_for_user(
                                     point_type='COMMISSION',
                                     amount=l2_bonus_amount,
                                     description=(
-                                        f"L2 Affiliate bonus from {downline_user.username}'s profit (via {upline_l1_wallet.user.username}). "
-                                        f"Old AP Bal: {original_affiliate_balance_l2:.2f}, New AP Bal: {upline_l2_wallet.affiliate_point_balance:.2f}."
+                                        f"L2 Affiliate bonus from {downline_user.username}'s profit (via {upline_l1_wallet.user.username}). Old AP Bal: {original_affiliate_balance_l2:.2f}, New AP Bal: {upline_l2_wallet.affiliate_point_balance:.2f}."
                                     ),
                                     reference=f"AffL2_{downline_user.id}_{current_time.strftime('%Y%m%d')}"
                                 )
@@ -210,7 +206,7 @@ def distribute_profit_manually():
                 # ---- DISTRIBUTE AFFILIATE BONUSES ----
                 _distribute_affiliate_bonus_for_user(
                     downline_user=downline_user,
-                    profit_earned_by_downline=user_profit_amount, # This is the key amount
+                    daily_rate_percentage=daily_rate_percentage,
                     wallets_needing_affiliate_update_list=wallets_to_update_affiliate_balance_list,
                     affiliate_transactions_list=affiliate_bonus_transactions_to_create,
                     all_wallets_map=all_wallets_map,
@@ -251,7 +247,6 @@ def distribute_profit_manually():
         
         logger.info(f"Manual profit and affiliate distribution completed. Processed {processed_wallets_count} direct profit recipients.")
         return {
-            "status": "success", 
             "message": "Profit and affiliate bonuses distributed successfully.",
             'metrics': metrics,
             "profit_wallets_updated": len(wallets_to_update_profit_balance_list),
@@ -400,7 +395,7 @@ class WalletService:
                 introducer_wallet = Wallet.objects.get(user=introducer)
                 # Determine bonus rate
 
-                if 200 <= asset_amount < 1000:
+                if asset_amount < 1000:
                     bonus_rate = Decimal('0.02')
                 elif 1000 <= asset_amount < 10000:
                     bonus_rate = Decimal('0.025')
@@ -458,7 +453,7 @@ class AssetService:
         """Grants 100 free CAMPRO to a user (locked for 1 year)."""
 
         if user.is_campro:  # Prevent duplicate grants
-            raise ValidationError("User already received free CAMPRO.")
+            raise ValidationError("User already received welcome bonus.")
         
         with db_transaction.atomic():
             # 1. Add 100 to user's Asset
@@ -471,7 +466,7 @@ class AssetService:
             trx = Transaction.objects.create(
                 user=user,
                 asset=asset,
-                transaction_type='FREE_CAMPRO_GRANT',
+                transaction_type='WELCOME_BONUS',
                 point_type='ASSET',
                 amount=Decimal('100.00'),
                 description="Welcome Bonus", #locked for 1 year

@@ -286,7 +286,7 @@ class Transaction(models.Model):
     ('INTRODUCER_BONUS', 'Introducer Bonus'), #Admin > Affiliate Point
     ('ASSET_PLACEMENT', 'Asset Placement'), #Master Point >> Asset
     ('ASSET_WITHDRAWAL', 'Asset Withdrawal'), #Asset > Profit Point
-    ('FREE_CAMPRO_GRANT', 'Welcome Bonus'), #Admin > Asset
+    ('WELCOME_BONUS', 'Welcome Bonus'), #Admin > Asset
     ('MIGRATION', 'Migration')
   )
     
