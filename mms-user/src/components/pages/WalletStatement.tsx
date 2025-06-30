@@ -38,7 +38,6 @@ export const ProfitStatement = () => {
   const columns = [
     { header: "Date", accessor: "created_at" },
     { header: "Amount", accessor: "amount" },
-    { header: 'Point', accessor: 'point_type'},
     { header: "Type", accessor: "transaction_type" },
     { header: "Description", accessor: "description" }
   ];
@@ -83,7 +82,6 @@ export const CommissionStatement = () => {
   const columns = [
     { header: "Date", accessor: "created_at" },
     { header: "Amount", accessor: "amount" },
-    { header: 'Point', accessor: 'point_type'},
     { header: "Type", accessor: "transaction_type" },
     { header: "Description", accessor: "description" }
   ];
