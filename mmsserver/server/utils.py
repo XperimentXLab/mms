@@ -324,8 +324,8 @@ class WalletService:
 
         if amount <= 0:
             raise ValidationError("Amount is needed")
-        
-        sender_wallet = sender.wallet
+
+        sender_wallet = Wallet.objects.get(user=sender)
         if sender_wallet.master_point_balance < amount:
             raise ValidationError("Insufficient Master Point balance")
         
@@ -333,7 +333,7 @@ class WalletService:
             sender_wallet.master_point_balance -= Decimal(amount)
             sender_wallet.save()
             
-            receiver_wallet = receiver.wallet
+            receiver_wallet = Wallet.objects.get(user=receiver)
             receiver_wallet.master_point_balance += Decimal(amount)
             receiver_wallet.save()
             
