@@ -114,7 +114,7 @@ def register_user(request):
     logger.error(f"Unexpected error during user registration: {e}")
     return Response({'error': 'An unexpected error occurred. Please contact administrator'}, status=500)
 
-
+#login
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
