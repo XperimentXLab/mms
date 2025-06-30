@@ -429,7 +429,7 @@ def transfer_master(request):
       description,
       reference
     )
-    serializer = WalletSerializer(result)
+    serializer = WalletSerializer(result, many=True)
     return Response(serializer.data, status=200)
   except ValidationError as e:
     return Response({'error': list(e.messages)}, status=400)
