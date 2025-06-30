@@ -181,13 +181,6 @@ def distribute_profit_manually():
                 user_share_ratio, sharing_rule_desc = Decimal('0.80'), "80/20"
 
             user_profit_amount = (raw_profit * user_share_ratio).quantize(Decimal('0.01'))
-            
-            # Reconciliation for rounding (optional, but good practice)
-            if user_profit_amount != raw_profit:
-                adjustment = raw_profit - user_profit_amount
-                user_profit_amount += adjustment # Adjust user's share to reconcile
-            user_profit_amount = user_profit_amount.quantize(Decimal('0.01'))
-
 
             # Update Downline User's profit_point_balance
             if user_profit_amount > Decimal('0.00'):
