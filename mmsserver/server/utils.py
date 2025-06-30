@@ -356,6 +356,7 @@ class WalletService:
     def place_asset(user, amount, description="", reference=""):
         """Place asset from Master Point"""
 
+        amount = Decimal(amount)
         if amount <= 50:
             raise ValidationError("Minimum placement amount is 50 USDT")
 
@@ -395,18 +396,18 @@ class WalletService:
         if user.referred_by:
             try:
                 introducer = User.objects.get(id=user.referred_by)
-                introducer_wallet = introducer.wallet
+                introducer_wallet = Wallet.objects.get(user=introducer)
                 # Determine bonus rate
-                if 200 <= amount <= 999:
+                if 200 <= amount < 1000:
                     bonus_rate = Decimal('0.02')
-                elif 1000 <= amount <= 9999:
+                elif 1000 <= amount < 10000:
                     bonus_rate = Decimal('0.025')
-                elif amount > 10000:
+                elif amount >= 10000:
                     bonus_rate = Decimal('0.03')
                 else:
                     bonus_rate = Decimal('0.00')
                 if bonus_rate > 0:
-                    bonus_amount = (Decimal(amount) * bonus_rate).quantize(Decimal('0.01'))
+                    bonus_amount = (amount * bonus_rate).quantize(Decimal('0.01'))
                     introducer_wallet.introducer_point_balance += bonus_amount
                     introducer_wallet.save()
                     Transaction.objects.create(
