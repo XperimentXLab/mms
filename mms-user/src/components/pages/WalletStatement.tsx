@@ -4,12 +4,12 @@ import { getCommissionStatement, getConvertStatement, getProfitCommissionWDState
 import Loading from "../props/Loading";
 
 export interface Data {
-  created_date: string;
+  created_at: string;
   amount: string;
   point_type?: string;
   transaction_type?: string;
   description: string;
-  receiver?: string;
+  //receiver_wallet.user?: string;
   reference?: string;
 }
 
@@ -36,7 +36,7 @@ export const ProfitStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_date" },
+    { header: "Date", accessor: "created_at" },
     { header: "Amount", accessor: "amount" },
     { header: 'Point', accessor: 'point_type'},
     { header: "Type", accessor: "transaction_type" },
@@ -81,7 +81,7 @@ export const CommissionStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_date" },
+    { header: "Date", accessor: "created_at" },
     { header: "Amount", accessor: "amount" },
     { header: 'Point', accessor: 'point_type'},
     { header: "Type", accessor: "transaction_type" },
@@ -126,9 +126,8 @@ export const TransferStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_date" },
+    { header: "Date", accessor: "created_at" },
     { header: "Amount", accessor: "amount" },
-    { header: "Receiver", accessor: "receiver" },
     { header: 'Description', accessor: 'description' },
     { header: "Reference", accessor: "reference" }
   ];
@@ -171,7 +170,7 @@ export const ConvertStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_date" },
+    { header: "Date", accessor: "created_at" },
     { header: "Amount", accessor: "amount" },
     { header: 'Point', accessor: 'point_type'},
     { header: "Description", accessor: "description" }
@@ -215,7 +214,7 @@ export const WithdrawalWalletStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_date" },
+    { header: "Date", accessor: "created_at" },
     { header: "Amount", accessor: "amount" },
     { header: 'Point', accessor: 'point_type'},
     { header: 'Description', accessor: 'description' },
