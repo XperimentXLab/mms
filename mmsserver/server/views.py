@@ -95,7 +95,7 @@ def get_user(request):
 @permission_classes([AllowAny])
 def register_user(request):
   username = request.data.get('username')
-  if not username or not username.startswith('MMS')):
+  if not username or not username.startswith('MMS'):
     return Response({'error': 'Username must start with MMS'})
     
   try:
