@@ -49,7 +49,7 @@ const Setup = () => {
       await resetAllWalletBalances()
       alert('All wallet successfully reset')
     } catch (error: any) {
-      console.log(error.response)
+      console.error(error.response)
     } finally {
       setLoading(false)
     }

@@ -35,7 +35,7 @@ def _distribute_affiliate_bonus_for_user(
         upline_l1_asset = all_asset_map.get(upline_l1_id)
 
         if upline_l1_wallet and upline_l1_wallet.user.is_active and upline_l1_asset and upline_l1_asset.amount > Decimal('0.00'): # Check if L1 user is active and has place asset
-            l1_bonus_percentage = Decimal('0.05')  # 5%
+            l1_bonus_percentage = Decimal('0.0625')  # 6.25%
             l1_bonus_amount = (profit_earned_by_downline * l1_bonus_percentage).quantize(Decimal('0.01'))
 
             if l1_bonus_amount > Decimal('0.00'):
@@ -75,7 +75,7 @@ def _distribute_affiliate_bonus_for_user(
                     upline_l2_asset = all_asset_map.get(upline_l2_id)
 
                     if upline_l2_wallet and upline_l2_wallet.user.is_active and upline_l1_asset and upline_l2_asset.amount > Decimal('0.00'): # Check if L2 user is active and has place asset
-                        l2_bonus_percentage = Decimal('0.02')  # 2%
+                        l2_bonus_percentage = Decimal('0.025')  # 2.5%
                         # L2 bonus is also based on the original downline's earned profit
                         l2_bonus_amount = (profit_earned_by_downline * l2_bonus_percentage).quantize(Decimal('0.01'))
 
@@ -391,22 +391,25 @@ class WalletService:
                 )
         
         current_time = timezone.now()
+        asset = Asset.objects.get(user=user)
+        asset_amount = asset.amount
         ## Introducer Bonus ##
         if user.referred_by:
             try:
                 introducer = User.objects.get(id=user.referred_by)
                 introducer_wallet = Wallet.objects.get(user=introducer)
                 # Determine bonus rate
-                if 200 <= amount < 1000:
+
+                if 200 <= asset_amount < 1000:
                     bonus_rate = Decimal('0.02')
-                elif 1000 <= amount < 10000:
+                elif 1000 <= asset_amount < 10000:
                     bonus_rate = Decimal('0.025')
-                elif amount >= 10000:
+                elif asset_amount >= 10000:
                     bonus_rate = Decimal('0.03')
                 else:
                     bonus_rate = Decimal('0.00')
                 if bonus_rate > 0:
-                    bonus_amount = (amount * bonus_rate).quantize(Decimal('0.01'))
+                    bonus_amount = (bonus_rate * asset_amount).quantize(Decimal('0.01'))
                     introducer_wallet.introducer_point_balance += bonus_amount
                     introducer_wallet.save()
                     Transaction.objects.create(
