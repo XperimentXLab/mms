@@ -118,6 +118,7 @@ def login(request):
   user = authenticate(request, username=username, password=password)
 
   if user:
+    """
     data = request.data
     recaptcha_token = data.get('recaptchaToken')
     if not recaptcha_token:
@@ -132,6 +133,7 @@ def login(request):
 
     if not resultCaptcha.get("success"):
       return Response({'error': 'CAPTCHA verification failed'}, status=400)
+    """
 
     refresh = RefreshToken.for_user(user)
     response = Response({'message': 'Login successful'})
@@ -153,6 +155,7 @@ def login(request):
     )
     return response
   else:
+    logger.error(f"Error logging in for {username} : {str(e)}")
     return Response({'error': 'Invalid credentials'}, status=400)
   
 
@@ -187,7 +190,7 @@ def update_password(request):
   except ValidationError as e:
     return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
-    logger.error(f"Unexpected error during password update for {user.username}: {str(e)}")
+    logger.error(f"Error during password update for {user.username}: {str(e)}")
     return Response({'error': 'An unexpected error occurred.'}, status=500)
 
 
