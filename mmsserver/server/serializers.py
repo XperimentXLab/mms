@@ -358,7 +358,7 @@ class DepositLockSerializer(serializers.ModelSerializer):
     ]
 
   def get_request_status_display(self, obj):
-    if obj.transaction:
-        return obj.transaction.request_status
+    if obj.deposit:
+        return obj.deposit.request_status
     return None
     
