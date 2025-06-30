@@ -422,14 +422,14 @@ def transfer_master(request):
     return Response({'error': 'Amount must be in number'}, status=400)
 
   try:
-    result = WalletService.transfer_master_point(
+    sender_wallet, receiver_wallet = WalletService.transfer_master_point(
       sender,
       receiver_user,
       amount,
       description,
       reference
     )
-    serializer = WalletSerializer(result, many=True)
+    serializer = WalletSerializer([sender_wallet, receiver_wallet], many=True)
     return Response(serializer.data, status=200)
   except ValidationError as e:
     return Response({'error': list(e.messages)}, status=400)
