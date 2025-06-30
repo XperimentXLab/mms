@@ -3,7 +3,7 @@ import api from "./api"
 interface LoginRes {
   username: string
   password: string
-  recaptchaToken: string
+  //recaptchaToken: string
 }
 
 interface ProfitRes {
@@ -27,9 +27,9 @@ export const protectedView = async () => {
 }
 
 export const login = async (loginData: LoginRes) => {
-  const { username, password, recaptchaToken } = loginData
+  const { username, password, /*recaptchaToken*/ } = loginData
   const response = await api.post('/login_admin/', {
-    username, password, recaptchaToken
+    username, password, //recaptchaToken
   })
   return response.data
 }
