@@ -56,7 +56,7 @@ def _distribute_affiliate_bonus_for_user(
                         point_type='COMMISSION',
                         amount=l1_bonus_amount,
                         description=(
-                            f"L1 Affiliate bonus (5%) from {downline_user.username}'s profit of {profit_earned_by_downline:.2f}. "
+                            f"L1 Affiliate bonus from {downline_user.username}'s profit"
                             f"Old AP Bal: {original_affiliate_balance_l1:.2f}, New AP Bal: {upline_l1_wallet.affiliate_point_balance:.2f}."
                         ),
                         reference=f"AffL1_{downline_user.id}_{current_time.strftime('%Y%m%d')}"
@@ -96,7 +96,7 @@ def _distribute_affiliate_bonus_for_user(
                                     point_type='COMMISSION',
                                     amount=l2_bonus_amount,
                                     description=(
-                                        f"L2 Affiliate bonus (2%) from {downline_user.username}'s profit of {profit_earned_by_downline:.2f} (via {upline_l1_wallet.user.username}). "
+                                        f"L2 Affiliate bonus from {downline_user.username}'s profit (via {upline_l1_wallet.user.username}). "
                                         f"Old AP Bal: {original_affiliate_balance_l2:.2f}, New AP Bal: {upline_l2_wallet.affiliate_point_balance:.2f}."
                                     ),
                                     reference=f"AffL2_{downline_user.id}_{current_time.strftime('%Y%m%d')}"
@@ -176,9 +176,9 @@ def distribute_profit_manually():
                 continue
 
             if asset_balance < Decimal('10000.00'):
-                user_share_ratio, sharing_rule_desc = Decimal('0.70'), "70/30"
+                user_share_ratio = Decimal('0.70'), "70/30"
             else:
-                user_share_ratio, sharing_rule_desc = Decimal('0.80'), "80/20"
+                user_share_ratio = Decimal('0.80'), "80/20"
 
             user_profit_amount = (raw_profit * user_share_ratio).quantize(Decimal('0.01'))
 
@@ -201,7 +201,6 @@ def distribute_profit_manually():
                         amount=user_profit_amount,
                         description=(
                             f"Profit distribution ({daily_rate_percentage}% on MP {asset_balance:.2f}). "
-                            f"Rule: {sharing_rule_desc}. User share: {user_profit_amount:.2f}. "
                             f"Old PP Bal: {original_profit_balance:.2f}, New PP Bal: {wallet_instance.profit_point_balance:.2f}."
                         ),
                         reference=f"ProfitDist_{current_time.strftime('%Y%m%d')}"
