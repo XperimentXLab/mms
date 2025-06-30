@@ -318,7 +318,7 @@ def get_asset(request):
 def get_profit_transaction(request):
   user = request.user
   try:
-    profit_tx = Transaction.objects.filter(user=user, point_type='profit')
+    profit_tx = Transaction.objects.filter(user=user, point_type='PROFIT')
     serializer = TransactionSerializer(profit_tx, many=True)
     return Response(serializer.data, status=200)
   except Transaction.DoesNotExist:
@@ -329,7 +329,7 @@ def get_profit_transaction(request):
 def get_commission_transaction(request):
   user = request.user
   try:
-    commission_tx = Transaction.objects.filter(user=user, point_type='commission')
+    commission_tx = Transaction.objects.filter(user=user, point_type='COMMISSION')
     serializer = TransactionSerializer(commission_tx, many=True)
     return Response(serializer.data, status=200)
   except Transaction.DoesNotExist:
@@ -340,7 +340,7 @@ def get_commission_transaction(request):
 def get_transfer_transaction(request):
   user = request.user
   try:
-    transfer_tx = Transaction.objects.filter(user=user, point_type='master', transaction_type='transfer')
+    transfer_tx = Transaction.objects.filter(user=user, transaction_type='TRANSFER')
     serializer = TransactionSerializer(transfer_tx, many=True)
     return Response(serializer.data, status=200)
   except Transaction.DoesNotExist:
@@ -351,7 +351,7 @@ def get_transfer_transaction(request):
 def get_convert_transaction(request):
   user = request.user
   try:
-    convert_tx = Transaction.objects.filter(user=user, transaction_type__in=['convert'])
+    convert_tx = Transaction.objects.filter(user=user, transaction_type__in=['CONVERT'])
     serializer = TransactionSerializer(convert_tx, many=True)
     return Response(serializer.data, status=200)
   except Transaction.DoesNotExist:
@@ -362,7 +362,7 @@ def get_convert_transaction(request):
 def get_profit_commission_wd_transaction(request):
   user = request.user
   try:
-    profit_commission_wd_tx = Transaction.objects.filter(user=user, point_type__in=['profit', 'commission'], transaction_type='withdrawal')
+    profit_commission_wd_tx = Transaction.objects.filter(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type='WITHDRAWAL')
     serializer = TransactionSerializer(profit_commission_wd_tx, many=True)
     return Response(serializer.data, status=200)
   except Transaction.DoesNotExist:
@@ -373,7 +373,7 @@ def get_profit_commission_wd_transaction(request):
 def get_asset_transaction(request):
   user = request.user
   try:
-    asset_tx = Transaction.objects.filter(user=user, transaction_type__in=['asset_placement', 'asset_withdrawal', 'free_campro_grant'])
+    asset_tx = Transaction.objects.filter(user=user, transaction_type__in=['ASSET_PLACEMNET', 'ASSET_WITHDRAWAL', 'FREE_CAMPRO_GRANT'])
     serializer = TransactionSerializer(asset_tx, many=True)
     return Response(serializer.data, status=200)
   except Transaction.DoesNotExist:
