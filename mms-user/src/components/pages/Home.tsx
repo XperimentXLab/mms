@@ -3,6 +3,7 @@ import Loading from "../props/Loading"
 import { getAsset, getWallet, userDetails } from "../auth/endpoints"
 import { FixedText } from "../props/Textt"
 import { Tables } from "../props/Tables";
+import dayjs from "dayjs";
 
 interface ProfitData {
   type: string;
@@ -45,8 +46,10 @@ const Home = () => {
         setUserId(respUserDetails.id)
         setMasterP(resWallet.master_point_balance || 0)
         setProfitP(resWallet.profit_point_balance || 0)
-        const commissionTotal = Number(resWallet.affiliate_point_balance)+Number(resWallet.bonus_point_balance)
-        setCommissionP(commissionTotal || 0)
+        setCommissionP(
+          Number(resWallet.affiliate_point_balance || 0) +
+          Number(resWallet.introducer_point_balance || 0)
+        )
         setAssetP(resAsset.amount || 0)
         // In a real app, you would fetch this from an API
         setDailyProfit(mockProfit);

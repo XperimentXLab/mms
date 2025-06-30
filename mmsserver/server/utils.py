@@ -133,7 +133,7 @@ def distribute_profit_manually():
             logger.error("OperationalProfit record not found.")
             raise Exception("OperationalProfit record not found. Cannot distribute profit.")
         
-        daily_rate_percentage = operational_profit.daily_profit_rate
+        daily_rate_percentage = Decimal(operational_profit.daily_profit_rate)
         if daily_rate_percentage is None or daily_rate_percentage <= Decimal('0.00'):
             logger.info(f"Profit rate ({daily_rate_percentage}%) is zero or not set. No profit distributed.")
             return {"status": "skipped", "message": "Profit rate is zero or not set."}
@@ -165,7 +165,7 @@ def distribute_profit_manually():
             asset_obj = Asset.objects.filter(user=downline_user).first()
             if not asset_obj or asset_obj.amount is None:
                 continue
-            asset_balance = asset_obj.amount
+            asset_balance = Decimal(asset_obj.amount)
             
             if asset_balance <= Decimal('0.00'):
                 metrics['skipped_users'] += 1
