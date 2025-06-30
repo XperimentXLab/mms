@@ -76,22 +76,22 @@ def reset_all_wallet_balances(request):
         current_time = timezone.now()
 
         for wallet in wallets:
-            wallet.master_point_balance = Decimal('0.00')
-            wallet.profit_point_balance = Decimal('0.00')
-            wallet.affiliate_point_balance = Decimal('0.00')
-            wallet.introducer_point_balance = Decimal('0.00')
-            wallet.updated_at = current_time
+          wallet.master_point_balance = Decimal('0.00')
+          wallet.profit_point_balance = Decimal('0.00')
+          wallet.affiliate_point_balance = Decimal('0.00')
+          wallet.introducer_point_balance = Decimal('0.00')
+          wallet.updated_at = current_time
 
-        with transaction.atomic():
+        with db_transaction.atomic():
             Wallet.objects.bulk_update(
-                wallets,
-                [
-                    'master_point_balance',
-                    'profit_point_balance',
-                    'affiliate_point_balance',
-                    'introducer_point_balance',
-                    'updated_at'
-                ]
+              wallets,
+              [
+                'master_point_balance',
+                'profit_point_balance',
+                'affiliate_point_balance',
+                'introducer_point_balance',
+                'updated_at'
+              ]
             )
 
         return Response(f"Reset successful for {wallets.count()} wallets.")
