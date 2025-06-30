@@ -34,7 +34,7 @@ def _distribute_affiliate_bonus_for_user(
 
         if upline_l1_wallet and upline_l1_wallet.user.is_active and upline_l1_asset and upline_l1_asset.amount > Decimal('0.00'): # Check if L1 user is active and has place asset
             l1_bonus_percentage = Decimal('0.05')  # 5%
-            l1_bonus_amount = (downline_asset.amount * daily_rate_percentage * l1_bonus_percentage).quantize(Decimal('0.01'))
+            l1_bonus_amount = (downline_asset.amount * (daily_rate_percentage / Decimal('100.00')) * l1_bonus_percentage).quantize(Decimal('0.01'))
 
             if l1_bonus_amount > Decimal('0.00'):
                 original_affiliate_balance_l1 = upline_l1_wallet.affiliate_point_balance
@@ -74,7 +74,7 @@ def _distribute_affiliate_bonus_for_user(
                     if upline_l2_wallet and upline_l2_wallet.user.is_active and upline_l1_asset and upline_l2_asset.amount > Decimal('0.00'): # Check if L2 user is active and has place asset
                         l2_bonus_percentage = Decimal('0.02')  # 2%
                         # L2 bonus is also based on the original downline's earned profit
-                        l2_bonus_amount = (downline_asset.amount * daily_rate_percentage * l2_bonus_percentage).quantize(Decimal('0.01'))
+                        l2_bonus_amount = (downline_asset.amount * (daily_rate_percentage / Decimal('100.00')) * l2_bonus_percentage).quantize(Decimal('0.01'))
 
                         if l2_bonus_amount > Decimal('0.00'):
                             original_affiliate_balance_l2 = upline_l2_wallet.affiliate_point_balance
