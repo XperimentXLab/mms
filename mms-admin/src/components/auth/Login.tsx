@@ -5,7 +5,7 @@ import Loading from "../props/Loading"
 import { login } from "./endpoints"
 import Buttons from "../props/Buttons"
 import { Inputss } from "../props/Formss"
-import ReCAPTCHA from "react-google-recaptcha"
+//import ReCAPTCHA from "react-google-recaptcha"
 
 const Login = () => {
 
@@ -15,29 +15,30 @@ const Login = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  //const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const navigate = useNavigate()
 
   const resetForm = () => {
     setUsername('')
     setPassword('')
     setErrorMessage('')
-    setRecaptchaToken(null)
+    //setRecaptchaToken(null)
   }
 
   const toggleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    /*
     if (!recaptchaToken) {
       setErrorMessage("Please complete the CAPTCHA verification.");
       return;
-    }
+    }*/
 
     try {
       setLoading(true)
       await login({
         username,
         password,
-        recaptchaToken,
+        //recaptchaToken,
       })
       resetForm()
       navigate('/')
@@ -89,12 +90,12 @@ const Login = () => {
             />
           </div>
 
-          <ReCAPTCHA 
+          {/*<ReCAPTCHA 
             sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
             onChange={(token: any) => setRecaptchaToken(token)}
             onExpired={() => setRecaptchaToken(null)}
             className="mx-auto"
-          />
+          />*/}
 
           {errorMessage && <span className="text-red-500 text-md">{errorMessage}</span>}
 
