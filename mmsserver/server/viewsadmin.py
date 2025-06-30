@@ -21,6 +21,7 @@ def login_admin(request):
 
   try:
     if user.is_staff:
+      """
       data = request.data
       recaptcha_token = data.get('recaptchaToken')
       if not recaptcha_token:
@@ -35,6 +36,7 @@ def login_admin(request):
 
       if not resultCaptcha.get("success"):
         return Response({'error': 'CAPTCHA verification failed'}, status=400)
+      """
 
       refresh = RefreshToken.for_user(user)
       response = Response({'message': 'Login successful'})
