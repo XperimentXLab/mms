@@ -98,7 +98,7 @@ def register_user(request):
   serializer = UserSerializer(data=request.data)
 
   if not username.startswith('MMS'):
-    return Response({'error':{'username':'Username must start with MMS'}})
+    return Response({'error':'Username must start with MMS'})
   
   try:
     if serializer.is_valid():
