@@ -321,7 +321,9 @@ class WithdrawalRequestSerializer(serializers.ModelSerializer):
     ]
 
   def get_request_status_display(self, obj):
-    return obj.get_request_status_display()
+    if obj.transaction:
+        return obj.transaction.request_status
+    return None
 
 class DepositLockSerializer(serializers.ModelSerializer):
 
@@ -353,9 +355,10 @@ class DepositLockSerializer(serializers.ModelSerializer):
       'days_until_6m',
       'days_until_1y',
       'withdrawable_now',
-      'request_status_display',
     ]
 
   def get_request_status_display(self, obj):
-    return obj.get_request_status_display()
+    if obj.transaction:
+        return obj.transaction.request_status
+    return None
     
