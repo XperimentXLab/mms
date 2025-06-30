@@ -94,9 +94,6 @@ def get_user(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
-  username = request.data.get('username')
-  if not username or not username.startswith('MMS'):
-    return Response({'error': 'Username must start with MMS'})
     
   try:
     serializer = UserSerializer(data=request.data)
