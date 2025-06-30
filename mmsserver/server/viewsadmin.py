@@ -63,7 +63,7 @@ def login_admin(request):
     return Response({'error': f'Invalid credentials or {str(e)}' }, status=400)
 
 
-@api_views(['POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def reset_all_wallet_balances(request):
     """
