@@ -119,7 +119,7 @@ const Home = () => {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-start sm:justify-center">
           <FixedText label="USERNAME" text={username} />
           <FixedText label="USER ID" text={userId} />
-          <FixedText label="Master Point" text={masterP.toString()} />
+          <FixedText label="Register Point" text={masterP.toString()} />
           <FixedText label="Profit" text={profitP.toString()} />
           <FixedText label="Commission" text={commissionP.toFixed(2).toString()} />
           <FixedText label="Asset" text={assetP.toString()} />

@@ -93,7 +93,7 @@ const Wallet = () => {
         receiver,
         reference
       })
-      alert(`Successfully transferred ${masterPoint} MP to ${receiver}.`)
+      alert(`Successfully transferred ${masterPoint} RP to ${receiver}.`)
       setMasterPoint(0)
       setReceiver('')
     } catch (error: any) {
@@ -237,7 +237,7 @@ const Wallet = () => {
                 value={String(masterPoint)}
                 required={true}
               />
-              <InputNormal placeholder="Enter receiver username" 
+              <InputNormal placeholder="Enter username" 
                 type="text"
                 onChange={e => setReceiver(e.target.value)}
                 value={receiver}
@@ -290,7 +290,7 @@ const Wallet = () => {
               value={String(convertProfit)}
               required={true}
             />
-            <Buttons type="submit">Covert To MP</Buttons>
+            <Buttons type="submit">Covert To RP</Buttons>
           </form>
         </div>
 
@@ -320,7 +320,7 @@ const Wallet = () => {
               value={String(convertCommision)}
               required={true}
             />
-            <Buttons type="submit">Covert To MP</Buttons>
+            <Buttons type="submit">Covert To RP</Buttons>
           </form>
 
           {bonusUpDown && 

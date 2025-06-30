@@ -80,7 +80,7 @@ const Setup = () => {
           required={true}
         />
         
-        <Inputss label="Master Point" placeholder="Enter master point amount"
+        <Inputss label="Register Point" placeholder="Enter RP amount"
           type="text" 
           onChange={e => setMasterAmount(e.target.value)}
           value={masterAmount}

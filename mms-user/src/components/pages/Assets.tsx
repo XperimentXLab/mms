@@ -69,7 +69,7 @@ const Assets = () => {
 
       <div className="flex flex-col gap-3 border rounded-xl p-3 w-fit shadow-lg shadow-red-600 bg-white">
         <Spannn label="Total Asset">{assetBalance}</Spannn>
-        <Spannn label="Master Point">{masterBalance}</Spannn>
+        <Spannn label="Register Point">{masterBalance}</Spannn>
         <form className="flex gap-1.5" onSubmit={handlePlaceAsset}>
           <input type="number" placeholder="Enter amount" 
             className="border py-1 px-2 rounded-md"
