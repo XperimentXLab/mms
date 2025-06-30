@@ -34,7 +34,7 @@ interface updatePassData {
 interface LoginDataRes {
   username: string
   password: string
-  recaptchaToken: string
+  //recaptchaToken: string
 }
 
 interface PasswordResetConfirmDataRes {
@@ -72,9 +72,9 @@ export const register = async (userData: User) => {
 }
 
 export const login = async (loginData: LoginDataRes) => {
-  const { username, password, recaptchaToken } = loginData
+  const { username, password, /*recaptchaToken*/ } = loginData
   const response = await api.post('/login/', {
-    username, password, recaptchaToken
+    username, password, //recaptchaToken
   })
   return response.data
 }
