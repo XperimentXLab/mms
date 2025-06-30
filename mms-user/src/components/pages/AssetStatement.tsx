@@ -44,7 +44,7 @@ export const AssetStatement = () => {
   const columns = [
     { header: "Date", accessor: "created_date" },
     { header: "Time", accessor: "created_time" },
-    { header: 'Status', accessor: 'request_status_display'},
+    { header: 'Status', accessor: 'request_status'},
     { header: "Amount Locked (50%)", accessor: "amount_6m_locked" },
     { header: 'Days Left', accessor: 'days_until_6m'},
     { header: "Amount Locked (50%)", accessor: "amount_1y_locked" },
@@ -62,7 +62,8 @@ export const AssetStatement = () => {
     amount_1y_unlocked: number;
     days_until_6m: number;
     days_until_1y: number;
-    request_status_display: string;
+    request_status: string;
+    request_status_display?: string;
     withdrawable_now: number;
   }
 
@@ -79,7 +80,7 @@ const data = dataRes.map(asset => ({
   ...asset,
   action: (
     <div className="flex gap-2">
-      {asset.days_until_6m > 0 || asset.days_until_1y > 0  && (
+      {asset.days_until_6m < 0 || asset.days_until_1y < 0  && (
         <Buttons 
           type="button"
           onClick={() => handleWithdraw(asset.id)}
@@ -92,17 +93,6 @@ const data = dataRes.map(asset => ({
   )
   }))
 
-  /*
-  const dataM = [
-    { date: "2023-10-01 10:03:00", amount: "100.00", unlock_date: "2024-04-01 10:03:00",
-      action: depositLock ?
-      <span className="text-red-500">Deposit Locked</span> :
-      <Buttons type="button">Withdraw</Buttons>
-    },
-    { date: "2023-10-01 10:03:00", amount: "100.00", unlock_date: "2024-10-01 10:03:00",
-      action: depositLock ? <span className="text-red-500">Deposit Locked</span> : <Buttons type="button">Withdraw</Buttons> }
-  ]
-  */
 
   return (
     <div>
