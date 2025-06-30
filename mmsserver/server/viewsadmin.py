@@ -63,6 +63,46 @@ def login_admin(request):
     return Response({'error': f'Invalid credentials or {str(e)}' }, status=400)
 
 
+@api_views(['POST'])
+@permission_classes([IsAuthenticated])
+def reset_all_wallet_balances(request):
+    """
+    Admin-only reset all wallet point balances to zero.
+    """
+    user = request.user
+    try:
+      if user.is_staff:
+        wallets = Wallet.objects.all()
+        current_time = timezone.now()
+
+        for wallet in wallets:
+            wallet.master_point_balance = Decimal('0.00')
+            wallet.profit_point_balance = Decimal('0.00')
+            wallet.affiliate_point_balance = Decimal('0.00')
+            wallet.introducer_point_balance = Decimal('0.00')
+            wallet.updated_at = current_time
+
+        with transaction.atomic():
+            Wallet.objects.bulk_update(
+                wallets,
+                [
+                    'master_point_balance',
+                    'profit_point_balance',
+                    'affiliate_point_balance',
+                    'introducer_point_balance',
+                    'updated_at'
+                ]
+            )
+
+        return Response(f"Reset successful for {wallets.count()} wallets.")
+      else:
+        return Response({'error': 'Permission denied'}, status=403)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+      
+
+
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def manage_admin_mp(request):
