@@ -165,3 +165,8 @@ export const processPlaceAsset = async (dataRes: processPlaceAssetRes) => {
   })
   return response.data
 }
+
+
+export const resetAllWalletBalances = async () => {
+  const response = await api.post('/reset_all_wallet_balances/')
+  return response.data
