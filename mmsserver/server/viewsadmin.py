@@ -438,8 +438,7 @@ def distribute_profit(request):
   try:
     if user.is_staff:
         result = distribute_profit_manually()
-        serializer = WalletSerializer(result)
-        return Response(serializer.data, status=200)
+        return Response(result, status=200)
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except ValidationError as e:
