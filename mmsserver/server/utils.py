@@ -401,21 +401,18 @@ class WalletService:
                     bonus_rate = Decimal('0.025')
                 elif asset_amount >= 10000:
                     bonus_rate = Decimal('0.03')
-                else:
-                    bonus_rate = Decimal('0.00')
-                if bonus_rate > 0:
-                    bonus_amount = (bonus_rate * asset_amount).quantize(Decimal('0.01'))
-                    introducer_wallet.introducer_point_balance += bonus_amount
-                    introducer_wallet.save()
-                    Transaction.objects.create(
-                        user=introducer,
-                        wallet=introducer_wallet,
-                        transaction_type='INTRODUCER_BONUS',
-                        point_type='COMMISSION',
-                        amount=bonus_amount,
-                        description=f"Introducer bonus for {user.username} asset placement ({amount})",
-                        reference=f"INTRODUCER_BONUS from {user.id}"
-                    )
+                bonus_amount = (bonus_rate * Decimal(amount)).quantize(Decimal('0.01'))
+                introducer_wallet.introducer_point_balance += bonus_amount
+                introducer_wallet.save()
+                Transaction.objects.create(
+                    user=introducer,
+                    wallet=introducer_wallet,
+                    transaction_type='INTRODUCER_BONUS',
+                    point_type='COMMISSION',
+                    amount=bonus_amount,
+                    description=f"Introducer bonus for {user.username} asset placement ({amount})",
+                    reference=f"INTRODUCER_BONUS from {user.id}"
+                )
             except User.DoesNotExist:
                 pass # Referrer not found, skip bonus
                     
