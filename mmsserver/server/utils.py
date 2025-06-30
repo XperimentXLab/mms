@@ -386,13 +386,14 @@ class WalletService:
                 )
         
         current_time = timezone.now()
-        asset = Asset.objects.get(user=user)
-        asset_amount = asset.amount
+
         ## Introducer Bonus ##
         if user.referred_by:
             try:
                 introducer = User.objects.get(id=user.referred_by)
                 introducer_wallet = Wallet.objects.get(user=introducer)
+                introducer_asset = Asset.objects.get(user=introducer)
+                asset_amount = introducer_asset.amount
                 # Determine bonus rate
 
                 if asset_amount < 1000:
