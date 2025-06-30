@@ -453,6 +453,7 @@ class AssetService:
     @classmethod
     def grant_free_campro(cls, user):
         """Grants 100 free CAMPRO to a user (locked for 1 year)."""
+
         if user.is_campro:  # Prevent duplicate grants
             raise ValidationError("User already received free CAMPRO.")
         
@@ -584,7 +585,7 @@ class ProfitService:
         if amount < 50:
             raise ValidationError("Minimum withdrawal amount is 50 USDT")
         
-        wallet = user.wallet
+        wallet = Wallet.objects.get(user=user)
         if wallet.profit_point_balance < amount:
             raise ValidationError("Insufficient Profit Point balance")
         
@@ -627,8 +628,8 @@ class ProfitService:
         """Approve or reject a withdrawal request"""
 
         withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
-        
-        if withdrawal_request.request_status != 'PENDING':
+        txn = withdrawal_request.transaction
+        if txn.request_status != 'PENDING':
             raise ValidationError("This request has already been processed")
         
         wallet = withdrawal_request.wallet
@@ -636,12 +637,11 @@ class ProfitService:
         with db_transaction.atomic():
             if action == 'APPROVE':
                 # Update request status
-                withdrawal_request.request_status = 'APPROVED'
+                txn.request_status = 'APPROVED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
                 
                 # Update transaction description
-                txn = withdrawal_request.transaction
                 txn.description = f"Withdrawal request #{withdrawal_request.id} (Approved)"
                 txn.save()
                 
@@ -651,7 +651,7 @@ class ProfitService:
                 wallet.save()
                 
                 # Update request status
-                withdrawal_request.request_status = 'REJECTED'
+                txn.request_status = 'REJECTED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
                 
@@ -669,7 +669,7 @@ class ProfitService:
         if amount % 10 != 0:
             raise ValidationError("Amount must be a multiple of 10")
         
-        wallet = user.wallet
+        wallet = Wallet.objects.get(user=user)
         if wallet.profit_point_balance < amount:
             raise ValidationError("Insufficient Profit Point balance")
         
@@ -700,7 +700,7 @@ class CommissionService:
         if amount < 50:
             raise ValidationError("Minimum withdrawal amount is 50 USDT")
         
-        wallet = user.wallet
+        wallet = Wallet.objects.get(user=user)
         commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
         if commission_point < amount:
             raise ValidationError("Insufficient Commission Point balance")
@@ -752,8 +752,8 @@ class CommissionService:
         """Approve or reject a withdrawal request"""
 
         withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
-        
-        if withdrawal_request.request_status != 'PENDING':
+        txn = withdrawal_request.transaction
+        if txn.request_status != 'PENDING':
             raise ValidationError("This request has already been processed")
         
         wallet = withdrawal_request.wallet
@@ -761,7 +761,8 @@ class CommissionService:
         with db_transaction.atomic():
             if action == 'Approve':
                 # Update request status
-                withdrawal_request.request_status = 'APPROVED'
+                
+                txn.request_status = 'APPROVED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
                 
@@ -782,7 +783,7 @@ class CommissionService:
                 wallet.save()
                 
                 # Update request status
-                withdrawal_request.request_status = 'REJECTED'
+                txn.request_status = 'REJECTED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
                 
@@ -797,7 +798,7 @@ class CommissionService:
     @staticmethod
     def convert_to_master_point(user, amount, reference="", description=""):
         """Convert Commission Point to Master Point (must be multiple of 10)"""
-        wallet = user.wallet
+        wallet = Wallet.objects.get(user=user)
         commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
 
         if amount % 10 != 0:
