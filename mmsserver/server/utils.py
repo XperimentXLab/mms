@@ -269,9 +269,9 @@ class UserService:
         wallet, created = Wallet.objects.get_or_create(user=user)
         
         with db_transaction.atomic():
-            wallet.master_point_balance += master_amount
-            wallet.profit_point_balance += profit_amount
-            wallet.affiliate_point_balance += affiliate_amount
+            wallet.master_point_balance += Decimal(master_amount)
+            wallet.profit_point_balance += Decimal(profit_amount)
+            wallet.affiliate_point_balance += Decimal(affiliate_amount)
             wallet.save()
 
             Transaction.objects.create(
