@@ -10,6 +10,7 @@ from datetime import date
 class UserSerializer(serializers.ModelSerializer):
   verification_status_display = serializers.SerializerMethodField()
   asset_amount = serializers.SerializerMethodField()
+  password = serializers.CharField(write_only=True)
 
   class Meta:
     address_country = serializers.StringRelatedField()
