@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Inputss } from "../props/Formss"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
-import { setupUser } from "../auth/endpoints"
+import { setupUser, resetAllWalletBalances } from "../auth/endpoints"
 
 
 const Setup = () => {
@@ -36,6 +36,20 @@ const Setup = () => {
       } else {
         setErrorMessage(error.response.data.error)
       }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
+  const handleResetAllWallet = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      await resetAllWalletBalances()
+      alert('All wallet successfully reset')
+    } catch (error: any) {
+      console.log(error.response)
     } finally {
       setLoading(false)
     }
@@ -85,6 +99,10 @@ const Setup = () => {
         />
 
         <Buttons type="submit">Submit</Buttons>
+      </form>
+
+      <form onSubmit={handleResetAllWallet}>
+        <Buttons type='submit'>Reset All Wallet Balance</Buttons>
       </form>
 
 
