@@ -176,9 +176,9 @@ def distribute_profit_manually():
                 continue
 
             if asset_balance < Decimal('10000.00'):
-                user_share_ratio = Decimal('0.70'), "70/30"
+                user_share_ratio = Decimal('0.70') #"70/30"
             else:
-                user_share_ratio = Decimal('0.80'), "80/20"
+                user_share_ratio = Decimal('0.80') #"80/20"
 
             user_profit_amount = (raw_profit * user_share_ratio).quantize(Decimal('0.01'))
 
