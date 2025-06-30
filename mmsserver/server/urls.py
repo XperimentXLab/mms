@@ -68,5 +68,5 @@ urlpatterns = [
   path('process_withdrawal_profit', process_withdrawal_profit, name='process_withdrawal_profit'),
   path('process_withdrawal_commission', process_withdrawal_commission, name='process_withdrawal_commission'),
   path('update_profit_sharing/', update_profit_sharing, name='update_profit_sharing'),
-  path('reset_all_wallet_balances', reset_all_wallet_balances, name='reset_all_wallet_balances'),
+  path('reset_all_wallet_balances/', reset_all_wallet_balances, name='reset_all_wallet_balances'),
 ]

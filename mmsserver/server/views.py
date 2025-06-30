@@ -155,7 +155,7 @@ def login(request):
     )
     return response
   else:
-    logger.error(f"Error logging in for {username} : {str(e)}")
+    logger.error(f"Error logging in for {username}")
     return Response({'error': 'Invalid credentials'}, status=400)
   
 
