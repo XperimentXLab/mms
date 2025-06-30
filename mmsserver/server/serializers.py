@@ -127,7 +127,11 @@ class UserSerializer(serializers.ModelSerializer):
     return obj.get_verification_status_display()
 
   def create(self, validated_data):
-    user = User.objects.create_user(**validated_data)
+    password = validated_data.pop('password', None)
+    if not password:
+        raise serializers.ValidationError({'password': 'This field is required.'})
+    
+    user = User.objects.create_user(**validated_data, password=password)
     return user
 
 class UserNetworkSerializer(serializers.ModelSerializer):
