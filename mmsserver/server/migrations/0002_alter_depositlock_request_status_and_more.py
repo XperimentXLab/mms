@@ -10,5 +10,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-
+        migrations.AlterField(
+            model_name='withdrawalrequest',
+            name='point_type',
+            field=models.CharField(choices=[('MASTER', 'Master Point'), ('PROFIT', 'Profit'), ('COMMISSION', 'Commission'), ('ASSET', 'Asset')], max_length=40),
+        ),
     ]
