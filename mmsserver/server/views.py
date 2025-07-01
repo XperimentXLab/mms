@@ -266,7 +266,11 @@ def password_reset_confirm(request, uidb64, token):
 def update_user(request):
   user = request.user
   try:
-    serializer = UserSerializer(user, data=request.data, partial=True)
+    serializer = UserSerializer(
+      user, 
+      data=request.data, 
+      files=request.FILES,
+      partial=True)
     if serializer.is_valid():
       serializer.save()
       return Response(serializer.data, status=200)
