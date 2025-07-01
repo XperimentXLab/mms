@@ -1,5 +1,5 @@
 
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from django.db import transaction as db_transaction
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -167,7 +167,7 @@ def distribute_profit_manually():
                 metrics['skipped_users'] += 1
                 continue
 
-            raw_profit = (asset_balance * (daily_rate_percentage / Decimal('100.00'))).quantize(Decimal('0.01'))
+            raw_profit = (asset_balance * (daily_rate_percentage / Decimal('100.00'))).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
             if raw_profit <= Decimal('0.00'):
                 continue
 
@@ -176,7 +176,7 @@ def distribute_profit_manually():
             else:
                 user_share_ratio = Decimal('0.80') #"80/20"
 
-            user_profit_amount = (raw_profit * user_share_ratio).quantize(Decimal('0.01'))
+            user_profit_amount = (raw_profit * user_share_ratio).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
             # Update Downline User's profit_point_balance
             if user_profit_amount > Decimal('0.00'):
