@@ -3,6 +3,7 @@ from .serializers import *
 from .utils import *
 from django.conf import settings
 import requests
+from decimal import Decimal
 from rest_framework.authentication import authenticate
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -412,7 +413,7 @@ def update_profit_sharing (request):
     if user.is_staff:
       userSuper = User.objects.get(is_superuser=True)
       wallet, created = Wallet.objects.get_or_create(user=userSuper)
-      wallet.profit_point_balance += amount
+      wallet.profit_point_balance += Decimal(amount)
       wallet.save()
       serializer = WalletSerializer(wallet, data=request.data, partial=True)
       if serializer.is_valid():

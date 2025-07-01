@@ -196,7 +196,7 @@ def distribute_profit_manually():
                         point_type='PROFIT',
                         amount=user_profit_amount,
                         description=(
-                            f"Profit distribution ({daily_rate_percentage}% on MP {asset_balance:.2f}). "
+                            f"Profit distribution ({daily_rate_percentage}% on RP {asset_balance:.2f}). "
                             f"Old PP Bal: {original_profit_balance:.2f}, New PP Bal: {wallet_instance.profit_point_balance:.2f}."
                         ),
                         reference=f"ProfitDist_{current_time.strftime('%Y%m%d')}"
