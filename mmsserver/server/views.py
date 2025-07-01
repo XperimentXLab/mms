@@ -269,7 +269,7 @@ def update_user(request):
     serializer = UserSerializer(user, data=request.data, partial=True)
     if serializer.is_valid():
       serializer.save()
-      return Response({'message': f'{user.username} successfully updated'}, status=200)
+      return Response(serializer.data, status=200)
     else:
       return Response(serializer.errors, status=400)
   except Exception as e:
