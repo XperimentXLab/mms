@@ -29,8 +29,8 @@ const ResetPasswordConfirm = () => {
       if (password !== password2) return 'Passwords do not match'
       return null
     }
-    const error = validatePassword(password, password2)
-    if (error: any) {
+    const error: any = validatePassword(password, password2)
+    if (error) {
       setErrorMessage(error)
       return
     }
