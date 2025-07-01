@@ -49,7 +49,7 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState<string>('')
   const [confirmPassword, setConfirmPassword] = useState<string>('')
 
-
+  const [errorMessageVeri, setErrorMessageVeri] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
@@ -75,6 +75,7 @@ const Profile = () => {
         setBeneficiaryPhone(response.bineficiary_phone)
         setVerificationStatus(response.verification_status)
         setVerificationStatusDisplay(response.verification_status_display)
+        setErrorMessageVeri(response.reject_reason)
 
         // Initialize edit states with fetched data
         setEditWalletAddress(response.wallet_address || '')
@@ -322,7 +323,10 @@ const Profile = () => {
 
           <FixedText label='Status' text={verificationStatusDisplay} />
           {verificationStatus === 'UNDER_REVIEW' && <span className="text-md">Please wait for 24 hours for verification or contact administrator.</span>}
-          {verificationStatus === 'REQUIRES_ACTION' && <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
+
+          {errorMessageVeri && <span className="text-red-500 text-md">{errorMessageVeri}</span>}
+
+          {verificationStatus === 'REQUIRES_ACTION' || verificationStatus === 'REJECTED' && <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
             <label className="font-semibold">Upload I/C Document</label>
             <input type="file" 
               className="border p-2 rounded-md cursor-pointer"
