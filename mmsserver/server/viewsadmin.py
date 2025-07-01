@@ -415,6 +415,15 @@ def update_profit_sharing (request):
       wallet, created = Wallet.objects.get_or_create(user=userSuper)
       wallet.profit_point_balance += Decimal(amount)
       wallet.save()
+      Transaction.objects.create(
+        user=userSuper,
+        wallet=wallet,
+        transaction_type='SHARING_PROFIT',
+        point_type='PROFIT',
+        amount=amount,
+        description=f"SHARING PROFIT: {amount}",
+        reference=f"SHARING PROFIT - {amount}"
+      )
       serializer = WalletSerializer(wallet, data=request.data, partial=True)
       if serializer.is_valid():
         serializer.save()
