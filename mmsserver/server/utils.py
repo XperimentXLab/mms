@@ -354,6 +354,9 @@ class WalletService:
         if amount <= 50:
             raise ValidationError("Minimum placement amount is 50 USDT")
 
+        if amount % 10 != 0:
+            raise ValidationError("Amount must be a multiple of 10")
+
         wallet = Wallet.objects.get(user=user)
         if wallet.master_point_balance < amount:
             raise ValidationError("Insufficient Master Point balance")
@@ -490,6 +493,12 @@ class AssetService:
     @staticmethod
     def withdraw_asset(user, amount, description="", reference=""):
         """Withdraw asset to Profit"""
+        
+        if amount < 50:
+            raise ValidationError("Minimum withdrawal amount is 50 USDT")
+
+        if amount % 10 != 0:
+            raise ValidationError("Amount must be a multiple of 10")
 
         asset = Asset.objects.get(user=user)
         if asset.amount < amount:
@@ -580,6 +589,9 @@ class ProfitService:
 
         if amount < 50:
             raise ValidationError("Minimum withdrawal amount is 50 USDT")
+
+        if amount % 10 != 0:
+            raise ValidationError("Amount must be a multiple of 10")
         
         wallet = Wallet.objects.get(user=user)
         if wallet.profit_point_balance < amount:
