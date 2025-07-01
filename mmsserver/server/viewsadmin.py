@@ -573,6 +573,7 @@ def process_verification(request):
   user = request.user
   user_id = request.data.get('user_id')
   action = request.data.get('action')
+  reject_reason = request.data.get('reject_reason')
 
   user_ = User.objects.get(id=user_id)
   try:
@@ -581,6 +582,9 @@ def process_verification(request):
         user_.verification_status = 'APPROVED'
       elif action == 'Reject':
         user_.verification_status = 'REJECTED'
+        user_.reject_reason = reject_reason
+      else:
+        return Response({'error': 'Invalid action'}, status=400)
       user_.save()
       serializer = UserSerializer(user_)
       return Response(serializer.data, status=200)

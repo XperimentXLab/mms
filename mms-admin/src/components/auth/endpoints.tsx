@@ -176,12 +176,14 @@ export const resetAllWalletBalances = async () => {
 interface processVeriRes {
   user_id: string
   action: string
+  reject_reason?: string
 }
 export const processVeri = async (data: processVeriRes) => {
-  const { user_id, action } = data
+  const { user_id, action, reject_reason } = data
   const response = await api.post('/process_verification/',{
     user_id,
-    action
+    action,
+    reject_reason
   })
   return response.data
 }
