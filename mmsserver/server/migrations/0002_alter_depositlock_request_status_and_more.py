@@ -20,4 +20,9 @@ class Migration(migrations.Migration):
             name='point_type',
             field=models.CharField(choices=[('MASTER', 'Master Point'), ('PROFIT', 'Profit'), ('COMMISSION', 'Commission'), ('ASSET', 'Asset')], max_length=40),
         ),
+        migrations.AlterField(
+            model_name='withdrawalrequest',
+            name='request_status',
+            field=models.CharField(choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')], default='Pending', max_length=40, verbose_name='Request Status'),
+        ),
     ]
