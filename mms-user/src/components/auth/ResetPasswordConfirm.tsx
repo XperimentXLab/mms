@@ -1,8 +1,9 @@
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { reset_password_confirm } from "./endpoints"
-import Inputss from "../props/Formss"
+import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
+import Loading from "../props/Loading"
 
 const ResetPasswordConfirm = () => {
 
@@ -29,7 +30,7 @@ const ResetPasswordConfirm = () => {
       return null
     }
     const error = validatePassword(password, password2)
-    if (error) {
+    if (error: any) {
       setErrorMessage(error)
       return
     }
@@ -56,6 +57,7 @@ const ResetPasswordConfirm = () => {
 
   return (
     <div className="flex flex-col justify-center items-center gap-2 p-2">
+      {loading && <Loading />}
       <span className="font-bold text-xl">Reset Passsword</span>
       <form onSubmit={toggleSubmit} className="grid grid-cols-1 items-center justify-center gap-2">
         <label>Please fill in</label>
