@@ -58,6 +58,8 @@ class User(AbstractUser):
     default='REQUIRES_ACTION',
     verbose_name="Verification Status"
   )
+  reject_reason = models.TextField(blank=True, null=True, verbose_name="Reject Reason")
+
 
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)

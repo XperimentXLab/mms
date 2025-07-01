@@ -37,6 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
       'verification_status',
       'verification_status_display',
       'asset_amount',
+      'reject_reason',
       'created_at',
     ]
     extra_kwargs = {
