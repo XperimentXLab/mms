@@ -13,6 +13,9 @@ dayjs.extend(timezone);
 interface Transaction {
   id: string;
   created_date: string;
+  created_time: string;
+  created_datetime: string; // <-- Add this line
+  username: string; 
   amount: number;
   request_status: 'PENDING' | 'APPROVED' | 'REJECTED';
   point_type: string;
@@ -105,16 +108,16 @@ const AssetRequest = () => {
 
   /*
   const isOneHourPassed = (createdDate: string) => {
-    const created = new Date(createdDate)
-    const now = new Date()
-    const diffInHours = (now.getTime() - created.getTime()) / (1000 * 60 * 60)
+    const created = dayjs(created_datetime)
+    const now = dayjs()
+    const diffInHours = now.diff(created, 'hours')
     return diffInHours >= 1
   }*/
 
   const isFiveMinutesPassed = (created_datetime: string) => {
-    const created = new Date(created_datetime)
-    const now = new Date()
-    const diffInMinutes = (now.getTime() - created.getTime()) / (1000 * 60)
+    const created = dayjs(created_datetime)
+    const now = dayjs()
+    const diffInMinutes = now.diff(created, 'minutes')
     return diffInMinutes >= 5
   }
 
@@ -134,15 +137,13 @@ const data = transactions.map(tx => ({
     ...tx,
     action: (
       <div className="flex gap-2">
-        {tx.request_status === 'PENDING' && isFiveMinutesPassed(tx.created_date) && (
+        {tx.request_status === 'PENDING' && isFiveMinutesPassed(tx.created_datetime) && (
           <Buttons 
             type="button"
             disabled={tx.request_status !== 'PENDING'}
             onClick={() => handleApprove(tx.id)}
             className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            Approve
-          </Buttons>
+          > Approve </Buttons>
         )}
         {tx.request_status === 'PENDING' ? (
           <>
