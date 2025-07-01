@@ -268,8 +268,7 @@ def update_user(request):
   try:
     serializer = UserSerializer(
       user, 
-      data=request.data, 
-      files=request.FILES,
+      data={**request.data, **request.FILES}, 
       partial=True)
     if serializer.is_valid():
       serializer.save()
