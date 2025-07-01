@@ -11,6 +11,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
+            model_name='depositlock',
+            name='request_status',
+            field=models.CharField(choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')], default='Pending', max_length=40, verbose_name='Request Status'),
+        ),
+        migrations.AlterField(
             model_name='withdrawalrequest',
             name='point_type',
             field=models.CharField(choices=[('MASTER', 'Master Point'), ('PROFIT', 'Profit'), ('COMMISSION', 'Commission'), ('ASSET', 'Asset')], max_length=40),
