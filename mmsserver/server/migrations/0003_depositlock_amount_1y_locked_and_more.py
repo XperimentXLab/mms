@@ -21,14 +21,4 @@ class Migration(migrations.Migration):
             name='amount_6m_locked',
             field=models.DecimalField(decimal_places=2, default=Decimal('0.00'), max_digits=15),
         ),
-        migrations.AlterField(
-            model_name='depositlock',
-            name='request_status',
-            field=models.CharField(choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')], default='Pending', max_length=40, verbose_name='Request Status'),
-        ),
-        migrations.AlterField(
-            model_name='withdrawalrequest',
-            name='request_status',
-            field=models.CharField(choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')], default='Pending', max_length=40, verbose_name='Request Status'),
-        ),
     ]

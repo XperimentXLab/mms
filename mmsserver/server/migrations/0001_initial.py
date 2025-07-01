@@ -138,7 +138,6 @@ class Migration(migrations.Migration):
                 ('amount_6m_unlocked', models.DecimalField(decimal_places=2, default=Decimal('0.00'), max_digits=15)),
                 ('amount_1y_unlocked', models.DecimalField(decimal_places=2, default=Decimal('0.00'), max_digits=15)),
                 ('is_free_campro', models.BooleanField(default=False)),
-                ('request_status', models.CharField(choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')], default='Pending', max_length=20, verbose_name='Request Status')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('deposit', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='lock_info', to='server.transaction')),
             ],

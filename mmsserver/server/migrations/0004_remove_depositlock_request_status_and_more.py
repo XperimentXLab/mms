@@ -10,12 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='depositlock',
-            name='request_status',
-        ),
-        migrations.RemoveField(
-            model_name='withdrawalrequest',
-            name='request_status',
-        ),
+
     ]
