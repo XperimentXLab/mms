@@ -171,3 +171,26 @@ export const resetAllWalletBalances = async () => {
   const response = await api.post('/reset_all_wallet_balances/')
   return response.data
 }
+
+
+interface processVeriRes {
+  user_id: string
+  action: string
+}
+export const processVeri = async (data: processVeriRes) => {
+  const { user_id, action } = data
+  const response = await api.post('/process_verification/',{
+    user_id,
+    action
+  })
+  return response.data
+}
+
+
+export const grantFreeCampro = async (user_id: string) => {
+  const response = await api.post('/grant_campro/',{
+    user_id
+  })
+  return response.data
+}
+

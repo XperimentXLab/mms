@@ -44,6 +44,7 @@ export const AssetStatement = () => {
   const columns = [
     { header: "Date", accessor: "created_date" },
     { header: "Time", accessor: "created_time" },
+    { header: "Amount", accessor: "deposit_amount" },
     { header: 'Status', accessor: 'request_status_display'},
     { header: "Amount Locked (50%)", accessor: "amount_6m_locked" },
     { header: 'Days Left', accessor: 'days_until_6m'},
@@ -56,6 +57,7 @@ export const AssetStatement = () => {
   interface AssetState {
     id: string;
     created_date: string;
+    deposit_amount: number;
     amount_6m_locked: number;
     amount_6m_unlocked: number;
     amount_1y_locked: number;

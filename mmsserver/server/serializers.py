@@ -11,6 +11,8 @@ class UserSerializer(serializers.ModelSerializer):
   verification_status_display = serializers.SerializerMethodField()
   asset_amount = serializers.SerializerMethodField()
   password = serializers.CharField(write_only=True)
+  ic_document_url = serializers.SerializerMethodField()
+
 
   class Meta:
     address_country = serializers.StringRelatedField()
@@ -18,6 +20,8 @@ class UserSerializer(serializers.ModelSerializer):
     fields = [
       'id',
       'username',
+      'first_name',
+      'last_name',
       'password',
       'ic',
       'email',
@@ -34,6 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
       'beneficiary_phone',
       'beneficiary_email',
       'ic_document',
+      'ic_document_url',
       'verification_status',
       'verification_status_display',
       'asset_amount',
@@ -54,6 +59,11 @@ class UserSerializer(serializers.ModelSerializer):
     asset = Asset.objects.filter(user=obj).first()
     if asset:
       return asset.amount
+    return None
+  
+  def get_ic_document_url(self, obj):
+    if obj.ic_document:
+      return obj.ic_document.url
     return None
     
   def validate_email(self, value):
@@ -329,12 +339,14 @@ class WithdrawalRequestSerializer(serializers.ModelSerializer):
 class DepositLockSerializer(serializers.ModelSerializer):
 
   request_status_display = serializers.SerializerMethodField()
+  deposit_amount = serializers.SerializerMethodField()
 
   class Meta:
     model = DepositLock
     fields = [
       'id',
       'deposit',
+      'deposit_amount',
       'amount_6m_unlocked',
       'amount_1y_unlocked',
       'amount_6m_locked',
@@ -348,6 +360,7 @@ class DepositLockSerializer(serializers.ModelSerializer):
     read_only_fields = [
       'id',
       'deposit'
+      'deposit_amount',
       'amount_6m_unlocked',
       'amount_1y_unlocked',
       'amount_6m_locked',
@@ -361,5 +374,10 @@ class DepositLockSerializer(serializers.ModelSerializer):
   def get_request_status_display(self, obj):
     if obj.deposit:
         return obj.deposit.request_status
+    return None
+  
+  def get_deposit_amount(self, obj):
+    if obj.deposit:
+        return obj.deposit.amount
     return None
     

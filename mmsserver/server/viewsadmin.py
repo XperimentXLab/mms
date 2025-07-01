@@ -461,9 +461,10 @@ def distribute_profit(request):
 @permission_classes([IsAuthenticated])
 def grant_free_campro(request):
   user = request.user
+  user_id = request.data.get('user_id')
   try:
     if user.is_staff:
-      result = grant_free_campro()
+      result = grant_free_campro(user_id)
       serializer = TransactionSerializer(result)
       return Response(serializer.data, status=200)
     else:
@@ -565,4 +566,26 @@ def process_withdrawal_commission(request):
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def process_verification(request):
+  user = request.user
+  user_id = request.data.get('user_id')
+  action = request.data.get('action')
+
+  user_ = User.objects.get(id=user_id)
+  try:
+    if user.is_staff:
+      if action == 'Approve':
+        user_.verification_status = 'APPROVED'
+      elif action == 'Reject':
+        user_.verification_status = 'REJECTED'
+      user_.save()
+      serializer = UserSerializer(user_)
+      return Response(serializer.data, status=200)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
 

@@ -94,6 +94,11 @@ def get_user(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
+  first_name = request.data.get('first_name')
+  last_name = request.data.get('last_name')
+
+  if not (first_name and last_name):
+    return Response({'error': 'First name and last name are required'}, status=400)
     
   try:
     serializer = UserSerializer(data=request.data)
