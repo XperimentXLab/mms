@@ -4,7 +4,7 @@ import Spannn, { FixedText } from "../props/Textt"
 import { updatePassword, updateUserDetails, userDetails } from "../auth/endpoints"
 import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
-import { apiCountry, type CountryType } from "../auth/api"
+import { apiCountry, supabase, type CountryType } from "../auth/api"
 
 const Profile = () => {
 
@@ -169,12 +169,13 @@ const Profile = () => {
         verificationStatus: verificationStatusChange,
       }, icDocument)
       console.log('Success upload document')
-      alert('IC Document uploaded successfully.')
+      alert('Document uploaded successfully.')
     } catch (error: any) {
       console.error(error)
     } finally {
       setLoading(false)
     }
+    
   }
 
   const [errorMessageChangeP, setErrorMessageChangeP] = useState<string>('')

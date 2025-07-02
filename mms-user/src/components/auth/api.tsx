@@ -1,4 +1,5 @@
 import axios from "axios"
+import { createClient } from '@supabase/supabase-js'
 
 export const baseURL = import.meta.env.VITE_BASE_URL ?? 'http://127.0.0.1:8000/server'
 const tokenURL = `${baseURL}/token/refresh/`
@@ -83,6 +84,9 @@ export const apiCountry: Promise<CountryType[]> = axios.get('https://restcountri
     console.error('Error fetching country data:', err)
     return []
   })
+
+
+export const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
 
 /*
 const getRecaptchaToken = async (action: string): Promise<string> => {
