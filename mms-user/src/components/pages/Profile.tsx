@@ -163,7 +163,8 @@ const Profile = () => {
   }
 
 
-  const toggleVerification = async () => {
+  const toggleVerification = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     try {
       setLoading(true)
       if (!icDocument) {

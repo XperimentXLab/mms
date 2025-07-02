@@ -142,7 +142,7 @@ const data = transactions.map(tx => ({
             type="button"
             disabled={tx.request_status !== 'PENDING'}
             onClick={() => handleApprove(tx.id)}
-            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+            className="px-3 py-1 cursor-pointer bg-green-500 text-white rounded hover:bg-green-600"
           > Approve </Buttons>
         )}
         {tx.request_status === 'PENDING' ? (
@@ -158,7 +158,7 @@ const data = transactions.map(tx => ({
               type="submit"
               onClick={() => handleReject(tx.id)}
               disabled={!rejectionReasons[tx.id]}
-              className={`px-3 py-1 rounded ${rejectionReasons[tx.id] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-300 cursor-not-allowed'}`}
+              className={`px-3 py-1 rounded ${rejectionReasons[tx.id] ? 'bg-red-500 hover:bg-red-600 text-white cursor-pointer' : 'bg-gray-300 cursor-not-allowed'}`}
             >
               Reject
             </Buttons>
