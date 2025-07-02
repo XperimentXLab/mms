@@ -40,6 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
       'verification_status_display',
       'asset_amount',
       'reject_reason',
+      'is_campro',
       'created_at',
     ]
     extra_kwargs = {

@@ -156,7 +156,7 @@ const Verifications = () => {
             >Approve</Buttons>
 
             <form onSubmit={(e) => handleReject(e)(user.id)}
-              className="flex flex-col gap-1"
+              className="flex flex-row gap-1"
             >
               <input
                 type="text"
