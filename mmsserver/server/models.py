@@ -42,7 +42,7 @@ class User(AbstractUser):
 
   # Verification documents
   ic_document = models.ImageField(
-    upload_to='verification_documents/',
+    upload_to=f'verification_documents/{id}/',
     blank=True,
     null=True,
     verbose_name="IC/Driving License"
