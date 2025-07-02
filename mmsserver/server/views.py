@@ -4,7 +4,7 @@ from .utils import *
 from django.conf import settings
 import requests
 from rest_framework.authentication import authenticate
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.contrib.auth.password_validation import validate_password
@@ -263,6 +263,7 @@ def password_reset_confirm(request, uidb64, token):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
 def update_user(request):
   user = request.user
   try:

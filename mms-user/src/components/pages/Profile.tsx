@@ -4,7 +4,7 @@ import Spannn, { FixedText } from "../props/Textt"
 import { updatePassword, updateUserDetails, userDetails } from "../auth/endpoints"
 import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
-import { apiCountry, supabase, type CountryType } from "../auth/api"
+import { apiCountry, type CountryType } from "../auth/api"
 
 const Profile = () => {
 
@@ -170,15 +170,10 @@ const Profile = () => {
         alert('Please select a document to upload.')
         return
       }
-      const { error } = await supabase.storage
-        .from('verification-documents')
-        .upload(`user-${refferralCode}/${icDocument.name}`, icDocument, { upsert: true });
-
-      if (error) throw error;
 
       await updateUserDetails({
         verificationStatus: verificationStatusChange,
-      }, icDocument );  // Save this in Django
+      }, icDocument ); 
 
       console.log('Success upload document')
       alert('Document uploaded successfully.')

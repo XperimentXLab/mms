@@ -42,7 +42,7 @@ class User(AbstractUser):
 
   # Verification documents
   ic_document = models.ImageField(
-    upload_to=f'verification_documents/{id}/',
+    upload_to=user_ic_document_upload_to,
     blank=True,
     null=True,
     verbose_name="IC/Driving License"
@@ -63,6 +63,9 @@ class User(AbstractUser):
 
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
+
+  def user_ic_document_upload_to(instance, filename):
+    return f'verification_documents/user_{instance.id}/{filename}'
   
   def unique_id_generator(self, referred_by_id=None):
     """
