@@ -4,7 +4,7 @@ import Spannn, { FixedText } from "../props/Textt"
 import { updatePassword, updateUserDetails, userDetails } from "../auth/endpoints"
 import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
-import { apiCountry, type CountryType } from "../auth/api"
+import { apiCountry, supabase, type CountryType } from "../auth/api"
 
 const Profile = () => {
 
@@ -31,7 +31,6 @@ const Profile = () => {
   const [verificationStatus, setVerificationStatus] = useState<string>('REQUIRES_ACTION')
   const [verificationStatusDisplay, setVerificationStatusDisplay] = useState<string>('')
   const [icDocument, setIcDocument] = useState<File | undefined>(undefined)
-  const [verificationStatusChange, setVerificationStatusChange] = useState<string>('UNDER_REVIEW')
 
   const [editWalletAddress, setEditWalletAddress] = useState<string>('')
   const [editAddressLine, setEditAddressLine] = useState<string>('')
@@ -172,14 +171,36 @@ const Profile = () => {
         return
       }
 
-      await updateUserDetails({
-        verificationStatus: verificationStatusChange,
-      }, icDocument ); 
+      // 1. Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('verification-documents')
+        .upload(`user-${refferralCode}/${icDocument.name}`, icDocument, { upsert: true });
 
-      console.log('Success upload document')
+      if (error) {
+        alert(error.message || 'Failed to upload document to Supabase.');
+        return;
+      }
+      console.log(data)
+
+      // 2. Get the public URL
+      const { data: publicUrlData } = supabase
+        .storage
+        .from('verification-documents')
+        .getPublicUrl(`user-${refferralCode}/${icDocument.name}`);
+
+      if (!publicUrlData || !publicUrlData.publicUrl) {
+        alert('Failed to get public URL from Supabase.');
+        return;
+      }
+
+      await updateUserDetails({
+        verificationStatus: 'UNDER_REVIEW',
+        ic_document_url: publicUrlData.publicUrl
+      }); 
+
       alert('Document uploaded successfully.')
     } catch (error: any) {
-      console.error(error.response.data)
+      console.error(error.message)
       alert('Failed to upload document.')
     } finally {
       setLoading(false)
@@ -346,7 +367,6 @@ const Profile = () => {
                 const file = e.target.files?.[0]
                 if (file) {
                   setIcDocument(file)
-                  setVerificationStatusChange('UNDER_REVIEW')
                 }
               }}
             />

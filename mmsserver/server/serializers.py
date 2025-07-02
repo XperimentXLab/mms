@@ -11,8 +11,6 @@ class UserSerializer(serializers.ModelSerializer):
   verification_status_display = serializers.SerializerMethodField()
   asset_amount = serializers.SerializerMethodField()
   password = serializers.CharField(write_only=True)
-  ic_document_url = serializers.SerializerMethodField()
-
 
   class Meta:
     address_country = serializers.StringRelatedField()
@@ -37,7 +35,6 @@ class UserSerializer(serializers.ModelSerializer):
       'beneficiary_relationship',
       'beneficiary_phone',
       'beneficiary_email',
-      'ic_document',
       'ic_document_url',
       'verification_status',
       'verification_status_display',
@@ -49,7 +46,7 @@ class UserSerializer(serializers.ModelSerializer):
       'password': {'write_only': True},
       'id': {'read_only': True},
       'referred_by': {'required': False, 'allow_null': True, 'allow_blank': True},
-      'ic_document': {'required': False},
+      'ic_document_url': {'required': False},
       'verification_status': {'required': False},
       'verification_status_display': {'read_only': True},
       'created_at': {'read_only': True},
@@ -129,11 +126,6 @@ class UserSerializer(serializers.ModelSerializer):
       raise serializers.ValidationError(f'Invalid Referral ID format.')
     if not User.objects.filter(id=value).exists():
       raise serializers.ValidationError(f'Referral ID does not exist.')
-    return value
-  
-  def validate_ic_document(self, value):
-    if not value.name.lower().endswith(('.jpg', '.jpeg', '.png', '.pdf')):
-      raise serializers.ValidationError("Upload a valid image format (jpg, jpeg, png, pdf).")
     return value
 
   def get_verification_status_display(self, obj):

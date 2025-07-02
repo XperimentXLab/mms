@@ -23,6 +23,7 @@ interface User {
   bineficiaryEmail?: string | undefined;
   bineficiaryPhone?: string | undefined;
   verificationStatus?: string | undefined;
+  ic_document_url?: string | undefined
 }
 
 interface updatePassData {
@@ -110,7 +111,7 @@ export const userNetwork = async () => {
 }
 
 
-export const updateUserDetails = async (userData: Partial<User>, icDocument?: File) => {
+export const updateUserDetails = async (userData: Partial<User>) => {
   const {
     addressLine,
     state,
@@ -124,57 +125,24 @@ export const updateUserDetails = async (userData: Partial<User>, icDocument?: Fi
     bineficiaryEmail,
     bineficiaryPhone, 
     verificationStatus,
+    ic_document_url,
    } = userData
-
-   if (icDocument) {
-    const formData = new FormData()
-
-    const fields = {
-      address_line: addressLine,
-      address_state: state,
-      address_city: city,
-      address_postcode: postcode,
-      address_country: country,
-      wallet_address: walletAddress,
-      bineficiary_name: bineficiaryName,
-      bineficiary_ic: bineficiaryIc,
-      bineficiary_relationship: bineficiaryRelationship,
-      bineficiary_email: bineficiaryEmail,
-      bineficiary_phone: bineficiaryPhone,
-      verification_status: verificationStatus,
-    }
-
-    Object.entries(fields).forEach(([key, value]) => {
-      if (value !== undefined) {
-        formData.append(key, value)
-      }
-    })
-    formData.append('ic_document', icDocument, icDocument.name)
-
-    return api.put(`/update_user/`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Accept': 'application/json',
-      },
-    })
-
-   } else {
-    const response = await api.put(`/update_user/`, {
-      address_line: addressLine,
-      address_state: state,
-      address_city: city,
-      address_postcode: postcode,
-      address_country: country,
-      wallet_address: walletAddress,
-      bineficiary_name: bineficiaryName,
-      bineficiary_ic: bineficiaryIc,
-      bineficiary_relationship: bineficiaryRelationship,
-      bineficiary_email: bineficiaryEmail,
-      bineficiary_phone: bineficiaryPhone,
-      verification_status: verificationStatus,
-    })
+  const response = await api.put(`/update_user/`, {
+    address_line: addressLine,
+    address_state: state,
+    address_city: city,
+    address_postcode: postcode,
+    address_country: country,
+    wallet_address: walletAddress,
+    bineficiary_name: bineficiaryName,
+    bineficiary_ic: bineficiaryIc,
+    bineficiary_relationship: bineficiaryRelationship,
+    bineficiary_email: bineficiaryEmail,
+    bineficiary_phone: bineficiaryPhone,
+    verification_status: verificationStatus,
+    ic_document_url
+  })
     return response.data
-  }
 }
 
 

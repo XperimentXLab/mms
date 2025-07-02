@@ -42,15 +42,7 @@ class User(AbstractUser):
   beneficiary_email = models.EmailField(blank=True, null=True)
 
   # Verification documents
-  def user_ic_document_upload_to(instance, filename):
-    return f'verification_documents/user_{instance.id}/{filename}'
-
-  ic_document = models.ImageField(
-    upload_to=user_ic_document_upload_to,
-    blank=True,
-    null=True,
-    verbose_name="IC/Driving License"
-  )
+  ic_document_url = models.URLField(blank=True, null=True)
   verification_status = models.CharField(
     max_length=40,
     choices=[

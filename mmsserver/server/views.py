@@ -270,8 +270,9 @@ def update_user(request):
   try:
     serializer = UserSerializer(
       user, 
-      data={**request.data, **request.FILES}, 
-      partial=True)
+      data=request.data, 
+      partial=True
+    )
     if serializer.is_valid():
       serializer.save()
       logger.info(f'Update profile {user.username} success')

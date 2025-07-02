@@ -16,7 +16,6 @@ interface userDetail {
   address_postcode: string | null
   address_country: string | null
   verification_status: 'REQUIRES_ACTION' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED'
-  ic_document?: string | null
   ic_document_url?: string | undefined
   is_campro?: boolean
   reject_reason?: string | null
@@ -76,7 +75,8 @@ const Verifications = () => {
     setRejectionReasons(prev => ({ ...prev, [id]: reason }))
   }
 
-  const handleReject = (id: string) => {
+  const handleReject = (e: React.FormEvent<HTMLFormElement>) => ( id: string) => {
+    e.preventDefault()
     const reason = rejectionReasons[id] || 'No reason provided'
     const fetchData = async () => {
       try {
@@ -127,7 +127,7 @@ const Verifications = () => {
     { header: 'Postcode', accessor: 'address_postcode' },
     { header: 'Country', accessor: 'address_country' },
     { header: 'Status', accessor: 'verification_status'},
-    { header: 'Document', accessor: 'ic_document'},
+    { header: 'Document', accessor: 'ic_document_url'},
     { header: 'Action', accessor: 'action'},
     { header: 'Welcome Bonus', accessor: 'is_campro'},
 
@@ -135,7 +135,7 @@ const Verifications = () => {
 
   const data = userDetailss.map(user => ({
     ...user,
-    ic_document: (
+    ic_document_url: (
       <a
         href={user.ic_document_url}
         target="_blank"
@@ -155,22 +155,22 @@ const Verifications = () => {
             className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
             >Approve</Buttons>
 
-          
-            <input
-              type="text"
-              placeholder="Reason for rejection"
-              value={rejectionReasons[user.id] || ''}
-              onChange={(e) => handleReasonChange(user.id, e.target.value)}
-              className="border p-1 rounded text-sm"
-            />
-            <Buttons
-              type="submit"
-              onClick={() => handleReject(user.id)}
-              disabled={!rejectionReasons[user.id]}
-              className={`px-3 py-1 rounded ${rejectionReasons[user.id] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-300 cursor-not-allowed'}`}
-            >
-              Reject
-            </Buttons>
+            <form onSubmit={(e) => handleReject(e)(user.id)}>
+              <input
+                type="text"
+                placeholder="Reason for rejection"
+                value={rejectionReasons[user.id] || ''}
+                onChange={(e) => handleReasonChange(user.id, e.target.value)}
+                className="border p-1 rounded text-sm"
+              />
+              <Buttons
+                type="submit"
+                disabled={!rejectionReasons[user.id]}
+                className={`px-3 py-1 rounded ${rejectionReasons[user.id] ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-300 cursor-not-allowed'}`}
+              >
+                Reject
+              </Buttons>
+            </form>
           </div>}
       </div>
     ),
