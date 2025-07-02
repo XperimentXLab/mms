@@ -50,8 +50,8 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 #Supabase
 SUPABASE_JWT_SECRET = os.getenv('SUPABASE_JWT_SECRET')
-#SUPABASE_URL = os.environ.get('SUPABASE_URL')
-#SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
 
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 CORS_ALLOW_CREDENTIALS = True
@@ -166,20 +166,23 @@ RECAPTCHA_SECRET_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
 
 # DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE')
 
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+#AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+#AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 #AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
-AWS_S3_REGION_NAME =    os.getenv('AWS_S3_REGION_NAME') # optional
+#AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
+#AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME') # optional
 AWS_S3_ADDRESSING_STYLE = "path"  # important for Supabase compatibility
 
 STORAGES = {
     "default": {
         "BACKEND": os.getenv('DEFAULT_FILE_STORAGE'),
         "OPTIONS": {
-            "SUPABASE_URL": os.environ.get('SUPABASE_URL'),
-            "SUPABASE_API_KEY": os.environ.get('SUPABASE_KEY'),
-            "SUPABASE_STORAGE_BUCKET": os.getenv('AWS_STORAGE_BUCKET_NAME'),
+            "access_key": os.getenv('AWS_ACCESS_KEY_ID'),
+            "secret_key": os.getenv('AWS_SECRET_ACCESS_KEY'),
+            "bucket_name": os.getenv('AWS_STORAGE_BUCKET_NAME'),
+            "region_name": os.getenv('AWS_S3_REGION_NAME'),
+            "endpoint_url": os.getenv('AWS_S3_ENDPOINT_URL'),
+            "addressing_style": "path"
         }
     },
     "staticfiles": {
