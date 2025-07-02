@@ -404,7 +404,7 @@ def setup_user(request):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def update_profit_sharing (request):
+def update_profit_sharing(request):
   user = request.user
   amount = request.data.get('amount')
   if not amount:

@@ -168,6 +168,7 @@ const Profile = () => {
       await updateUserDetails({
         verificationStatus: verificationStatusChange,
       }, icDocument)
+      console.log('Success upload document')
       alert('IC Document uploaded successfully.')
     } catch (error: any) {
       console.error(error)

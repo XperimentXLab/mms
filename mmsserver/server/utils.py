@@ -196,7 +196,7 @@ def distribute_profit_manually():
                         point_type='PROFIT',
                         amount=user_profit_amount,
                         description=(
-                            f"Profit distribution ({daily_rate_percentage}% on RP {asset_balance:.2f}). "
+                            f"Profit distribution ({daily_rate_percentage}% on Asset {asset_balance:.2f}). "
                             f"Old PP Bal: {original_profit_balance:.2f}, New PP Bal: {wallet_instance.profit_point_balance:.2f}."
                         ),
                         reference=f"ProfitDist_{current_time.strftime('%Y%m%d')}"
@@ -389,36 +389,6 @@ class WalletService:
                 )
         
         current_time = timezone.now()
-
-        ## Introducer Bonus ##
-        if user.referred_by:
-            try:
-                introducer = User.objects.get(id=user.referred_by)
-                introducer_wallet = Wallet.objects.get(user=introducer)
-                introducer_asset = Asset.objects.get(user=introducer)
-                asset_amount = introducer_asset.amount
-                # Determine bonus rate
-
-                if asset_amount < 1000:
-                    bonus_rate = Decimal('0.02')
-                elif 1000 <= asset_amount < 10000:
-                    bonus_rate = Decimal('0.025')
-                elif asset_amount >= 10000:
-                    bonus_rate = Decimal('0.03')
-                bonus_amount = (bonus_rate * Decimal(amount)).quantize(Decimal('0.01'))
-                introducer_wallet.introducer_point_balance += bonus_amount
-                introducer_wallet.save()
-                Transaction.objects.create(
-                    user=introducer,
-                    wallet=introducer_wallet,
-                    transaction_type='INTRODUCER_BONUS',
-                    point_type='COMMISSION',
-                    amount=bonus_amount,
-                    description=f"Introducer bonus for {user.username} asset placement ({amount})",
-                    reference=f"INTRODUCER_BONUS from {user.id}"
-                )
-            except User.DoesNotExist:
-                pass # Referrer not found, skip bonus
                     
         return wallet, asset
 
@@ -432,6 +402,7 @@ class WalletService:
             
             wallet = trx.wallet
             asset = trx.asset
+            user = trx.user
             amount = trx.amount if trx.amount is not None else Decimal('0.00')
 
 
@@ -440,6 +411,39 @@ class WalletService:
                 asset.save()
                 trx.request_status = 'APPROVED'
                 trx.save()
+
+                ## Introducer Bonus ##
+                if user.referred_by:
+                    try:
+                        introducer = User.objects.get(id=user.referred_by)
+                        introducer_wallet = Wallet.objects.get(user=introducer)
+                        introducer_asset = Asset.objects.get(user=introducer)
+                        asset_amount = introducer_asset.amount
+                        # Determine bonus rate
+
+                        if asset_amount == 0:
+                            bonus_rate = Decimal('0.00')
+                        elif asset_amount < 1000:
+                            bonus_rate = Decimal('0.02')
+                        elif 1000 <= asset_amount < 10000:
+                            bonus_rate = Decimal('0.025')
+                        elif asset_amount >= 10000:
+                            bonus_rate = Decimal('0.03')
+                        bonus_amount = (bonus_rate * Decimal(amount)).quantize(Decimal('0.01'))
+                        introducer_wallet.introducer_point_balance += bonus_amount
+                        introducer_wallet.save()
+                        Transaction.objects.create(
+                            user=introducer,
+                            wallet=introducer_wallet,
+                            transaction_type='INTRODUCER_BONUS',
+                            point_type='COMMISSION',
+                            amount=bonus_amount,
+                            description=f"Introducer bonus for {user.username} asset placement ({amount})",
+                            reference=f"INTRODUCER_BONUS from {user.id}"
+                        )
+                    except User.DoesNotExist:
+                        pass # Referrer not found, skip bonus
+
             elif action == 'Reject':
                 wallet.master_point_balance += Decimal(amount)
                 wallet.save()
