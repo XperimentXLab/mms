@@ -119,11 +119,11 @@ const Home = () => {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-start sm:justify-center">
           <FixedText label="USERNAME" text={username} />
           <FixedText label="USER ID" text={userId} />
-          <FixedText label="Register Point" text={masterP.toString()} />
+          <FixedText label="Asset" text={assetP.toString()} />
           <FixedText label="Profit" text={profitP.toString()} />
           <FixedText label="Commission" text={commissionP.toFixed(2).toString()} />
-          <FixedText label="Asset" text={assetP.toString()} />
-          </div>
+          <FixedText label="Register Point" text={masterP.toString()} />
+        </div>
 
         <div className="border rounded-xl p-4 flex items-center flex-col shadow-2xl shadow-red-300 bg-white">
           <h2 className="font-bold text-lg mb-3">Daily Summary Profit</h2>

@@ -459,12 +459,12 @@ def distribute_profit(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def grant_free_campro(request):
+def grant_welcome_bonus(request):
   user = request.user
   user_id = request.data.get('user_id')
   try:
     if user.is_staff:
-      result = grant_free_campro(user_id)
+      result = AssetService.grant_free_campro(user_id)
       serializer = TransactionSerializer(result)
       return Response(serializer.data, status=200)
     else:

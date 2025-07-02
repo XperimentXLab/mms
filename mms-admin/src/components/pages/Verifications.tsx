@@ -155,7 +155,9 @@ const Verifications = () => {
             className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
             >Approve</Buttons>
 
-            <form onSubmit={(e) => handleReject(e)(user.id)}>
+            <form onSubmit={(e) => handleReject(e)(user.id)}
+              className="flex flex-col gap-1"
+            >
               <input
                 type="text"
                 placeholder="Reason for rejection"

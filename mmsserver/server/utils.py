@@ -54,7 +54,7 @@ def _distribute_affiliate_bonus_for_user(
                         point_type='COMMISSION',
                         amount=l1_bonus_amount,
                         description=(
-                            f"L1 Affiliate bonus from {downline_user.username}'s profit. Old AP Bal: {original_affiliate_balance_l1:.2f}, New AP Bal: {upline_l1_wallet.affiliate_point_balance:.2f}."
+                            f"L1 Affiliate bonus (5%) from {downline_user.username}'s profit."
                         ),
                         reference=f"AffL1_{downline_user.id}_{current_time.strftime('%Y%m%d')}"
                     )
@@ -93,7 +93,7 @@ def _distribute_affiliate_bonus_for_user(
                                     point_type='COMMISSION',
                                     amount=l2_bonus_amount,
                                     description=(
-                                        f"L2 Affiliate bonus from {downline_user.username}'s profit (via {upline_l1_wallet.user.username}). Old AP Bal: {original_affiliate_balance_l2:.2f}, New AP Bal: {upline_l2_wallet.affiliate_point_balance:.2f}."
+                                        f"L2 Affiliate bonus (2%) from {downline_user.username}'s profit (via {upline_l1_wallet.user.username})."
                                     ),
                                     reference=f"AffL2_{downline_user.id}_{current_time.strftime('%Y%m%d')}"
                                 )

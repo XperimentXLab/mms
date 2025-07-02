@@ -1,5 +1,5 @@
 import axios from "axios"
-import { createClient } from '@supabase/supabase-js'
+import { updateUserDetails } from "./endpoints";
 
 export const baseURL = import.meta.env.VITE_BASE_URL ?? 'http://127.0.0.1:8000/server'
 const tokenURL = `${baseURL}/token/refresh/`
@@ -86,7 +86,30 @@ export const apiCountry: Promise<CountryType[]> = axios.get('https://restcountri
   })
 
 
-export const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
+export const openCloudinaryWidget = () => {
+  // @ts-ignore
+  window.cloudinary.openUploadWidget(
+    {
+      cloudName: 'YOUR_CLOUD_NAME',
+      uploadPreset: 'YOUR_UNSIGNED_UPLOAD_PRESET', // set this up in Cloudinary dashboard
+      sources: ['local', 'url', 'camera'],
+      multiple: false,
+      cropping: false,
+      folder: 'verification_documents',
+      resourceType: 'auto'
+    },
+    (error: any, result: any) => {
+      if (!error && result && result.event === "success") {
+        // result.info.secure_url is the uploaded file URL
+        updateUserDetails({
+          verificationStatus: 'UNDER_REVIEW',
+          ic_document_url: result.info.secure_url
+        });
+        alert('Document uploaded successfully.');
+      }
+    }
+  );
+};
 
 /*
 const getRecaptchaToken = async (action: string): Promise<string> => {

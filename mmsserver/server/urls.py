@@ -62,7 +62,7 @@ urlpatterns = [
 
   #admin - functionalities
   path('distribute_profit/', distribute_profit, name='distribute_profit'),
-  path('grant_campro/', grant_free_campro, name='grant_free_campro'),
+  path('grant_campro/', grant_welcome_bonus, name='grant_free_campro'),
   path('process_place_asset/', process_place_asset, name='process_place_asset'),
   path('process_withdrawal_asset/', process_withdrawal_asset, name='process_withdrawal_asset'),
   path('process_withdrawal_profit', process_withdrawal_profit, name='process_withdrawal_profit'),

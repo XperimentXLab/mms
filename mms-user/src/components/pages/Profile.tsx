@@ -4,7 +4,7 @@ import Spannn, { FixedText } from "../props/Textt"
 import { updatePassword, updateUserDetails, userDetails } from "../auth/endpoints"
 import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
-import { apiCountry, supabase, type CountryType } from "../auth/api"
+import { apiCountry, /*openCloudinaryWidget,*/ type CountryType } from "../auth/api"
 
 const Profile = () => {
 
@@ -30,7 +30,7 @@ const Profile = () => {
 
   const [verificationStatus, setVerificationStatus] = useState<string>('REQUIRES_ACTION')
   const [verificationStatusDisplay, setVerificationStatusDisplay] = useState<string>('')
-  const [icDocument, setIcDocument] = useState<File | undefined>(undefined)
+  //const [icDocument, setIcDocument] = useState<File | undefined>(undefined)
 
   const [editWalletAddress, setEditWalletAddress] = useState<string>('')
   const [editAddressLine, setEditAddressLine] = useState<string>('')
@@ -161,7 +161,7 @@ const Profile = () => {
     }
   }
 
-
+/*
   const toggleVerification = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
@@ -171,31 +171,9 @@ const Profile = () => {
         return
       }
 
-      // 1. Upload to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('verification-documents')
-        .upload(`user-${refferralCode}/${icDocument.name}`, icDocument, { upsert: true });
-
-      if (error) {
-        alert(error.message || 'Failed to upload document to Supabase.');
-        return;
-      }
-      console.log(data)
-
-      // 2. Get the public URL
-      const { data: publicUrlData } = supabase
-        .storage
-        .from('verification-documents')
-        .getPublicUrl(`user-${refferralCode}/${icDocument.name}`);
-
-      if (!publicUrlData || !publicUrlData.publicUrl) {
-        alert('Failed to get public URL from Supabase.');
-        return;
-      }
-
       await updateUserDetails({
         verificationStatus: 'UNDER_REVIEW',
-        ic_document_url: publicUrlData.publicUrl
+        ic_document_url: '...'
       }); 
 
       alert('Document uploaded successfully.')
@@ -206,7 +184,7 @@ const Profile = () => {
       setLoading(false)
     }
     
-  }
+  }*/
 
   const [errorMessageChangeP, setErrorMessageChangeP] = useState<string>('')
   const resetFormChangeP = () => {
@@ -358,6 +336,7 @@ const Profile = () => {
 
           {errorMessageVeri && <span className="text-red-500 text-md">{errorMessageVeri}</span>}
 
+          {/*
           {verificationStatus === 'REQUIRES_ACTION' || verificationStatus === 'REJECTED' && <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
             <label className="font-semibold">Upload I/C Document</label>
             <input type="file" 
@@ -370,9 +349,9 @@ const Profile = () => {
                 }
               }}
             />
-
-            <Buttons type="submit">Upload</Buttons>
-          </form>}
+}
+            <Buttons type="button" onClick={openCloudinaryWidget}>Upload</Buttons>
+          </form>*/}
         </div>
 
         <div className="flex flex-col gap-2 w-full items-center p-3 border rounded-xl shadow-red-300 bg-white shadow-2xl">
