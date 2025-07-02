@@ -275,7 +275,7 @@ def update_user(request):
       logger.info(f'Update profile {user.username} success')
       return Response(serializer.data, status=200)
     else:
-      logger.error(f'Error update user {user.username}')
+      logger.error(f'Error update user {user.username}: {str(serializer.errors)}')
       return Response(serializer.errors, status=400)
   except Exception as e:
     logger.error(str(e))
