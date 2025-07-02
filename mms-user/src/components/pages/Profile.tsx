@@ -162,16 +162,29 @@ const Profile = () => {
     }
   }
 
+
   const toggleVerification = async () => {
     try {
       setLoading(true)
+      if (!icDocument) {
+        alert('Please select a document to upload.')
+        return
+      }
+      const { error } = await supabase.storage
+        .from('verification-documents')
+        .upload(`user-${refferralCode}/${icDocument.name}`, icDocument, { upsert: true });
+
+      if (error) throw error;
+
       await updateUserDetails({
         verificationStatus: verificationStatusChange,
-      }, icDocument)
+      }, icDocument );  // Save this in Django
+
       console.log('Success upload document')
       alert('Document uploaded successfully.')
     } catch (error: any) {
       console.error(error)
+      alert('Failed to upload document.')
     } finally {
       setLoading(false)
     }
