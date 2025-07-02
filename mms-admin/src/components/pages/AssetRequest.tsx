@@ -112,14 +112,14 @@ const AssetRequest = () => {
     const now = dayjs()
     const diffInHours = now.diff(created, 'hours')
     return diffInHours >= 1
-  }*/
+  }
 
   const isFiveMinutesPassed = (created_datetime: string) => {
     const created = dayjs(created_datetime)
     const now = dayjs()
     const diffInMinutes = now.diff(created, 'minutes')
     return diffInMinutes >= 5
-  }
+  }*/
 
 
   const columns = [
@@ -137,7 +137,7 @@ const data = transactions.map(tx => ({
     ...tx,
     action: (
       <div className="flex gap-2">
-        {tx.request_status === 'PENDING' && isFiveMinutesPassed(tx.created_datetime) && (
+        {tx.request_status === 'PENDING' && (
           <Buttons 
             type="button"
             disabled={tx.request_status !== 'PENDING'}

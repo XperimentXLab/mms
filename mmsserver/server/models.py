@@ -15,6 +15,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class User(AbstractUser):
+
   id = models.CharField(max_length=8, primary_key=True)
   username = models.CharField(max_length=255, unique=True)
   ic = models.CharField(max_length=12, unique=True, validators=[RegexValidator(r'^\d{12}$', 'IC must be 12 digits')])
@@ -41,6 +42,9 @@ class User(AbstractUser):
   beneficiary_email = models.EmailField(blank=True, null=True)
 
   # Verification documents
+  def user_ic_document_upload_to(instance, filename):
+    return f'verification_documents/user_{instance.id}/{filename}'
+
   ic_document = models.ImageField(
     upload_to=user_ic_document_upload_to,
     blank=True,
@@ -63,9 +67,6 @@ class User(AbstractUser):
 
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
-
-  def user_ic_document_upload_to(instance, filename):
-    return f'verification_documents/user_{instance.id}/{filename}'
   
   def unique_id_generator(self, referred_by_id=None):
     """
