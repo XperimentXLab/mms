@@ -183,7 +183,7 @@ const Profile = () => {
       console.log('Success upload document')
       alert('Document uploaded successfully.')
     } catch (error: any) {
-      console.error(error)
+      console.error(error.response.data)
       alert('Failed to upload document.')
     } finally {
       setLoading(false)
