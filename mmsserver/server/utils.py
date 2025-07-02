@@ -454,9 +454,10 @@ class WalletService:
 
 class AssetService:
     @classmethod
-    def grant_free_campro(cls, user):
+    def grant_free_campro(cls, user_id):
         """Grants 100 free CAMPRO to a user (locked for 1 year)."""
 
+        user = User.objects.get(id=user_id)
         if user.is_campro:  # Prevent duplicate grants
             raise ValidationError("User already received welcome bonus.")
         
