@@ -181,6 +181,9 @@ STORAGES = {
             "SUPABASE_API_KEY": os.environ.get('SUPABASE_KEY'),
             "SUPABASE_STORAGE_BUCKET": os.getenv('AWS_STORAGE_BUCKET_NAME'),
         }
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
     }
 }
 
