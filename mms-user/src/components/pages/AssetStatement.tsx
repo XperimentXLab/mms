@@ -112,7 +112,7 @@ export const WithdrawalAssetStatement = () => {
     <div>
       {loading && <Loading />}
       <span className="font-semibold">
-        Asset Statement
+        Withdrawal Statement
       </span>
 
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
@@ -176,7 +176,7 @@ export const AssetStatement = () => {
     <div>
       {loading && <Loading />}
       <span className="font-semibold">
-        Withdrawal Statement
+        Asset Statement
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 

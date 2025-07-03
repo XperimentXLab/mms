@@ -19,6 +19,35 @@ export interface Data {
   reference?: string;
 }
 
+// Helper
+export const fetchAndFormatData = async (apiFn: Function, setData: Function, setError: Function, setLoading: Function) => {
+  try {
+    setLoading(true);
+    const response = await apiFn();
+    const formatted = response.map((item: any) => {
+      const dt = dayjs.utc(item.created_at).tz("Asia/Kuala_Lumpur");
+      return {
+        ...item,
+        created_date: dt.format("YYYY-MM-DD"),
+        created_time: dt.format("HH:mm:ss"),
+      };
+    });
+    setData(formatted);
+  } catch (error: any) {
+    if (error.response && error.response.status === 400) {
+      setError(error.response.data.error);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+/*
+useEffect(() => {
+  fetchAndFormatData(getDepositLock, setDataRes, setErrorMessage, setLoading);
+}, []);
+*/
+
 
 export const ProfitStatement = () => {
 
