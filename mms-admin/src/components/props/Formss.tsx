@@ -1,10 +1,8 @@
 import type React from "react";
 
 
-type InputP = 'text' | 'email' | 'password' | 'number';
-
 interface InputssProps {
-  type: InputP;
+  type: string;
   placeholder: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value: string | number;
