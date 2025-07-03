@@ -81,8 +81,6 @@ export const CommissionStatement = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [affiliateBal, setAffiliateBal] = useState<number>(0)
-  const [introducerBal, setIntroducerBal] = useState<number>(0)
   // affiliate + introducer
   const [commissionBal, setCommissionBal] = useState<number>(0)
 
@@ -101,8 +99,6 @@ export const CommissionStatement = () => {
         });
         setData(formattedData)
         const resWallet = await userDetails()
-        setAffiliateBal(resWallet.affiliate_point_balance || 0)
-        setIntroducerBal(resWallet.introducer_point_balance || 0)
         setCommissionBal(
           Number(resWallet.affiliate_point_balance || 0) +
           Number(resWallet.introducer_point_balance || 0)
