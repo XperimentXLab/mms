@@ -80,7 +80,7 @@ const [dataRes, setDataRes] = useState<AssetState[]>([])
 const data = dataRes.map(asset => ({
   ...asset,
   request_status_display: (
-    request_status_display === undefined ? '-' : request_status_display
+    asset.request_status_display ? asset.request_status_display : '-' 
   ),
   action: (
     <div className="flex gap-2">
