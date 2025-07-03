@@ -66,7 +66,7 @@ export const ProfitStatement = () => {
     <div>
       {loading && <Loading />}
       <div className="flex flex-row gap-2">
-        <span className="font-semibold">Profit Statement</span>
+        <span className="font-semibold">Profit Statement | </span>
         <Spannn label="Profit Balance">{profitBal}</Spannn>
       </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
@@ -128,7 +128,7 @@ export const CommissionStatement = () => {
     <div>
       {loading && <Loading />}
       <div className="flex flex-row gap-2">
-        <span className="font-semibold">Commission Statement</span>
+        <span className="font-semibold">Commission Statement | </span>
         <Spannn label="Commission Balance">{commissionBal}</Spannn>
       </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
