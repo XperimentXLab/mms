@@ -79,7 +79,9 @@ const [dataRes, setDataRes] = useState<AssetState[]>([])
 
 const data = dataRes.map(asset => ({
   ...asset,
-  request_status_display: (request_status_display ? request_status_display : '-'),
+  request_status_display: (
+    request_status_display === undefined ? '-' : request_status_display
+  ),
   action: (
     <div className="flex gap-2">
       {asset.days_until_6m < 0 || asset.days_until_1y < 0  && (
