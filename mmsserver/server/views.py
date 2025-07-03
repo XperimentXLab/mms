@@ -519,7 +519,7 @@ def withdraw_profit(request):
 def convert_profit_to_master(request):
   user = request.user
   amount = request.data.get('amount', '0.00')
-  description = request.data.get('description', f"Convert Profit Point to Master Point : {amount}")
+  description = request.data.get('description', f"Convert Profit Point to Register Point : {amount}")
   reference = request.data.get('reference', '')
 
   if not amount:
@@ -581,7 +581,7 @@ def withdraw_commission(request):
 def convert_commission_to_master(request):
   user = request.user
   amount = request.data.get('amount', '0.00')
-  description = request.data.get('description', f"Convert Commission Point to Master Point: {amount}")
+  description = request.data.get('description', f"Convert Commission Point to Register Point: {amount}")
   reference = request.data.get('reference', '')
 
   if not amount:

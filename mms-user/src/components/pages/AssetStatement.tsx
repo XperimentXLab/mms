@@ -29,7 +29,7 @@ interface AssetState extends BaseStatement {
 
 interface TransactionStatement extends BaseStatement {
   transaction_type: string;
-  description: string;
+  description?: string;
   amount: number;
 }
 
@@ -153,7 +153,6 @@ export const AssetStatement = () => {
     { header: "Time", accessor: "created_time" },
     { header: 'Status', accessor: 'request_status_display'},
     { header: "Type", accessor: "transaction_type" },
-    { header: "Description", accessor: "description" },
     { header: "Amount", accessor: "amount" },
   ]
 
