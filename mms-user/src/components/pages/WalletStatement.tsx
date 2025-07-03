@@ -19,39 +19,12 @@ export interface Data {
   reference?: string;
 }
 
-const [profitBal, setProfitBal] = useState<number>(0)
-const [affiliateBal, setAffiliateBal] = useState<number>(0)
-const [introducerBal, setIntroducerBal] = useState<number>(0)
-// affiliate + introducer
-const [commissionBal, setCommissionBal] = useState<number>(0)
-const [loading, setLoading] = useState(false);
-
-const fetchDataAll = async () => {
-  try {
-    setLoading(true)
-    const response = await userDetails()
-    setProfitBal(response.profit_point_balance || 0)
-    setAffiliateBal(response.affiliate_point_balance || 0)
-    setIntroducerBal(response.introducer_point_balance || 0)
-    setCommissionBal(
-      Number(response.affiliate_point_balance || 0) +
-      Number(response.introducer_point_balance || 0)
-    )
-  } catch (error: any) {
-    setError("Failed to fetch user details.")
-  } finally {
-    setLoading(false)
-  }
-}
-
-useEffect(()=> {
-  fetchDataAll()
-}, [])
 
 export const ProfitStatement = () => {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [profitBal, setProfitBal] = useState<number>(0)
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -67,6 +40,8 @@ export const ProfitStatement = () => {
         }
         });
         setData(formattedData)
+        const resWallet = await userDetails()
+        setProfitBal(resWallet.profit_point_balance || 0)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
           setErrorMessage(error.response.data.error)
@@ -106,6 +81,11 @@ export const CommissionStatement = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [affiliateBal, setAffiliateBal] = useState<number>(0)
+  const [introducerBal, setIntroducerBal] = useState<number>(0)
+  // affiliate + introducer
+  const [commissionBal, setCommissionBal] = useState<number>(0)
+
   useEffect(()=>{
     const fetchData = async () => {
       try {
@@ -120,6 +100,13 @@ export const CommissionStatement = () => {
         }
         });
         setData(formattedData)
+        const resWallet = await userDetails()
+        setAffiliateBal(resWallet.affiliate_point_balance || 0)
+        setIntroducerBal(resWallet.introducer_point_balance || 0)
+        setCommissionBal(
+          Number(resWallet.affiliate_point_balance || 0) +
+          Number(resWallet.introducer_point_balance || 0)
+        )
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
           setErrorMessage(error.response.data.error)
