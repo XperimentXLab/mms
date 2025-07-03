@@ -34,7 +34,7 @@ interface TransactionStatement extends BaseStatement {
 }
 
 
-export const WithdrawStatement = () => {
+export const WithdrawalAssetStatement = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
