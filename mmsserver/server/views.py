@@ -390,7 +390,7 @@ def get_profit_commission_wd_transaction(request):
 def get_asset_transaction(request):
   user = request.user
   try:
-    asset_tx = Transaction.objects.filter(user=user, transaction_type__in=['ASSET_PLACEMNET', 'ASSET_WITHDRAWAL', 'WELCOME_BONUS'])
+    asset_tx = Transaction.objects.filter(user=user, transaction_type__in=['ASSET_WITHDRAWAL'])
     serializer = TransactionSerializer(asset_tx, many=True)
     return Response(serializer.data, status=200)
   except Transaction.DoesNotExist:
