@@ -1,4 +1,4 @@
-import type React from "react";
+import type React, { useState } from "react";
 
 
 type InputP = 'text' | 'email' | 'password' | 'number';
