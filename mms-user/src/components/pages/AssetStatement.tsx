@@ -128,7 +128,7 @@ export const WithdrawalAssetStatement = () => {
             created_time: dt.format("HH:mm:ss"),
           }
         });
-        setData(formattedData)
+        setDataRes(formattedData)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
           setErrorMessage(error.response.data.error)
@@ -149,7 +149,12 @@ export const WithdrawalAssetStatement = () => {
     { header: 'Status', accessor: 'request_status_display'}
   ]
 
-  const [data, setData] = useState<Data[]>([])
+  const [dataRes, setDataRes] = useState<Data[]>([])
+
+  const data = dataRes.map(statement => ({
+    ...statement,
+    request_status_display: (request_status_display ? request_status_display : '-')
+  }))
 
   return (
     <div>
