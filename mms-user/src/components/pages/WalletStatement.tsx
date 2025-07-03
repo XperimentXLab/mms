@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Tables } from "../props/Tables";
 import Spannn from "../props/Textt"
-import { userDetails, getCommissionStatement, getConvertStatement, getProfitCommissionWDStatement, getProfitStatement, getTransferStatement } from "../auth/endpoints";
+import { getWallet, getCommissionStatement, getConvertStatement, getProfitCommissionWDStatement, getProfitStatement, getTransferStatement } from "../auth/endpoints";
 import Loading from "../props/Loading";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -40,7 +40,7 @@ export const ProfitStatement = () => {
         }
         });
         setData(formattedData)
-        const resWallet = await userDetails()
+        const resWallet = await getWallet()
         setProfitBal(resWallet.profit_point_balance || 0)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
@@ -98,7 +98,7 @@ export const CommissionStatement = () => {
         }
         });
         setData(formattedData)
-        const resWallet = await userDetails()
+        const resWallet = await getWallet()
         setCommissionBal(
           Number(resWallet.affiliate_point_balance || 0) +
           Number(resWallet.introducer_point_balance || 0)
