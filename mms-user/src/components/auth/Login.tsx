@@ -15,9 +15,7 @@ const Login = () => {
 
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
-
-  const [showPassword, setShowPassword] = useState(false);
-  const isPasswordField = type === 'password';
+  
 
   //const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const navigate = useNavigate()
@@ -72,8 +70,7 @@ const Login = () => {
         <form className="grid grid-row-3 gap-5 p-5 shadow-xl shadow-red-300" onSubmit={toggleLogin}>
           <div className="grid grid-row-2 gap-2">
 
-            <Inputss type="text" 
-              placeholder="Enter Username"
+            <Inputss type="text" placeholder="Enter Username"
               label="Username" 
               onChange={(e) => setUsername(e.target.value)}
               value={username}
@@ -84,23 +81,13 @@ const Login = () => {
 
           <div className="grid grid-row-2 gap-2">
 
-            <Inputss type={isPasswordField ? (showPassword ? 'text' : 'password') : type}
-              placeholder="Enter password"
+            <Inputss type="password" placeholder="Enter password"
               label="Password" 
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               required={true}
               className="border py-1 px-2 rounded-md" 
             />
-            {isPasswordField && (
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm text-blue-500"
-              >
-                {showPassword ? 'Hide' : 'Show'}
-              </button>
-            )}
           </div>
 
           {/*<ReCAPTCHA 

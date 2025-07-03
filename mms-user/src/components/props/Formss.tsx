@@ -1,7 +1,9 @@
 import type React from "react";
 
+type InputP = 'text' | 'email' | 'password' | 'number';
+
 interface InputssProps {
-  type: string;
+  type: InputP;
   placeholder?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value: string | number;
@@ -22,16 +24,30 @@ export const Inputss: React.FC<InputssProps> = ({
   className,
   maxLength,
 }) => {
+
+  const [showPassword, setShowPassword] = useState(false);
+  const isPasswordField = type === 'password';
+
   return (
     <div className="grid grid-row-2 gap-2">
       <span className="font-semibold">{label}</span>
-      <input type={type} placeholder={placeholder} 
+      <input type={isPasswordField ? (showPassword ? 'text' : 'password') : type} 
+        placeholder={placeholder} 
         onChange={onChange}
         value={value}
         className={className ? className : "border py-1 px-2 rounded-md"} 
         required={required}
         maxLength={maxLength}
       />
+    {isPasswordField && (
+      <button
+        type="button"
+        onClick={() => setShowPassword(!showPassword)}
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm text-blue-500"
+      >
+        {showPassword ? 'Hide' : 'Show'}
+      </button>
+    )}
     </div>
   )
 }
@@ -48,6 +64,7 @@ export const InputNormal: React.FC<InputssProps> = ({
       value={value}
       required={required}
     />
+    
   )
 }
 
