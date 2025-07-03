@@ -64,7 +64,7 @@ export const AssetStatement = () => {
     amount_1y_unlocked: number;
     days_until_6m: number;
     days_until_1y: number;
-    request_status_display?: string;
+    request_status_display?: string | undefined;
     withdrawable_now: number;
   }
 
@@ -79,6 +79,7 @@ const [dataRes, setDataRes] = useState<AssetState[]>([])
 
 const data = dataRes.map(asset => ({
   ...asset,
+  request_status_display: (request_status_display ? request_status_display : '-'),
   action: (
     <div className="flex gap-2">
       {asset.days_until_6m < 0 || asset.days_until_1y < 0  && (
@@ -151,11 +152,6 @@ export const WithdrawalAssetStatement = () => {
 
   const [dataRes, setDataRes] = useState<Data[]>([])
 
-  const data = dataRes.map(statement => ({
-    ...statement,
-    request_status_display: (request_status_display ? request_status_display : '-')
-  }))
-
   return (
     <div>
       {loading && <Loading />}
@@ -164,7 +160,7 @@ export const WithdrawalAssetStatement = () => {
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} />
+      <Tables columns={columns} data={dataRes} />
     </div>
   )
 }
