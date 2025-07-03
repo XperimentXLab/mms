@@ -19,27 +19,33 @@ export interface Data {
   reference?: string;
 }
 
-const fetchData = async () => {
+const [profitBal, setProfitBal] = useState<number>(0)
+const [affiliateBal, setAffiliateBal] = useState<number>(0)
+const [introducerBal, setIntroducerBal] = useState<number>(0)
+// affiliate + introducer
+const [commissionBal, setCommissionBal] = useState<number>(0)
+const [loading, setLoading] = useState(false);
 
-  const [profitBal, setProfitBal] = useState<number>(0)
-  const [affiliateBal, setAffiliateBal] = useState<number>(0)
-  const [introducerBal, setIntroducerBal] = useState<number>(0)
-  // affiliate + introducer
-  const [commissionBal, setCommissionBal] = useState<number>(0)
-
-  const response = await userDetails()
-  setProfitBal(response.profit_point_balance || 0)
-  setAffiliateBal(response.affiliate_point_balance || 0)
-  setIntroducerBal(response.introducer_point_balance || 0)
-  setCommissionBal(
-    Number(response.affiliate_point_balance || 0) +
-    Number(response.introducer_point_balance || 0)
-  )
-
+const fetchDataAll = async () => {
+  try {
+    setLoading(true)
+    const response = await userDetails()
+    setProfitBal(response.profit_point_balance || 0)
+    setAffiliateBal(response.affiliate_point_balance || 0)
+    setIntroducerBal(response.introducer_point_balance || 0)
+    setCommissionBal(
+      Number(response.affiliate_point_balance || 0) +
+      Number(response.introducer_point_balance || 0)
+    )
+  } catch (error: any) {
+    setError("Failed to fetch user details.")
+  } finally {
+    setLoading(false)
+  }
 }
 
 useEffect(()=> {
-  fetchData()
+  fetchDataAll()
 }, [])
 
 export const ProfitStatement = () => {
