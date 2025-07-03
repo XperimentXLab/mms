@@ -83,16 +83,28 @@ export const ProfitStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_date" },
-    { header: "Time", accessor: "created_time" },
-    { header: "Description", accessor: "description" },
-    { header: "Amount", accessor: "amount" },
+    { header: "Date", 
+      accessor: "created_date",
+      render: (value: any) => value
+     },
+    { header: "Time", 
+      accessor: "created_time", 
+      render: (value: any) => value 
+    },
+    { header: "Description", 
+      accessor: "description",
+      render: (value: any) => value
+     },
+    { header: "Amount", 
+      accessor: "amount",
+      render: (value: any) => value
+     },
   ];
 
   const [data, setData] = useState<Data[]>([])
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {loading && <Loading />}
       <div className="flex flex-row gap-2">
         <span className="font-semibold">Profit Statement | </span>
@@ -100,7 +112,10 @@ export const ProfitStatement = () => {
       </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} />
+      <Tables columns={columns} data={data} 
+        enableFilters={true}
+        enableSorting={true}
+      />
     </div>
   )
 }
@@ -144,17 +159,32 @@ export const CommissionStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_date" },
-    { header: "Time", accessor: "created_time" },
-    { header: "Type", accessor: "transaction_type" },
-    { header: "Description", accessor: "description" },
-    { header: "Amount", accessor: "amount" },
+    { header: "Date", 
+      accessor: "created_date",
+      render: (value: any) => value
+     },
+    { header: "Time", 
+      accessor: "created_time", 
+      render: (value: any) => value 
+    },
+    { header: "Type", 
+      accessor: "transaction_type",
+      render: (value: any) => value
+     },
+    { header: "Description", 
+      accessor: "description",
+      render: (value: any) => value
+     },
+    { header: "Amount", 
+      accessor: "amount",
+      render: (value: any) => value
+     },
   ];
 
   const [data, setData] = useState<Data[]>([])
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {loading && <Loading />}
       <div className="flex flex-row gap-2">
         <span className="font-semibold">Commission Statement | </span>
@@ -162,7 +192,10 @@ export const CommissionStatement = () => {
       </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
       
-      <Tables columns={columns} data={data} />
+      <Tables columns={columns} data={data} 
+        enableFilters={true}
+        enableSorting={true}
+      />
     </div>
   )
 }
@@ -177,7 +210,15 @@ export const TransferStatement = () => {
       try {
         setLoading(true)
         const response = await getTransferStatement()
-        setData(response)
+        const formattedData = response.map((user: any) => {
+        const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
+        return {
+          ...user,
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss"),
+        }
+        });
+        setData(formattedData)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
           setErrorMessage(error.response.data.error)
@@ -190,23 +231,42 @@ export const TransferStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_at" },
-    { header: 'Description', accessor: 'description' },
-    { header: "Reference", accessor: "reference" },
-    { header: "Amount", accessor: "amount" },
+    { header: "Date", 
+      accessor: "created_date",
+      render: (value: any) => value
+     },
+    { header: "Time", 
+      accessor: "created_time",
+      render: (value: any) => value
+     },
+    { header: 'Description', 
+      accessor: 'description',
+      render: (value: any) => value
+    },
+    { header: "Reference", 
+      accessor: "reference",
+      render: (value: any) => value
+     },
+    { header: "Amount", 
+      accessor: "amount",
+      render: (value: any) => value
+     },
   ];
 
   const [data, setData] = useState<Data[]>([])
   
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {loading && <Loading />}
       <span className="font-semibold">
         Transfer Statement
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} />
+      <Tables columns={columns} data={data} 
+        enableFilters={true}
+        enableSorting={true}
+      />
     </div>
   )
 }
@@ -221,7 +281,15 @@ export const ConvertStatement = () => {
       try {
         setLoading(true)
         const response = await getConvertStatement()
-        setData(response)
+        const formattedData = response.map((user: any) => {
+        const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
+        return {
+          ...user,
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss"),
+        }
+        });
+        setData(formattedData)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
           setErrorMessage(error.response.data.error)
@@ -234,23 +302,42 @@ export const ConvertStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_at" },
-    { header: 'Point', accessor: 'point_type'},
-    { header: "Description", accessor: "description" },
-    { header: "Amount", accessor: "amount" },
+    { header: "Date", 
+      accessor: "created_date",
+      render: (value: any) => value
+     },
+    { header: "Time", 
+      accessor: "created_time",
+      render: (value: any) => value
+     },
+    { header: 'Point', 
+      accessor: 'point_type',
+      render: (value: any) => value
+    },
+    { header: "Description", 
+      accessor: "description",
+      render: (value: any) => value
+     },
+    { header: "Amount", 
+      accessor: "amount",
+      render: (value: any) => value
+     },
   ]
 
   const [data, setData] = useState<Data[]>([])
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {loading && <Loading />}
       <span className="font-semibold">
         Convert Statement
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} />
+      <Tables columns={columns} data={data} 
+        enableFilters={true}
+        enableSorting={true}
+      />
     </div>
   )
 }
@@ -265,7 +352,15 @@ export const WithdrawalWalletStatement = () => {
       try {
         setLoading(true)
         const response = await getProfitCommissionWDStatement()
-        setData(response)
+        const formattedData = response.map((user: any) => {
+        const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
+        return {
+          ...user,
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss"),
+        }
+        });
+        setData(formattedData)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
           setErrorMessage(error.response.data.error)
@@ -278,23 +373,42 @@ export const WithdrawalWalletStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_at" },
-    { header: 'Point', accessor: 'point_type'},
-    { header: 'Description', accessor: 'description' },
-    { header: "Amount", accessor: "amount" },
+    { header: "Date", 
+      accessor: "created_date",
+      render: (value: any) => value
+     },
+    { header: "Time", 
+      accessor: "created_time",
+      render: (value: any) => value
+    },
+    { header: 'Point', 
+      accessor: 'point_type',
+      render: (value: any) => value
+    },
+    { header: 'Description', 
+      accessor: 'description',
+      render: (value: any) => value
+    },
+    { header: "Amount", 
+      accessor: "amount",
+      render: (value: any) => value
+     },
   ]
 
   const [data, setData] = useState<Data[]>([])
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {loading && <Loading />}
       <span className="font-semibold">
         Withdrawal Statement
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} />
+      <Tables columns={columns} data={data} 
+        enableFilters={true}
+        enableSorting={true}
+      />
     </div>
   )
 }

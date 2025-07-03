@@ -38,6 +38,7 @@ export const WithdrawalAssetStatement = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [dataRes, setDataRes] = useState<AssetState[]>([])
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -65,14 +66,50 @@ export const WithdrawalAssetStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_date" },
-    { header: "Time", accessor: "created_time" },
-    { header: "Amount Locked (50%)", accessor: "amount_6m_locked" },
-    { header: 'Days Left', accessor: 'days_until_6m'},
-    { header: "Amount Locked (50%)", accessor: "amount_1y_locked" },
-    { header: 'Days Left', accessor: 'days_until_1y'},
-    { header: "Available Withdraw", accessor: "withdrawable_now" },
-    { header: "Action", accessor: "action" },
+    { header: "Date", 
+      accessor: "created_date",
+      render: (value: any) => value
+    },
+    { header: "Time", 
+      accessor: "created_time",
+      render: (value: any) => value
+    },
+    { header: "Amount Locked (50%)", 
+      accessor: "amount_6m_locked",
+      render: (value: any) => value
+    },
+    { header: 'Days Left', 
+      accessor: 'days_until_6m',
+      render: (value: any) => value
+    },
+    { header: "Amount Locked (50%)", 
+      accessor: "amount_1y_locked",
+      render: (value: any) => value
+    },
+    { header: 'Days Left', 
+      accessor: 'days_until_1y',
+      render: (value: any) => value
+    },
+    { header: "Available Withdraw", 
+      accessor: "withdrawable_now",
+      render: (value: any) => value
+    },
+    { header: "Action", 
+      accessor: "action",
+      render: (_: any, row: any) => (
+      <div className="flex gap-2">
+        {(row.days_until_6m < 0 || row.days_until_1y < 0) && (
+          <Buttons
+            type="button"
+            onClick={() => handleWithdraw(row.id)}
+            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Withdraw
+          </Buttons>
+        )}
+      </div>
+      )
+    },
   ]
   
 
@@ -83,25 +120,7 @@ export const WithdrawalAssetStatement = () => {
     // call an API to update the status
   }
 
-  const [dataRes, setDataRes] = useState<AssetState[]>([])
-
-  const data = dataRes.map(asset => ({
-    ...asset,
-    action: (
-      <div className="flex gap-2">
-        {(asset.days_until_6m < 0 || asset.days_until_1y < 0) && (
-          <Buttons 
-            type="button"
-            onClick={() => handleWithdraw(asset.id)}
-            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            Withdraw
-          </Buttons>
-        )}
-      </div>
-    )
-    }))
-
+  const data = dataRes
 
   return (
     <div>
@@ -112,7 +131,10 @@ export const WithdrawalAssetStatement = () => {
 
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} />
+      <Tables columns={columns} data={data} 
+        enableFilters={true}
+        enableSorting={true}
+      />
     </div>
   )
 }
@@ -122,6 +144,8 @@ export const AssetStatement = () => {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [dataRes, setDataRes] = useState<TransactionStatement[]>([])
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -149,22 +173,29 @@ export const AssetStatement = () => {
   }, [])
 
   const columns = [
-    { header: "Date", accessor: "created_date" },
-    { header: "Time", accessor: "created_time" },
-    { header: 'Status', accessor: 'request_status_display'},
-    { header: "Type", accessor: "transaction_type" },
-    { header: "Amount", accessor: "amount" },
+    { header: "Date", 
+      accessor: "created_date", 
+      render: (value: any) => value
+    },
+    { header: "Time", 
+      accessor: "created_time",
+      render: (value: any) => value
+     },
+    { header: 'Status', 
+      accessor: 'request_status_display',
+      render: (value: any) => value ? value : '-' 
+    },
+    { header: "Type", 
+      accessor: "transaction_type",
+      render: (value: any) => value
+     },
+    { header: "Amount", 
+      accessor: "amount",
+      render: (value: any) => value 
+    },
   ]
 
-  const [dataRes, setDataRes] = useState<TransactionStatement[]>([])
-
-  const data = dataRes.map(statement => ({
-    ...statement,
-    request_status_display: (
-      statement.request_status_display ? statement.request_status_display : '-' 
-    ),
-  }))
-
+  const data = dataRes
 
   return (
     <div>
@@ -174,7 +205,10 @@ export const AssetStatement = () => {
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} />
+      <Tables columns={columns} data={data} 
+        enableFilters={true}
+        enableSorting={true}
+      />
     </div>
   )
 }

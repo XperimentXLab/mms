@@ -23,7 +23,6 @@ const User = () => {
     { header: 'Joined Time', accessor: 'joined_time' },
     { header: 'Asset', accessor: 'asset_amount' },
     { header: 'Verification', accessor: 'verification_status' },
-    { header: 'I/C Document', accessor: 'ic_document' },
   ]
   const [dataUserDetails, setDataUserDetails] = useState<Data[]>([])
 
