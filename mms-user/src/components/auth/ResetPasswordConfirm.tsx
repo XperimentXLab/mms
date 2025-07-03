@@ -4,6 +4,7 @@ import { reset_password_confirm } from "./endpoints"
 import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
 import Loading from "../props/Loading"
+import { InfoPassword } from "../props/Info";
 
 const ResetPasswordConfirm = () => {
 
@@ -76,6 +77,7 @@ const ResetPasswordConfirm = () => {
         {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
         <Buttons type="submit" >Submit</Buttons>
       </form>
+      <InfoPassword />
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Tables } from "../props/Tables";
-import { getCommissionStatement, getConvertStatement, getProfitCommissionWDStatement, getProfitStatement, getTransferStatement } from "../auth/endpoints";
+import Spannn from "../props/Textt"
+import { userDetails, getCommissionStatement, getConvertStatement, getProfitCommissionWDStatement, getProfitStatement, getTransferStatement } from "../auth/endpoints";
 import Loading from "../props/Loading";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -17,6 +18,29 @@ export interface Data {
   //receiver_wallet.user?: string;
   reference?: string;
 }
+
+const fetchData = async () => {
+
+  const [profitBal, setProfitBal] = useState<number>(0)
+  const [affiliateBal, setAffiliateBal] = useState<number>(0)
+  const [introducerBal, setIntroducerBal] = useState<number>(0)
+  // affiliate + introducer
+  const [commissionBal, setCommissionBal] = useState<number>(0)
+
+  const response = await userDetails()
+  setProfitBal(response.profit_point_balance || 0)
+  setAffiliateBal(response.affiliate_point_balance || 0)
+  setIntroducerBal(response.introducer_point_balance || 0)
+  setCommissionBal(
+    Number(response.affiliate_point_balance || 0) +
+    Number(response.introducer_point_balance || 0)
+  )
+
+}
+
+useEffect(()=> {
+  fetchData()
+}, [])
 
 export const ProfitStatement = () => {
 
@@ -51,8 +75,8 @@ export const ProfitStatement = () => {
   const columns = [
     { header: "Date", accessor: "created_date" },
     { header: "Time", accessor: "created_time" },
+    { header: "Description", accessor: "description" },
     { header: "Amount", accessor: "amount" },
-    { header: "Description", accessor: "description" }
   ];
 
   const [data, setData] = useState<Data[]>([])
@@ -60,9 +84,10 @@ export const ProfitStatement = () => {
   return (
     <div>
       {loading && <Loading />}
-      <span className="font-semibold">
-        Profit Statement
-      </span>
+      <div className="flex flex-row gap-2">
+        <span className="font-semibold">Profit Statement</span>
+        <Spannn label="Profit Balance">{profitBal}</Spannn>
+      </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
       <Tables columns={columns} data={data} />
@@ -103,9 +128,9 @@ export const CommissionStatement = () => {
   const columns = [
     { header: "Date", accessor: "created_date" },
     { header: "Time", accessor: "created_time" },
-    { header: "Amount", accessor: "amount" },
     { header: "Type", accessor: "transaction_type" },
-    { header: "Description", accessor: "description" }
+    { header: "Description", accessor: "description" },
+    { header: "Amount", accessor: "amount" },
   ];
 
   const [data, setData] = useState<Data[]>([])
@@ -113,9 +138,10 @@ export const CommissionStatement = () => {
   return (
     <div>
       {loading && <Loading />}
-      <span className="font-semibold">
-        Commission Statement
-      </span>
+      <div className="flex flex-row gap-2">
+        <span className="font-semibold">Commission Statement</span>
+        <Spannn label="Commission Balance">{commissionBal}</Spannn>
+      </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
       
       <Tables columns={columns} data={data} />
@@ -147,9 +173,9 @@ export const TransferStatement = () => {
 
   const columns = [
     { header: "Date", accessor: "created_at" },
-    { header: "Amount", accessor: "amount" },
     { header: 'Description', accessor: 'description' },
-    { header: "Reference", accessor: "reference" }
+    { header: "Reference", accessor: "reference" },
+    { header: "Amount", accessor: "amount" },
   ];
 
   const [data, setData] = useState<Data[]>([])
@@ -191,9 +217,9 @@ export const ConvertStatement = () => {
 
   const columns = [
     { header: "Date", accessor: "created_at" },
-    { header: "Amount", accessor: "amount" },
     { header: 'Point', accessor: 'point_type'},
-    { header: "Description", accessor: "description" }
+    { header: "Description", accessor: "description" },
+    { header: "Amount", accessor: "amount" },
   ]
 
   const [data, setData] = useState<Data[]>([])
@@ -235,9 +261,9 @@ export const WithdrawalWalletStatement = () => {
 
   const columns = [
     { header: "Date", accessor: "created_at" },
-    { header: "Amount", accessor: "amount" },
     { header: 'Point', accessor: 'point_type'},
     { header: 'Description', accessor: 'description' },
+    { header: "Amount", accessor: "amount" },
   ]
 
   const [data, setData] = useState<Data[]>([])

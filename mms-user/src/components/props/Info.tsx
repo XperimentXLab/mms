@@ -39,3 +39,23 @@ export const InfoPlaceAsset = () => {
     </ul>
   )
 }
+
+
+export const InfoPassword = () => {
+  return (
+    <ul className="list-disc px-6">
+      <li className="text-gray-600 text-xs ">
+        Password must be at least 8 characters
+      </li>
+      <li className="text-gray-600 text-xs ">
+        Password must contain at least 1 uppercase letter
+      </li>
+      <li className="text-gray-600 text-xs ">
+        Password must contain at least 1 lowercase letter
+      </li>
+      <li className="text-gray-600 text-xs ">
+        Password must contain at least 1 number
+      </li>
+    </ul>
+  )
+}
