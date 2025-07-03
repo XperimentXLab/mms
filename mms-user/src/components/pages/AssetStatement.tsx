@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { Tables } from "../props/Tables"
 import { getAssetStatement, getDepositLock } from "../auth/endpoints"
-import type { Data } from "./WalletStatement"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
 import dayjs from "dayjs";
@@ -10,8 +9,32 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+interface BaseStatement {
+  id: string;
+  created_date: string;
+  created_time: string;
+  request_status_display?: string;
+}
 
-export const AssetStatement = () => {
+interface AssetState extends BaseStatement {
+  deposit_amount: number;
+  amount_6m_locked: number;
+  amount_6m_unlocked: number;
+  amount_1y_locked: number;
+  amount_1y_unlocked: number;
+  days_until_6m: number;
+  days_until_1y: number;
+  withdrawable_now: number;
+}
+
+interface TransactionStatement extends BaseStatement {
+  transaction_type: string;
+  description: string;
+  amount: number;
+}
+
+
+export const WithdrawStatement = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -54,19 +77,6 @@ export const AssetStatement = () => {
     { header: "Action", accessor: "action" },
   ]
   
-  interface AssetState {
-    id: string;
-    created_date: string;
-    deposit_amount: number;
-    amount_6m_locked: number;
-    amount_6m_unlocked: number;
-    amount_1y_locked: number;
-    amount_1y_unlocked: number;
-    days_until_6m: number;
-    days_until_1y: number;
-    request_status_display?: string | undefined;
-    withdrawable_now: number;
-  }
 
   const handleWithdraw = (id: string) => {
     setDataRes(prev => prev.map(asset => 
@@ -75,27 +85,27 @@ export const AssetStatement = () => {
     // call an API to update the status
   }
 
-const [dataRes, setDataRes] = useState<AssetState[]>([])
+  const [dataRes, setDataRes] = useState<AssetState[]>([])
 
-const data = dataRes.map(asset => ({
-  ...asset,
-  request_status_display: (
-    asset.request_status_display ? asset.request_status_display : '-' 
-  ),
-  action: (
-    <div className="flex gap-2">
-      {asset.days_until_6m < 0 || asset.days_until_1y < 0  && (
-        <Buttons 
-          type="button"
-          onClick={() => handleWithdraw(asset.id)}
-          className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-        >
-          Withdraw
-        </Buttons>
-      )}
-    </div>
-  )
-  }))
+  const data = dataRes.map(asset => ({
+    ...asset,
+    request_status_display: (
+      asset.request_status_display ? asset.request_status_display : '-' 
+    ),
+    action: (
+      <div className="flex gap-2">
+        {(asset.days_until_6m < 0 || asset.days_until_1y < 0) && (
+          <Buttons 
+            type="button"
+            onClick={() => handleWithdraw(asset.id)}
+            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Withdraw
+          </Buttons>
+        )}
+      </div>
+    )
+    }))
 
 
   return (
@@ -113,7 +123,7 @@ const data = dataRes.map(asset => ({
 }
 
 
-export const WithdrawalAssetStatement = () => {
+export const AssetStatement = () => {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -146,13 +156,21 @@ export const WithdrawalAssetStatement = () => {
   const columns = [
     { header: "Date", accessor: "created_date" },
     { header: "Time", accessor: "created_time" },
-    { header: "Amount", accessor: "amount" },
+    { header: 'Status', accessor: 'request_status_display'},
     { header: "Type", accessor: "transaction_type" },
     { header: "Description", accessor: "description" },
-    { header: 'Status', accessor: 'request_status_display'}
+    { header: "Amount", accessor: "amount" },
   ]
 
-  const [dataRes, setDataRes] = useState<Data[]>([])
+  const [dataRes, setDataRes] = useState<TransactionStatement[]>([])
+
+  const data = dataRes.map(statement => ({
+    ...statement,
+    request_status_display: (
+      statement.request_status_display ? statement.request_status_display : '-' 
+    ),
+  }))
+
 
   return (
     <div>
@@ -162,7 +180,7 @@ export const WithdrawalAssetStatement = () => {
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={dataRes} />
+      <Tables columns={columns} data={data} />
     </div>
   )
 }
