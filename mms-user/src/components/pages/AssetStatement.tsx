@@ -67,7 +67,6 @@ export const WithdrawalAssetStatement = () => {
   const columns = [
     { header: "Date", accessor: "created_date" },
     { header: "Time", accessor: "created_time" },
-    { header: 'Status', accessor: 'request_status_display'},
     { header: "Amount Locked (50%)", accessor: "amount_6m_locked" },
     { header: 'Days Left', accessor: 'days_until_6m'},
     { header: "Amount Locked (50%)", accessor: "amount_1y_locked" },
@@ -88,9 +87,6 @@ export const WithdrawalAssetStatement = () => {
 
   const data = dataRes.map(asset => ({
     ...asset,
-    request_status_display: (
-      asset.request_status_display ? asset.request_status_display : '-' 
-    ),
     action: (
       <div className="flex gap-2">
         {(asset.days_until_6m < 0 || asset.days_until_1y < 0) && (
