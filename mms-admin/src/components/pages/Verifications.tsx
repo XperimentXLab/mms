@@ -10,6 +10,7 @@ interface userDetail {
   first_name: string
   last_name: string
   ic: string
+  wallet_address: string | null
   address_line: string | null
   address_city: string | null
   address_state: string | null
@@ -121,7 +122,7 @@ const Verifications = () => {
     { header: 'First Name', accessor: 'first_name' },
     { header: 'Last Name', accessor: 'last_name' },
     { header: 'I/C', accessor: 'ic' },
-    { header: 'Address', accessor: 'address_line' },
+    { header: 'Wallet Address', accessor: 'wallet_address' },
     { header: 'City', accessor: 'address_city' },
     { header: 'State', accessor: 'address_state' },
     { header: 'Postcode', accessor: 'address_postcode' },

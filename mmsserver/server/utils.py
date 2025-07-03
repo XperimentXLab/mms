@@ -197,7 +197,6 @@ def distribute_profit_manually():
                         amount=user_profit_amount,
                         description=(
                             f"Profit distribution ({daily_rate_percentage}% on Asset {asset_balance:.2f}). "
-                            f"Old PP Bal: {original_profit_balance:.2f}, New PP Bal: {wallet_instance.profit_point_balance:.2f}."
                         ),
                         reference=f"ProfitDist_{current_time.strftime('%Y%m%d')}"
                     )
@@ -438,7 +437,7 @@ class WalletService:
                             transaction_type='INTRODUCER_BONUS',
                             point_type='COMMISSION',
                             amount=bonus_amount,
-                            description=f"Introducer bonus for {user.username} asset placement ({amount})",
+                            description=f"Introducer bonus from {user.username} asset placement ({amount})",
                             reference=f"INTRODUCER_BONUS from {user.id}"
                         )
                     except User.DoesNotExist:
@@ -655,7 +654,7 @@ class ProfitService:
                 withdrawal_request.save()
                 
                 # Update transaction description
-                txn.description = f"Withdrawal request #{withdrawal_request.id} (Approved)"
+                txn.description = f"Withdrawal request {txn.amount} (Approved)"
                 txn.save()
                 
             elif action == 'REJECTED':
@@ -670,7 +669,7 @@ class ProfitService:
                 
                 # Update transaction description
                 txn = withdrawal_request.transaction
-                txn.description = f"Withdrawal request #{withdrawal_request.id} (Rejected - Refunded)"
+                txn.description = f"Withdrawal request {txn.amount} (Rejected - Refunded)"
                 txn.save()
         
         return txn
@@ -750,7 +749,7 @@ class CommissionService:
                 transaction_type='WITHDRAWAL',
                 point_type='COMMISSION',
                 amount=amount,
-                description=f"Withdrawal request #{withdrawal_request.id} (Pending): {amount}",
+                description=f"Withdrawal request (Pending): {amount}",
                 request_status='PENDING',
                 reference=reference
             )
@@ -781,7 +780,7 @@ class CommissionService:
                 
                 # Update transaction description
                 txn = withdrawal_request.transaction
-                txn.description = f"Withdrawal request #{withdrawal_request.id} (Approved)"
+                txn.description = f"Withdrawal request {txn.amount} (Approved)"
                 txn.save()
 
             elif action == 'Reject':
