@@ -379,7 +379,7 @@ def get_convert_transaction(request):
 def get_profit_commission_wd_transaction(request):
   user = request.user
   try:
-    profit_commission_wd_tx = Transaction.objects.filter(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type='WITHDRAWAL')
+    profit_commission_wd_tx = Transaction.objects.filter(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type__in=['WITHDRAWAL'])
     serializer = TransactionSerializer(profit_commission_wd_tx, many=True)
     return Response(serializer.data, status=200)
   except Transaction.DoesNotExist:
@@ -390,7 +390,7 @@ def get_profit_commission_wd_transaction(request):
 def get_asset_transaction(request):
   user = request.user
   try:
-    asset_tx = Transaction.objects.filter(user=user,  transaction_type=['ASSET_WITHDRAWAL', 'ASSET_PLACEMENT', 'WELCOME_BONUS'])
+    asset_tx = Transaction.objects.filter(user=user, transaction_type__in=['ASSET_WITHDRAWAL', 'ASSET_PLACEMENT', 'WELCOME_BONUS'])
     serializer = TransactionSerializer(asset_tx, many=True)
     return Response(serializer.data, status=200)
   except Transaction.DoesNotExist:
