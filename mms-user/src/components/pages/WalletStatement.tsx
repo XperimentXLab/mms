@@ -195,6 +195,7 @@ export const CommissionStatement = () => {
       <Tables columns={columns} data={data} 
         enableFilters={true}
         enableSorting={true}
+        enablePagination={true}
       />
     </div>
   )
@@ -408,6 +409,7 @@ export const WithdrawalWalletStatement = () => {
       <Tables columns={columns} data={data} 
         enableFilters={true}
         enableSorting={true}
+        enablePagination={true}
       />
     </div>
   )
