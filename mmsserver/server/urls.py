@@ -27,6 +27,7 @@ urlpatterns = [
   path('user_profit_commission_wd_tx/', get_profit_commission_wd_transaction, name='user_profit_commission_wd_transaction'),
   path('user_asset_tx/', get_asset_transaction, name='user_asset_transaction'),
   path('user_deposit_lock/', get_deposit_lock, name='user_deposit_lock'),
+  path('user_daily_total_profit/', get_daily_total_profit, name="user_daily_total_profit"),
 
   #updating
   path('update_password/', update_password, name='update_password'),

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import Loading from "../props/Loading"
-import { getAsset, getWallet, userDetails } from "../auth/endpoints"
+import { getAsset, getDailyTotalProfit, getWallet, userDetails } from "../auth/endpoints"
 import { FixedText } from "../props/Textt"
 import { Tables } from "../props/Tables";
 //import dayjs from "dayjs";
@@ -51,7 +51,10 @@ const Home = () => {
           Number(resWallet.introducer_point_balance || 0)
         )
         setAssetP(resAsset.amount || 0)
-        // In a real app, you would fetch this from an API
+
+
+        const resDailyProfit = await getDailyTotalProfit()
+        console.log(resDailyProfit)
         setDailyProfit(mockProfit);
       } catch (error: any) {
         console.error('Error fetching user data:', error)

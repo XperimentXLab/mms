@@ -215,6 +215,11 @@ export const getDepositLock = async () => {
   return response.data
 }
 
+export const getDailyTotalProfit = async () => {
+  const response = await api.get('/user_daily_total_profit/')
+  return response.data
+}
+
 
 interface TransferMasterData {
   amount: number
