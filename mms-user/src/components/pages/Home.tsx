@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import Loading from "../props/Loading"
 import { getAsset, getDailyTotalProfit, getWallet, userDetails } from "../auth/endpoints"
 import { FixedText } from "../props/Textt"
@@ -6,9 +6,17 @@ import { Tables } from "../props/Tables";
 //import dayjs from "dayjs";
 
 interface ProfitData {
-  type: string;
-  amount: string;
+  transaction_type: string;
+  total_amount: string;
 }
+
+const typeLabels: Record<string, string> = {
+  DISTRIBUTION: "Personal Profit",
+  AFFILIATE_BONUS: "Affiliate",
+  INTRODUCER_BONUS: "Introducer",
+  TOTAL: "Total", // fallback or custom type
+};
+
 
 
 const Home = () => {
@@ -33,6 +41,23 @@ const Home = () => {
   const [loading, setLoading] = useState<boolean>(false)
 
 
+  const fixedTypes = ["DISTRIBUTION", "AFFILIATE_BONUS", "INTRODUCER_BONUS", "TOTAL"];
+
+  const fixedRows = useMemo(() => {
+    const totalsMap = new Map<string, number>();
+    dailyProfit.forEach((item: ProfitData) => {
+      totalsMap.set(item.transaction_type, Number(item.total_amount));
+    });
+
+    return fixedTypes.map((type) => ({
+      transaction_type: type,
+      total_amount: totalsMap.get(type) ?? 0,
+    }));
+  }, [dailyProfit]);
+
+
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,12 +77,9 @@ const Home = () => {
 
 
         const resDailyProfit = await getDailyTotalProfit()
-        console.log('Today Date : ', todayD)
-        console.log(resDailyProfit)
         setDailyProfit(resDailyProfit);
       } catch (error: any) {
         console.error('Error fetching user data:', error)
-        setDailyProfit([])
         if (error.response) {
           console.error('Response data:', error.response.data)
           console.error('Response status:', error.response.status)
@@ -87,7 +109,7 @@ const Home = () => {
     { 
       header: "Profit Type", 
       accessor: "transaction_type",
-      render: (value: string) => value
+      render: (value: string) => typeLabels[value] || value
     },
     { 
       header: "Amount (USD)", 
@@ -132,7 +154,7 @@ const Home = () => {
           <div className="overflow-x-auto">
             <Tables 
               columns={tableColumns}
-              data={dailyProfit}
+              data={fixedRows}
               emptyMessage="No profit data available"
             />
           </div>
