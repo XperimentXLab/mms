@@ -13,6 +13,9 @@ interface ProfitData {
 
 const Home = () => {
 
+  const date = new Date()
+  const todayDate: number = (date.getDate())
+
   const [username, setUsername] = useState<string>('')
   const [userId, setUserId] = useState<string>('')
 
@@ -54,6 +57,7 @@ const Home = () => {
 
 
         const resDailyProfit = await getDailyTotalProfit()
+        console.log('Today Date : ', todayDate)
         console.log(resDailyProfit)
         setDailyProfit(mockProfit);
       } catch (error: any) {

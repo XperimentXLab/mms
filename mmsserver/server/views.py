@@ -644,7 +644,9 @@ def get_daily_total_profit(request):
     today = timezone.localdate()
     transaction = Transaction.objects.filter(user=user, transaction_type__in=['DISTRIBUTION',
     'AFFILIATE_BONUS', 'INTRODUCER_BONUS'],
-    created_at__date=today)
+    created_at__date=today).values("transaction_type").annotate(
+      total_amount=Sum("amount")
+    )
     serializer = TransactionSerializer(transaction, many=True)
     return Response(serializer.data, status=200)
   except Exception as e:
