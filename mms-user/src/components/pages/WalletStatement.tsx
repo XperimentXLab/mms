@@ -11,7 +11,7 @@ dayjs.extend(timezone);
 
 export interface Data {
   created_at: string;
-  amount: string;
+  amount: number;
   point_type?: string;
   transaction_type?: string;
   description: string;

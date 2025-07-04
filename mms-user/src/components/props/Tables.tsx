@@ -100,12 +100,12 @@ export const Tables = ({
             onChange={e => setGlobalFilter(e.target.value)}
           />
           <DatePicker
-            className="border rounded px-2 py-1 text-xs"
-            selected={dateFilter}
-            onChange={(date) => setDateFilter(date)}
-            dateFormat="dd/MM/yyyy"
-            placeholderText="Choose a date"
-          />
+                      className="border rounded px-2 py-1 text-xs"
+                                  selected={dateFilter}
+                                              onChange={(date) => setDateFilter(date)}
+                                                          dateFormat="dd/MM/yyyy"
+                                                                      placeholderText="Choose a date"
+                                                                                />
         </div>
       )}
 
