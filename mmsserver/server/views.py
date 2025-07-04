@@ -648,7 +648,6 @@ def get_daily_total_profit(request):
     created_at__date=today).values("transaction_type").annotate(
       total_amount=Sum("amount")
     )
-    serializer = TransactionSerializer(transaction, many=True)
-    return Response(serializer.data, status=200)
+    return Response(transaction, status=200)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
