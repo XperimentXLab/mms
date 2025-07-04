@@ -7,14 +7,18 @@ import { Tables } from "../props/Tables";
 
 interface ProfitData {
   type: string;
-  amount: number;
+  amount: string;
 }
 
 
 const Home = () => {
 
   const date = new Date()
-  const todayDate: number = (date.getDate())
+  const todayD: number = date.getDate()
+  const todayM: string = date.toLocaleString('default', { month: 'short' })
+  const todayY: number = date.getFullYear()
+
+  const fullDate: string = `${todayD} ${todayM} ${todayY}`
 
   const [username, setUsername] = useState<string>('')
   const [userId, setUserId] = useState<string>('')
@@ -27,15 +31,6 @@ const Home = () => {
   const [dailyProfit, setDailyProfit] = useState<ProfitData[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false)
-
-  
-  // Mock data for profit - replace with API call in production
-  const mockProfit: ProfitData[] = [
-    { type: "Personal", amount: 0 }, 
-    { type: "Affiliate", amount: 0 },
-    { type: "Introducer", amount: 0 },
-    { type: "Total", amount: 0}
-  ];
 
 
   useEffect(() => {
@@ -57,9 +52,9 @@ const Home = () => {
 
 
         const resDailyProfit = await getDailyTotalProfit()
-        console.log('Today Date : ', todayDate)
+        console.log('Today Date : ', todayD)
         console.log(resDailyProfit)
-        setDailyProfit(mockProfit);
+        setDailyProfit(resDailyProfit);
       } catch (error: any) {
         console.error('Error fetching user data:', error)
         setDailyProfit([])
@@ -91,12 +86,12 @@ const Home = () => {
   const tableColumns = [
     { 
       header: "Profit Type", 
-      accessor: "type",
-      render: (value: string) => value || "-"
+      accessor: "transaction_type",
+      render: (value: string) => value
     },
     { 
       header: "Amount (USD)", 
-      accessor: "amount",
+      accessor: "total_amount",
       render: (value: number) => value?.toLocaleString() || "0"
     },
     /*
@@ -133,7 +128,7 @@ const Home = () => {
         </div>
 
         <div className="border rounded-xl p-4 flex items-center flex-col shadow-2xl shadow-red-300 bg-white">
-          <h2 className="font-bold text-lg mb-3">Daily Summary Profit</h2>
+          <h2 className="font-bold text-lg mb-3">Daily Summary Profit ({fullDate})</h2>
           <div className="overflow-x-auto">
             <Tables 
               columns={tableColumns}
