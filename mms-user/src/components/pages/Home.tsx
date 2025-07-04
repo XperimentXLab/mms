@@ -7,7 +7,7 @@ import { Tables } from "../props/Tables";
 
 interface ProfitData {
   transaction_type: string;
-  total_amount: string;
+  total_amount: number;
 }
 
 const typeLabels: Record<string, string> = {
@@ -48,27 +48,27 @@ const Home = () => {
       totalsMap.set(item.transaction_type, Number(item.total_amount));
     });
 
-    const totalProfit = fixedRows.reduce((sum, row) => {
-      if (["DISTRIBUTION", "AFFILIATE_BONUS", "INTRODUCER_BONUS"].includes(row.transaction_type)) {
-        return sum + row.total_amount;
-      }
-      return sum;
-    }, 0);
-
-
     return fixedTypes.map((type) => ({
       transaction_type: type,
       total_amount: totalsMap.get(type) ?? 0,
       }));
   }, [dailyProfit]);
 
-  const data = fixedRows.map(data => (
-    ...data,
+
+  const totalProfit = fixedRows.reduce((sum, row) => {
+    if (["DISTRIBUTION", "AFFILIATE_BONUS", "INTRODUCER_BONUS"].includes(row.transaction_type)) {
+      return sum + row.total_amount;
+    }
+    return sum;
+  }, 0);
+
+  const data: ProfitData[] = [
+    ...fixedRows,
     {
       transaction_type: "TOTAL",
       total_amount: totalProfit,
     },
-  ))
+  ]
 
 
 
