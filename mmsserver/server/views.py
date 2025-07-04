@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
+from django.db.models import Sum
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
@@ -645,7 +646,7 @@ def get_daily_total_profit(request):
     transaction = Transaction.objects.filter(user=user, transaction_type__in=['DISTRIBUTION',
     'AFFILIATE_BONUS', 'INTRODUCER_BONUS'],
     created_at__date=today).values("transaction_type").annotate(
-      total_amount=sum("amount")
+      total_amount=Sum("amount")
     )
     serializer = TransactionSerializer(transaction, many=True)
     return Response(serializer.data, status=200)
