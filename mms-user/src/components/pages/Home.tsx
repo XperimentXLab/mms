@@ -13,8 +13,7 @@ interface ProfitData {
 const typeLabels: Record<string, string> = {
   DISTRIBUTION: "Personal Profit",
   AFFILIATE_BONUS: "Affiliate",
-  INTRODUCER_BONUS: "Introducer",
-  TOTAL: "Total", // fallback or custom type
+  INTRODUCER_BONUS: "Introducer", 
 };
 
 
@@ -41,7 +40,7 @@ const Home = () => {
   const [loading, setLoading] = useState<boolean>(false)
 
 
-  const fixedTypes = ["DISTRIBUTION", "AFFILIATE_BONUS", "INTRODUCER_BONUS", "TOTAL"];
+  const fixedTypes = ["DISTRIBUTION", "AFFILIATE_BONUS", "INTRODUCER_BONUS"];
 
   const fixedRows = useMemo(() => {
     const totalsMap = new Map<string, number>();
@@ -49,12 +48,27 @@ const Home = () => {
       totalsMap.set(item.transaction_type, Number(item.total_amount));
     });
 
+    const totalProfit = fixedRows.reduce((sum, row) => {
+      if (["DISTRIBUTION", "AFFILIATE_BONUS", "INTRODUCER_BONUS"].includes(row.transaction_type)) {
+        return sum + row.total_amount;
+      }
+      return sum;
+    }, 0);
+
+
     return fixedTypes.map((type) => ({
       transaction_type: type,
       total_amount: totalsMap.get(type) ?? 0,
-    }));
+      }));
   }, [dailyProfit]);
 
+  const data = fixedRows.map(data => (
+    ...data,
+    {
+      transaction_type: "TOTAL",
+      total_amount: totalProfit,
+    },
+  ))
 
 
 
@@ -109,10 +123,12 @@ const Home = () => {
     { 
       header: "Profit Type", 
       accessor: "transaction_type",
-      render: (value: string) => typeLabels[value] || value
+      render: (value: string) => (
+        value === 'TOTAL' ? <span className="font-semibold">Total</span> : typeLabels[value] || value
+      )
     },
     { 
-      header: "Amount (USD)", 
+      header: "Amount (USDT)", 
       accessor: "total_amount",
       render: (value: number) => value?.toLocaleString() || "0"
     },
@@ -154,7 +170,7 @@ const Home = () => {
           <div className="overflow-x-auto">
             <Tables 
               columns={tableColumns}
-              data={fixedRows}
+              data={data}
               emptyMessage="No profit data available"
             />
           </div>
