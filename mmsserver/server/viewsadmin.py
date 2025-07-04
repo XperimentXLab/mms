@@ -306,7 +306,7 @@ def get_all_transaction(request):
   try:
     if user.is_staff:
       all_transaction = Transaction.objects.all()
-      serializer= TransactionSerializer(all_transaction, many=True)
+      serializer = TransactionSerializer(all_transaction, many=True)
       return Response(serializer.data, status=200)
     else:
       return Response({'error': 'Permission denied'}, status=403)

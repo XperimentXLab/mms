@@ -14,6 +14,11 @@ import {
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css'
 import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 export interface TableColumn {
   header: string;
@@ -39,25 +44,34 @@ export const Tables = ({
   enablePagination = false,
 }: TablesProps) => {
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [dateFilter, setDateFilter] = useState<Date | null>(null);
+  //const [dateFilter, setDateFilter] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(null); 
+  const [endDate, setEndDate] = useState<Date | null>(null);    
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 20,
+    pageSize: 30,
   })
 
   const filteredData = useMemo(() => {
-    if (!dateFilter) return data;
-    const filterDateString = dayjs(dateFilter)
-    .tz("Asia/Kuala_Lumpur")
-    .format("YYYY-MM-DD")
+    if (!startDate && !endDate) return data;
     return data.filter(row => {
-      const rowDate = row.created_date
-        ? dayjs(row.created_date).tz("Asia/Kuala_Lumpur").format("YYYY-MM-DD")
-        : ""
-      return rowDate === filterDateString;
+      if (!row.created_date) return false;
+      const rowDate = dayjs(row.created_date).tz("Asia/Kuala_Lumpur").startOf("day");
+      const start = startDate ? dayjs(startDate).tz("Asia/Kuala_Lumpur").startOf("day") : null;
+      const end = endDate ? dayjs(endDate).tz("Asia/Kuala_Lumpur").startOf("day") : null;
+      if (start && end) {
+        return rowDate.isSameOrAfter(start) && rowDate.isSameOrBefore(end);
+      }
+      if (start) {
+        return rowDate.isSameOrAfter(start);
+      }
+      if (end) {
+        return rowDate.isSameOrBefore(end);
+      }
+      return true;
     });
-  }, [data, dateFilter]);
+  }, [data, startDate, endDate]);
 
   const columnDefs = useMemo<ColumnDef<any, any>[]>(
     () =>
@@ -77,7 +91,7 @@ export const Tables = ({
     columns: columnDefs,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    state: { globalFilter, sorting },
+    state: { globalFilter, sorting, pagination },
     onGlobalFilterChange: setGlobalFilter,
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
@@ -91,23 +105,50 @@ export const Tables = ({
     <div className="w-full overflow-x-auto flex flex-col gap-2">
 
       {enableFilters && (
-        <div className="grid grid-cols-2 gap-2 justify-center items-center">
           <input
             type="text"
-            className="w-full border rounded px-2 py-1 text-xs"
+            className="border rounded px-2 py-1 text-xs"
             placeholder={`Enter filter keyword`}
             value={globalFilter}
             onChange={e => setGlobalFilter(e.target.value)}
           />
+
+        )}
+          {/*
           <DatePicker
             className="border rounded px-2 py-1 text-xs"
             selected={dateFilter}
             onChange={(date) => setDateFilter(date)}
             dateFormat="dd/MM/yyyy"
             placeholderText="Choose a date"
+          />*/}
+
+        <div className="flex flex-row gap-2 justify-center items-center">
+          <DatePicker
+            className="flex border rounded px-2 py-1 text-xs"
+            selected={startDate}
+            onChange={date => setStartDate(date)}
+            dateFormat="dd/MM/yyyy"
+            placeholderText="Start date"
+            selectsStart
+            startDate={startDate}
+            endDate={endDate}
+            isClearable
           />
+          <DatePicker
+            className="flex border rounded px-2 py-1 text-xs"
+            selected={endDate}
+            onChange={date => setEndDate(date)}
+            dateFormat="dd/MM/yyyy"
+            placeholderText="End date"
+            selectsEnd
+            startDate={startDate}
+            endDate={endDate}
+            minDate={startDate ?? undefined}
+            isClearable
+          />
+
         </div>
-      )}
 
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
@@ -138,8 +179,8 @@ export const Tables = ({
         </thead>
 
         <tbody className="bg-white divide-y divide-gray-200">
-          {table.getRowModel().rows.length > 0 ? (
-            table.getRowModel().rows.map((row) => (
+          {table.getPaginationRowModel().rows.length > 0 ? (
+            table.getPaginationRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
@@ -190,7 +231,7 @@ export const Tables = ({
               table.setPageSize(Number(e.target.value));
             }}
           >
-            {[20, 30, 40, 50, 100].map(pageSize => (
+            {[30, 40, 50, 100].map(pageSize => (
               <option key={pageSize} value={pageSize}
               >
                 Show {pageSize}

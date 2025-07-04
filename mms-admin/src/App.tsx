@@ -8,6 +8,7 @@ import Setup from "./components/pages/Setup"
 import AssetRequest from "./components/pages/AssetRequest"
 import User from "./components/pages/User"
 import Verifications from "./components/pages/Verifications"
+import Transactionss from "./components/pages/Transactionss"
 
 
 
@@ -25,7 +26,7 @@ const router = createBrowserRouter(createRoutesFromElements(
         <Route path="/verification" element={<Verifications />} />
         <Route path="/asset/requests" element={<AssetRequest />}/> 
         <Route path="/withdraw/requests" /> 
-        <Route path="/transaction" /> 
+        <Route path="/transaction" element={<Transactionss />} /> 
 
       </Route>
 

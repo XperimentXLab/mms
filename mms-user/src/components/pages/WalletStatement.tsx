@@ -113,7 +113,6 @@ export const ProfitStatement = () => {
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
       <Tables columns={columns} data={data} 
-        enableFilters={true}
         enableSorting={true}
       />
     </div>

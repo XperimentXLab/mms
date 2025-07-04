@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import Tables, { type Data } from "../props/Tables"
+import { Tables, type Data } from "../props/Tables"
 import { getAllUsers } from "../auth/endpoints"
 import Loading from "../props/Loading"
 import dayjs from "dayjs";
@@ -14,15 +14,42 @@ const User = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   const columnsUserDetails = [
-    { header: 'User ID', accessor: 'id' },
-    { header: 'Username', accessor: 'username' },
-    { header: 'I/C', accessor: 'ic' },
-    { header: 'Email', accessor: 'email' },
-    { header: 'Referral ID', accessor: 'referred_by' },
-    { header: 'Joined Date', accessor: 'joined_date' },
-    { header: 'Joined Time', accessor: 'joined_time' },
-    { header: 'Asset', accessor: 'asset_amount' },
-    { header: 'Verification', accessor: 'verification_status' },
+    { header: 'User ID', 
+      accessor: 'id',
+      render: (value: string) => value
+     },
+    { header: 'Username', 
+      accessor: 'username',
+      render: (value: string) => value
+     },
+    { header: 'I/C', 
+      accessor: 'ic',
+      render: (value: number) => value
+     },
+    { header: 'Email', 
+      accessor: 'email',
+      render: (value: string) => value
+     },
+    { header: 'Referral ID', 
+      accessor: 'referred_by',
+      render: (value: string) => value
+     },
+    { header: 'Joined Date', 
+      accessor: 'joined_date',
+      render: (value: string) => value
+     },
+    { header: 'Joined Time', 
+      accessor: 'joined_time',
+      render: (value: string) => value
+     },
+    { header: 'Asset', 
+      accessor: 'asset_amount',
+      render: (value: number | null) => value ? value : '0'
+     },
+    { header: 'Verification', 
+      accessor: 'verification_status',
+      render: (value: string) => value
+     },
   ]
   const [dataUserDetails, setDataUserDetails] = useState<Data[]>([])
 
@@ -54,9 +81,13 @@ const User = () => {
     <div className="flex flex-col gap-3 m-4 justify-center">
       {loading && <Loading />}
 
-      <span>All Users</span>
+      <span className="text-white">All Users</span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
-      <Tables columns={columnsUserDetails} data={dataUserDetails}/>
+      <Tables columns={columnsUserDetails} data={dataUserDetails}
+        enableSorting={true}
+        enableFilters={true}
+        enablePagination={true}
+      />
 
     </div>
   )

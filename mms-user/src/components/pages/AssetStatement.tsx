@@ -132,8 +132,8 @@ export const WithdrawalAssetStatement = () => {
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
       <Tables columns={columns} data={data} 
-        enableFilters={true}
         enableSorting={true}
+        enablePagination={true}
       />
     </div>
   )

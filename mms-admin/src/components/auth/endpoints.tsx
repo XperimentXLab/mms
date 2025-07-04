@@ -196,3 +196,9 @@ export const grantFreeCampro = async (user_id: string) => {
   return response.data
 }
 
+
+export const getAllTransactions = async () => {
+  const response = await api.get('/all_transactions/')
+  return response.data
+}
+

@@ -315,7 +315,7 @@ class Transaction(models.Model):
     return f"{self.user.username} - {self.get_transaction_type_display()} - {self.get_point_type_display()} - {self.amount}"
   
   class Meta:
-    ordering = ['-created_at', 'request_status', 'transaction_type', 'user']
+    ordering = ['-created_at', 'request_status', 'transaction_type', 'point_type','user']
     verbose_name = "Transaction"
     verbose_name_plural = "Transactions"
 
