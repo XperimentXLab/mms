@@ -634,3 +634,18 @@ def withdraw_asset(request):
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
+
+## Home ##
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_daily_total_profit(request):
+  user = request.user
+  try:
+    today = timezone.localdate()
+    transaction = Transaction.objects.filter(user=user, transaction_type__in=['DISTRIBUTION',
+    'AFFILIATE_BONUS', 'INTRODUCER_BONUS'],
+    created_at__date=today)
+    serializer = TransactionSerializer(transaction, many=True)
+    return Response(serializer.data, status=200)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)

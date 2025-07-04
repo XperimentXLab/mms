@@ -43,8 +43,14 @@ const Wallet = () => {
     setBonusUpDown(!bonusUpDown)
   }
   const columns: TableColumn[] = [
-    {header: 'Type', accessor: 'type'},
-    {header: 'Amount (USDT)', accessor: 'amount'},
+    { header: 'Type', 
+      accessor: 'type',
+      render: (value: any) => value
+    },
+    { header: 'Amount (USDT)', 
+      accessor: 'amount',
+      render: (value: any) => value
+    },
   ]
   const data = [
     { type: 'Affiliate', amount: affiliateBalance },
