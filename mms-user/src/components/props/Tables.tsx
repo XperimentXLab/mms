@@ -39,7 +39,8 @@ export const Tables = ({
   enablePagination = false,
 }: TablesProps) => {
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  const [dateFilter, setDateFilter] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -47,17 +48,35 @@ export const Tables = ({
   })
 
   const filteredData = useMemo(() => {
-    if (!dateFilter) return data;
-    const filterDateString = dayjs(dateFilter)
-    .tz("Asia/Kuala_Lumpur")
-    .format("YYYY-MM-DD")
     return data.filter(row => {
-      const rowDate = row.created_date
-        ? dayjs(row.created_date).tz("Asia/Kuala_Lumpur").format("YYYY-MM-DD")
-        : ""
-      return rowDate === filterDateString;
+      const rowDateStr = row.created_date;
+      if (!rowDateStr) return false;
+
+      const rowDate = dayjs(rowDateStr).tz("Asia/Kuala_Lumpur");
+
+      const start = startDate ? dayjs(startDate).tz("Asia/Kuala_Lumpur") : null;
+      const end = endDate ? dayjs(endDate).tz("Asia/Kuala_Lumpur") : null;
+
+      // If only startDate is selected
+      if (start && !end) {
+        return rowDate.isAfter(start) || rowDate.isSame(start, 'day')
+      };
+      if (!start && end) {
+        return rowDate.isBefore(end) || rowDate.isSame(end, 'day')
+      };
+
+      // If both dates are selected
+      if (start && end) {
+        return (
+          (rowDate.isAfter(start) || rowDate.isSame(start, 'day')) &&
+          (rowDate.isBefore(end) || rowDate.isSame(end, 'day'))
+        )
+      }
+
+      // If no date is selected, show all
+      return true;
     });
-  }, [data, dateFilter]);
+  }, [data, startDate, endDate])
 
   const columnDefs = useMemo<ColumnDef<any, any>[]>(
     () =>
@@ -65,7 +84,7 @@ export const Tables = ({
         header: col.header,
         accessorKey: col.accessor,
         cell: col.render
-          ? (info) => col.render?.(info.getValue(), info.row.original)
+          ? (info: any) => col.render?.(info.getValue(), info.row.original)
           : undefined,
         enableSorting,
       })),
@@ -77,7 +96,14 @@ export const Tables = ({
     columns: columnDefs,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    state: { globalFilter, sorting },
+    state: { globalFilter, sorting, 
+        columnFilters: [
+        {
+          id: 'date',
+          value: [startDate, endDate],
+        },
+      ],
+    },
     onGlobalFilterChange: setGlobalFilter,
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
@@ -100,12 +126,21 @@ export const Tables = ({
             onChange={e => setGlobalFilter(e.target.value)}
           />
           <DatePicker
-                      className="border rounded px-2 py-1 text-xs"
-                                  selected={dateFilter}
-                                              onChange={(date) => setDateFilter(date)}
-                                                          dateFormat="dd/MM/yyyy"
-                                                                      placeholderText="Choose a date"
-                                                                                />
+            className="border rounded px-2 py-1 text-xs"
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            selectsStart
+            startDate={startDate}
+            endDate={endDate}
+          />
+          <DatePicker
+            className="border rounded px-2 py-1 text-xs"
+            selected={endDate}
+            onChange={(date) => setEndDate(date)}
+            selectsEnd
+            startDate={startDate}
+            endDate={endDate}
+          />
         </div>
       )}
 
@@ -280,8 +315,3 @@ export const TableAssetWithdrawal = ({columns, data, emptyMessage = "No data ava
     </div>
   )
 }
-
-////////////////////////////////////////////
-
-
-export const theTable = useReactTable
