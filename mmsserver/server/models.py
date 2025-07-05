@@ -38,7 +38,8 @@ class User(AbstractUser):
   beneficiary_name = models.CharField(max_length=255, blank=True, null=True)
   beneficiary_ic = models.CharField(max_length=12, blank=True, null=True, validators=[RegexValidator(r'^\d{12}$', 'IC must be 12 digits')])
   beneficiary_relationship = models.CharField(max_length=255, blank=True, null=True)
-  beneficiary_phone = models.CharField(max_length=15, blank=True, null=True, validators=[RegexValidator(r'^01\d{9,10}$', 'Enter a valid phone number')])
+  beneficiary_phone = models.CharField(max_length=15, blank=True, null=True, validators=[RegexValidator(r'^(?:\+?60|0)1\d{7,11}$',
+  'Enter a valid mobile number')])
   beneficiary_email = models.EmailField(blank=True, null=True)
 
   # Verification documents
