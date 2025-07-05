@@ -38,10 +38,14 @@ const Transactionss = () => {
       accessor: 'created_time',
       render: (value: string) => value
     },
-    { header: 'Point Type', 
-      accessor: 'point_type',
+    { header: 'User',
+      accessor: 'user',
       render: (value: string) => value
-     },
+    },
+    { header: 'Username',
+      accessor: 'username',
+      render: (value: string) => value
+    },
     { header: 'Transaction Type', 
       accessor: 'transaction_type',
       render: (value: string) => value
@@ -52,7 +56,7 @@ const Transactionss = () => {
      },
     { header: 'Status',
       accessor: 'request_status',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
     },
     { header: 'Description', 
       accessor: 'description',
@@ -162,6 +166,8 @@ const Transactionss = () => {
       {loading && <Loading />}
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
 
+      <span className="text-white">All Transactions</span>
+
       <nav className="flex flex-row gap-2">
         <Buttons
           type="button"
@@ -181,7 +187,6 @@ const Transactionss = () => {
         >Asset Point</Buttons>
       </nav>
 
-      <span className="text-white">All Transactions</span>
       <Tables columns={columns} data={data} 
         enableFilters={true}
         enablePagination={true}
