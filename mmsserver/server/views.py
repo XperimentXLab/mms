@@ -265,7 +265,6 @@ def password_reset_confirm(request, uidb64, token):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-@parser_classes([MultiPartParser, FormParser])
 def update_user(request):
   user = request.user
   try:

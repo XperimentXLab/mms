@@ -142,7 +142,7 @@ export const updateUserDetails = async (userData: Partial<User>) => {
     verification_status: verificationStatus,
     ic_document_url
   })
-    return response.data
+  return response.data
 }
 
 

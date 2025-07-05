@@ -299,6 +299,7 @@ def get_all_network(request):
   except Exception as e:
     return Response({'error': str(e)}, status=400)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_all_transaction(request):
@@ -312,7 +313,64 @@ def get_all_transaction(request):
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
     return Response({'error': str(e)}, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_master_tx(request):
+  user = request.user
+  try:
+    if user.is_staff:
+      all_master_tx = Transaction.objects.filer(point_type__in=['MASTER'])
+      serializer = TransactionSerializer(all_master_tx, many=True)
+      return Response(serializer.data, status=200)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_profit_tx(request):
+  user = request.user
+  try:
+    if user.is_staff:
+      all_profit_tx = Transaction.objects.filer(point_type__in=['PROFIT'])
+      serializer = TransactionSerializer(all_profit_tx, many=True)
+      return Response(serializer.data, status=200)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_commission_tx(request):
+  user = request.user
+  try:
+    if user.is_staff:
+      all_commission_tx = Transaction.objects.filer(point_type__in=['COMMISSION'])
+      serializer = TransactionSerializer(all_commission_tx, many=True)
+      return Response(serializer.data, status=200)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_asset_tx(request):
+  user = request.user
+  try:
+    if user.is_staff:
+      all_asset_tx = Transaction.objects.filer(point_type__in=['ASSET'])
+      serializer = TransactionSerializer(all_asset_tx, many=True)
+      return Response(serializer.data, status=200)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=400)
   
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_pending_transaction(request):
