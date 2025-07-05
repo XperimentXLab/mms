@@ -58,11 +58,6 @@ class UserSerializer(serializers.ModelSerializer):
     if asset:
       return asset.amount
     return None
-  
-  def get_ic_document_url(self, obj):
-    if obj.ic_document:
-      return obj.ic_document.url
-    return None
     
   def validate_email(self, value):
     if User.objects.filter(email=value).exists():
