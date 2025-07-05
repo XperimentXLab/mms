@@ -142,7 +142,7 @@ const Profile = () => {
     }
   }
 
-    const toggleBeneficiary = async (e: React.FormEvent<HTMLFormElement>) => {
+  const toggleBeneficiary = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       setLoading(true)

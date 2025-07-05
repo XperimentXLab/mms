@@ -10,7 +10,11 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 interface TransactioDetail {
-  created_datetime: string;
+  created_date: string
+  created_time: string
+  user: string;
+  username: string
+  request_status: string
   point_type: string
   transaction_type: string
   amount: number
@@ -26,8 +30,12 @@ const Transactionss = () => {
   const [data, setData] = useState<TransactioDetail[]>([])
 
   const columns = [
-    { header: 'Date Time',
-      accessor: 'created_datetime',
+    { header: 'Date',
+      accessor: 'created_date',
+      render: (value: string) => value
+    },
+    { header: 'Time',
+      accessor: 'created_time',
       render: (value: string) => value
     },
     { header: 'Point Type', 
@@ -42,6 +50,10 @@ const Transactionss = () => {
       accessor: 'amount',
       render: (value: number) => value
      },
+    { header: 'Status',
+      accessor: 'request_status',
+      render: (value: string) => value
+    },
     { header: 'Description', 
       accessor: 'description',
       render: (value: string) => value
@@ -60,7 +72,8 @@ const Transactionss = () => {
         const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
         return {
           ...tx,
-          created_datetime: dt.format("YYYY-MM-DD HH:mm:ss"),
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss")
         }
       });
       setData(formattedData)
@@ -82,7 +95,8 @@ const Transactionss = () => {
       const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
         return {
           ...tx,
-          created_datetime: dt.format("YYYY-MM-DD HH:mm:ss"),
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss")
         }
       });
       setData(formattedData)
@@ -104,7 +118,8 @@ const Transactionss = () => {
       const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
         return {
           ...tx,
-          created_datetime: dt.format("YYYY-MM-DD HH:mm:ss"),
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss")
         }
       });
       setData(formattedData)
@@ -126,7 +141,8 @@ const Transactionss = () => {
       const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
         return {
           ...tx,
-          created_datetime: dt.format("YYYY-MM-DD HH:mm:ss"),
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss")
         }
       });
       setData(formattedData)

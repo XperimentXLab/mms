@@ -134,11 +134,11 @@ export const updateUserDetails = async (userData: Partial<User>) => {
     address_postcode: postcode,
     address_country: country,
     wallet_address: walletAddress,
-    bineficiary_name: bineficiaryName,
-    bineficiary_ic: bineficiaryIc,
-    bineficiary_relationship: bineficiaryRelationship,
-    bineficiary_email: bineficiaryEmail,
-    bineficiary_phone: bineficiaryPhone,
+    beneficiary_name: bineficiaryName,
+    beneficiary_ic: bineficiaryIc,
+    beneficiary_relationship: bineficiaryRelationship,
+    beneficiary_email: bineficiaryEmail,
+    beneficiary_phone: bineficiaryPhone,
     verification_status: verificationStatus,
     ic_document_url
   })
