@@ -72,7 +72,15 @@ const Transactionss = () => {
     try {
       setLoading(true)
       const response = await getAllTransactions()
-      setData(response)
+      const formattedData = response.map((tx: any) => {
+        const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
+        return {
+          ...tx,
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss")
+        }
+      });
+      setData(formattedData)
     } catch (error: any) {
       if (error.response && error.response.status == 400) {
         console.error(error)
