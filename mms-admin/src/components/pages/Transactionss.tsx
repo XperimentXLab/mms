@@ -93,7 +93,7 @@ const Transactionss = () => {
 
   useEffect(()=>{
     fetchData()
-  },[])
+  }, [])
 
   const toggleMasterTx = async () => {
     try {
