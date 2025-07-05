@@ -320,7 +320,7 @@ def get_all_master_tx(request):
   user = request.user
   try:
     if user.is_staff:
-      all_master_tx = Transaction.objects.filer(point_type__in=['MASTER'])
+      all_master_tx = Transaction.objects.filter(point_type__in=['MASTER'])
       serializer = TransactionSerializer(all_master_tx, many=True)
       return Response(serializer.data, status=200)
     else:
@@ -334,7 +334,7 @@ def get_all_profit_tx(request):
   user = request.user
   try:
     if user.is_staff:
-      all_profit_tx = Transaction.objects.filer(point_type__in=['PROFIT'])
+      all_profit_tx = Transaction.objects.filter(point_type__in=['PROFIT'])
       serializer = TransactionSerializer(all_profit_tx, many=True)
       return Response(serializer.data, status=200)
     else:
@@ -348,7 +348,7 @@ def get_all_commission_tx(request):
   user = request.user
   try:
     if user.is_staff:
-      all_commission_tx = Transaction.objects.filer(point_type__in=['COMMISSION'])
+      all_commission_tx = Transaction.objects.filter(point_type__in=['COMMISSION'])
       serializer = TransactionSerializer(all_commission_tx, many=True)
       return Response(serializer.data, status=200)
     else:
@@ -362,7 +362,7 @@ def get_all_asset_tx(request):
   user = request.user
   try:
     if user.is_staff:
-      all_asset_tx = Transaction.objects.filer(point_type__in=['ASSET'])
+      all_asset_tx = Transaction.objects.filter(point_type__in=['ASSET'])
       serializer = TransactionSerializer(all_asset_tx, many=True)
       return Response(serializer.data, status=200)
     else:
