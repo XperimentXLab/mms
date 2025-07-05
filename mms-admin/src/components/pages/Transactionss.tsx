@@ -85,7 +85,7 @@ const Transactionss = () => {
 
   useEffect(()=>{
     fetchData()
-  })
+  },[])
 
   const toggleMasterTx = async () => {
     try {
@@ -186,7 +186,6 @@ const Transactionss = () => {
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
 
       <Buttons type="button" 
-        className="text-white" 
         onClick={fetchData}
       >All Transactions</Buttons>
 
