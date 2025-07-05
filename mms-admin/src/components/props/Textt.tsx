@@ -16,7 +16,7 @@ export default Spannn
 
 
 interface FixedTextProps {
-  text: string
+  text: string | number
   label: string
   className?: string
 }

@@ -69,7 +69,7 @@ export const Tables = ({
   const [sorting, setSorting] = useState<SortingState>([])
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 20,
+    pageSize: 30,
   })
 
   const filteredData = useMemo(() => {
@@ -250,7 +250,7 @@ export const Tables = ({
               table.setPageSize(Number(e.target.value));
             }}
           >
-            {[20, 30, 40, 50, 100].map(pageSize => (
+            {[30, 40, 50, 100].map(pageSize => (
               <option key={pageSize} value={pageSize}
               >
                 Show {pageSize}

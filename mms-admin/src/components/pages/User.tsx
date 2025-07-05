@@ -14,6 +14,14 @@ const User = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   const columnsUserDetails = [
+    { header: 'Joined Date', 
+      accessor: 'joined_date',
+      render: (value: string) => value
+     },
+    { header: 'Joined Time', 
+      accessor: 'joined_time',
+      render: (value: string) => value
+     },
     { header: 'User ID', 
       accessor: 'id',
       render: (value: string) => value
@@ -32,14 +40,6 @@ const User = () => {
      },
     { header: 'Referral ID', 
       accessor: 'referred_by',
-      render: (value: string) => value
-     },
-    { header: 'Joined Date', 
-      accessor: 'joined_date',
-      render: (value: string) => value
-     },
-    { header: 'Joined Time', 
-      accessor: 'joined_time',
       render: (value: string) => value
      },
     { header: 'Asset', 

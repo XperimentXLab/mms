@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { getAllAssetTX, getAllCommissionTX, getAllMasterTX, getAllProfitTX } from "../auth/endpoints"
+import { useEffect, useState } from "react"
+import { getAllAssetTX, getAllCommissionTX, getAllMasterTX, getAllProfitTX, getAllTransactions } from "../auth/endpoints"
 import { Tables } from "../props/Tables"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
@@ -67,6 +67,25 @@ const Transactionss = () => {
       render: (value: string) => value ? value : '-'
      },
   ]
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const response = await getAllTransactions()
+      setData(response)
+    } catch (error: any) {
+      if (error.response && error.response.status == 400) {
+        console.error(error)
+        setErrorMessage(error.response.data.error)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(()=>{
+    fetchData()
+  })
 
   const toggleMasterTx = async () => {
     try {
@@ -166,9 +185,12 @@ const Transactionss = () => {
       {loading && <Loading />}
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
 
-      <span className="text-white">All Transactions</span>
+      <Buttons type="button" 
+        className="text-white" 
+        onClick={fetchData}
+      >All Transactions</Buttons>
 
-      <nav className="flex flex-row gap-2">
+      <nav className="flex flex-row gap-2 justify-center items-center">
         <Buttons
           type="button"
           onClick={toggleMasterTx}

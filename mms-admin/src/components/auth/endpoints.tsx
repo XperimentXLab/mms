@@ -40,6 +40,11 @@ export const logout = async () => {
 }
 
 
+export const getUsername = async () => {
+  const response = await api.get('/user_username/')
+  return response.data
+}
+
 export const userDetails = async () => {
   const response = await api.get('/user_details/')
   return response.data
@@ -219,5 +224,11 @@ export const getAllCommissionTX = async () => {
 
 export const getAllAssetTX = async () => {
   const response = await api.get('/all_asset_tx/')
+  return response.data
+}
+
+
+export const getInfoDashboard = async () => {
+  const response = await api.get('/get_info_dashboard/')
   return response.data
 }

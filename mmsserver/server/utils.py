@@ -675,7 +675,7 @@ class ProfitService:
         return txn
 
     @staticmethod
-    def convert_to_master_point(user, amount, reference="", description=""):
+    def convert_to_master_point(user, amount, reference=""):
         """Convert Profit Point to Master Point (must be multiple of 10)"""
 
         if amount % 10 != 0:
@@ -698,7 +698,7 @@ class ProfitService:
                 target_point_type='MASTER',
                 amount=amount,
                 converted_amount=amount,
-                description=description,
+                description=f"Convert Profit Point to Register Point: {amount}",
                 reference=reference
             )
         return wallet
@@ -808,7 +808,7 @@ class CommissionService:
 
 
     @staticmethod
-    def convert_to_master_point(user, amount, reference="", description=""):
+    def convert_to_master_point(user, amount, reference=""):
         """Convert Commission Point to Master Point (must be multiple of 10)"""
         wallet = Wallet.objects.get(user=user)
         commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
@@ -840,7 +840,7 @@ class CommissionService:
                 target_point_type='MASTER',
                 amount=amount,
                 converted_amount=amount,
-                description=description,
+                description=f"Convert Commission Point to Register Point: {amount}",
                 reference=reference
             )
         return wallet

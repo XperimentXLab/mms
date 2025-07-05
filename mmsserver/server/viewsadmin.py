@@ -11,6 +11,9 @@ from rest_framework.response import Response
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.tokens import default_token_generator
+from django.db.models import Sum
+from django.db.models.functions import TruncDate
+
 
 
 @api_view(['POST'])
@@ -651,3 +654,57 @@ def process_verification(request):
   except Exception as e:
     return Response({'error': str(e)}, status=500)
 
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_info_dashboard(request):
+  user = request.user
+
+  try:
+    if user.is_staff:
+
+      total_asset_amount = Asset.objects.aggregate(
+        total=models.Sum('amount'))['total'] or 0
+      
+      total_profit_balance = Wallet.objects.aggregate(
+        total=models.Sum('profit_point_balance'))['total'] or 0
+      
+      total_convert_amount = Transaction.objects.filter(transaction_type='CONVERT').aggregate(
+        total=models.Sum('amount'))['total'] or 0
+      
+      daily_profits = (
+        Transaction.objects
+        .filter(transaction_type='DISTRIBUTION')
+        .annotate(day=TruncDate('created_at'))  # Extract just the date part
+        .values('day')  # Group by day
+        .annotate(total=Sum('amount'))  # Sum amounts per day
+        .order_by('day')
+      )
+      #<QuerySet [
+      #  {'day': datetime.date(2024, 5, 1), 'total': 1000},
+      #  {'day': datetime.date(2024, 5, 2), 'total': 1500},
+      #  ...
+      #]>
+      
+      total_withdraw_amount = Transaction.objects.filter(transaction_type__in=['WITHDRAWAL']).aggregate(
+        total=models.Sum('amount'))['total'] or 0
+      
+      #total_deposit =
+      #total_gain = 
+      
+      total_user = User.objects.count()
+
+      return Response({
+        'total_asset_amount': total_asset_amount, 
+        'total_profit_balance': total_profit_balance,
+        'total_convert_amount': total_convert_amount,
+        'daily_profits': list(daily_profits),
+        'total_withdraw_amount': total_withdraw_amount,
+        #'total_deposit' : total_deposit,
+        #'total_gain': total_gain,
+        'total_user': total_user,
+      }, status=200)
+    else: 
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)

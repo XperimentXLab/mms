@@ -89,8 +89,22 @@ def protected_view(request):
 @permission_classes([IsAuthenticated])
 def get_user(request):
   user = request.user
-  serializer = UserSerializer(user)
-  return Response(serializer.data)
+  try:
+    serializer = UserSerializer(user)
+    return Response(serializer.data, status=200)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_username(request):
+  user = request.user
+  try:
+    user = User.objects.get(id=user.id)
+    username = user.username
+    return Response(username, status=200)
+  except User.DoesNotExist:
+    return Response({'error': 'User not found'}, status=404)
 
 
 @api_view(['POST'])
@@ -519,7 +533,6 @@ def withdraw_profit(request):
 def convert_profit_to_master(request):
   user = request.user
   amount = request.data.get('amount', '0.00')
-  description = request.data.get('description', f"Convert Profit Point to Register Point : {amount}")
   reference = request.data.get('reference', '')
 
   if not amount:
@@ -533,7 +546,6 @@ def convert_profit_to_master(request):
     result = ProfitService.convert_to_master_point(
       user,
       amount,
-      description,
       reference
     )
     serializer = WalletSerializer(result)
@@ -581,7 +593,6 @@ def withdraw_commission(request):
 def convert_commission_to_master(request):
   user = request.user
   amount = request.data.get('amount', '0.00')
-  description = request.data.get('description', f"Convert Commission Point to Register Point: {amount}")
   reference = request.data.get('reference', '')
 
   if not amount:
@@ -595,7 +606,6 @@ def convert_commission_to_master(request):
     result = CommissionService.convert_to_master_point(
       user,
       amount,
-      description,
       reference
     )
     serializer = WalletSerializer(result)

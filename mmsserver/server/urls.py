@@ -17,6 +17,7 @@ urlpatterns = [
 
   #get details
   path('user_details/', get_user, name='user_details'),
+  path('user_username/', get_username, name='user_username'),
   path('user_network/', get_user_network, name='user_network'),
   path('user_wallet/', get_wallet, name='user_wallet'),
   path('user_asset/', get_asset, name='user_asset'),
@@ -63,6 +64,7 @@ urlpatterns = [
   path('get_yearly_profit_total/', get_yearly_profit_total, name='get_yearly_profit_total'),
   path('setup_user/', setup_user, name='setup_user'),
   path('get_pending_transaction/', get_pending_transaction, name='get_pending_transaction'),
+  path('get_info_dashboard/', get_info_dashboard, name='get_info_dashboard'),
 
 
   #admin - functionalities

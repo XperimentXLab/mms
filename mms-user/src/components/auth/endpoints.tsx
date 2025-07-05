@@ -17,11 +17,11 @@ interface User {
   postcode?: string | undefined;
   country?: string | undefined;
   walletAddress?: string | undefined;
-  bineficiaryName?: string | undefined;
-  bineficiaryIc?: string | undefined;
-  bineficiaryRelationship?: string | undefined;
-  bineficiaryEmail?: string | undefined;
-  bineficiaryPhone?: string | undefined;
+  beneficiaryName?: string | undefined;
+  beneficiaryIc?: string | undefined;
+  beneficiaryRelationship?: string | undefined;
+  beneficiaryEmail?: string | undefined;
+  beneficiaryPhone?: string | undefined;
   verificationStatus?: string | undefined;
   ic_document_url?: string | undefined
 }
@@ -105,6 +105,11 @@ export const userDetails = async () => {
   return response.data
 }
 
+export const getUsername = async () => {
+  const response = await api.get('/user_username/')
+  return response.data
+}
+
 export const userNetwork = async () => {
   const response = await api.get(`/user_network/`)
   return response.data
@@ -119,11 +124,11 @@ export const updateUserDetails = async (userData: Partial<User>) => {
     postcode,
     country,
     walletAddress,
-    bineficiaryName,
-    bineficiaryIc,
-    bineficiaryRelationship,
-    bineficiaryEmail,
-    bineficiaryPhone, 
+    beneficiaryName,
+    beneficiaryIc,
+    beneficiaryRelationship,
+    beneficiaryEmail,
+    beneficiaryPhone, 
     verificationStatus,
     ic_document_url,
    } = userData
@@ -134,11 +139,11 @@ export const updateUserDetails = async (userData: Partial<User>) => {
     address_postcode: postcode,
     address_country: country,
     wallet_address: walletAddress,
-    beneficiary_name: bineficiaryName,
-    beneficiary_ic: bineficiaryIc,
-    beneficiary_relationship: bineficiaryRelationship,
-    beneficiary_email: bineficiaryEmail,
-    beneficiary_phone: bineficiaryPhone,
+    beneficiary_name: beneficiaryName,
+    beneficiary_ic: beneficiaryIc,
+    beneficiary_relationship: beneficiaryRelationship,
+    beneficiary_email: beneficiaryEmail,
+    beneficiary_phone: beneficiaryPhone,
     verification_status: verificationStatus,
     ic_document_url
   })

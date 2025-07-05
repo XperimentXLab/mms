@@ -21,12 +21,12 @@ const Profile = () => {
   const [country, setCountry] = useState<string>('')
   const [countryList, setCountryList] = useState<CountryType[]>([])
 
-  const [bineficiaryName, setBeneficiaryName] = useState<string>('')
-  const [bineficiaryIc, setBeneficiaryIc] = useState<string>('')
-  const [bineficiaryRelationship, setBeneficiaryRelationship] = useState<string>('')
-  const bineficiaryRelationshipList = ['Father', 'Mother', 'Spouse', 'Child', 'Sibling']
-  const [bineficiaryEmail, setBeneficiaryEmail] = useState<string>('')
-  const [bineficiaryPhone, setBeneficiaryPhone] = useState<string>('')
+  const [beneficiaryName, setBeneficiaryName] = useState<string>('')
+  const [beneficiaryIc, setBeneficiaryIc] = useState<string>('')
+  const [beneficiaryRelationship, setBeneficiaryRelationship] = useState<string>('')
+  const beneficiaryRelationshipList = ['Father', 'Mother', 'Spouse', 'Child', 'Sibling']
+  const [beneficiaryEmail, setBeneficiaryEmail] = useState<string>('')
+  const [beneficiaryPhone, setBeneficiaryPhone] = useState<string>('')
 
   const [verificationStatus, setVerificationStatus] = useState<string>('REQUIRES_ACTION')
   const [verificationStatusDisplay, setVerificationStatusDisplay] = useState<string>('')
@@ -38,11 +38,11 @@ const Profile = () => {
   const [editCity, setEditCity] = useState<string>('')
   const [editPostcode, setEditPostcode] = useState<string>('')
   const [editCountry, setEditCountry] = useState<string>('')
-  const [editBineficiaryName, setEditBeneficiaryName] = useState<string>('')
-  const [editBineficiaryIc, setEditBeneficiaryIc] = useState<string>('')
-  const [editBineficiaryRelationship, setEditBeneficiaryRelationship] = useState<string>('')
-  const [editBineficiaryEmail, setEditBeneficiaryEmail] = useState<string>('')
-  const [editBineficiaryPhone, setEditBeneficiaryPhone] = useState<string>('')
+  const [editBeneficiaryName, setEditBeneficiaryName] = useState<string>('')
+  const [editBeneficiaryIc, setEditBeneficiaryIc] = useState<string>('')
+  const [editBeneficiaryRelationship, setEditBeneficiaryRelationship] = useState<string>('')
+  const [editBeneficiaryEmail, setEditBeneficiaryEmail] = useState<string>('')
+  const [editBeneficiaryPhone, setEditBeneficiaryPhone] = useState<string>('')
 
   const [oldPassword, setOldPassword] = useState<string>('')
   const [newPassword, setNewPassword] = useState<string>('')
@@ -147,11 +147,11 @@ const Profile = () => {
     try {
       setLoading(true)
       await updateUserDetails({
-        bineficiaryName: editBineficiaryName,
-        bineficiaryRelationship: editBineficiaryRelationship,
-        bineficiaryIc: editBineficiaryIc,
-        bineficiaryEmail: editBineficiaryEmail,
-        bineficiaryPhone: editBineficiaryPhone,
+        beneficiaryName: editBeneficiaryName,
+        beneficiaryRelationship: editBeneficiaryRelationship,
+        beneficiaryIc: editBeneficiaryIc,
+        beneficiaryEmail: editBeneficiaryEmail,
+        beneficiaryPhone: editBeneficiaryPhone,
       })
       alert('Beneficiary information updated successfully')
     } catch (error: any) {
@@ -289,24 +289,24 @@ const Profile = () => {
           <h1 className="font-bold text-lg underline">Beneficiary Information</h1>
 
           <Inputss type="text" label='BENEFCIARY NAME'
-            placeholder={bineficiaryName ? bineficiaryName : "Enter beneficiary name"}
+            placeholder={beneficiaryName ? beneficiaryName : "Enter beneficiary name"}
             onChange={e => setEditBeneficiaryName(e.target.value)}
-            value={editBineficiaryName}
+            value={editBeneficiaryName}
           />
           <Inputss type="text" label='BENEFCIARY I/C'
-            placeholder={bineficiaryIc ? bineficiaryIc : "Enter beneficiary I/C"}
+            placeholder={beneficiaryIc ? beneficiaryIc : "Enter beneficiary I/C"}
             onChange={e => setEditBeneficiaryIc(e.target.value)}
-            value={editBineficiaryIc}  
+            value={editBeneficiaryIc}  
           />
 
           <div className="grid grid-row-2 gap-2">
             <label className="font-semibold">BENEFCIARY RELATIONSHIP</label>
             <select className="border py-1 px-2 rounded-md"
               onChange={e => setEditBeneficiaryRelationship(e.target.value)}
-              value={editBineficiaryRelationship}
+              value={editBeneficiaryRelationship}
             >
-              <option value={bineficiaryRelationship ? bineficiaryRelationship : ''}>Select your relationship</option>
-              {bineficiaryRelationshipList.map((relName) => (
+              <option value={beneficiaryRelationship ? beneficiaryRelationship : ''}>Select your relationship</option>
+              {beneficiaryRelationshipList.map((relName) => (
                 <option value={relName} key={relName} >
                   {relName}
                 </option>
@@ -315,14 +315,14 @@ const Profile = () => {
           </div>
 
           <Inputss type="email" label='BENEFCIARY EMAIL'
-            placeholder={bineficiaryEmail ? bineficiaryEmail : "Enter beneficiary email"}
+            placeholder={beneficiaryEmail ? beneficiaryEmail : "Enter beneficiary email"}
             onChange={e => setEditBeneficiaryEmail(e.target.value)}
-            value={editBineficiaryEmail}  
+            value={editBeneficiaryEmail}  
           />
           <Inputss type="text" label='BENEFCIARY PHONE'
-            placeholder={bineficiaryPhone ? bineficiaryPhone : "Enter beneficiary phone"}
+            placeholder={beneficiaryPhone ? beneficiaryPhone : "Enter beneficiary phone"}
             onChange={e => setEditBeneficiaryPhone(e.target.value)}
-            value={editBineficiaryPhone}  
+            value={editBeneficiaryPhone}  
           />
 
           <Buttons type="submit">Save</Buttons>

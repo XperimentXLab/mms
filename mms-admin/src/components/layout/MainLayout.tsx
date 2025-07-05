@@ -4,7 +4,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { NavLinkss } from "../props/theLinks";
 import Loading from "../props/Loading";
 import Buttons from "../props/Buttons";
-import { logout, userDetails } from "../auth/endpoints";
+import { logout, getUsername } from "../auth/endpoints";
 
 
 const MainLayout = () => {
@@ -60,8 +60,8 @@ const MainLayout = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await userDetails()
-        setUsername(response.username)
+        const response = await getUsername()
+        setUsername(response)
       } catch (error) {
         console.error('Error fetching user details:', error)
       }
