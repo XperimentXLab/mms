@@ -77,4 +77,6 @@ urlpatterns = [
   path('update_profit_sharing/', update_profit_sharing, name='update_profit_sharing'),
   path('reset_all_wallet_balances/', reset_all_wallet_balances, name='reset_all_wallet_balances'),
   path('process_verification/', process_verification, name='process_verification'),
+  path('manage_performance/', manage_performance, name='manage_performance'),
+
 ]

@@ -57,8 +57,8 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
       {
         label: `Total Profit - ${totalProfit7Days}`,
         data: data.map(item => item.total),
-        backgroundColor: 'rgba(75, 192, 192, 1)',
-        borderColor: 'blue',
+        backgroundColor: 'lightgrey',
+        borderColor: 'white',
         borderWidth: 2,
         tension: 0.3,
       },
@@ -77,7 +77,10 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
       title: {
         display: true,
         text: 'Weekly Profits',
-        color: 'white'
+        color: 'white',
+        font: {
+          size: 15,
+        },
       },
       tooltip: {
         callbacks: {
@@ -113,7 +116,7 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
   }
 
   return (
-    <div className="flex justify-center w-full m-3 shadow shadow-neutral-200 rounded-2xl bg-transparent">
+    <div className="flex justify-center w-full m-3 shadow shadow-neutral-200 rounded-2xl bg-transparent p-3">
       <Line data={chartData} options={options} />
     </div>
   );
@@ -129,9 +132,9 @@ const Dashboard = () => {
   const [totalProfit, setTotalProfit] = useState<number>(0)
   const [totalUser, setTotalUser] = useState<number>(0)
   const [totalWithdraw, setTotalWithdraw] = useState<number>(0)
+  const [totalDeposit, setTotalDeposit] = useState<number>(0)
+  const [totalGain, setTotalGain] = useState<number>(0)
   const [dailyProfitByDay, setDailyProfitsByDay] = useState<DailyProfitByDayProps[]>([])
-
-
 
   useEffect(()=> {
     const fetchData = async () => {
@@ -145,6 +148,8 @@ const Dashboard = () => {
         setTotalUser(resInfoDash.total_user)
         setTotalWithdraw(resInfoDash.total_withdraw_amount)
         setDailyProfitsByDay(resInfoDash.daily_profits)
+        setTotalDeposit(resInfoDash.total_deposit)
+        setTotalGain(resInfoDash.total_gain)
       } catch (error: any) {
         if (error.response && error.response.status === 400 ) {
           setErrorMessage(error.response.data.error)
@@ -165,11 +170,13 @@ const Dashboard = () => {
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
       <div className="flex flex-col md:flex-row gap-2 justify-center">
-        <FixedText label="Total Asset" text={totalAsset}/>
-        <FixedText label="Total Profit" text={totalProfit} />
-        <FixedText label="Total Convert" text={totalConvert}/>
         <FixedText label="Total User" text={totalUser} />
+        <FixedText label="Total Asset" text={totalAsset}/>
+        <FixedText label="Total Profit & Commission" text={totalProfit} />
+        <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
         <FixedText label="Total Withdraw" text={totalWithdraw} />
+        <FixedText label="Total Deposit" text={totalDeposit} />
+        <FixedText label="Total Gain" text={totalGain} />
       </div>
 
       <div className="flex justify-center">

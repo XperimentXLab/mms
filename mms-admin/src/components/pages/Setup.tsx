@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Inputss } from "../props/Formss"
+import { Inputss, InputwithVal } from "../props/Formss"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
 import { setupUser } from "../auth/endpoints"
@@ -14,6 +14,12 @@ const Setup = () => {
   const [profitAmount, setProfitAmount] = useState<string>('')
   const [affiliateAmount, setAffiliateAmount] = useState<string>('')
 
+  //type Mode = 'plus' | 'minus'
+  //const [mode, setMode] = useState<Mode>('plus')
+  //const [totalDeposit, setTotalDeposit] = useState<number>(0)
+  //const [totalGain, setTotalGain] = useState<number>(0)
+  const [editTotalDeposit, setEditTotalDeposit] = useState<number>(0)
+  const [editTotalGain, setEditTotalGain] = useState<number>(0)
 
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
@@ -41,6 +47,9 @@ const Setup = () => {
     }
   }
 
+
+
+
   /*
   const handleResetAllWallet = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -60,6 +69,31 @@ const Setup = () => {
     <div className="flex flex-col items-center justify-center m-5 gap-3">
 
       {loading && <Loading />}
+
+      <div className="flex flex-col justify-center gap-2 bg-white p-3 w-full rounded-xl">
+
+          <InputwithVal 
+            type="number"
+            label="Total Deposit"
+            placeholder="Enter amount"
+            onChange={e => setEditTotalDeposit(Number(e.target.value))}
+            value={String(editTotalDeposit)}
+            //currentValue={totalDeposit}
+            noNeedPercent={true}
+          />
+          <InputwithVal 
+            type="number"
+            label="Total Gain"
+            placeholder="Enter amount"
+            onChange={e => setEditTotalGain(Number(e.target.value))}
+            value={String(editTotalGain)}
+            //currentValue={totalGain}
+            noNeedPercent={true}
+          />
+          <Buttons type="button">Add</Buttons>
+          <Buttons type="button">Minus</Buttons>
+
+      </div>
 
       <form onSubmit={toggleSetupUser} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">        
         <span className="font-semibold">Setup User Master Wallet</span>

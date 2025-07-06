@@ -286,11 +286,11 @@ class Asset(models.Model):
 
   @classmethod
   def get_or_create_asset(cls, user):
-      asset, created = cls.objects.get_or_create(
-          user=user,
-          defaults={'amount': Decimal('0.00')}  # Default value for new records
-      )
-      return asset
+    asset, created = cls.objects.get_or_create(
+        user=user,
+        defaults={'amount': Decimal('0.00')}  # Default value for new records
+    )
+    return asset
 
   class Meta:
     verbose_name = "Asset"
@@ -427,3 +427,30 @@ class DepositLock(models.Model):
   class Meta:
     verbose_name = "Deposit Lock"
     verbose_name_plural = "Deposit Locks"
+
+
+class SingletonManager(models.Manager):
+  def get_instance(self):
+    obj, created = self.get_or_create(pk=1)
+    return obj
+
+class Performance(models.Model):
+  total_deposit = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'))
+  total_gain = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'))
+  last_updated = models.DateTimeField(auto_now=True)
+
+  objects = SingletonManager() # access with .. performance = Performance.objects.get_instance()
+
+  def save(self, *args, **kwargs):
+    self.pk = 1  # Always use primary key 1
+    super().save(*args, **kwargs)
+
+  def delete(self, *args, **kwargs):
+    pass  # Prevent deletion
+
+  class Meta:
+    verbose_name = "Performance"
+    verbose_name_plural = "Performances"
+
+  def __str__(self):
+    return f'Performance -- Total Deposit: {self.total_deposit}, Total Gain: {self.total_gain}'

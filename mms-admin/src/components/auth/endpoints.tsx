@@ -270,3 +270,24 @@ export const getInfoDashboard = async () => {
   const response = await api.get('/get_info_dashboard/')
   return response.data
 }
+
+
+export const getPerformance = async () => {
+  const repsonse = await api.get('/manage_performance/')
+  return repsonse.data
+}
+
+interface PerformanceData {
+  totalDeposit: number
+  totalGain: number
+  mode: string
+}
+export const putPerformance = async (data: PerformanceData) => {
+  const { totalDeposit, totalGain, mode } = data
+  const response = await api.put('/manage_performance/', {
+    total_deposit: totalDeposit,
+    total_gain: totalGain,
+    mode
+  })
+  return response.data
+}

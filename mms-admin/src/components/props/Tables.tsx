@@ -121,7 +121,7 @@ export const Tables = ({
   });
 
   return (
-    <div className="w-full overflow-x-auto flex flex-col gap-2 bg-white rounded-xl p-2">
+    <div className="w-full overflow-x-auto flex flex-col gap-2 bg-white rounded-xl">
 
       {enableFilters && (
           <input

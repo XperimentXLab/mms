@@ -252,7 +252,7 @@ const Verifications = () => {
       {loading && <Loading />}
       <span className="text-white">Verification</span>
 
-      <div className="flex flex-col gap-1 ">
+      <div className="flex flex-col gap-1">
         {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
         <Tables columns={columns} data={data}
           enableFilters={true}

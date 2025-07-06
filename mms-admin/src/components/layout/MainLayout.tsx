@@ -96,7 +96,7 @@ const MainLayout = () => {
     <div className="flex flex-col relative">
 
       <div className="fixed top-0 left-0 right-0 z-20">
-        <header className="flex justify-between items-center border border-black py-2 px-3 bg-linear-to-r from-red-600 to-rose-300 bg-linear">
+        <header className="flex justify-between items-center border border-black py-2 px-3 bg-linear-to-r from-blue-800 to-red-500 bg-linear">
           <GiHamburgerMenu className="cursor-pointer" onClick={toggleOpen}/>
           <div className="flex items-center gap-4">
 

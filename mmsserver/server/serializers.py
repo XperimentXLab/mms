@@ -369,3 +369,16 @@ class DepositLockSerializer(serializers.ModelSerializer):
         return obj.deposit.amount
     return None
     
+class PerformanceSerializer(serializers.ModelSerializer):
+
+  total_deposit = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  total_gain = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+
+  class Meta:
+    model = Performance
+    fields = [
+      'total_deposit',
+      'total_gain',
+      'last_updated'
+    ]
+    read_only_fields = [ 'last_updated' ]

@@ -48,7 +48,8 @@ def login_admin(request):
         'refresh': str(refresh),
       })
     else:
-      return Response({'error': 'Permission denied'}, status=403)
+      logger.error(f"Error logging in for {username}")
+      return Response({'error': 'Invalid credentials'}, status=400)
   except Exception as e:
     logger.error(f"Error logging in for {username}")
     return Response({'error': f'Invalid credentials or {str(e)}' }, status=400)
@@ -667,17 +668,13 @@ def get_info_dashboard(request):
         .annotate(total=Sum('amount'))  # Sum amounts per day
         .order_by('day')
       )
-      #<QuerySet [
-      #  {'day': datetime.date(2024, 5, 1), 'total': 1000},
-      #  {'day': datetime.date(2024, 5, 2), 'total': 1500},
-      #  ...
-      #]>
       
       total_withdraw_amount = Transaction.objects.filter(transaction_type__in=['WITHDRAWAL']).aggregate(
         total=models.Sum('amount'))['total'] or 0
       
-      #total_deposit =
-      #total_gain = 
+      performance = Performance.objects.get_instance()
+      total_deposit = performance.total_deposit
+      total_gain = performance.total_gain
       
       total_user = User.objects.count()
 
@@ -687,11 +684,64 @@ def get_info_dashboard(request):
         'total_convert_amount': total_convert_amount,
         'daily_profits': list(daily_profits),
         'total_withdraw_amount': total_withdraw_amount,
-        #'total_deposit' : total_deposit,
-        #'total_gain': total_gain,
+        'total_deposit' : total_deposit,
+        'total_gain': total_gain,
         'total_user': total_user,
       }, status=200)
     else: 
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+  
+@api_view(['GET', 'PUT']) 
+@permission_classes([IsAuthenticated])
+def manage_performance(request):
+  user = request.user
+  total_deposit = request.data.get('total_deposit')
+  total_gain = request.data.get('total_gain')
+  mode = request.data.get('mode')
+
+  try:
+    if user.is_staff:
+      performance = Performance.objects.get_instance()
+
+      if request.method == 'GET':
+        serializer = PerformanceSerializer(performance)
+        return Response(serializer.data, status=200)
+      
+      elif request.method == 'PUT':
+
+        if mode == 'minus':
+          if total_deposit:
+            performance.total_deposit -= Decimal(total_deposit)
+          if total_gain:
+            performance.total_gain -= Decimal(total_gain)
+          performance.save()
+          serializer = PerformanceSerializer(performance)
+          if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+          else:
+            return Response({'error': serializer.errors}, status=400)
+          
+        elif mode == 'plus':
+          if total_deposit:
+            performance.total_deposit += Decimal(total_deposit)
+          if total_gain:
+            performance.total_gain += Decimal(total_gain)
+          performance.save()
+          serializer = PerformanceSerializer(performance)
+          if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=200)
+          else:
+            return Response({'error': serializer.errors}, status=400)
+          
+        else:
+          return Response({'error': 'Invalid mode'}, status=401)
+      else:
+        return Response({'error': 'Method not allowed'}, status=405)
+    else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
