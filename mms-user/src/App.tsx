@@ -16,15 +16,14 @@ import WalletLayout from "./components/layout/WalletLayout"
 import AssetLayout from "./components/layout/AssetLayout"
 import { AssetStatement, WithdrawalAssetStatement } from "./components/pages/AssetStatement"
 import { CommissionStatement, ConvertStatement, ProfitStatement, TransferStatement, WithdrawalWalletStatement } from "./components/pages/WalletStatement"
-*/
 import NotFound from "./components/pages/NotFound"
+*/
 import Updating from "./components/auth/Updating"
 
 function App() {
 
   const router = createBrowserRouter(createRoutesFromElements(
     <Route>
-      <Route path="/" element={<Updating />} />
       {/*
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<MainLayout />} >
@@ -80,10 +79,12 @@ function App() {
       <Route 
         path="/reset-password-confirm/:uidb64/:token" 
         element={<ResetPasswordConfirm />} 
-      />*/}
+      />
       
+      <Route path="*" element={<NotFound />} />*/}
 
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={<Updating />} />
+      
     </Route>
   ))
 
