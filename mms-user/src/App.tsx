@@ -1,5 +1,5 @@
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom"
-/*
+
 import MainLayout from "./components/layout/MainLayout"
 import Home from "./components/pages/Home"
 import Register from "./components/auth/Register"
@@ -17,14 +17,14 @@ import AssetLayout from "./components/layout/AssetLayout"
 import { AssetStatement, WithdrawalAssetStatement } from "./components/pages/AssetStatement"
 import { CommissionStatement, ConvertStatement, ProfitStatement, TransferStatement, WithdrawalWalletStatement } from "./components/pages/WalletStatement"
 import NotFound from "./components/pages/NotFound"
-*/
-import Updating from "./components/auth/Updating"
+
+//import Updating from "./components/auth/Updating"
 
 function App() {
 
   const router = createBrowserRouter(createRoutesFromElements(
     <Route>
-      {/*
+      
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<MainLayout />} >
           <Route index element={<Home />} />
@@ -81,9 +81,9 @@ function App() {
         element={<ResetPasswordConfirm />} 
       />
       
-      <Route path="*" element={<NotFound />} />*/}
+      <Route path="*" element={<NotFound />} />
 
-      <Route path="*" element={<Updating />} />
+      {/*<Route path="*" element={<Updating />} />*/}
       
     </Route>
   ))

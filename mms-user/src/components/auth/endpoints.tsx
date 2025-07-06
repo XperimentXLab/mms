@@ -1,5 +1,5 @@
 
-import api from "./api";
+import api, { generateDeviceFingerprint } from "./api";
 
 
 interface User {
@@ -38,6 +38,11 @@ interface LoginDataRes {
   //recaptchaToken: string
 }
 
+type AuthTokens = {
+  access: string
+  refresh: string
+}
+
 interface PasswordResetConfirmDataRes {
   uidb64?: string
   token?: string
@@ -72,23 +77,57 @@ export const register = async (userData: User) => {
   return response.data
 }
 
-export const login = async (loginData: LoginDataRes) => {
-  const { username, password, /*recaptchaToken*/ } = loginData
-  const response = await api.post('/login/', {
-    username, password, //recaptchaToken
-  })
-  return response.data
+export const login = async (loginData: LoginDataRes): Promise<AuthTokens> => {
+  const fingerprint = generateDeviceFingerprint?.()
+
+  const headers: Record<string, string> = {
+    'X-Requested-With': 'XMLHttpRequest',
+  };
+
+  if (fingerprint) {
+    headers['X-Device-Fingerprint'] = fingerprint;
+  }
+
+  try {
+    const { username, password, /*recaptchaToken*/ } = loginData
+    const response = await api.post('/login/', {
+      username, password, //recaptchaToken
+    }, { headers })
+
+    const { access, refresh } = response.data
+    sessionStorage.setItem('access_token', access)
+    sessionStorage.setItem('refresh_token', refresh)
+    
+    return { access, refresh }
+  } catch (e) {
+    console.error(e)
+    throw e
+  }
 }
 
-export const logout = async () => {
-  const response = await api.post('/logout/')
-  return response.data
+export const logout = async (): Promise<void> => {
+  try {  
+    const accessToken = sessionStorage.getItem('access_token');
+    const response = await api.post('/logout/',
+      {},
+      { 
+        headers: { 
+          Authorization: `Bearer ${accessToken}` 
+        } 
+      }
+    )
+
+    sessionStorage.removeItem('access_token')
+    sessionStorage.removeItem('refresh_token')
+    api.defaults.headers.common['Authorization'] = ''
+    return response.data
+
+  } catch (e) {
+    console.error(e)
+    throw e
+  }
 }
 
-export const protectedView = async () => {
-  const response = await api.get('/protected/')
-  return response.data
-}
 
 export const updatePassword = async (passwordData: updatePassData) => {
   const { oldPassword, newPassword, newConfirmPassword} = passwordData
