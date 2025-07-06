@@ -5,6 +5,7 @@ import { NavLinkss } from "../props/theLinks";
 import Loading from "../props/Loading";
 import Buttons from "../props/Buttons";
 import { logout, getUsername } from "../auth/endpoints";
+import { useAutoLogout } from "../auth/api";
 
 
 const MainLayout = () => {
@@ -57,6 +58,9 @@ const MainLayout = () => {
 
 
   const [username, setUsername] = useState<string>('')
+  
+  useAutoLogout();
+
   useEffect(() => {
     const fetchData = async () => {
       try {

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
+from corsheaders.defaults import default_headers
 import dj_database_url
 import os
 
@@ -51,6 +52,9 @@ USE_TZ = True
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
+PRODUCTION_API_URL = os.getenv('PRODUCTION_API_URL', 'http://127.0.0.1:8000/')
+
+
 #Supabase
 SUPABASE_JWT_SECRET = os.getenv('SUPABASE_JWT_SECRET')
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
@@ -64,14 +68,19 @@ CORS_EXPOSE_HEADERS = ['Set-Cookie']
 #CSRF Configuration
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS').split(',')
 SAME_DOMAIN = env_to_bool('SAME_DOMAIN', False)
-_samesite_env_val = os.environ.get('CSRF_COOKIE_SAMESITE', 'Lax') 
-CSRF_COOKIE_SAMESITE = None if _samesite_env_val.lower() == 'none' else _samesite_env_val
+#CSRF_COOKIE_SAMESITE = None if _samesite_env_val.lower() == 'none' else _samesite_env_val
 SECURE_SSL_REDIRECT = env_to_bool('SECURE_SSL_REDIRECT', False)
-CSRF_COOKIE_SECURE = env_to_bool('CSRF_COOKIE_SECURE', False)
-CSRF_COOKIE_NAME = os.environ.get('CSRF_COOKIE_NAME', 'csrftoken')
+#CSRF_COOKIE_SECURE = env_to_bool('CSRF_COOKIE_SECURE', False)
+#CSRF_COOKIE_NAME = os.environ.get('CSRF_COOKIE_NAME', 'csrftoken')
 SESSION_COOKIE_SECURE = env_to_bool('SESSION_COOKIE_SECURE', False)
 SESSION_COOKIE_SAMESITE = env_to_bool('SESSION_COOKIE_SAMESITE', False)
-CSRF_COOKIE_HTTPONLY = env_to_bool('CSRF_COOKIE_HTTPONLY', False) # Allow the frontend to access the token
+#CSRF_COOKIE_HTTPONLY = env_to_bool('CSRF_COOKIE_HTTPONLY', False) # Allow the frontend to access the token
+
+# Security Headers
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+REFERRER_POLICY = 'same-origin'
 
 # Application definition
 
@@ -99,6 +108,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'mmsserver.middleware.security_headers.SecurityHeadersMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -106,25 +116,38 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'server.authentication.JWTCookieAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
    ]
 }
 
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'x-device-fingerprint',
+]
+
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=env_to_int('ACCESS_TOKEN_LIFETIME_MINUTES', 60)),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=env_to_int('ACCESS_TOKEN_LIFETIME_MINUTES', 30)),
     'REFRESH_TOKEN_LIFETIME': timedelta(minutes=env_to_int('REFRESH_TOKEN_LIFETIME_MINUTES', 1200)),
     'ROTATE_REFRESH_TOKENS': env_to_bool('ROTATE_REFRESH_TOKENS', True),
     'BLACKLIST_AFTER_ROTATION': env_to_bool('BLACKLIST_AFTER_ROTATION', True),
-    'AUTH_COOKIE_SECURE': env_to_bool('AUTH_COOKIE_SECURE', False),
-    'AUTH_COOKIE_SAMESITE': os.environ.get('AUTH_COOKIE_SAMESITE', 'Lax'),
-    'AUTH_COOKIE_PATH': '/',
-    'AUTH_COOKIE_HTTP_ONLY': env_to_bool('AUTH_COOKIE_HTTP_ONLY', True),
-    'AUTH_COOKIE_ACCESS': os.environ.get('AUTH_COOKIE_ACCESS', 'access_token'),
-    'AUTH_COOKIE_REFRESH': os.environ.get('AUTH_COOKIE_REFRESH', 'refresh_token'),
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': os.environ.get('SECRET_KEY'), 
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+
+    #Cookie Configuration
+#    'AUTH_COOKIE_SECURE': env_to_bool('AUTH_COOKIE_SECURE', False),
+#    'AUTH_COOKIE_SAMESITE': os.environ.get('AUTH_COOKIE_SAMESITE', 'Lax'),
+#    'AUTH_COOKIE_PATH': '/',
+#    'AUTH_COOKIE_HTTP_ONLY': env_to_bool('AUTH_COOKIE_HTTP_ONLY', True),
+#    'AUTH_COOKIE_ACCESS': os.environ.get('AUTH_COOKIE_ACCESS', 'access_token'),
+#    'AUTH_COOKIE_REFRESH': os.environ.get('AUTH_COOKIE_REFRESH', 'refresh_token'),
     
     #JWT Claims Configuration
-    "TOKEN_TYPE_CLAIM": "token_type",
-    "JTI_CLAIM": "jti",
+#    "JTI_CLAIM": "jti",
 }
 
 ROOT_URLCONF = 'mmsserver.urls'
@@ -219,4 +242,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Database-backed JWT storage
 AUTH_USER_MODEL = 'server.User'
+JWT_STORAGE_MODEL = 'server.UserJWT'

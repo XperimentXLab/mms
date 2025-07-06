@@ -4,13 +4,13 @@ from .utils import *
 from django.conf import settings
 import requests
 from rest_framework.authentication import authenticate
-from rest_framework.decorators import api_view, permission_classes, parser_classes
+from rest_framework.decorators import api_view, permission_classes, APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from django.db.models import Sum
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
@@ -23,64 +23,30 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def refresh_Token(request):
-  refresh_token_cookie_name = getattr(settings, 'SIMPLE_JWT', {}).get('AUTH_COOKIE_REFRESH', 'refresh_token')
-  refresh_token = request.COOKIES.get(refresh_token_cookie_name)
+class TokenVerifyView(APIView):
+  authentication_classes = [JWTAuthentication]
+  permission_classes = [IsAuthenticated]
 
-  if not refresh_token:
-    logger.warning("Refresh token cookie not found.")
-    return Response({'error': 'Refresh token cookie not found.'}, status=401)
-
-  try:
-    # Use the RefreshToken object to verify and potentially blacklist the old token
-    refresh = RefreshToken(refresh_token)
-    # Verify the token (this will raise TokenError if invalid or blacklisted)
-    refresh.verify()
-
-    # Create response and set the new access token cookie
-    response = Response({'message': 'Token refreshed successfully'})
-    access_token_cookie_name = getattr(settings, 'SIMPLE_JWT', {}).get('AUTH_COOKIE_ACCESS', 'access_token')
-    response.set_cookie(
-        key=access_token_cookie_name,
-        value=str(refresh.access_token),
-        httponly=settings.SIMPLE_JWT.get('AUTH_COOKIE_HTTP_ONLY', True), # Use .get for safety
-        secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE', not settings.DEBUG),
-        samesite=settings.SIMPLE_JWT.get('AUTH_COOKIE_SAMESITE', 'Lax'),
-        path=settings.SIMPLE_JWT.get('AUTH_COOKIE_PATH', '/')
-    )
-    # Since ROTATE_REFRESH_TOKENS is likely False in your settings now,
-    # we don't get/set a new refresh token.
-    logger.info("Token refreshed successfully via cookie.")
-    return response
-
-  except TokenError as e:
-    logger.warning(f"Token refresh failed via cookie: {e}")
-    # Clear potentially invalid cookies
-    response = Response({'error': f'Invalid or expired refresh token: {e}'}, status=401)
-    response.delete_cookie(refresh_token_cookie_name, path=settings.SIMPLE_JWT.get('AUTH_COOKIE_PATH', '/'))
-    access_token_cookie_name = getattr(settings, 'SIMPLE_JWT', {}).get('AUTH_COOKIE_ACCESS', 'access_token')
-    response.delete_cookie(access_token_cookie_name, path=settings.SIMPLE_JWT.get('AUTH_COOKIE_PATH', '/'))
-    return response
-  except Exception as e:
-    logger.error(f"Unexpected error during token refresh: {e}", exc_info=True) # Log traceback for 500s
-    return Response({'error': 'An unexpected error occurred during token refresh.'}, status=500)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def protected_view(request):
-  user = request.user
-  try:
-    if (user):
-      return Response({'message': f'Hello, {user.username}!'})
-    else:
-      return Response({'error': 'Invalid credentials'}, status=400)
-  except Exception as e:
-    return Response({'error': str(e)}, status=400)
+  def get(self, request):
+    """Simple endpoint to verify token validity"""
+    return Response({'status': 'valid'}, status=200)
   
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def refresh_token(request):
+  refresh_token = request.data.get('refresh') or request.headers.get('Authorization', '').replace('Bearer ', '')
+
+  if not refresh_token:
+    return Response({'error': 'Refresh token not provided'}, status=401)
+
+  try:
+    refresh = RefreshToken(refresh_token)
+    refresh.verify()
+    return Response({'access': str(refresh.access_token)})
+  except TokenError as e:
+    return Response({'error': f'Invalid or expired refresh token: {e}'}, status=401)
+  
 
 ############################################
 
@@ -155,26 +121,11 @@ def login(request):
     if not resultCaptcha.get("success"):
       return Response({'error': 'CAPTCHA verification failed'}, status=400)
     """
-
     refresh = RefreshToken.for_user(user)
-    response = Response({'message': 'Login successful'})
-    response.set_cookie(
-      key='access_token',
-      value=str(refresh.access_token),
-      httponly=True,
-      secure=True,
-      samesite='None',
-      path='/'
-    )
-    response.set_cookie(
-      key='refresh_token',
-      value=str(refresh),
-      httponly=True,
-      secure=True,
-      samesite='None',
-      path='/'
-    )
-    return response
+    return Response({
+      'access': str(refresh.access_token),
+      'refresh': str(refresh),
+    })
   else:
     logger.error(f"Error logging in for {username}")
     return Response({'error': 'Invalid credentials'}, status=400)

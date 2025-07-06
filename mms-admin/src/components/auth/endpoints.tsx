@@ -1,9 +1,14 @@
-import api from "./api"
+import api, { generateDeviceFingerprint } from "./api"
 
 interface LoginRes {
   username: string
   password: string
   //recaptchaToken: string
+}
+
+type AuthTokens = {
+  access: string
+  refresh: string
 }
 
 interface ProfitRes {
@@ -21,22 +26,55 @@ interface MonthlyProfitRes {
 }
 
 
-export const protectedView = async () => {
-  const response = await api.get('/protected/')
-  return response.data
+export const login = async (loginData: LoginRes): Promise<AuthTokens> => {
+  const fingerprint = generateDeviceFingerprint?.()
+
+  const headers: Record<string, string> = {
+    'X-Requested-With': 'XMLHttpRequest',
+  };
+
+  if (fingerprint) {
+    headers['X-Device-Fingerprint'] = fingerprint;
+  }
+
+  try {
+    const { username, password, /*recaptchaToken*/ } = loginData
+    const response = await api.post('/login_admin/', {
+      username, password, //recaptchaToken
+    }, { headers })
+
+    const { access, refresh } = response.data
+    sessionStorage.setItem('access_token', access)
+    sessionStorage.setItem('refresh_token', refresh)
+    
+    return { access, refresh }
+  } catch (e) {
+    console.error(e)
+    throw e
+  }
 }
 
-export const login = async (loginData: LoginRes) => {
-  const { username, password, /*recaptchaToken*/ } = loginData
-  const response = await api.post('/login_admin/', {
-    username, password, //recaptchaToken
-  })
-  return response.data
-}
+export const logout = async (): Promise<void> => {
+  try {  
+    const accessToken = sessionStorage.getItem('access_token');
+    const response = await api.post('/logout/',
+      {},
+      { 
+        headers: { 
+          Authorization: `Bearer ${accessToken}` 
+        } 
+      }
+    )
 
-export const logout = async () => {
-  const response = await api.post('/logout/')
-  return response.data
+    sessionStorage.removeItem('access_token')
+    sessionStorage.removeItem('refresh_token')
+    api.defaults.headers.common['Authorization'] = ''
+    return response.data
+
+  } catch (e) {
+    console.error(e)
+    throw e
+  }
 }
 
 

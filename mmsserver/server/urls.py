@@ -5,11 +5,11 @@ from .viewsadmin import *
 urlpatterns = [
 
   #auth
-  path('token/refresh/', refresh_Token, name='token_refresh'),
+  path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+  path('token/refresh/', refresh_token, name='token_refresh'),
   path('register/', register_user, name='register_user'),
   path('login/', login, name='login'),
   path('logout/', logout, name='logout'),
-  path('protected/', protected_view, name='protected_view'),
 
   #forgot password
   path('password_reset/', request_password_reset_email, name='password_reset'),

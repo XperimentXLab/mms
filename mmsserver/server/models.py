@@ -149,6 +149,31 @@ class User(AbstractUser):
     ordering = ['-created_at', 'referred_by', 'verification_status']
 
 
+class UserJWT(models.Model):
+    user = models.ForeignKey(
+      User,
+      on_delete=models.CASCADE,
+      related_name='jwts'
+    )
+    access_token = models.TextField()
+    refresh_token = models.TextField()
+    device_fingerprint = models.CharField(max_length=64)
+    ip_address = models.GenericIPAddressField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used = models.DateTimeField(auto_now=True)
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'device_fingerprint']),
+            models.Index(fields=['access_token']),
+            models.Index(fields=['expires_at']),
+        ]
+
+    def is_expired(self):
+        return timezone.now() > self.expires_at
+
+
 class OperationalProfit(models.Model):
   daily_profit_rate = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'), help_text='Manually update daily profit rate (e.g., enter 5.0 for 5.0%)')
   weekly_profit_rate = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'), help_text='Manually update weekly profit rate (e.g., enter 5.0 for 5.0%)')

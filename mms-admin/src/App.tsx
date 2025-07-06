@@ -10,8 +10,6 @@ import User from "./components/pages/User"
 import Verifications from "./components/pages/Verifications"
 import Transactionss from "./components/pages/Transactionss"
 
-
-
 const router = createBrowserRouter(createRoutesFromElements(
   <Route>
     <Route path="/login" element={<Login />} />

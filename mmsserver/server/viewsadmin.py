@@ -43,27 +43,14 @@ def login_admin(request):
       """
 
       refresh = RefreshToken.for_user(user)
-      response = Response({'message': 'Login successful'})
-      response.set_cookie(
-        key='access_token',
-        value=str(refresh.access_token),
-        httponly=True,
-        secure=True,
-        samesite='None',
-        path='/'
-      )
-      response.set_cookie(
-        key='refresh_token',
-        value=str(refresh),
-        httponly=True,
-        secure=True,
-        samesite='None',
-        path='/'
-      )
-      return response
+      return Response({
+        'access': str(refresh.access_token),
+        'refresh': str(refresh),
+      })
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error logging in for {username}")
     return Response({'error': f'Invalid credentials or {str(e)}' }, status=400)
 
 

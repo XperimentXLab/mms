@@ -1,66 +1,112 @@
-import axios from "axios"
+import axios, { type AxiosRequestConfig } from "axios"
 
 export const baseURL = import.meta.env.VITE_BASE_URL ?? 'http://127.0.0.1:8000/server'
 const tokenURL = `${baseURL}/token/refresh/`
 
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'; // This is the default, but good to be explicit
-axios.defaults.withCredentials = true // Include credentials (cookies) in requests
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+export const generateDeviceFingerprint = (): string => {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  
+  if (!ctx) {
+    return Math.random().toString(36).substring(2, 15);
+  }
+
+  ctx.textBaseline = 'top';
+  ctx.font = '14px Arial';
+  ctx.fillText('fingerprint', 2, 2);
+  return canvas.toDataURL().slice(-16);
+};
+
+import { useEffect } from 'react';
+
+export const useAutoLogout = () => {
+  useEffect(() => {
+    const resetTimer = () => {
+      clearTimeout((window as any).inactivityTimer);
+      (window as any).inactivityTimer = setTimeout(() => {
+        sessionStorage.clear();
+        window.location.href = '/login';
+      }, 30 * 60 * 1000); // 30 minutes
+    };
+
+    ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(event =>
+      window.addEventListener(event, resetTimer)
+    );
+
+    resetTimer();
+
+    return () => {
+      ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(event =>
+        window.removeEventListener(event, resetTimer)
+      );
+      clearTimeout((window as any).inactivityTimer);
+    };
+  }, []);
+};
+
 
 const api = axios.create({
   baseURL: baseURL,
-  withCredentials: true,
-  timeout: 5000,
+  withCredentials: false,
+  timeout: 3000,
 })
 
-// Remove the request interceptor - browser handles HttpOnly cookies automatically
+// Request interceptor for auth headers
 api.interceptors.request.use((config) => {
+  const accessToken = sessionStorage.getItem('access_token')
+  if (accessToken) {
+    config.headers = config.headers || {};
+    config.headers['Authorization'] = `Bearer ${accessToken}`;
+    config.headers['X-Device-Fingerprint'] = generateDeviceFingerprint();
+  }
   return config
 }, (error) => {
   return Promise.reject(error)
 })
 
-api.interceptors.response.use((response) => {
-  return response
-}, async (error) => {
-  const originalRequest = error.config
+api.interceptors.response.use((response) => response, async (error) => {
 
-    if (
-      error.response?.status === 401 && 
-      !originalRequest._retry
-    ) {
-      originalRequest._retry = true
-      try {
-        console.log('Attempting token refresh via HttpOnly cookie...');
-        // Send request to refresh endpoint. The browser automatically includes
-        // the HttpOnly refresh_token cookie because withCredentials is true.
-        // The backend reads the cookie, verifies it, and sets a new access_token cookie.
-        await axios.post(tokenURL, {}, { // Send empty body, backend reads cookie
-          withCredentials: true,
-        })
-        console.log('Token refresh successful (cookies updated by backend).');
-        // Retry the original request. The browser will now send the new access_token cookie.
-        return api(originalRequest);
-      } catch (refreshError: any) {
-        console.error('Token refresh failed.');
-        // Log the detailed error response from the backend if available
-        if (refreshError.response) {
-          console.error('Refresh Error Response:', refreshError.response.status, refreshError.response.data);
-        } else {
-          console.error('Refresh Error:', refreshError.message);
-        }
-        // No need to remove localStorage item as we are not using it for tokens
-        // Could potentially clear other app state here if needed
-        // Redirect to login on refresh failure
-        if (window.location.pathname !== '/login') { // Avoid redirect loop if already on login
-            window.location.href = '/login';
-        }
-        return Promise.reject(refreshError);
+  const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+  const refreshToken = sessionStorage.getItem('refresh_token');
+
+  if (error.response?.status === 401 && !originalRequest._retry && refreshToken) {
+    originalRequest._retry = true;
+    
+    try {
+      const response = await axios.post<{ access: string; refresh?: string }>(
+        tokenURL,
+        { refresh: refreshToken }
+      );
+
+      const newTokens = {
+        access: response.data.access,
+        refresh: response.data.refresh || refreshToken,
+      };
+
+      // Update storage
+      sessionStorage.setItem('access_token', newTokens.access);
+      sessionStorage.setItem('refresh_token', newTokens.refresh);
+
+      // Update axios defaults
+      api.defaults.headers.common['Authorization'] = `Bearer ${newTokens.access}`;
+
+      // Update the original request header
+      if (originalRequest.headers) {
+        originalRequest.headers['Authorization'] = `Bearer ${newTokens.access}`;
       }
+
+      return api(originalRequest)
+
+    } catch (refreshError) {
+      // Clear tokens on refresh failure
+      sessionStorage.removeItem('access_token');
+      sessionStorage.removeItem('refresh_token');
+      delete api.defaults.headers.common['Authorization'];
+      return Promise.reject(refreshError);
     }
+  }
   return Promise.reject(error)
 })
 
-
 export default api
+

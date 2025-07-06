@@ -4,6 +4,7 @@ from django.db import transaction as db_transaction
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from .models import *
+from django.http import HttpRequest
 import logging
 
 logger = logging.getLogger(__name__)
@@ -844,3 +845,13 @@ class CommissionService:
                 reference=reference
             )
         return wallet
+    
+
+def get_client_ip(request: HttpRequest) -> str:
+    """Get client IP address from request object"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip or '0.0.0.0'
