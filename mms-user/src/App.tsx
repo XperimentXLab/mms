@@ -4,7 +4,6 @@ import MainLayout from "./components/layout/MainLayout"
 import Home from "./components/pages/Home"
 import Register from "./components/auth/Register"
 import Profile from "./components/pages/Profile"
-import NotFound from "./components/pages/NotFound"
 import Wallet from "./components/pages/Wallet"
 import Others from "./components/pages/Others"
 import Assets from "./components/pages/Assets"
@@ -18,6 +17,7 @@ import AssetLayout from "./components/layout/AssetLayout"
 import { AssetStatement, WithdrawalAssetStatement } from "./components/pages/AssetStatement"
 import { CommissionStatement, ConvertStatement, ProfitStatement, TransferStatement, WithdrawalWalletStatement } from "./components/pages/WalletStatement"
 */
+import NotFound from "./components/pages/NotFound"
 import Updating from "./components/auth/Updating"
 
 function App() {
@@ -80,10 +80,10 @@ function App() {
       <Route 
         path="/reset-password-confirm/:uidb64/:token" 
         element={<ResetPasswordConfirm />} 
-      />
+      />*/}
       
 
-      <Route path="*" element={<NotFound />} />*/}
+      <Route path="*" element={<NotFound />} />
     </Route>
   ))
 
