@@ -5,6 +5,7 @@ import { SelectMonth, SelectYear } from "../props/DropDown"
 import { distribute_profit, get_profit, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
 import { FixedText } from "../props/Textt"
+import dayjs from "dayjs"
 
 const Operation = () => {
 
@@ -15,13 +16,11 @@ const Operation = () => {
   const [activeYearProfit, setActiveYearProfit] = useState<string>("")
   const [lastUpdated, setLastUpdated] = useState<string>("")
 
-
   const [todayProfit, setTodayProfit] = useState<number>(0)
   const [weeklyProfit, setWeeklyProfit] = useState<number>(0)
   const [monthlyProfit, setMonthlyProfit] = useState<number>(0)
   const [inputActiveMonth, setInputActiveMonth] = useState<string>(""); 
   const [inputActiveYear, setInputActiveYear] = useState<string>("");
-
 
   const [finalizedSelectedMonth, setFinalizedSelectedMonth] = useState<string>("");
   const [finalizedSelectedYear, setFinalizedSelectedYear] = useState<string>("");
@@ -42,7 +41,6 @@ const Operation = () => {
         setCurrentMonthProfit(response.current_month_profit || 0)
         setActiveMonthProfit(response.active_month_profit || null)
         setActiveYearProfit(response.active_year_profit || null)
-        setLastUpdated(response.last_updated)
 
         // Initialize input states for the operational profit form
         setDailyProfitRate(response.daily_profit_rate || 0);
@@ -50,6 +48,9 @@ const Operation = () => {
         setCurrentMonthProfit(response.current_month_profit || 0);
         setInputActiveMonth(response.active_month_profit);
         setInputActiveYear(response.active_year_profit);
+
+        const formattedDate = dayjs().format("YYYY-MM-DD HH:mm:ss");
+        setLastUpdated(formattedDate);
 
         console.log(activeMonthProfit, activeYearProfit)
       } catch (error: any) {

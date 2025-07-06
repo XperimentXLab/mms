@@ -279,14 +279,16 @@ export const getPerformance = async () => {
 
 interface PerformanceData {
   totalDeposit: number
-  totalGain: number
+  totalGainZ: number
+  totalGainA: number
   mode: string
 }
 export const putPerformance = async (data: PerformanceData) => {
-  const { totalDeposit, totalGain, mode } = data
+  const { totalDeposit, totalGainZ, totalGainA, mode } = data
   const response = await api.put('/manage_performance/', {
     total_deposit: totalDeposit,
-    total_gain: totalGain,
+    total_gain_z: totalGainZ,
+    total_gain_a: totalGainA,
     mode
   })
   return response.data

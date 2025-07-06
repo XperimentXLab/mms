@@ -164,11 +164,11 @@ class UserJWT(models.Model):
     expires_at = models.DateTimeField()
 
     class Meta:
-        indexes = [
-            models.Index(fields=['user', 'device_fingerprint']),
-            models.Index(fields=['access_token']),
-            models.Index(fields=['expires_at']),
-        ]
+      indexes = [
+        models.Index(fields=['user', 'device_fingerprint']),
+        models.Index(fields=['access_token']),
+        models.Index(fields=['expires_at']),
+      ]
 
     def is_expired(self):
         return timezone.now() > self.expires_at
@@ -436,7 +436,8 @@ class SingletonManager(models.Manager):
 
 class Performance(models.Model):
   total_deposit = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'))
-  total_gain = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'))
+  total_gain_z = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'))
+  total_gain_a = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'))
   last_updated = models.DateTimeField(auto_now=True)
 
   objects = SingletonManager() # access with .. performance = Performance.objects.get_instance()
@@ -454,3 +455,17 @@ class Performance(models.Model):
 
   def __str__(self):
     return f'Performance -- Total Deposit: {self.total_deposit}, Total Gain: {self.total_gain}'
+  
+
+class PromoCode(models.Model):
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='promo_code')
+  code = models.CharField(max_length=10, unique=True, help_text='Invalid code')
+
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  def __str__(self):
+    return self.code
+  
+  class Meta:
+    verbose_name = "Promo Code"
+    verbose_name_plural = "Promo Codes"

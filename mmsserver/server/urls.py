@@ -33,6 +33,7 @@ urlpatterns = [
   #updating
   path('update_password/', update_password, name='update_password'),
   path('update_user/', update_user, name='update_user'),
+  path('promo_code/', promo_code, name='promo_code'),
 
   #functionalities
   path('transfer_master_to_user/', transfer_master, name='transfer_master_to_user'),

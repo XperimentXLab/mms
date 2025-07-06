@@ -1,8 +1,13 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Inputss, InputwithVal } from "../props/Formss"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
-import { setupUser } from "../auth/endpoints"
+import { getPerformance, putPerformance, setupUser } from "../auth/endpoints"
+import dayjs from "dayjs";
+import utc from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 
 const Setup = () => {
@@ -14,15 +19,43 @@ const Setup = () => {
   const [profitAmount, setProfitAmount] = useState<string>('')
   const [affiliateAmount, setAffiliateAmount] = useState<string>('')
 
-  //type Mode = 'plus' | 'minus'
-  //const [mode, setMode] = useState<Mode>('plus')
-  //const [totalDeposit, setTotalDeposit] = useState<number>(0)
-  //const [totalGain, setTotalGain] = useState<number>(0)
+  const [totalDeposit, setTotalDeposit] = useState<number>(0)
   const [editTotalDeposit, setEditTotalDeposit] = useState<number>(0)
-  const [editTotalGain, setEditTotalGain] = useState<number>(0)
+  const [totalGainZ, setTotalGainZ] = useState<number>(0)
+  const [editTotalGainZ, setEditTotalGainZ] = useState<number>(0)
+  const [totalGainA, setTotalGainA] = useState<number>(0)
+  const [editTotalGainA, setEditTotalGainA] = useState<number>(0)
 
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
+
+  const [date, setDate] = useState<string>('')
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const resPerformance = await getPerformance()
+      setTotalDeposit(resPerformance.total_deposit)
+      setTotalGainZ(resPerformance.total_gain_z)
+      setTotalGainA(resPerformance.total_gain_a)
+
+      const formattedDate = dayjs().format("YYYY-MM-DD HH:mm:ss");
+      setDate(formattedDate);
+      
+    } catch (error: any) {
+      if (error.response && error.response.status === 500) {
+        setErrorMessage('An unexpected error occurred. Please try again later.');
+      } else {
+        setErrorMessage(error.response.data.error)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   const toggleSetupUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -47,8 +80,52 @@ const Setup = () => {
     }
   }
 
+  const resetForm = () => {
+    setUserID('')
+    setUsername('')
+    setMasterAmount('')
+    setProfitAmount('')
+    setAffiliateAmount('')
+    setEditTotalDeposit(0)
+    setEditTotalGainA(0)
+    setEditTotalGainZ(0)
+  }
 
+  const handlePlus = async () => {
+    try {
+      setLoading(true)
+      await putPerformance({
+        totalDeposit: editTotalDeposit,
+        totalGainZ: editTotalGainZ,
+        totalGainA: editTotalGainA,
+        mode: 'plus'
+      })
+    } catch (error: any) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+      resetForm()
+      fetchData()
+    }
+  }
 
+  const handleMinus = async () => {
+    try {
+      setLoading(true)
+      await putPerformance({
+        totalDeposit: editTotalDeposit,
+        totalGainZ: editTotalGainZ,
+        totalGainA: editTotalGainA,
+        mode: 'minus'
+      })
+    } catch (error: any) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+      resetForm()
+      fetchData()
+    }
+  }
 
   /*
   const handleResetAllWallet = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -64,34 +141,43 @@ const Setup = () => {
     }
   }*/
 
-
   return (
     <div className="flex flex-col items-center justify-center m-5 gap-3">
 
       {loading && <Loading />}
 
       <div className="flex flex-col justify-center gap-2 bg-white p-3 w-full rounded-xl">
+        <span>Last Updated: {date}</span>
 
-          <InputwithVal 
-            type="number"
-            label="Total Deposit"
-            placeholder="Enter amount"
-            onChange={e => setEditTotalDeposit(Number(e.target.value))}
-            value={String(editTotalDeposit)}
-            //currentValue={totalDeposit}
-            noNeedPercent={true}
-          />
-          <InputwithVal 
-            type="number"
-            label="Total Gain"
-            placeholder="Enter amount"
-            onChange={e => setEditTotalGain(Number(e.target.value))}
-            value={String(editTotalGain)}
-            //currentValue={totalGain}
-            noNeedPercent={true}
-          />
-          <Buttons type="button">Add</Buttons>
-          <Buttons type="button">Minus</Buttons>
+        <InputwithVal 
+          type="number"
+          label="Total Deposit"
+          placeholder="Enter amount"
+          onChange={e => setEditTotalDeposit(Number(e.target.value))}
+          value={String(editTotalDeposit)}
+          currentValue={totalDeposit}
+          noNeedPercent={true}
+        />
+        <InputwithVal 
+          type="number"
+          label="Total Gain Trading Z"
+          placeholder="Enter amount"
+          onChange={e => setEditTotalGainZ(Number(e.target.value))}
+          value={String(editTotalGainZ)}
+          currentValue={totalGainZ}
+          noNeedPercent={true}
+        />
+        <InputwithVal 
+          type="number"
+          label="Total Gain Trading A"
+          placeholder="Enter amount"
+          onChange={e => setEditTotalGainA(Number(e.target.value))}
+          value={String(editTotalGainA)}
+          currentValue={totalGainA}
+          noNeedPercent={true}
+        />
+        <Buttons type="button" onClick={handlePlus}>Plus</Buttons>
+        <Buttons type="button" onClick={handleMinus}>Minus</Buttons>
 
       </div>
 

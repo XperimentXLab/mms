@@ -372,13 +372,33 @@ class DepositLockSerializer(serializers.ModelSerializer):
 class PerformanceSerializer(serializers.ModelSerializer):
 
   total_deposit = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
-  total_gain = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  total_gain_z = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+  total_gain_a = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
+
 
   class Meta:
     model = Performance
     fields = [
       'total_deposit',
-      'total_gain',
+      'total_gain_z',
+      'total_gain_a',
       'last_updated'
     ]
     read_only_fields = [ 'last_updated' ]
+
+class PromoCodeSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = PromoCode
+    fields = ['user', 'code', 'created_at']
+    read_only_fields = ['id', 'user', 'created_at']
+  
+  def validate_code(self, value):
+    if not isinstance(value, str) or len(value) != 10 or not value.startswith('RSJC'):
+        raise serializers.ValidationError('Invalid promo code.')
+
+    if PromoCode.objects.filter(code=value).exists():
+        raise serializers.ValidationError('Promo code already in use.')
+
+    return value
+
+  

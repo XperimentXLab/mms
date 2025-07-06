@@ -611,3 +611,27 @@ def get_daily_total_profit(request):
     return Response(transaction, status=200)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
+  
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def promo_code(request):
+  user = request.user
+  code = request.data.get('code')
+
+  try:
+    if PromoCode.objects.filter(code=code).exists():
+      return Response({'error': 'Invalid promo code'}, status=400)
+    if len(code) == 10 :
+      serializer = PromoCodeSerializer(data=request.data)
+      print(request.data)
+      if serializer.is_valid():
+        serializer.save(user=user)
+        return Response(serializer.data, status=201)
+      else: 
+        return Response(serializer.errors, status=400)
+    else:
+      return Response({'error': 'Invalid promo code'}, status=400)
+      
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)

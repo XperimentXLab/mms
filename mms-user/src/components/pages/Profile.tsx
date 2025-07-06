@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react"
 import Loading from "../props/Loading"
 import Spannn, { FixedText } from "../props/Textt"
-import { updatePassword, updateUserDetails, userDetails } from "../auth/endpoints"
+import { PromoCode, updatePassword, updateUserDetails, userDetails } from "../auth/endpoints"
 import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
 import { apiCountry, /*openCloudinaryWidget,*/ type CountryType } from "../auth/api"
 
 const Profile = () => {
+
+  const [promoCode, setPromoCode] = useState<string>('')
+  const [errorMessagePC, setErrorMessagePC] = useState<string>('')
 
   const [refferralCode, setRefferralCode] = useState<string>('')
   const [username, setUsername] = useState<string>('')
@@ -217,6 +220,22 @@ const Profile = () => {
     }
   }
 
+  const handlePromoCode = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      await PromoCode(promoCode)
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        setErrorMessagePC(error.response.data.error)
+      } else {
+        setErrorMessagePC('An unexpected error occurred. Please try again later.');
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   return (
     <div className="flex flex-col items-center p-3 w-full">
@@ -326,6 +345,20 @@ const Profile = () => {
           />
 
           <Buttons type="submit">Save</Buttons>
+        </form>
+
+        <form onSubmit={handlePromoCode} className="flex flex-col gap-2 w-full items-center p-3 border rounded-xl shadow-red-300 bg-white shadow-2xl">
+          <h1 className="font-bold text-lg underline">Promo Code</h1>
+
+          <Inputss 
+            type="text"
+            placeholder="Enter promo code"
+            onChange={e => setPromoCode(e.target.value)}
+            value={promoCode}
+            required={true}
+          />
+          {errorMessagePC && <span className="text-red-500 text-md">{errorMessagePC}</span>}
+          <Buttons type="submit">Apply</Buttons>
         </form>
 
         <div className="flex flex-col gap-2 w-full items-center p-3 border rounded-xl shadow-red-300 bg-white shadow-2xl">

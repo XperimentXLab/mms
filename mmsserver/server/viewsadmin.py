@@ -698,7 +698,8 @@ def get_info_dashboard(request):
 def manage_performance(request):
   user = request.user
   total_deposit = request.data.get('total_deposit')
-  total_gain = request.data.get('total_gain')
+  total_gain_z = request.data.get('total_gain_z')
+  total_gain_a = request.data.get('total_gain_a')
   mode = request.data.get('mode')
 
   try:
@@ -714,8 +715,10 @@ def manage_performance(request):
         if mode == 'minus':
           if total_deposit:
             performance.total_deposit -= Decimal(total_deposit)
-          if total_gain:
-            performance.total_gain -= Decimal(total_gain)
+          if total_gain_a:
+            performance.total_gain -= Decimal(total_gain_a)
+          if total_gain_z:
+            performance.total_gain -= Decimal(total_gain_z)
           performance.save()
           serializer = PerformanceSerializer(performance)
           if serializer.is_valid():
@@ -727,8 +730,10 @@ def manage_performance(request):
         elif mode == 'plus':
           if total_deposit:
             performance.total_deposit += Decimal(total_deposit)
-          if total_gain:
-            performance.total_gain += Decimal(total_gain)
+          if total_gain_a:
+            performance.total_gain += Decimal(total_gain_a)
+          if total_gain_z:
+            performance.total_gain += Decimal(total_gain_z)
           performance.save()
           serializer = PerformanceSerializer(performance)
           if serializer.is_valid():

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import api from './api';
+import Loading from '../props/Loading';
 
 const ProtectedRoute = () => {
   const [isValid, setIsValid] = useState<boolean | null>(null);
@@ -18,7 +19,7 @@ const ProtectedRoute = () => {
     verifyToken();
   }, []);
 
-  if (isValid === null) return <p>Loading...</p>;
+  if (isValid === null) return <Loading />;
   return isValid ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
