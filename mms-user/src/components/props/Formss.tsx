@@ -32,7 +32,7 @@ export const Inputss: React.FC<InputssProps> = ({
   const isPasswordField = type === 'password';
 
   return (
-    <div className="grid grid-row-2 gap-2">
+    <div className={`grid gap-2 relative ${ isPasswordField ? 'grid-rows-3' : 'grid-row-2' }`}>
       <span className="font-semibold">{label}</span>
       <input type={isPasswordField ? (showPassword ? 'text' : 'password') : type} 
         placeholder={placeholder} 
