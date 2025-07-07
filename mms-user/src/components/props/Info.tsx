@@ -59,3 +59,13 @@ export const InfoPassword = () => {
     </ul>
   )
 }
+
+export const InfoDoc = () => {
+  return (
+    <ul className="list-disc px-6">
+      <li className="text-gray-600 text-xs ">
+        I/C or Driving License
+      </li>
+    </ul>
+  )
+}

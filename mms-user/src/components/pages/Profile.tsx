@@ -5,6 +5,7 @@ import { PromoCode, updatePassword, updateUserDetails, userDetails } from "../au
 import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
 import { apiCountry, /*openCloudinaryWidget,*/ type CountryType } from "../auth/api"
+import { InfoDoc } from "../props/Info"
 
 const Profile = () => {
 
@@ -386,6 +387,7 @@ const Profile = () => {
             />
             
             <Buttons type="submit" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
+            <InfoDoc />
           </form>}
           {verificationStatus === 'REJECTED' &&
             <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
@@ -402,6 +404,7 @@ const Profile = () => {
             />
             
             <Buttons type="submit" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
+            <InfoDoc />
           </form>}
         </div>
 
