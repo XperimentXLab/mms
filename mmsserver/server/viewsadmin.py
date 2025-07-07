@@ -716,9 +716,9 @@ def manage_performance(request):
           if total_deposit:
             performance.total_deposit -= Decimal(total_deposit)
           if total_gain_a:
-            performance.total_gain -= Decimal(total_gain_a)
+            performance.total_gain_a -= Decimal(total_gain_a)
           if total_gain_z:
-            performance.total_gain -= Decimal(total_gain_z)
+            performance.total_gain_z -= Decimal(total_gain_z)
           performance.save()
           serializer = PerformanceSerializer(performance)
           if serializer.is_valid():
@@ -731,9 +731,9 @@ def manage_performance(request):
           if total_deposit:
             performance.total_deposit += Decimal(total_deposit)
           if total_gain_a:
-            performance.total_gain += Decimal(total_gain_a)
+            performance.total_gain_a += Decimal(total_gain_a)
           if total_gain_z:
-            performance.total_gain += Decimal(total_gain_z)
+            performance.total_gain_z += Decimal(total_gain_z)
           performance.save()
           serializer = PerformanceSerializer(performance)
           if serializer.is_valid():
