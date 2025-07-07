@@ -20,6 +20,7 @@ interface userDetail {
   ic_document_url?: string | null
   is_campro?: boolean
   reject_reason?: string | null
+  promocode?: string | null
 }
 
 
@@ -125,11 +126,11 @@ const Verifications = () => {
   const columns = useMemo(() => [
     { header: 'First Name', 
       accessor: 'first_name',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
      },
     { header: 'Last Name', 
       accessor: 'last_name',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
      },
     { header: 'I/C', 
       accessor: 'ic',
@@ -137,23 +138,23 @@ const Verifications = () => {
      },
     { header: 'Wallet Address', 
       accessor: 'wallet_address',
-      render: (value: string) => value
+      render: (value: string) => value ? value : 'Not Set'
      },
     { header: 'City', 
       accessor: 'address_city',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
      },
     { header: 'State', 
       accessor: 'address_state',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
      },
     { header: 'Postcode', 
       accessor: 'address_postcode',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
      },
     { header: 'Country', 
       accessor: 'address_country',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
      },
     { header: 'Status', 
       accessor: 'verification_status',
@@ -242,6 +243,10 @@ const Verifications = () => {
         </div>
       )
     },
+    { header: 'Promo Code',
+      accessor: 'promocode',
+      render: (value: string) => value ? value : '-'
+    }
 
   ], [userDetailss, rejectionReasons, handleApprove, handleReject, handleReasonChange])
 

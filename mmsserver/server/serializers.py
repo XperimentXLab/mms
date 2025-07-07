@@ -10,6 +10,7 @@ from datetime import date
 class UserSerializer(serializers.ModelSerializer):
   verification_status_display = serializers.SerializerMethodField()
   asset_amount = serializers.SerializerMethodField()
+  promocode = serializers.SerializerMethodField()
   password = serializers.CharField(write_only=True)
 
   class Meta:
@@ -42,6 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
       'reject_reason',
       'is_campro',
       'created_at',
+      'promocode',
     ]
     extra_kwargs = {
       'password': {'write_only': True},
@@ -52,11 +54,18 @@ class UserSerializer(serializers.ModelSerializer):
       'verification_status_display': {'read_only': True},
       'created_at': {'read_only': True},
       'asset_amount': {'read_only': True},
+      'promocode': {'read_only': True},
     }
   def get_asset_amount(self, obj):
     asset = Asset.objects.filter(user=obj).first()
     if asset:
       return asset.amount
+    return None
+
+  def get_promocode(self, obj):
+    promocode = PromoCode.objects.filter(user=obj).first()
+    if promocode:
+      return promocode.code
     return None
     
   def validate_email(self, value):
