@@ -33,7 +33,7 @@ const Profile = () => {
 
   const [verificationStatus, setVerificationStatus] = useState<string>('REQUIRES_ACTION')
   const [verificationStatusDisplay, setVerificationStatusDisplay] = useState<string>('')
-  //const [icDocument, setIcDocument] = useState<File | undefined>(undefined)
+  const [icDocument, setIcDocument] = useState<File | undefined>(undefined)
 
   const [editWalletAddress, setEditWalletAddress] = useState<string>('')
   const [editAddressLine, setEditAddressLine] = useState<string>('')
@@ -164,7 +164,7 @@ const Profile = () => {
     }
   }
 
-/*
+
   const toggleVerification = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
@@ -176,18 +176,18 @@ const Profile = () => {
 
       await updateUserDetails({
         verificationStatus: 'UNDER_REVIEW',
-        ic_document_url: '...'
+        ic_document_url: icDocument.name
       }); 
-
       alert('Document uploaded successfully.')
+
     } catch (error: any) {
       console.error(error.message)
       alert('Failed to upload document.')
     } finally {
       setLoading(false)
     }
-    
-  }*/
+
+  }
 
   const [errorMessageChangeP, setErrorMessageChangeP] = useState<string>('')
   const resetFormChangeP = () => {
@@ -370,7 +370,7 @@ const Profile = () => {
 
           {errorMessageVeri && <span className="text-red-500 text-md">{errorMessageVeri}</span>}
 
-          {/*
+          
           {verificationStatus === 'REQUIRES_ACTION' || verificationStatus === 'REJECTED' && <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
             <label className="font-semibold">Upload I/C Document</label>
             <input type="file" 
@@ -383,9 +383,9 @@ const Profile = () => {
                 }
               }}
             />
-}
-            <Buttons type="button" onClick={openCloudinaryWidget}>Upload</Buttons>
-          </form>*/}
+            
+            <Buttons type="button" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
+          </form>}
         </div>
 
         <div className="flex flex-col gap-2 w-full items-center p-3 border rounded-xl shadow-red-300 bg-white shadow-2xl">
