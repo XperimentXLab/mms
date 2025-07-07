@@ -454,7 +454,7 @@ class Performance(models.Model):
     verbose_name_plural = "Performances"
 
   def __str__(self):
-    return f'Performance -- Total Deposit: {self.total_deposit}, Total Gain: {self.total_gain}'
+    return f'Performance -- Total Deposit: {self.total_deposit}, Total Gain Trading: {self.total_gain_z + self.total_gain_a}'
   
 
 class PromoCode(models.Model):
