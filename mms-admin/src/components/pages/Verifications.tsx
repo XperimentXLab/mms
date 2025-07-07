@@ -160,14 +160,14 @@ const Verifications = () => {
     { header: 'Document', 
       accessor: 'ic_document_url',
       render: (value: string) => (
-          <button
-            onClick={() => handleViewDoc(value)}
-            disabled={value ? false : true}
-            className={`px-3 py-1 rounded ${ value ? 'bg-black text-white cursor-pointer hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'}`}
-          >
-            View
-          </button>
-        )
+        <button
+          onClick={() => handleViewDoc(value)}
+          disabled={value ? false : true}
+          className={`px-3 py-1 rounded ${ value ? 'bg-black text-white cursor-pointer hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'}`}
+        >
+          View
+        </button>
+      )
     },
     { header: 'Action', 
       accessor: 'id',

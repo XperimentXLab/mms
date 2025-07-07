@@ -1,3 +1,4 @@
+import { useState } from "react"
 
 
 interface ButtonProps {
@@ -24,16 +25,6 @@ const Buttons: React.FC<ButtonProps> = ({
 }
 
 export default Buttons
-
-
-import React, { memo, useState } from 'react';
-
-interface RejectionInputProps {
-  id: string;
-  value: string;
-  onChange: (id: string, value: string) => void;
-  onReject: (id: string, reason: string) => void;
-}
 
 export const RejectionInput = ({ 
   id, 
