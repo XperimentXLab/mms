@@ -820,6 +820,22 @@ class CommissionService:
         if commission_point < amount:
             raise ValidationError("Insufficient Commission Point balance")
         
+        # Daily limit check
+        start_of_day = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = start_of_day + timedelta(days=1)
+
+        daily_total = Transaction.objects.filter(
+            user=user,
+            transaction_type='CONVERT',
+            point_type='COMMISSION',
+            target_point_type='MASTER',
+            created_at__gte=start_of_day,
+            created_at__lt=end_of_day
+        ).aggregate(total=Sum('converted_amount'))['total'] or 0
+
+        if daily_total + amount > 50:
+            raise ValidationError(f"Daily conversion limit exceeded. You can convert {50 - daily_total} more today.")
+
         with db_transaction.atomic():
             affiliate_point = wallet.affiliate_point_balance
             convert_balance = amount - affiliate_point
@@ -830,6 +846,7 @@ class CommissionService:
                 if wallet.introducer_point_balance < convert_balance:
                     raise ValidationError("Insufficient Commission Point balance(bonus insufficient)")
                 wallet.introducer_point_balance -= convert_balance
+                
             wallet.master_point_balance += Decimal(amount)
             wallet.save()
             
