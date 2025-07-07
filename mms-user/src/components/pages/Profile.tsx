@@ -385,9 +385,9 @@ const Profile = () => {
                 }
               }}
             />
-            
-            <Buttons type="submit" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
             <InfoDoc />
+            <Buttons type="submit" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
+            
           </form>}
           {verificationStatus === 'REJECTED' &&
             <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
@@ -402,9 +402,9 @@ const Profile = () => {
                 }
               }}
             />
-            
-            <Buttons type="submit" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
             <InfoDoc />
+            <Buttons type="submit" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
+            
           </form>}
         </div>
 
