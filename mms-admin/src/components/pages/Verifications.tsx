@@ -225,7 +225,7 @@ const Verifications = () => {
       render: (value: string) => value ? value : '-'
     }
 
-  ], [userDetailss, rejectionReasons, handleApprove, handleReject, handleReasonChange])
+  ], [userDetailss])
 
   const data = userDetailss
 
