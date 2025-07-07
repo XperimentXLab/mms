@@ -95,6 +95,7 @@ const Profile = () => {
         const countryRes = await apiCountry
         setCountryList(countryRes)
 
+        console.log(verificationStatus)
         console.log(country)
       } catch (error: any) {
         setLoading(true)
@@ -176,7 +177,7 @@ const Profile = () => {
 
       await updateUserDetails({
         verificationStatus: 'UNDER_REVIEW',
-        ic_document_url: icDocument.name
+        ic_document_url: `http://127.0.0.1:8000/doc/${icDocument.name}`
       }); 
       alert('Document uploaded successfully.')
 
@@ -370,8 +371,8 @@ const Profile = () => {
 
           {errorMessageVeri && <span className="text-red-500 text-md">{errorMessageVeri}</span>}
 
-          
-          {verificationStatus === 'REQUIRES_ACTION' || verificationStatus === 'REJECTED' && <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
+          {verificationStatus === 'REQUIRES_ACTION' && 
+          <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
             <label className="font-semibold">Upload Document</label>
             <input type="file" 
               className="border p-2 rounded-md cursor-pointer"
@@ -384,7 +385,23 @@ const Profile = () => {
               }}
             />
             
-            <Buttons type="button" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
+            <Buttons type="submit" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
+          </form>}
+          {verificationStatus === 'REJECTED' &&
+            <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
+            <label className="font-semibold">Upload Document</label>
+            <input type="file" 
+              className="border p-2 rounded-md cursor-pointer"
+              accept=".jpg, .jpeg, .png, .pdf"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) {
+                  setIcDocument(file)
+                }
+              }}
+            />
+            
+            <Buttons type="submit" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
           </form>}
         </div>
 
