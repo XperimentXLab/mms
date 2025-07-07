@@ -3,6 +3,7 @@ import { Tables } from "../props/Tables"
 import Loading from "../props/Loading"
 import { getAllUsers, grantFreeCampro, processVeri } from "../auth/endpoints"
 import Buttons from "../props/Buttons"
+import { Inputss } from "../props/Formss"
 
 interface userDetail {
   id: string
@@ -74,21 +75,15 @@ const Verifications = () => {
   }
 
   const handleReject = (id: string) => {
-    const reason = rejectionReasons || 'No reason provided'
+    const reason = rejectionReasons
     const fetchData = async () => {
       try {
         setLoading(true)
           await processVeri({
             user_id: id,
-            action: 'Reject'
+            action: 'Reject',
+            reject_reason: reason
           })
-        setUserDetailss(prev => prev.map(user => 
-          user.id === id ? { 
-            ...user, 
-            verification_status: 'REJECTED', 
-            reject_reason: reason } 
-            : user
-        ))
         alert('Verification rejected')
       } catch (error: any) {
         setErrorMessage(error.response.data.error)
@@ -190,11 +185,11 @@ const Verifications = () => {
           </Buttons>
           
           <div className="flex flex-row gap-2 items-center">
-            <input
+            <Inputss
               type="text"
               placeholder="Reason for rejection"
-              value={rejectionReasons || ''}
-              onChange={(e) => setRejectionReasons(e.target.value)}
+              value={rejectionReasons}
+              onChange={e => setRejectionReasons(e.target.value)}
               className="border p-1 rounded text-sm w-full min-w-[150px]"
             />
             <Buttons

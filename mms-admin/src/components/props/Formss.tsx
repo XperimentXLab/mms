@@ -11,7 +11,7 @@ interface InputssProps {
   placeholder: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value: string | number;
-  label: string;
+  label?: string;
   required?: boolean;
   className?: string;
   maxLength?: number;
