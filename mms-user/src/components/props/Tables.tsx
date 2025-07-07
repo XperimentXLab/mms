@@ -29,6 +29,7 @@ export interface TableColumn {
 interface TablesProps {
   columns: TableColumn[];
   data: any[];
+  noNeedDate?: boolean;
   emptyMessage?: string;
   enableFilters?: boolean;
   enableSorting?: boolean;
@@ -38,6 +39,7 @@ interface TablesProps {
 export const Tables = ({ 
   columns, 
   data, 
+  noNeedDate = false,
   emptyMessage = "No data available",
   enableFilters = false, 
   enableSorting = false, 
@@ -123,7 +125,7 @@ export const Tables = ({
             placeholderText="Choose a date"
           />*/}
 
-        <div className="flex flex-row gap-2 justify-center items-center">
+        {noNeedDate && <div className="flex flex-row gap-2 justify-center items-center">
           <DatePicker
             className="flex border rounded px-2 py-1 text-xs"
             selected={startDate}
@@ -148,7 +150,7 @@ export const Tables = ({
             isClearable
           />
 
-        </div>
+        </div>}
 
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
