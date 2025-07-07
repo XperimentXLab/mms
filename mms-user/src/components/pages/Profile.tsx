@@ -372,7 +372,7 @@ const Profile = () => {
 
           
           {verificationStatus === 'REQUIRES_ACTION' || verificationStatus === 'REJECTED' && <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
-            <label className="font-semibold">Upload I/C Document</label>
+            <label className="font-semibold">Upload Document</label>
             <input type="file" 
               className="border p-2 rounded-md cursor-pointer"
               accept=".jpg, .jpeg, .png, .pdf"
