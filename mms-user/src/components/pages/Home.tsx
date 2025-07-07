@@ -171,7 +171,7 @@ const Home = () => {
             <Tables 
               columns={tableColumns}
               data={data}
-              noNeedDate={true}
+              needDate={false}
               emptyMessage="No profit data available"
             />
           </div>
