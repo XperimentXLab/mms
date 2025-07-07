@@ -133,8 +133,9 @@ const Dashboard = () => {
   const [totalUser, setTotalUser] = useState<number>(0)
   const [totalWithdraw, setTotalWithdraw] = useState<number>(0)
   const [totalDeposit, setTotalDeposit] = useState<number>(0)
-  const [totalGainZ, setTotalGainZ] = useState<number>(0)
-  const [totalGainA, setTotalGainA] = useState<number>(0)
+  //const [totalGainZ, setTotalGainZ] = useState<number>(0)
+  //const [totalGainA, setTotalGainA] = useState<number>(0)
+  const [totalGain, setTotalGain] = useState<number>(0)
   const [dailyProfitByDay, setDailyProfitsByDay] = useState<DailyProfitByDayProps[]>([])
 
   useEffect(()=> {
@@ -150,8 +151,9 @@ const Dashboard = () => {
         setTotalWithdraw(resInfoDash.total_withdraw_amount)
         setDailyProfitsByDay(resInfoDash.daily_profits)
         setTotalDeposit(resInfoDash.total_deposit)
-        setTotalGainZ(resInfoDash.total_gain)
-        setTotalGainA(resInfoDash.total_gain)
+        setTotalGain(resInfoDash.total_gain)
+        //setTotalGainZ(resInfoDash.total_gain_z)
+        //setTotalGainA(resInfoDash.total_gain_a)
       } catch (error: any) {
         if (error.response && error.response.status === 400 ) {
           setErrorMessage(error.response.data.error)
@@ -178,8 +180,9 @@ const Dashboard = () => {
         <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
         <FixedText label="Total Withdraw" text={totalWithdraw} />
         <FixedText label="Total Deposit" text={totalDeposit} />
-        <FixedText label="Total Gain Trading Z" text={totalGainZ} />
-        <FixedText label="Total Gain Trading A" text={totalGainA} />
+        <FixedText label="Total Trading Gain" text={totalGain} />
+        {/*<FixedText label="Total Gain Trading Z" text={totalGainZ} />
+        <FixedText label="Total Gain Trading A" text={totalGainA} />*/}
       </div>
 
       <div className="flex justify-center">

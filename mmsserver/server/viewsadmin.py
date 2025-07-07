@@ -674,7 +674,9 @@ def get_info_dashboard(request):
       
       performance = Performance.objects.get_instance()
       total_deposit = performance.total_deposit
-      total_gain = performance.total_gain
+      total_gain_a = performance.total_gain_a
+      total_gain_z = performance.total_gain_z
+      total_gain = total_gain_a + total_gain_z
       
       total_user = User.objects.count()
 
@@ -686,6 +688,8 @@ def get_info_dashboard(request):
         'total_withdraw_amount': total_withdraw_amount,
         'total_deposit' : total_deposit,
         'total_gain': total_gain,
+        'total_gain_a': total_gain_a,
+        'total_gain_z': total_gain_z,
         'total_user': total_user,
       }, status=200)
     else: 
