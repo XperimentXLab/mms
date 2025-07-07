@@ -309,6 +309,13 @@ export const depositMaster = async (depositMasterData: TransData) => {
   return response.data
 }
 
+export const PromoCode = async (code: string) => {
+  const response = await api.post('/promo_code/',{
+    code
+  })
+  return response.data
+}
+
 ////////////////////// Need admin approval ////////////////////////
 
 export const placeAsset = async (placeAssetData: TransData) => {
@@ -343,10 +350,3 @@ export const withdrawAsset = async (withdrawAssetData: TransData) => {
   return response.data
 }
 
-
-export const PromoCode = async (code: string) => {
-  const response = await api.post('/promo_code/',{
-    code
-  })
-  return response.data
-}
