@@ -30,7 +30,7 @@ const Verifications = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   const [userDetailss, setUserDetailss] = useState<userDetail[]>([])
-  const [rejectionReasons, setRejectionReasons] = useState<Record<string, string>>({})
+  const [rejectionReasons, setRejectionReasons] = useState<string>('')
 
   const fetchData = async () => {
     try {
@@ -73,12 +73,8 @@ const Verifications = () => {
     fetchData()
   }
 
-  const handleReasonChange = (id: string, reason: string) => {
-    setRejectionReasons(prev => ({ ...prev, [id]: reason }))
-  }
-
   const handleReject = (id: string) => {
-    const reason = rejectionReasons[id] || 'No reason provided'
+    const reason = rejectionReasons || 'No reason provided'
     const fetchData = async () => {
       try {
         setLoading(true)
@@ -197,16 +193,16 @@ const Verifications = () => {
             <input
               type="text"
               placeholder="Reason for rejection"
-              value={rejectionReasons[id] || ''}
-              onChange={(e) => handleReasonChange(id, e.target.value)}
+              value={rejectionReasons || ''}
+              onChange={(e) => setRejectionReasons(e.target.value)}
               className="border p-1 rounded text-sm w-full min-w-[150px]"
             />
             <Buttons
               type="button"
-              disabled={!rejectionReasons[id]}
+              disabled={!rejectionReasons}
               onClick={() => handleReject(id)}
               className={`px-3 py-1 rounded ${
-                rejectionReasons[id] 
+                rejectionReasons 
                   ? 'bg-red-500 hover:bg-red-600 text-white' 
                   : 'bg-gray-300 cursor-not-allowed'
               }`}
@@ -240,7 +236,7 @@ const Verifications = () => {
       render: (value: string) => value ? value : '-'
     }
 
-  ], [userDetailss, rejectionReasons, handleApprove, handleReject, handleReasonChange])
+  ], [userDetailss, rejectionReasons, handleApprove, handleReject])
 
   const data = userDetailss
 
