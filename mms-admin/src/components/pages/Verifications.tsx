@@ -3,7 +3,6 @@ import { Tables } from "../props/Tables"
 import Loading from "../props/Loading"
 import { getAllUsers, grantFreeCampro, processVeri } from "../auth/endpoints"
 import Buttons from "../props/Buttons"
-import { Inputss } from "../props/Formss"
 
 interface userDetail {
   id: string
@@ -31,7 +30,7 @@ const Verifications = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   const [userDetailss, setUserDetailss] = useState<userDetail[]>([])
-  const [rejectionReasons, setRejectionReasons] = useState<string>('')
+  const [rejectionReasons, setRejectionReasons] = useState<Record<string, string>>({})
 
   const fetchData = async () => {
     try {
@@ -74,16 +73,26 @@ const Verifications = () => {
     fetchData()
   }
 
+  const handleReasonChange = (id: string, reason: string) => {
+    setRejectionReasons(prev => ({ ...prev, [id]: reason }))
+  }
+
   const handleReject = (id: string) => {
-    const reason = rejectionReasons
+    const reason = rejectionReasons[id] || 'No reason provided'
     const fetchData = async () => {
       try {
         setLoading(true)
           await processVeri({
             user_id: id,
-            action: 'Reject',
-            reject_reason: reason
+            action: 'Reject'
           })
+        setUserDetailss(prev => prev.map(user => 
+          user.id === id ? { 
+            ...user, 
+            verification_status: 'REJECTED', 
+            reject_reason: reason } 
+            : user
+        ))
         alert('Verification rejected')
       } catch (error: any) {
         setErrorMessage(error.response.data.error)
@@ -185,19 +194,19 @@ const Verifications = () => {
           </Buttons>
           
           <div className="flex flex-row gap-2 items-center">
-            <Inputss
+            <input
               type="text"
               placeholder="Reason for rejection"
-              value={rejectionReasons}
-              onChange={e => setRejectionReasons(e.target.value)}
+              value={rejectionReasons[id] || ''}
+              onChange={(e) => handleReasonChange(id, e.target.value)}
               className="border p-1 rounded text-sm w-full min-w-[150px]"
             />
             <Buttons
               type="button"
-              disabled={!rejectionReasons}
+              disabled={!rejectionReasons[id]}
               onClick={() => handleReject(id)}
               className={`px-3 py-1 rounded ${
-                rejectionReasons 
+                rejectionReasons[id] 
                   ? 'bg-red-500 hover:bg-red-600 text-white' 
                   : 'bg-gray-300 cursor-not-allowed'
               }`}
@@ -231,7 +240,7 @@ const Verifications = () => {
       render: (value: string) => value ? value : '-'
     }
 
-  ], [userDetailss, rejectionReasons, handleApprove, handleReject])
+  ], [userDetailss, rejectionReasons, handleApprove, handleReject, handleReasonChange])
 
   const data = userDetailss
 
