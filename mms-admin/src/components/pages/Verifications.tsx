@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Tables } from "../props/Tables"
 import Loading from "../props/Loading"
 import { getAllUsers, grantFreeCampro, processVeri } from "../auth/endpoints"
-import Buttons from "../props/Buttons"
+import Buttons, { RejectionInput } from "../props/Buttons"
 
 interface userDetail {
   id: string
@@ -77,32 +77,32 @@ const Verifications = () => {
     setRejectionReasons(prev => ({ ...prev, [id]: reason }))
   }
 
-  const handleReject = (id: string) => {
-    const reason = rejectionReasons[id]
+  const handleReject = (id: string, reason: string) => {
     const fetchData = async () => {
       try {
-        setLoading(true)
-          await processVeri({
-            user_id: id,
-            action: 'Reject',
+        setLoading(true);
+        await processVeri({
+          user_id: id,
+          action: 'Reject',
+          reject_reason: reason
+        });
+        setUserDetailss(prev => prev.map(user =>
+          user.id === id ? {
+            ...user,
+            verification_status: 'REJECTED',
             reject_reason: reason
-          })
-        setUserDetailss(prev => prev.map(user => 
-          user.id === id ? { 
-            ...user, 
-            verification_status: 'REJECTED', 
-            reject_reason: reason } 
-            : user
-        ))
-        alert('Verification rejected')
+          } : user
+        ));
+        alert('Verification rejected');
       } catch (error: any) {
-        setErrorMessage(error.response.data.error)
+        setErrorMessage(error.response?.data?.error || 'Something went wrong');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchData()
-  }
+    };
+    fetchData();
+  };
+
 
   const handleViewDoc = (url: string | null | undefined) => {
     if (!url) return
@@ -175,48 +175,31 @@ const Verifications = () => {
     },
     { header: 'Action', 
       accessor: 'id',
-     render: (id: string) => {
-      // Find the full row data by id
-      const row = userDetailss.find(user => user.id === id);
-      if (!row) return null;
-      
-      if (row.verification_status === 'REQUIRES_ACTION') {
-        return 'User needs to upload document first.';
-      }
-      
-      return (
-        <div className="flex gap-2 items-center">
-          <Buttons
-            type="button"
-            onClick={() => handleApprove(id)}
-            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            Approve
-          </Buttons>
-          
-          <div className="flex flex-row gap-2 items-center">
-            <input
-              key={`reject-input-${id}`}
-              type="text"
-              placeholder="Reason for rejection"
-              value={rejectionReasons[id] || ''}
-              onChange={(e) => handleReasonChange(id, e.target.value)}
-              className="border p-1 rounded text-sm w-full min-w-[150px]"
-            />
-            <Buttons
-              type="button"
-              disabled={!rejectionReasons[id]}
-              onClick={() => handleReject(id)}
-              className={`px-3 py-1 rounded ${
-                rejectionReasons[id] 
-                  ? 'bg-red-500 hover:bg-red-600 text-white' 
-                  : 'bg-gray-300 cursor-not-allowed'
-              }`}
-            >
-              Reject
-            </Buttons>
-          </div>
-        </div>
+ render: (id: string) => {
+  const row = userDetailss.find(user => user.id === id);
+  if (!row) return null;
+
+  if (row.verification_status === 'REQUIRES_ACTION') {
+    return 'User needs to upload document first.';
+  }
+
+  return (
+    <div className="flex gap-2 items-center">
+      <Buttons
+        type="button"
+        onClick={() => handleApprove(id)}
+        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+      >
+        Approve
+      </Buttons>
+
+      <RejectionInput
+        id={id}
+        value={rejectionReasons[id] || ''}
+        onChange={handleReasonChange}
+        onReject={handleReject}
+      />
+    </div>
       );
     }
     },

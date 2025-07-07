@@ -25,3 +25,37 @@ const Buttons: React.FC<ButtonProps> = ({
 
 export default Buttons
 
+
+import React, { memo } from 'react';
+
+interface RejectionInputProps {
+  id: string;
+  value: string;
+  onChange: (id: string, value: string) => void;
+  onReject: (id: string, reason: string) => void;
+}
+
+export const RejectionInput = memo(({ id, value, onChange, onReject }: RejectionInputProps) => {
+  return (
+    <div className="flex flex-row gap-2 items-center">
+      <input
+        type="text"
+        placeholder="Reason for rejection"
+        value={value}
+        onChange={(e) => onChange(id, e.target.value)}
+        className="border p-1 rounded text-sm w-full min-w-[150px]"
+      />
+      <Buttons
+        type="button"
+        disabled={!value}
+        onClick={() => onReject(id, value)}
+        className={`px-3 py-1 rounded ${
+          value ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-300 cursor-not-allowed'
+        }`}
+      >
+        Reject
+      </Buttons>
+    </div>
+  );
+});
+
