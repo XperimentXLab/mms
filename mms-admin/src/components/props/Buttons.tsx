@@ -26,7 +26,7 @@ const Buttons: React.FC<ButtonProps> = ({
 export default Buttons
 
 
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 
 interface RejectionInputProps {
   id: string;
@@ -35,27 +35,35 @@ interface RejectionInputProps {
   onReject: (id: string, reason: string) => void;
 }
 
-export const RejectionInput = memo(({ id, value, onChange, onReject }: RejectionInputProps) => {
+export const RejectionInput = ({ 
+  id, 
+  onReject,
+  initialReason = ''
+}: { 
+  id: string, 
+  onReject: (id: string, reason: string) => void,
+  initialReason?: string
+}) => {
+  const [reason, setReason] = useState(initialReason);
+
   return (
-    <div className="flex flex-row gap-2 items-center">
+    <div className="flex gap-2 items-center">
       <input
         type="text"
-        placeholder="Reason for rejection"
-        value={value}
-        onChange={(e) => onChange(id, e.target.value)}
-        className="border p-1 rounded text-sm w-full min-w-[150px]"
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+        placeholder="Rejection reason"
+        className="px-2 py-1 border rounded"
       />
       <Buttons
         type="button"
-        disabled={!value}
-        onClick={() => onReject(id, value)}
-        className={`px-3 py-1 rounded ${
-          value ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-300 cursor-not-allowed'
-        }`}
+        onClick={() => onReject(id, reason)}
+        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+        disabled={!reason.trim()}
       >
         Reject
       </Buttons>
     </div>
   );
-});
+};
 

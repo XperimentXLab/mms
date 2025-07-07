@@ -30,7 +30,6 @@ const Verifications = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   const [userDetailss, setUserDetailss] = useState<userDetail[]>([])
-  const [rejectionReasons, setRejectionReasons] = useState<Record<string, string>>({})
 
   const fetchData = async () => {
     try {
@@ -73,9 +72,6 @@ const Verifications = () => {
     fetchData()
   }
 
-  const handleReasonChange = (id: string, reason: string) => {
-    setRejectionReasons(prev => ({ ...prev, [id]: reason }))
-  }
 
   const handleReject = (id: string, reason: string) => {
     const fetchData = async () => {
@@ -194,10 +190,9 @@ const Verifications = () => {
       </Buttons>
 
       <RejectionInput
-        id={id}
-        value={rejectionReasons[id] || ''}
-        onChange={handleReasonChange}
-        onReject={handleReject}
+        id={id} 
+        onReject={handleReject} 
+        initialReason={row.reject_reason || ''}
       />
     </div>
       );
