@@ -225,6 +225,7 @@ const Profile = () => {
     try {
       setLoading(true)
       await PromoCode(promoCode)
+      alert('Promo code successfully entered.')
     } catch (error: any) {
       if (error.response && error.response.status === 400) {
         setErrorMessagePC(error.response.data.error)
