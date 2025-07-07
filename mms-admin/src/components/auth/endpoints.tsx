@@ -222,14 +222,16 @@ interface processVeriRes {
   reject_reason?: string
 }
 export const processVeri = async (data: processVeriRes) => {
-  const { user_id, action, reject_reason } = data
-  const response = await api.post('/process_verification/',{
-    user_id,
-    action,
-    reject_reason
-  })
-  return response.data
-}
+  const { user_id, action, reject_reason } = data;
+  const payload: any = { user_id, action };
+  if (reject_reason !== undefined) {
+    payload.reject_reason = reject_reason;
+  }
+
+  const response = await api.post('/process_verification/', payload);
+  return response.data;
+};
+
 
 
 export const grantFreeCampro = async (user_id: string) => {

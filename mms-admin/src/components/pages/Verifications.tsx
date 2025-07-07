@@ -78,13 +78,14 @@ const Verifications = () => {
   }
 
   const handleReject = (id: string) => {
-    const reason = rejectionReasons[id] || 'No reason provided'
+    const reason = rejectionReasons[id]
     const fetchData = async () => {
       try {
         setLoading(true)
           await processVeri({
             user_id: id,
-            action: 'Reject'
+            action: 'Reject',
+            reject_reason: reason
           })
         setUserDetailss(prev => prev.map(user => 
           user.id === id ? { 
@@ -195,6 +196,7 @@ const Verifications = () => {
           
           <div className="flex flex-row gap-2 items-center">
             <input
+              key={`reject-input-${id}`}
               type="text"
               placeholder="Reason for rejection"
               value={rejectionReasons[id] || ''}

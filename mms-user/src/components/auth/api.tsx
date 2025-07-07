@@ -131,30 +131,30 @@ export const apiCountry: Promise<CountryType[]> = axios.get('https://restcountri
   })
 
 
-export const openCloudinaryWidget = () => {
-  // @ts-ignore
-  window.cloudinary.openUploadWidget(
-    {
-      cloudName: 'YOUR_CLOUD_NAME',
-      uploadPreset: 'YOUR_UNSIGNED_UPLOAD_PRESET', // set this up in Cloudinary dashboard
-      sources: ['local', 'url', 'camera'],
-      multiple: false,
-      cropping: false,
-      folder: 'verification_documents',
-      resourceType: 'auto'
-    },
-    (error: any, result: any) => {
-      if (!error && result && result.event === "success") {
-        // result.info.secure_url is the uploaded file URL
-        updateUserDetails({
-          verificationStatus: 'UNDER_REVIEW',
-          ic_document_url: result.info.secure_url
-        });
-        alert('Document uploaded successfully.');
-      }
-    }
-  );
+export const uploadToCloudinary = async (file: File, user_id: string) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', 'verification-mms');
+  formData.append('cloud_name', 'ddv9fqfxw');
+
+  const customPublicId = `verification/mms-doc/${user_id}-${file.name.replace(/\.[^/.]+$/, "")}`;
+  formData.append('public_id', customPublicId);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/ddv9fqfxw/auto/upload/`, {
+    method: 'POST',
+    body: formData
+  });
+
+  const data = await res.json();
+  if (data.secure_url) {
+    updateUserDetails({
+      verificationStatus: 'UNDER_REVIEW',
+      ic_document_url: data.secure_url
+    });
+    alert('Document uploaded successfully.');
+  }
 };
+
 
 /*
 const getRecaptchaToken = async (action: string): Promise<string> => {

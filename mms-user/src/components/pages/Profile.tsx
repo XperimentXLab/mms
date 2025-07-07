@@ -4,7 +4,7 @@ import Spannn, { FixedText } from "../props/Textt"
 import { PromoCode, updatePassword, updateUserDetails, userDetails } from "../auth/endpoints"
 import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
-import { apiCountry, /*openCloudinaryWidget,*/ type CountryType } from "../auth/api"
+import { apiCountry, uploadToCloudinary, /*openCloudinaryWidget,*/ type CountryType } from "../auth/api"
 import { InfoDoc } from "../props/Info"
 
 const Profile = () => {
@@ -175,13 +175,8 @@ const Profile = () => {
         alert('Please select a document to upload.')
         return
       }
-
-      await updateUserDetails({
-        verificationStatus: 'UNDER_REVIEW',
-        ic_document_url: `http://127.0.0.1:8000/doc/${icDocument.name}`
-      }); 
+      await uploadToCloudinary(icDocument, refferralCode)
       alert('Document uploaded successfully.')
-
     } catch (error: any) {
       console.error(error.message)
       alert('Failed to upload document.')
@@ -386,7 +381,7 @@ const Profile = () => {
               }}
             />
             <InfoDoc />
-            <Buttons type="submit" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
+            <Buttons type="submit" >Upload</Buttons>
             
           </form>}
           {verificationStatus === 'REJECTED' &&
@@ -403,7 +398,7 @@ const Profile = () => {
               }}
             />
             <InfoDoc />
-            <Buttons type="submit" >Upload</Buttons> {/*onClick={openCloudinaryWidget*/}
+            <Buttons type="submit" >Upload</Buttons>
             
           </form>}
         </div>
