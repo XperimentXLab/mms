@@ -4,6 +4,7 @@ import Loading from "../props/Loading"
 import { register } from "./endpoints"
 import Buttons from "../props/Buttons"
 import { Inputss } from "../props/Formss"
+import { InfoPassword } from "../props/Info"
 
 
 const Register = () => {
@@ -163,6 +164,8 @@ const Register = () => {
             label="Confirm Password"
             required={true}
           />
+
+          <InfoPassword />
 
           {renderError('error')}
 

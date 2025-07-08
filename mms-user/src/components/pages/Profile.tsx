@@ -102,7 +102,6 @@ const Profile = () => {
       const countryRes = await apiCountry
       setCountryList(countryRes)
 
-      setFullName(`${firstName} ${lastName}`)
       console.log(fullName)
       console.log(country)
     } catch (error: any) {
@@ -120,6 +119,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData()
+    setFullName(`${firstName} ${lastName}`)
   }, [])
 
   const toggleWalletAddress = async (e: React.FormEvent<HTMLFormElement>) => {
