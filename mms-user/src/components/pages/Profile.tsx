@@ -16,6 +16,8 @@ const Profile = () => {
   const [username, setUsername] = useState<string>('')
   const [email, setEmail] = useState<string>('')
   const [fullName, setFullName] = useState<string>('')
+  const [firstName, setFirstName] = useState<string>('')
+  const [lastName, setLastName] = useState<string>('')
   const [ic, setIc] = useState<string>('')
   const [walletAddress, setWalletAddress] = useState<string | undefined  | null>(undefined)
   const [addressLine, setAddressLine] = useState<string>('')
@@ -42,6 +44,8 @@ const Profile = () => {
   const [editCity, setEditCity] = useState<string>('')
   const [editPostcode, setEditPostcode] = useState<string>('')
   const [editCountry, setEditCountry] = useState<string>('')
+  const [editFirstName, setEditFirstName] = useState<string>('')
+  const [editLastName, setEditLastName] = useState<string>('')
   const [editBeneficiaryName, setEditBeneficiaryName] = useState<string>('')
   const [editBeneficiaryIc, setEditBeneficiaryIc] = useState<string>('')
   const [editBeneficiaryRelationship, setEditBeneficiaryRelationship] = useState<string>('')
@@ -55,61 +59,65 @@ const Profile = () => {
   const [errorMessageVeri, setErrorMessageVeri] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const response = await userDetails()
-        setRefferralCode(response.id)
-        setUsername(response.username)
-        setEmail(response.email)
-        setFullName(`${response.first_name ? response.first_name : ''} ${response.last_name ? response.last_name : ''}`)
-        setIc(response.ic)
-        setWalletAddress(response.wallet_address)
-        setAddressLine(response.address_line)
-        setState(response.address_state)
-        setCity(response.address_city)
-        setPostcode(response.address_postcode)
-        setCountry(response.address_country)
-        setBeneficiaryName(response.beneficiary_name)
-        setBeneficiaryIc(response.beneficiary_ic)
-        setBeneficiaryRelationship(response.beneficiary_relationship)
-        setBeneficiaryEmail(response.beneficiary_email)
-        setBeneficiaryPhone(response.beneficiary_phone)
-        setVerificationStatus(response.verification_status)
-        setVerificationStatusDisplay(response.verification_status_display)
-        setErrorMessageVeri(response.reject_reason)
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const response = await userDetails()
+      setRefferralCode(response.id)
+      setUsername(response.username)
+      setEmail(response.email)
+      setFirstName(response.first_name)
+      setLastName(response.last_name)
+      setFullName(`${firstName} ${lastName}` || '')
+      setIc(response.ic)
+      setWalletAddress(response.wallet_address)
+      setAddressLine(response.address_line)
+      setState(response.address_state)
+      setCity(response.address_city)
+      setPostcode(response.address_postcode)
+      setCountry(response.address_country)
+      setBeneficiaryName(response.beneficiary_name)
+      setBeneficiaryIc(response.beneficiary_ic)
+      setBeneficiaryRelationship(response.beneficiary_relationship)
+      setBeneficiaryEmail(response.beneficiary_email)
+      setBeneficiaryPhone(response.beneficiary_phone)
+      setVerificationStatus(response.verification_status)
+      setVerificationStatusDisplay(response.verification_status_display)
+      setErrorMessageVeri(response.reject_reason)
 
-        // Initialize edit states with fetched data
-        setEditWalletAddress(response.wallet_address || '')
-        setEditAddressLine(response.address_line || '')
-        setEditState(response.address_state || '')
-        setEditCity(response.address_city || '')
-        setEditPostcode(response.address_postcode || '')
-        setEditCountry(response.address_country || '')
-        setEditBeneficiaryName(response.beneficiary_name || '')
-        setEditBeneficiaryIc(response.beneficiary_ic || '')
-        setEditBeneficiaryRelationship(response.beneficiary_relationship || '')
-        setEditBeneficiaryEmail(response.beneficiary_email || '')
-        setEditBeneficiaryPhone(response.beneficiary_phone || '')
+      // Initialize edit states with fetched data
+      setEditWalletAddress(response.wallet_address || '')
+      setEditAddressLine(response.address_line || '')
+      setEditState(response.address_state || '')
+      setEditCity(response.address_city || '')
+      setEditPostcode(response.address_postcode || '')
+      setEditCountry(response.address_country || '')
+      setEditFirstName(response.first_name || '')
+      setEditLastName(response.last_name || '')
+      setEditBeneficiaryName(response.beneficiary_name || '')
+      setEditBeneficiaryIc(response.beneficiary_ic || '')
+      setEditBeneficiaryRelationship(response.beneficiary_relationship || '')
+      setEditBeneficiaryEmail(response.beneficiary_email || '')
+      setEditBeneficiaryPhone(response.beneficiary_phone || '')
 
-        const countryRes = await apiCountry
-        setCountryList(countryRes)
+      const countryRes = await apiCountry
+      setCountryList(countryRes)
 
-        console.log(verificationStatus)
-        console.log(country)
-      } catch (error: any) {
-        setLoading(true)
-        console.error('Error fetching user data:', error)
-        if (error.response) {
-          console.error('Response data:', error.response.data)
-          console.error('Response status:', error.response.status)
-          alert(error.response.data.error)
-        }
-      } finally {
-        setLoading(false)
+      console.log(country)
+    } catch (error: any) {
+      setLoading(true)
+      console.error('Error fetching user data:', error)
+      if (error.response) {
+        console.error('Response data:', error.response.data)
+        console.error('Response status:', error.response.status)
+        alert(error.response.data.error)
       }
+    } finally {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     fetchData()
   }, [])
 
@@ -259,6 +267,21 @@ const Profile = () => {
             <Buttons type="submit">Save</Buttons>
           </form>
 
+          {!firstName && !lastName &&<form className="grid grid-cols-1 gap-1.5">
+            <Inputss type="text" label='First Name'
+              placeholder={"Enter your last name"}
+              onChange={e => setEditFirstName(e.target.value)}
+              value={editFirstName}
+              required={true}
+            />
+            <Inputss type="text" label='Last Name'
+              placeholder={"Enter your last name"}
+              onChange={e => setEditLastName(e.target.value)}
+              value={editLastName}
+              required={true}
+            />
+          </form>}
+
           <form className="grid grid-cols-1 gap-1.5" onSubmit={toggleAddress}>
             <Inputss type="text" label='ADDRESS LINE'
               placeholder={addressLine ? addressLine : "Enter your address line"}
@@ -365,8 +388,6 @@ const Profile = () => {
           <FixedText label='Status' text={verificationStatusDisplay} />
           {verificationStatus === 'UNDER_REVIEW' && <span className="text-md">Please wait for 24 hours for verification or contact administrator.</span>}
 
-          {errorMessageVeri && <span className="text-red-500 text-md">{errorMessageVeri}</span>}
-
           {verificationStatus === 'REQUIRES_ACTION' && 
           <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
             <label className="font-semibold">Upload Document</label>
@@ -386,6 +407,7 @@ const Profile = () => {
           </form>}
           {verificationStatus === 'REJECTED' &&
             <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
+            {errorMessageVeri && <span className="text-red-500 text-md">{errorMessageVeri}</span>}
             <label className="font-semibold">Upload Document</label>
             <input type="file" 
               className="border p-2 rounded-md cursor-pointer"

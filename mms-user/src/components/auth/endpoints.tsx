@@ -162,6 +162,8 @@ export const updateUserDetails = async (userData: Partial<User>) => {
     city,
     postcode,
     country,
+    firstName,
+    lastName,
     walletAddress,
     beneficiaryName,
     beneficiaryIc,
@@ -172,6 +174,8 @@ export const updateUserDetails = async (userData: Partial<User>) => {
     ic_document_url,
    } = userData
   const response = await api.put(`/update_user/`, {
+    first_name: firstName,
+    last_name: lastName,
     address_line: addressLine,
     address_state: state,
     address_city: city,
