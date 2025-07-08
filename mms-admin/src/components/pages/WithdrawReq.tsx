@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react"
+  import { useEffect, useState } from "react"
 import Loading from "../props/Loading"
-import { getPendingTX, processPlaceAsset } from "../auth/endpoints"
+import { getWDReq, processWDAsset } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
 import dayjs from "dayjs";
 import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import { Tables } from "../props/Tables";
+import { Inputss } from "../props/Formss";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -21,20 +22,22 @@ interface Transaction {
   point_type: string;
   transaction_type: string;
   description: string;
-  reference?: string; // Reason for rejection
+  reference?: string;
 }
 
-const AssetRequest = () => {
+const WithdrawReq = () => {
 
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
+
+  const [ref, setRef] = useState<string>('')
 
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
   const fetchData = async () => {
     try {
       setLoading(true)
-      const response = await getPendingTX()
+      const response = await getWDReq()
       const formattedData = response.map((user: any) => {
       const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
       return {
@@ -62,9 +65,10 @@ const AssetRequest = () => {
     const fetchDataA = async () => {
       try {
         setLoading(true)
-        await processPlaceAsset({
+        await processWDAsset({
           tx_id: id,
-          action: 'Approve'
+          action: 'Approve',
+          reference: ref
         })
         alert('Transaction approved')
       } catch (error: any) {
@@ -81,9 +85,10 @@ const AssetRequest = () => {
     const fetchDataPA = async () => {
       try {
         setLoading(true)
-        await processPlaceAsset({
+        await processWDAsset({
           tx_id: id,
-          action: 'Reject'
+          action: 'Reject',
+          reference: ref
         })
         alert('Transaction rejected')
       } catch (error: any) {
@@ -95,21 +100,6 @@ const AssetRequest = () => {
     }
     fetchDataPA()
   }
-
-  /*
-  const isOneHourPassed = (createdDate: string) => {
-    const created = dayjs(created_datetime)
-    const now = dayjs()
-    const diffInHours = now.diff(created, 'hours')
-    return diffInHours >= 1
-  }
-
-  const isFiveMinutesPassed = (created_datetime: string) => {
-    const created = dayjs(created_datetime)
-    const now = dayjs()
-    const diffInMinutes = now.diff(created, 'minutes')
-    return diffInMinutes >= 5
-  }*/
 
 
   const columns = [
@@ -132,6 +122,16 @@ const AssetRequest = () => {
     { header: 'Amount', 
       accessor: 'amount',
       render: (value: number) => value
+    },
+    {
+      header: 'Point',
+      accessor: 'point_type',
+      render: (value: string) => value
+    },
+    {
+      header: 'Transaction',
+      accessor: 'transaction_type',
+      render: (value: string) => value
      },
     { header: 'Request Status', 
       accessor: 'request_status',
@@ -168,9 +168,19 @@ const AssetRequest = () => {
           )}
         </div>
       )
-    }}
+    }},
+    { header: 'Reference', 
+      accessor: 'reference',
+      render: (value: string) => { !value &&
+        <Inputss 
+          type="text"
+          placeholder="transaction id / rejection reason"
+          value={ref}
+          onChange={(e) => setRef(e.target.value)}
+        />
+      }
+    }
   ]
-
 
   const data = transactions
 
@@ -184,9 +194,11 @@ const AssetRequest = () => {
 
       <Tables columns={columns} data={data}
         enableFilters={true}
+        enablePagination={true}
+        enableSorting={true}
       />
     </div>
   )
 }
 
-export default AssetRequest
+export default WithdrawReq

@@ -130,7 +130,7 @@ export const apiCountry: Promise<CountryType[]> = axios.get('https://restcountri
     return []
   })
 
-
+const cloudinary_url = import.meta.env.VITE_CLOUDINARY_URL
 export const uploadToCloudinary = async (file: File, user_id: string) => {
   const formData = new FormData();
   formData.append('file', file);
@@ -140,7 +140,7 @@ export const uploadToCloudinary = async (file: File, user_id: string) => {
   const customPublicId = `verification/mms-doc/${user_id}-${file.name.replace(/\.[^/.]+$/, "")}`;
   formData.append('public_id', customPublicId);
 
-  const res = await fetch(`https://api.cloudinary.com/v1_1/ddv9fqfxw/auto/upload/`, {
+  const res = await fetch(cloudinary_url, {
     method: 'POST',
     body: formData
   });

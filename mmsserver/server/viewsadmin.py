@@ -553,13 +553,14 @@ def process_withdrawal_asset(request):
   user = request.user
   transaction_id = request.data.get('transaction_id')
   action = request.data.get('action')
+  reference = request.data.get('reference', 'Asset Withdrawal')
 
   if not transaction_id and not action:
     return Response({'error': 'Transaction ID and action are required'}, status=400)
 
   try:
     if user.is_staff:
-      result = AssetService.process_withdrawal_request(transaction_id, action)
+      result = AssetService.process_withdrawal_request(transaction_id, action, reference)
       serializer = TransactionSerializer(result)
       return Response(serializer.data, status=200)
     else:
@@ -576,13 +577,14 @@ def process_withdrawal_profit(request):
   user = request.user
   transaction_id = request.data.get('transaction_id')
   action = request.data.get('action')
+  reference = request.data.get('reference')
 
   if not transaction_id and not action:
     return Response({'error': 'Transaction ID and action are required'}, status=400)
 
   try:
     if user.is_staff:
-      result = ProfitService.process_withdrawal_request(transaction_id, action)
+      result = ProfitService.process_withdrawal_request(transaction_id, action, reference)
       serializer = TransactionSerializer(result)
       return Response(serializer.data, status=200)
     else:
@@ -599,13 +601,14 @@ def process_withdrawal_commission(request):
   user = request.user
   request_id = request.data.get('request_id')
   action = request.data.get('action')
+  reference = request.data.get('reference')
 
   if not request_id and not action:
     return Response({'error': 'Transaction ID and action are required'}, status=400)
 
   try:
     if user.is_staff:
-      result = CommissionService.process_withdrawal_request(request_id, action)
+      result = CommissionService.process_withdrawal_request(request_id, action, reference)
       serializer = WithdrawalRequestSerializer(result)
       return Response(serializer.data, status=200)
     else:

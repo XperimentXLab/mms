@@ -295,3 +295,44 @@ export const putPerformance = async (data: PerformanceData) => {
   })
   return response.data
 }
+
+
+export const getWDReq = async () => {
+  const response = await api.get('/all_withdrawal_requests/')
+  return response.data
+}
+
+interface processWDRes {
+  tx_id: string
+  action: string
+  reference?: string
+}
+export const processWDAsset = async (data: processWDRes) => {
+  const { tx_id, action, reference } = data
+  const response = await api.post('/process_withdrawal_asset/',{
+    transaction_id: tx_id,
+    action,
+    reference,
+  })
+  return response.data
+} 
+
+export const processWDProfit = async (data: processWDRes) => {
+  const { tx_id, action, reference } = data
+  const response = await api.post('/process_withdrawal_profit/',{
+    transaction_id: tx_id,
+    action,
+    reference,
+  })
+  return response.data
+}
+
+export const processWDCommission = async (data: processWDRes) => {
+  const {  tx_id, action, reference } = data
+  const response = await api.post('/process_withdrawal_commission/',{
+    request_id: tx_id,
+    action,
+    reference,
+  })
+  return response.data
+}
