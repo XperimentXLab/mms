@@ -103,7 +103,7 @@ const Profile = () => {
       setCountryList(countryRes)
 
       setFullName(`${firstName} ${lastName}`)
-
+      console.log(fullName)
       console.log(country)
     } catch (error: any) {
       setLoading(true)
