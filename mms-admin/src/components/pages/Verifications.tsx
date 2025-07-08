@@ -75,9 +75,6 @@ const Verifications = () => {
 
   const handleReject = (id: string, reason: string) => {
     const fetchData = async () => {
-      if (!reason) {
-        alert('Please fill the rejection reason')
-      }
       try {
         setLoading(true);
         await processVeri({
@@ -174,32 +171,32 @@ const Verifications = () => {
     },
     { header: 'Action', 
       accessor: 'id',
- render: (id: string) => {
-  const row = userDetailss.find(user => user.id === id);
-  if (!row) return null;
+      render: (id: string) => {
+        const row = userDetailss.find(user => user.id === id);
+        if (!row) return null;
 
-  if (row.verification_status === 'REQUIRES_ACTION') {
-    return 'User needs to upload document first.';
-  }
+        if (row.verification_status === 'REQUIRES_ACTION') {
+          return 'User needs to upload document first.';
+        }
 
-  return (
-    <div className="flex gap-2 items-center">
-      <Buttons
-        type="button"
-        onClick={() => handleApprove(id)}
-        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-      >
-        Approve
-      </Buttons>
+        return (
+          <div className="flex gap-2 items-center">
+            <Buttons
+              type="button"
+              onClick={() => handleApprove(id)}
+              className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Approve
+            </Buttons>
 
-      <RejectionInput
-        id={id} 
-        onReject={handleReject} 
-        initialReason={row.reject_reason | 'Try again'}
-      />
-    </div>
-      );
-    }
+            <RejectionInput
+              id={id} 
+              onReject={handleReject} 
+              initialReason={row.reject_reason | 'Try again'}
+            />
+          </div>
+        );
+      }
     },
     { header: 'Welcome Bonus', 
       accessor: 'is_campro',

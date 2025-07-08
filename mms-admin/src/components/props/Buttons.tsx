@@ -33,7 +33,7 @@ export const RejectionInput = ({
 }: { 
   id: string, 
   onReject: (id: string, reason: string) => void,
-  initialReason: string
+  initialReason?: string
 }) => {
   const [reason, setReason] = useState(initialReason);
 
