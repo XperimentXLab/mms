@@ -171,14 +171,13 @@ const WithdrawReq = () => {
     }},
     { header: 'Reference', 
       accessor: 'reference',
-      render: (value: string) => { !value &&
+      render: (value: string) => value ? value :
         <Inputss 
           type="text"
           placeholder="transaction id / rejection reason"
           value={ref}
-          onChange={(e) => setRef(e.target.value)}
+          onChange={e => setRef(e.target.value)}
         />
-      }
     }
   ]
 
