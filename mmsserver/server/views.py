@@ -627,7 +627,7 @@ def promo_code(request):
 
   try:
     if PromoCode.objects.filter(code=code).exists():
-      return Response({'error': 'Invalid promo code'}, status=400)
+      return Response({'error': 'Promo code already used'}, status=400)
     if len(code) == 10 :
       serializer = PromoCodeSerializer(data=request.data)
       print(request.data)
@@ -635,7 +635,7 @@ def promo_code(request):
         serializer.save(user=user)
         return Response(serializer.data, status=201)
       else: 
-        return Response(serializer.errors, status=400)
+        return Response(serializer.errors, status=401)
     else:
       return Response({'error': 'Invalid promo code'}, status=400)
       

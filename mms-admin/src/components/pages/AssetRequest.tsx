@@ -137,33 +137,38 @@ const AssetRequest = () => {
       accessor: 'request_status',
       render: (value: string) => value ?  value : 'PENDING'
      },
-    { header: 'Action', accessor: 'action',
-      render: (value: Transaction) => (
-      <div className="flex gap-2">
-        {value.request_status === 'PENDING' && (
-          <Buttons 
-            type="button"
-            disabled={value.request_status !== 'PENDING'}
-            onClick={() => handleApprove(value.id)}
-            className="px-3 py-1 cursor-pointer bg-green-500 text-white rounded hover:bg-green-600"
-          > Approve </Buttons>
-        )}
-        {value.request_status === 'PENDING' ? (
-          <Buttons
-            type="submit"
-            onClick={() => handleReject(value.id)}
-            className={`px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer`}
-          >
-            Reject
-          </Buttons>
-        ) : value.request_status === 'REJECTED' ? (
-          <span className="text-red-500">Reject</span>
-        ) : (
-          <span className="text-green-500">Approve</span>
-        )}
-      </div>
-    )
-     }
+    { header: 'Action', accessor: 'id',
+      render: (id: string) => {
+
+      const row = transactions.find(user => user.id === id);
+      if (!row) return null;
+
+      return (
+        <div className="flex gap-2">
+          {row.request_status === 'PENDING' && (
+            <Buttons 
+              type="button"
+              disabled={row.request_status !== 'PENDING'}
+              onClick={() => handleApprove(row.id)}
+              className="px-3 py-1 cursor-pointer bg-green-500 text-white rounded hover:bg-green-600"
+            > Approve </Buttons>
+          )}
+          {row.request_status === 'PENDING' ? (
+            <Buttons
+              type="submit"
+              onClick={() => handleReject(row.id)}
+              className={`px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer`}
+            >
+              Reject
+            </Buttons>
+          ) : row.request_status === 'REJECTED' ? (
+            <span className="text-red-500">Reject</span>
+          ) : (
+            <span className="text-green-500">Approve</span>
+          )}
+        </div>
+      )
+    }}
   ]
 
 
