@@ -135,7 +135,7 @@ const AssetRequest = () => {
      },
     { header: 'Request Status', 
       accessor: 'request_status',
-      render: (value: string) => value
+      render: (value: string) => value ?  value : 'PENDING'
      },
     { header: 'Action', accessor: 'action',
       render: (value: Transaction) => (
