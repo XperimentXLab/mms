@@ -350,6 +350,11 @@ class WalletService:
     def place_asset(user, amount, description="", reference=""):
         """Place asset from Master Point"""
 
+        user_ = User.objects.get(id=user.id)
+
+        if user_.verification_status != 'APPROVED':
+            raise ValidationError("User is not verified.")
+
         amount = Decimal(amount)
         if amount <= 50:
             raise ValidationError("Minimum placement amount is 50 USDT")
