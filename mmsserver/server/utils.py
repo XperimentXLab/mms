@@ -352,7 +352,7 @@ class WalletService:
 
         user_ = User.objects.get(id=user.id)
 
-        if user_.verification_status != 'APPROVED':
+        if user_.verification_status != 'REQUIRES_ACTION':
             raise ValidationError("User is not verified.")
 
         amount = Decimal(amount)
@@ -503,6 +503,9 @@ class AssetService:
     @staticmethod
     def withdraw_asset(user, amount, description="", reference=""):
         """Withdraw asset to Profit"""
+
+        if user.verification_status != 'REQUIRES_ACTION':
+            raise ValidationError("User is not verified.")
         
         if amount < 50:
             raise ValidationError("Minimum withdrawal amount is 50 USDT")
