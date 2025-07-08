@@ -96,10 +96,6 @@ const AssetRequest = () => {
     fetchDataPA()
   }
 
-  const handleReasonChange = (id: string, reason: string) => {
-    setRejectionReasons(prev => ({ ...prev, [id]: reason }))
-  }
-
   /*
   const isOneHourPassed = (createdDate: string) => {
     const created = dayjs(created_datetime)
