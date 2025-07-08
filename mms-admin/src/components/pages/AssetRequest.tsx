@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import Loading from "../props/Loading"
 import { getPendingTX, processPlaceAsset } from "../auth/endpoints"
-import Buttons, { RejectionInput } from "../props/Buttons";
+import Buttons from "../props/Buttons";
 import dayjs from "dayjs";
 import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -30,7 +30,6 @@ const AssetRequest = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [rejectionReasons, setRejectionReasons] = useState<Record<string, string>>({})
 
   const fetchData = async () => {
     try {
@@ -77,34 +76,29 @@ const AssetRequest = () => {
     }
     fetchDataA()
   }
-  
-  const handleReject = (id: string, reason: string) => {
-    const fetchDataR = async () => {
+
+  const handleReject = (id: string) => {
+    const fetchDataPA = async () => {
       try {
-        setLoading(true);
+        setLoading(true)
         await processPlaceAsset({
-          user_id: id,
-          action: 'Reject',
-          reject_reason: reason || 'Try again'
-        });
-        setUserDetailss(prev => prev.map(user =>
-          user.id === id ? {
-            ...user,
-            verification_status: 'REJECTED',
-            reject_reason: reason
-          } : user
-        ));
-        alert('Verification rejected');
+          tx_id: id,
+          action: 'Reject'
+        })
+        alert('Transaction rejected')
       } catch (error: any) {
-        setErrorMessage(error.response?.data?.error || 'Something went wrong');
+        setErrorMessage(error.response.data.error)
       } finally {
-        setLoading(false);
+        setLoading(false)
         fetchData()
       }
-    };
-    fetchDataR();
-  };
+    }
+    fetchDataPA()
+  }
 
+  const handleReasonChange = (id: string, reason: string) => {
+    setRejectionReasons(prev => ({ ...prev, [id]: reason }))
+  }
 
   /*
   const isOneHourPassed = (createdDate: string) => {
@@ -159,11 +153,13 @@ const AssetRequest = () => {
           > Approve </Buttons>
         )}
         {value.request_status === 'PENDING' ? (
-          <RejectionInput
-            id={id} 
-            onReject={handleReject} 
-            initialReason={row.reject_reason || ''}
-          />
+          <Buttons
+            type="submit"
+            onClick={() => handleReject(value.id)}
+            className={`px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer`}
+          >
+            Reject
+          </Buttons>
         ) : value.request_status === 'REJECTED' ? (
           <span className="text-red-500">Reject</span>
         ) : (
