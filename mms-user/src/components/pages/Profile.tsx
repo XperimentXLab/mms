@@ -99,10 +99,11 @@ const Profile = () => {
       setEditBeneficiaryEmail(response.beneficiary_email || '')
       setEditBeneficiaryPhone(response.beneficiary_phone || '')
 
+      setFullName(`${response.first_name} ${response.last_name}`)
+
       const countryRes = await apiCountry
       setCountryList(countryRes)
 
-      console.log(fullName)
       console.log(country)
     } catch (error: any) {
       setLoading(true)
@@ -119,7 +120,6 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData()
-    setFullName(`${firstName} ${lastName}`)
   }, [])
 
   const toggleWalletAddress = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -407,7 +407,7 @@ const Profile = () => {
             
           </form>}
           {verificationStatus === 'REJECTED' &&
-            <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
+            <form className="grid grid-cols-1 gap-2 justify-center" onSubmit={toggleVerification}>
             {errorMessageVeri && <span className="text-red-500 text-md">{errorMessageVeri}</span>}
             <label className="font-semibold">Upload Document</label>
             <input type="file" 
