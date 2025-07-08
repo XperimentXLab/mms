@@ -48,7 +48,7 @@ const Verifications = () => {
   }, [])
 
   const handleApprove = (id: string) => {
-    const fetchData = async () => {
+    const fetchDataA = async () => {
       try {
         setLoading(true)
           await processVeri({
@@ -67,14 +67,15 @@ const Verifications = () => {
         setErrorMessage(error.response.data.error)
       } finally {
         setLoading(false)
+        fetchData()
       }
     }
-    fetchData()
+    fetchDataA()
   }
 
 
   const handleReject = (id: string, reason: string) => {
-    const fetchData = async () => {
+    const fetchDataR = async () => {
       try {
         setLoading(true);
         await processVeri({
@@ -94,9 +95,10 @@ const Verifications = () => {
         setErrorMessage(error.response?.data?.error || 'Something went wrong');
       } finally {
         setLoading(false);
+        fetchData()
       }
     };
-    fetchData();
+    fetchDataR();
   };
 
 
