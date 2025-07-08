@@ -195,7 +195,7 @@ const Verifications = () => {
       <RejectionInput
         id={id} 
         onReject={handleReject} 
-        initialReason={row.reject_reason}
+        initialReason={row.reject_reason | 'Try again'}
       />
     </div>
       );
