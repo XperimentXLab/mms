@@ -504,7 +504,7 @@ class AssetService:
     def withdraw_asset(user, amount, description="", reference=""):
         """Withdraw asset to Profit"""
 
-        if user.verification_status != 'REQUIRES_ACTION':
+        if user.verification_status != 'APPROVED':
             raise ValidationError("User is not verified.")
         
         if amount < 50:

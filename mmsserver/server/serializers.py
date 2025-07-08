@@ -109,7 +109,9 @@ class UserSerializer(serializers.ModelSerializer):
   
   def validate_username(self, value):
     if not (isinstance(value, str) and value.startswith('MMS')):
-      raise serializers.ValidationError(f'Username must start with MMS.')
+      raise serializers.ValidationError('Username must start with MMS.')
+    if ' ' in value:
+      raise serializers.ValidationError('Username cannot have spaces')
     if User.objects.filter(username=value).exists():
       raise serializers.ValidationError('Username already in use')
     return value

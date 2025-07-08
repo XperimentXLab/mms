@@ -76,11 +76,15 @@ def get_username(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
+  username = request.data.get('username')
   first_name = request.data.get('first_name')
   last_name = request.data.get('last_name')
 
   if not (first_name and last_name):
     return Response({'error': 'First name and last name are required'}, status=400)
+
+  if ' ' in username:
+    return Response({'error': 'Username cannot have spaces'})
     
   try:
     serializer = UserSerializer(data=request.data)
@@ -92,6 +96,8 @@ def register_user(request):
     
   except KeyError as e:
     return Response({'error': str(e)}, 400)
+  except ValidationError as e:
+    return Response({'error': str(e)}, 401)
   except Exception as e:
     logger.error(f"Unexpected error during user registration: {e}")
     return Response({'error': 'An unexpected error occurred. Please contact administrator'}, status=500)
