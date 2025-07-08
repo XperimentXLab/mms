@@ -133,9 +133,9 @@ const Verifications = () => {
       accessor: 'ic',
       render: (value: number) => value
      },
-    { header: 'Wallet Address', 
-      accessor: 'wallet_address',
-      render: (value: string) => value ? value : 'Not Set'
+    { header: 'Address Line', 
+      accessor: 'address_line',
+      render: (value: string) => value ? value : '-'
      },
     { header: 'City', 
       accessor: 'address_city',
