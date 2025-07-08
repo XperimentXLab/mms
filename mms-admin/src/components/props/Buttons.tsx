@@ -33,7 +33,7 @@ export const RejectionInput = ({
 }: { 
   id: string, 
   onReject: (id: string, reason: string) => void,
-  initialReason?: string
+  initialReason: string
 }) => {
   const [reason, setReason] = useState(initialReason);
 
@@ -45,6 +45,7 @@ export const RejectionInput = ({
         onChange={(e) => setReason(e.target.value)}
         placeholder="Rejection reason"
         className="px-2 py-1 border rounded"
+        required={true}
       />
       <Buttons
         type="button"

@@ -75,6 +75,9 @@ const Verifications = () => {
 
   const handleReject = (id: string, reason: string) => {
     const fetchData = async () => {
+      if (!reason) {
+        alert('Please fill the rejection reason')
+      }
       try {
         setLoading(true);
         await processVeri({
@@ -192,7 +195,7 @@ const Verifications = () => {
       <RejectionInput
         id={id} 
         onReject={handleReject} 
-        initialReason={row.reject_reason || ''}
+        initialReason={row.reject_reason}
       />
     </div>
       );
