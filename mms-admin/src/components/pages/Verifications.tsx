@@ -131,7 +131,7 @@ const Verifications = () => {
      },
     { header: 'I/C', 
       accessor: 'ic',
-      render: (value: number) => value
+      render: (value: number) => value ? value : '-'
      },
     { header: 'Address Line', 
       accessor: 'address_line',
@@ -192,7 +192,7 @@ const Verifications = () => {
             <RejectionInput
               id={id} 
               onReject={handleReject} 
-              initialReason={row.reject_reason | 'Try again'}
+              initialReason={row.reject_reason?.trim() ? row.reject_reason : 'Try again'}
             />
           </div>
         );
