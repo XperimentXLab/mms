@@ -137,6 +137,22 @@ const Profile = () => {
     }
   }
 
+  const toggleFullName = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      await updateUserDetails({
+        firstName: editFirstName,
+        lastName: editLastName,
+      })
+      alert('Name successfully saved')
+    } catch (error: any) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const toggleAddress = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
@@ -268,7 +284,8 @@ const Profile = () => {
             <Buttons type="submit">Save</Buttons>
           </form>
 
-          {!firstName && !lastName &&<form className="grid grid-cols-1 gap-1.5">
+          {!firstName && !lastName &&
+          <form onSubmit={toggleFullName} className="grid grid-cols-1 gap-1.5">
             <Inputss type="text" label='First Name'
               placeholder={"Enter your last name"}
               onChange={e => setEditFirstName(e.target.value)}
@@ -281,6 +298,7 @@ const Profile = () => {
               value={editLastName}
               required={true}
             />
+            <Buttons type="submit">Save</Buttons>
           </form>}
 
           <form className="grid grid-cols-1 gap-1.5" onSubmit={toggleAddress}>
