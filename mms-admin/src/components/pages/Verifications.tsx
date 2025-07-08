@@ -80,7 +80,7 @@ const Verifications = () => {
         await processVeri({
           user_id: id,
           action: 'Reject',
-          reject_reason: reason.trim() ? reason : 'Try again'
+          reject_reason: reason || 'Try again'
         });
         setUserDetailss(prev => prev.map(user =>
           user.id === id ? {
@@ -192,7 +192,7 @@ const Verifications = () => {
             <RejectionInput
               id={id} 
               onReject={handleReject} 
-              initialReason={row.reject_reason}
+              initialReason={row.reject_reason || ''}
             />
           </div>
         );

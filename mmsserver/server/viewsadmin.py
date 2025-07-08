@@ -622,7 +622,7 @@ def process_verification(request):
   user = request.user
   user_id = request.data.get('user_id')
   action = request.data.get('action')
-  reject_reason = request.data.get('reject_reason')
+  reject_reason = request.data.get('reject_reason', 'Try again')
 
   user_ = User.objects.get(id=user_id)
   try:
