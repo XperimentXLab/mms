@@ -50,7 +50,7 @@ export const RejectionInput = ({
       <Buttons
         type="button"
         onClick={() => onReject(id, reason)}
-        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+        className="px-3 py-1 bg-red-500 text-white rounded cursor-pointer hover:bg-red-600"
         disabled={!reason.trim()}
       >
         Reject
