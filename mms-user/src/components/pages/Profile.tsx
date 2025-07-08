@@ -68,7 +68,6 @@ const Profile = () => {
       setEmail(response.email)
       setFirstName(response.first_name)
       setLastName(response.last_name)
-      setFullName(`${firstName} ${lastName}` || '')
       setIc(response.ic)
       setWalletAddress(response.wallet_address)
       setAddressLine(response.address_line)
@@ -102,6 +101,8 @@ const Profile = () => {
 
       const countryRes = await apiCountry
       setCountryList(countryRes)
+
+      setFullName(`${firstName} ${lastName}`)
 
       console.log(country)
     } catch (error: any) {
