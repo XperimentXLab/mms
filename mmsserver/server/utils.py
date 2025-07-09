@@ -351,10 +351,6 @@ class WalletService:
     def place_asset(user, amount, description="", reference=""):
         """Place asset from Master Point"""
 
-        user_ = User.objects.select_for_update().get(id=user.id)
-        if user_.verification_status != 'APPROVED':
-            raise ValidationError("User is not verified.")
-
         amount = Decimal(amount)
         if amount <= 50:
             raise ValidationError("Minimum placement amount is 50 USDT")
@@ -367,6 +363,11 @@ class WalletService:
             raise ValidationError("Insufficient Master Point balance")
         
         with db_transaction.atomic():
+
+            user_ = User.objects.select_for_update().get(id=user.id)
+            if user_.verification_status != 'APPROVED':
+                raise ValidationError("User is not verified.")
+
             amount = Decimal(amount)
             wallet.master_point_balance -= amount
             wallet.save()
