@@ -54,9 +54,9 @@ const Assets = () => {
       resetForm()
     } catch (error: any) {
       if (error.response && error.response.status === 400) {
-        alert(error.respoonse.data.error)
+        alert(error.response.data.error)
       } else {
-        alert(error)
+        alert(error.response.data.error)
       }
     } finally {
       setLoading(false)
