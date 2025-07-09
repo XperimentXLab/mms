@@ -57,32 +57,32 @@ const Wallet = () => {
     { type: 'Introducer', amount: introducerBalance }
   ]
 
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const resUserDetails = await userDetails()
+      const resWallet = await getWallet()
+      setWalletAddress(resUserDetails.wallet_address || undefined)
+      setMasterBalance(resWallet.master_point_balance || 0)
+      setProfitBalance(resWallet.profit_point_balance || 0)
+      setAffiliateBalance(resWallet.affiliate_point_balance || 0)
+      setIntroducerBalance(resWallet.introducer_point_balance || 0)
+      setCommissionAmount(
+        Number(resWallet.affiliate_point_balance || 0) +
+        Number(resWallet.introducer_point_balance || 0)
+      )
+
+      // Request Deposit Master Point
+      //setUserID(resUserDetails.id)
+      //setUsername(resUserDetails.username)
+    } catch (error: any) {
+      console.error('Error fetching user data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const resUserDetails = await userDetails()
-        const resWallet = await getWallet()
-        setWalletAddress(resUserDetails.wallet_address || undefined)
-        setMasterBalance(resWallet.master_point_balance || 0)
-        setProfitBalance(resWallet.profit_point_balance || 0)
-        setAffiliateBalance(resWallet.affiliate_point_balance || 0)
-        setIntroducerBalance(resWallet.introducer_point_balance || 0)
-        setCommissionAmount(
-          Number(resWallet.affiliate_point_balance || 0) +
-          Number(resWallet.introducer_point_balance || 0)
-        )
-
-        // Request Deposit Master Point
-        //setUserID(resUserDetails.id)
-        //setUsername(resUserDetails.username)
-      } catch (error: any) {
-        console.error('Error fetching user data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
     fetchData()
 }, [])
 
@@ -107,10 +107,11 @@ const Wallet = () => {
         alert('Invalid input. Please check your data.')
       } else {
         console.error('Error during transfer:', error)
-        alert('An error occurred while processing your request. Please try again later.')
+        alert(error.response.data.error)
       }
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 
@@ -121,7 +122,7 @@ const Wallet = () => {
       setLoading(true)
       window.location.href = `https://www.wasap.my/601172840184/Request%20Deposit%20${username}%20(${userID})%20For%20${depositPoint}`
     } catch (error: any) {
-      console.error(error)
+      console.error(error.response.data.error)
     } finally {
       setLoading(false)
     }
@@ -149,10 +150,11 @@ const Wallet = () => {
       if (error.response && error.response.status === 400) {
         alert(error.response.data.error)
       } else {
-        alert('An error occurred while processing your withdrawal request. Please try again later.')
+        alert(error.response.data.error)
       }
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 
@@ -171,10 +173,11 @@ const Wallet = () => {
       if (error.response && error.response.status === 400) {
         alert(error.response.data.error)
       } else {
-        alert('An error occurred while processing your profit conversion request. Please try again later.')
+        alert(error.response.data.error)
       }
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 
@@ -201,10 +204,11 @@ const Wallet = () => {
       if (error.response && error.response.status === 400) {
         alert(error.response.data.error)
       } else {
-        alert('An error occurred while processing your withdrawal request. Please try again later.')
+        alert(error.response.data.error)
       }
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 
@@ -223,10 +227,11 @@ const Wallet = () => {
       if (error.response && error.response.status === 400) {
         alert(error.response.data.error)
       } else {
-        alert('An error occurred while processing your commission conversion request. Please try again later.')
+        alert(error.response.data.error)
       }
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 

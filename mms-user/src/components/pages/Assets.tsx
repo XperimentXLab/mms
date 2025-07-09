@@ -19,21 +19,22 @@ const Assets = () => {
     setPlaceAssetPoint(0)
   }
 
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const resWallet = await getWallet()
+      const resAsset = await getAsset()
+      setMasterBalance(resWallet.master_point_balance || 0)
+      setAssetBalance(resAsset.amount || 0)
+    } catch (error: any) {
+      console.error('Error fetching user data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const resWallet = await getWallet()
-        const resAsset = await getAsset()
-        setMasterBalance(resWallet.master_point_balance || 0)
-        setAssetBalance(resAsset.amount || 0)
-      } catch (error: any) {
-        console.error('Error fetching user data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
     fetchData()
   }, [])
 
@@ -55,11 +56,11 @@ const Assets = () => {
       if (error.response && error.response.status === 400) {
         alert(error.respoonse.data.error)
       } else {
-        console.error('Error placing asset:', error)
-        alert('An error occurred while placing the asset.')
+        alert(error)
       }
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 
