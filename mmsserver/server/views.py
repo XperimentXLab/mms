@@ -481,7 +481,7 @@ def withdraw_profit(request):
     return Response({'error': 'Amount must be in number'}, status=400)
 
   try:
-    wallet, withdrawal_request  = ProfitService.request_withdrawal(
+    withdrawal_request, wallet = ProfitService.request_withdrawal(
       user,
       amount,
       reference

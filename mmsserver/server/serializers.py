@@ -300,12 +300,17 @@ class TransactionSerializer(serializers.ModelSerializer):
 class WithdrawalRequestSerializer(serializers.ModelSerializer):
 
   request_status_display = serializers.SerializerMethodField()
+  user_id = serializers.SerializerMethodField()
+  username = serializers.SerializerMethodField()
+  wallet_address = serializers.SerializerMethodField()
+  reference = serializers.SerializerMethodField()
 
   class Meta:
     model = WithdrawalRequest
     fields = [
       'id',
-      'user',
+      'user_id',
+      'username',
       'amount',
       'actual_amount',
       'fee',
@@ -313,26 +318,49 @@ class WithdrawalRequestSerializer(serializers.ModelSerializer):
       'point_type',
       'created_at',
       'processed_at',
-      'request_status',
       'request_status_display',
+      'wallet_address',
       'reference',
-      'description'
     ]
     read_only_fields = [
       'id',
+      'user_id',
+      'username',
       'created_at',
       'processed_at',
       'amount',
+      'reference',
       'actual_amount',
       'fee',
       'fee_rate',
       'point_type'
       'request_status_display',
+      'wallet_address',
     ]
 
   def get_request_status_display(self, obj):
     if obj.transaction:
         return obj.transaction.request_status
+    return None
+  
+  def get_username(self, obj):
+    if obj.transaction:
+      return obj.transaction.user.username
+    return None
+  
+  def get_wallet_address(self, obj):
+    if obj.transaction:
+      return obj.transaction.user.wallet_address
+    return None
+  
+  def get_user_id(self, obj):
+    if obj.transaction:
+      return obj.transaction.user.id
+    return None
+  
+  def get_reference(self, obj):
+    if obj.transaction:
+      return obj.transaction.reference
     return None
 
 class DepositLockSerializer(serializers.ModelSerializer):

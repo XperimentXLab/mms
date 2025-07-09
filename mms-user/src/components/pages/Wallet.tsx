@@ -103,11 +103,11 @@ const Wallet = () => {
       setMasterPoint(0)
       setReceiver('')
     } catch (error: any) {
-      if (error.response && error.response.status === 400) {
-        alert('Invalid input. Please check your data.')
-      } else {
-        console.error('Error during transfer:', error)
+      if (error.response && error.response.status === 400 || error.response.status === 401) {
         alert(error.response.data.error)
+      } else {
+        console.log(error)
+        alert('Error occured during transfering. Please try again')
       }
     } finally {
       setLoading(false)
@@ -135,9 +135,6 @@ const Wallet = () => {
       if (profitPoint <= 0) {
         alert('Please enter a valid amount.')
       }
-      if (walletAddress === undefined) {
-        alert('Please set your wallet address in the profile page.')
-      }
       setReferenceWithdraw(walletAddress || '')
       await withdrawProfit({
         amount: profitPoint,
@@ -147,10 +144,11 @@ const Wallet = () => {
       setProfitPoint(0)
     } catch (error: any) {
       console.error('Error during withdrawal:', error)
-      if (error.response && error.response.status === 400) {
+      if (error.response && error.response.status === 400 || error.response.status === 401) {
         alert(error.response.data.error)
       } else {
-        alert(error.response.data.error)
+        console.log(error)
+        alert('Error occured during withdrawal request. Please try again')
       }
     } finally {
       setLoading(false)
@@ -170,10 +168,11 @@ const Wallet = () => {
       })
     } catch (error: any) {
       console.error('Error during profit conversion:', error)
-      if (error.response && error.response.status === 400) {
+      if (error.response && error.response.status === 400 || error.response.status === 401) {
         alert(error.response.data.error)
       } else {
-        alert(error.response.data.error)
+        console.log(error)
+        alert('Error occured during withdrawal request. Please try again')
       }
     } finally {
       setLoading(false)
@@ -201,10 +200,11 @@ const Wallet = () => {
       setCommissionPoint(0)
     } catch (error: any) {
       console.error('Error during commission withdrawal:', error)
-      if (error.response && error.response.status === 400) {
+      if (error.response && error.response.status === 400 ||  error.response.status === 401) {
         alert(error.response.data.error)
       } else {
-        alert(error.response.data.error)
+        console.log(error)
+        alert('Error occured during withdrawal request. Please try again')
       }
     } finally {
       setLoading(false)
@@ -224,10 +224,11 @@ const Wallet = () => {
       })
     } catch (error: any) {
       console.error('Error during commission conversion:', error)
-      if (error.response && error.response.status === 400) {
+      if (error.response && error.response.status === 400 ||  error.response.status === 401) {
         alert(error.response.data.error)
       } else {
-        alert(error.response.data.error)
+        console.log(error)
+        alert('Error occured during converting. Please try again')
       }
     } finally {
       setLoading(false)
@@ -290,7 +291,7 @@ const Wallet = () => {
               value={String(profitPoint)}
               required={true}
             />
-            <Buttons type="submit" disabled={true}>Withdraw</Buttons>
+            <Buttons type="submit" >Withdraw</Buttons>
           </form>
           <InfoWithdraw />
 

@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import { Tables } from "../props/Tables";
-import { Inputss } from "../props/Formss";
+import { RefInput } from "../props/Formss";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -18,10 +18,11 @@ interface Transaction {
   created_datetime: string;
   username: string; 
   amount: number;
-  request_status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  actual_amount: number
+  request_status_display: 'PENDING' | 'APPROVED' | 'REJECTED';
   point_type: string;
   transaction_type: string;
-  description: string;
+  description?: string;
   reference?: string;
 }
 
@@ -45,12 +46,16 @@ const WithdrawReq = () => {
         created_date: dt.format("YYYY-MM-DD"),
         created_time: dt.format("HH:mm:ss"),
         created_datetime: dt.format("YYYY-MM-DD HH:mm:ss"),
-        username: user.username,
       }
     });
       setTransactions(formattedData)
     } catch (error: any) {
-      setErrorMessage(error.response.data.error)
+      if (error.response && error.response.status == 400 || error.response.status == 401) {
+        setErrorMessage(error.response.data.error)
+        alert(error.response.data.error)
+      } else {
+        console.error(error)
+      }
     } finally {
       setLoading(false)
     }
@@ -61,44 +66,54 @@ const WithdrawReq = () => {
   }, [])
 
 
-  const handleApprove = (id: string) => {
-    const fetchDataA = async () => {
-      try {
-        setLoading(true)
-        await processWDAsset({
-          tx_id: id,
-          action: 'Approve',
-          reference: ref
-        })
-        alert('Transaction approved')
-      } catch (error: any) {
-        setErrorMessage(error.response.data.error)
-      } finally {
-        setLoading(false)
-        fetchData()
-      }
+  const handleApprove = async (id: string) => {
+    if (!ref) {
+      alert('Please fill in transaction id first.')
     }
-    fetchDataA()
+    try {
+      setLoading(true)
+      await processWDAsset({
+        tx_id: id,
+        action: 'Approve',
+        reference: ref
+      })
+      alert('Transaction approved')
+    } catch (error: any) {
+      if (error.response && error.response.status == 400 || error.response.status == 401) {
+        setErrorMessage(error.response.data.error)
+        alert(error.response.data.error)
+      } else {
+        console.error(error)
+      }
+    } finally {
+      setLoading(false)
+      fetchData()
+    }
   }
 
-  const handleReject = (id: string) => {
-    const fetchDataPA = async () => {
-      try {
-        setLoading(true)
-        await processWDAsset({
-          tx_id: id,
-          action: 'Reject',
-          reference: ref
-        })
-        alert('Transaction rejected')
-      } catch (error: any) {
-        setErrorMessage(error.response.data.error)
-      } finally {
-        setLoading(false)
-        fetchData()
-      }
+  const handleReject = async (id: string) => {
+    if (!ref) {
+      alert('Please fill in rejection reason first!')
     }
-    fetchDataPA()
+    try {
+      setLoading(true)
+      await processWDAsset({
+        tx_id: id,
+        action: 'Reject',
+        reference: ref
+      })
+      alert('Transaction rejected')
+    } catch (error: any) {
+      if (error.response && error.response.status == 400 || error.response.status == 401) {
+        setErrorMessage(error.response.data.error)
+        alert(error.response.data.error)
+      } else {
+        console.error(error)
+      }
+    } finally {
+      setLoading(false)
+      fetchData()
+    }
   }
 
 
@@ -112,7 +127,7 @@ const WithdrawReq = () => {
       render: (value: string) => value
      },
     { header: 'User ID', 
-      accessor: 'user',
+      accessor: 'user_id',
       render: (value: string) => value
      },
     { header: 'Username', 
@@ -129,56 +144,61 @@ const WithdrawReq = () => {
       render: (value: string) => value
     },
     {
-      header: 'Transaction',
-      accessor: 'transaction_type',
+      header: 'Wallet Address',
+      accessor: 'wallet_address',
       render: (value: string) => value
      },
+    { header: 'Actual Amount', 
+      accessor: 'actual_amount',
+      render: (value: number) => value
+    },
     { header: 'Request Status', 
-      accessor: 'request_status',
+      accessor: 'request_status_display',
       render: (value: string) => value ?  value : 'PENDING'
      },
+    { header: 'Reference', 
+      accessor: 'reference',
+      render: (value: string) => value ? value : (
+        <RefInput 
+          placeholder="tx id / rejection reason"
+          value={ref}
+          onChange={setRef}
+        />
+      )
+    },
     { header: 'Action', accessor: 'id',
       render: (id: string) => {
 
-      const row = transactions.find(user => user.id === id);
-      if (!row) return null;
+        const row = transactions.find(user => user.id === id);
+        if (!row) return null;
 
-      return (
-        <div className="flex gap-2">
-          {row.request_status === 'PENDING' && (
-            <Buttons 
-              type="button"
-              disabled={row.request_status !== 'PENDING'}
-              onClick={() => handleApprove(row.id)}
-              className="px-3 py-1 cursor-pointer bg-green-500 text-white rounded hover:bg-green-600"
-            > Approve </Buttons>
-          )}
-          {row.request_status === 'PENDING' ? (
-            <Buttons
-              type="submit"
-              onClick={() => handleReject(row.id)}
-              className={`px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer`}
-            >
-              Reject
-            </Buttons>
-          ) : row.request_status === 'REJECTED' ? (
-            <span className="text-red-500">Reject</span>
-          ) : (
-            <span className="text-green-500">Approve</span>
-          )}
-        </div>
-      )
-    }},
-    { header: 'Reference', 
-      accessor: 'reference',
-      render: (value: string) => value ? value :
-        <Inputss 
-          type="text"
-          placeholder="transaction id / rejection reason"
-          value={ref}
-          onChange={e => setRef(e.target.value)}
-        />
-    }
+        return (
+          <div className="flex gap-2">
+            {row.request_status_display === 'PENDING' && (
+              <Buttons 
+                type="button"
+                disabled={row.request_status_display !== 'PENDING'}
+                onClick={() => handleApprove(row.id)}
+                className="px-3 py-1 cursor-pointer bg-green-500 text-white rounded hover:bg-green-600"
+              > Approve </Buttons>
+            )}
+            {row.request_status_display === 'PENDING' ? (
+              <Buttons
+                type="submit"
+                onClick={() => handleReject(row.id)}
+                className={`px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer`}
+              >
+                Reject
+              </Buttons>
+            ) : row.request_status_display === 'REJECTED' ? (
+              <span className="text-red-500">Reject</span>
+            ) : (
+              <span className="text-green-500">Approve</span>
+            )}
+          </div>
+        )
+      }
+    },
   ]
 
   const data = transactions
@@ -187,7 +207,7 @@ const WithdrawReq = () => {
     <div className="flex m-5 justify-center flex-col">
       { loading && <Loading />}
 
-      <span className="font-semibold text-white">Place Asset Request</span>
+      <span className="font-semibold text-white">Withdrawal Request</span>
 
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span> }
 

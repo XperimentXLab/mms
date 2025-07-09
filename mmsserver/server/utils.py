@@ -598,6 +598,11 @@ class ProfitService:
     def request_withdrawal(user, amount, reference=""):
         """Request Profit Point withdrawal (min 50 USDT, 3% fee)"""
 
+        user_ = User.objects.get(id=user.id)
+        user_wallet_address = user_.wallet_address
+        if user_wallet_address is None:
+            raise ValidationError("Please set your wallet address in the profile page.")
+
         if amount < 50:
             raise ValidationError("Minimum withdrawal amount is 50 USDT")
 
@@ -632,7 +637,7 @@ class ProfitService:
                 transaction_type='WITHDRAWAL',
                 point_type='PROFIT',
                 amount=amount,
-                description=f"Profit Withdrawal request #{withdrawal_request.id} (Pending): {amount}",
+                description=f"Profit withdrawal to be received: {actual_amount}",
                 request_status='PENDING',
                 reference=reference
             )
@@ -659,9 +664,13 @@ class ProfitService:
                 txn.request_status = 'APPROVED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
+
+                fee_rate = Decimal('0.03') #Fee Rate 3%
+                fee = txn.amount * fee_rate
+                actual_amount = txn.amount - fee
                 
                 # Update transaction description
-                txn.description = f"Withdrawal request {txn.amount} (Approved)"
+                txn.description = f"Profit withdrawal to be received: {actual_amount}"
                 txn.save()
                 
             elif action == 'REJECTED':
@@ -676,7 +685,7 @@ class ProfitService:
                 
                 # Update transaction description
                 txn = withdrawal_request.transaction
-                txn.description = f"Withdrawal request {txn.amount} (Rejected - Refunded)"
+                txn.description = f"Withdrawal request {txn.amount} has been refunded"
                 txn.save()
         
         return txn

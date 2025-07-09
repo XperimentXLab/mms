@@ -89,3 +89,30 @@ export const InputwithVal: React.FC<InputssProps> = ({
 }
 
 
+interface RefInputProps {
+  id?: string
+  placeholder: string
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export const RefInput = ({
+  id,
+  placeholder,
+  onChange,
+  value
+}: RefInputProps) => {
+
+    return(
+      <input
+        type="text"
+        placeholder={placeholder}
+        onChange={e => onChange(e.target.value)}
+        value={value}
+        id={id}
+        required={true}
+        className="px-2 py-1 border rounded"
+      />
+    )
+  }
+
