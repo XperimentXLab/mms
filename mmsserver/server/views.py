@@ -166,7 +166,7 @@ def update_password(request):
   try:
     validate_password(new_password, user=user)
   except ValidationError as e:
-    return Response({'error': list(e.messages)}, status=400)
+    return Response({'error': list(e)}, status=400)
   except Exception as e:
     logger.error(f"Error during password update for {user.username}: {str(e)}")
     return Response({'error': 'An unexpected error occurred.'}, status=500)
@@ -415,7 +415,7 @@ def transfer_master(request):
     serializer = WalletSerializer([sender_wallet, receiver_wallet], many=True)
     return Response(serializer.data, status=200)
   except ValidationError as e:
-    return Response({'error': list(e.messages)}, status=400)
+    return Response({'error': list(e)}, status=400)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
@@ -448,7 +448,7 @@ def place_asset(request):
       'asset': serializer_asset.data
     }, status=200)
   except ValidationError as e:
-    return Response({'error': str(e)}, status=401)
+    return Response({'error': list(e)}, status=401)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
@@ -481,7 +481,7 @@ def withdraw_profit(request):
       'withdrawal_request': serializer_withdrawal_request.data
     }, status=200)
   except ValidationError as e:
-    return Response({'error': list(e.messages)}, status=400)
+    return Response({'error': list(e)}, status=400)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
@@ -508,7 +508,7 @@ def convert_profit_to_master(request):
     serializer = WalletSerializer(result)
     return Response(serializer.data, status=200)
   except ValidationError as e:
-    return Response({'error': list(e.messages)}, status=400)
+    return Response({'error': list(e)}, status=400)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
@@ -541,7 +541,7 @@ def withdraw_commission(request):
       'withdrawal_request': serializer_withdrawal_request.data
     }, status=200)
   except ValidationError as e:
-    return Response({'error': list(e.messages)}, status=400)
+    return Response({'error': list(e)}, status=400)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
@@ -568,7 +568,7 @@ def convert_commission_to_master(request):
     serializer = WalletSerializer(result)
     return Response(serializer.data, status=200)
   except ValidationError as e:
-    return Response({'error': list(e.messages)}, status=500)
+    return Response({'error': list(e)}, status=500)
 
 
 ## Asset ##
@@ -597,7 +597,7 @@ def withdraw_asset(request):
     serializer = AssetSerializer(result)
     return Response(serializer.data, status=200)
   except ValidationError as e:
-    return Response({'error': list(e.messages)}, status=400)
+    return Response({'error': list(e)}, status=400)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
