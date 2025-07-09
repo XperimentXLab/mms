@@ -146,7 +146,7 @@ const Operation = () => {
       setLoading(true)
       const response = await distribute_profit()
       alert(response.message)
-      alert(response.metrics)
+      alert(JSON.stringify(response.metrics))
       /*
       {
         "metrics": {
@@ -156,10 +156,10 @@ const Operation = () => {
             "l2_bonuses_paid": ..,
             "skipped_users": ..
         },
-        "profit_wallets_updated": 14,
-        "affiliate_wallets_updated": 9,
-        "profit_tx_created": 14,
-        "affiliate_tx_created": 25
+        "profit_wallets_updated": ..,
+        "affiliate_wallets_updated": ..,
+        "profit_tx_created": ..,
+        "affiliate_tx_created": ..
       }
       */
     } catch (error: any) {
