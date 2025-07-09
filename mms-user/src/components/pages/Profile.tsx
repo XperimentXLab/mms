@@ -347,19 +347,19 @@ const Profile = () => {
         <form className="grid grid-rows-3 gap-3 py-3 px-5 w-full shadow-red-300 bg-white shadow-2xl rounded-2xl border items-center" onSubmit={toggleBeneficiary}>
           <h1 className="font-bold text-lg underline">Beneficiary Information</h1>
 
-          <Inputss type="text" label='BENEFCIARY NAME'
+          <Inputss type="text" label='BENEFICIARY NAME'
             placeholder={beneficiaryName ? beneficiaryName : "Enter beneficiary name"}
             onChange={e => setEditBeneficiaryName(e.target.value)}
             value={editBeneficiaryName}
           />
-          <Inputss type="text" label='BENEFCIARY I/C'
+          <Inputss type="text" label='BENEFICIARY I/C'
             placeholder={beneficiaryIc ? beneficiaryIc : "Enter beneficiary I/C"}
             onChange={e => setEditBeneficiaryIc(e.target.value)}
             value={editBeneficiaryIc}  
           />
 
           <div className="grid grid-row-2 gap-2">
-            <label className="font-semibold">BENEFCIARY RELATIONSHIP</label>
+            <label className="font-semibold">BENEFICIARY RELATIONSHIP</label>
             <select className="border py-1 px-2 rounded-md"
               onChange={e => setEditBeneficiaryRelationship(e.target.value)}
               value={editBeneficiaryRelationship}
@@ -373,12 +373,12 @@ const Profile = () => {
             </select>
           </div>
 
-          <Inputss type="email" label='BENEFCIARY EMAIL'
+          <Inputss type="email" label='BENEFICIARY EMAIL'
             placeholder={beneficiaryEmail ? beneficiaryEmail : "Enter beneficiary email"}
             onChange={e => setEditBeneficiaryEmail(e.target.value)}
             value={editBeneficiaryEmail}  
           />
-          <Inputss type="text" label='BENEFCIARY PHONE'
+          <Inputss type="text" label='BENEFICIARY PHONE'
             placeholder={beneficiaryPhone ? beneficiaryPhone : "Enter beneficiary phone"}
             onChange={e => setEditBeneficiaryPhone(e.target.value)}
             value={editBeneficiaryPhone}  
