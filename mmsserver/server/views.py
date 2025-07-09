@@ -448,7 +448,7 @@ def place_asset(request):
       'asset': serializer_asset.data
     }, status=200)
   except ValidationError as e:
-    return Response({'error': list(e.messages)}, status=400)
+    return Response({'error': str(e)}, status=401)
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
