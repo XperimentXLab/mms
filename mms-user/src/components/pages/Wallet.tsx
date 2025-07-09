@@ -291,7 +291,7 @@ const Wallet = () => {
               value={String(profitPoint)}
               required={true}
             />
-            <Buttons type="submit" >Withdraw</Buttons>
+            <Buttons type="submit" disabled={true}>Withdraw</Buttons>
           </form>
           <InfoWithdraw />
 
