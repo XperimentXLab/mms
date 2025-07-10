@@ -658,15 +658,15 @@ class ProfitService:
 
         if reference is None:
             raise ValidationError('Reference is required.')
-
-        withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
-        txn = withdrawal_request.transaction
-        if txn.request_status != 'PENDING':
-            raise ValidationError("This request has already been processed")
-        
-        wallet = withdrawal_request.wallet
         
         with db_transaction.atomic():
+            withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
+            txn = withdrawal_request.transaction
+            if txn.request_status != 'PENDING':
+                raise ValidationError("This request has already been processed")
+            
+            wallet = withdrawal_request.wallet
+
             if action == 'APPROVE':
                 # Update request status
                 txn.reference = reference
@@ -791,14 +791,15 @@ class CommissionService:
         if reference is None:
             raise ValidationError('Reference is required.')
 
-        withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
-        txn = withdrawal_request.transaction
-        if txn.request_status != 'PENDING':
-            raise ValidationError("This request has already been processed")
-        
-        wallet = withdrawal_request.wallet
-
         with db_transaction.atomic():
+
+            withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
+            txn = withdrawal_request.transaction
+            if txn.request_status != 'PENDING':
+                raise ValidationError("This request has already been processed")
+            
+            wallet = withdrawal_request.wallet
+            
             if action == 'Approve':
                 # Update request status
                 
