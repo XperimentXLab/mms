@@ -675,11 +675,10 @@ def get_info_dashboard(request):
       total_withdraw_amount = Transaction.objects.filter(transaction_type__in=['WITHDRAWAL']).aggregate(
         total=models.Sum('amount'))['total'] or 0
       
-      performance = Performance.objects.get_instance()
-      total_deposit = performance.total_deposit
-      total_gain_a = performance.total_gain_a
-      total_gain_z = performance.total_gain_z
-      total_gain = total_gain_a + total_gain_z
+      #total_deposit = performance.total_deposit
+      #total_gain_a = performance.total_gain_a
+      #total_gain_z = performance.total_gain_z
+      #total_gain = total_gain_a + total_gain_z
       
       total_user = User.objects.count()
 
@@ -689,10 +688,10 @@ def get_info_dashboard(request):
         'total_convert_amount': total_convert_amount,
         'daily_profits': list(daily_profits),
         'total_withdraw_amount': total_withdraw_amount,
-        'total_deposit' : total_deposit,
-        'total_gain': total_gain,
-        'total_gain_a': total_gain_a,
-        'total_gain_z': total_gain_z,
+        #'total_deposit' : total_deposit,
+        #'total_gain': total_gain,
+        #'total_gain_a': total_gain_a,
+        #'total_gain_z': total_gain_z,
         'total_user': total_user,
       }, status=200)
     else: 
@@ -704,56 +703,30 @@ def get_info_dashboard(request):
 @permission_classes([IsAuthenticated])
 def manage_performance(request):
   user = request.user
-  total_deposit = request.data.get('total_deposit')
-  total_gain_z = request.data.get('total_gain_z')
-  total_gain_a = request.data.get('total_gain_a')
-  mode = request.data.get('mode')
-
+  month = request.data.get('month')
+  year = request.data.get('year')
+  
   try:
     if user.is_staff:
-      performance = Performance.objects.get_instance()
+      performance, created = Performance.objects.get_or_create(month=month, year=year)
 
       if request.method == 'GET':
         serializer = PerformanceSerializer(performance)
         return Response(serializer.data, status=200)
       
       elif request.method == 'PUT':
-
-        if mode == 'minus':
-          if total_deposit:
-            performance.total_deposit -= Decimal(total_deposit)
-          if total_gain_a:
-            performance.total_gain_a -= Decimal(total_gain_a)
-          if total_gain_z:
-            performance.total_gain_z -= Decimal(total_gain_z)
-          performance.save()
-          serializer = PerformanceSerializer(performance)
-          if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=200)
-          else:
-            return Response({'error': serializer.errors}, status=400)
-          
-        elif mode == 'plus':
-          if total_deposit:
-            performance.total_deposit += Decimal(total_deposit)
-          if total_gain_a:
-            performance.total_gain_a += Decimal(total_gain_a)
-          if total_gain_z:
-            performance.total_gain_z += Decimal(total_gain_z)
-          performance.save()
-          serializer = PerformanceSerializer(performance)
-          if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=200)
-          else:
-            return Response({'error': serializer.errors}, status=400)
-          
+        serializer = PerformanceSerializer(performance, data=request.data, partial=True)
+        if serializer.is_valid():
+          serializer.save()
+          return Response(serializer.data, status=200)
         else:
-          return Response({'error': 'Invalid mode'}, status=401)
+          return Response({'error': serializer.errors}, status=400)
+        
       else:
         return Response({'error': 'Method not allowed'}, status=405)
     else:
       return Response({'error': 'Permission denied'}, status=403)
+  except ValidationError as e:
+    return Response({'error': list(e.messages)}, status=401)
   except Exception as e:
     return Response({'error': str(e)}, status=500)

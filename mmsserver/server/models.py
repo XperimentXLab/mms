@@ -196,10 +196,7 @@ class OperationalProfit(models.Model):
 
 class MonthlyFinalizedProfit(models.Model):
   year = models.IntegerField(db_index=True, help_text="The year of the finalized profit (e.g., 2024).")
-  month = models.IntegerField(
-    validators=[MinValueValidator(1), MaxValueValidator(12)], 
-    db_index=True, 
-    help_text="The month of the finalized profit (1 for January, 12 for December)."
+  month = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], db_index=True, help_text="The month of the finalized profit (1 for January, 12 for December)."
   )
   finalized_profit_rate = models.DecimalField(
     max_digits=7, decimal_places=2, default=Decimal('0.00'),
@@ -428,33 +425,23 @@ class DepositLock(models.Model):
     verbose_name = "Deposit Lock"
     verbose_name_plural = "Deposit Locks"
 
-
-class SingletonManager(models.Manager):
-  def get_instance(self):
-    obj, created = self.get_or_create(pk=1)
-    return obj
-
 class Performance(models.Model):
   total_deposit = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'))
   total_gain_z = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'))
   total_gain_a = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'))
+  month = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], null=True, blank=True, help_text='The month (1-12) for which profit is currently active')
+  year = models.IntegerField(db_index=True, null=True, blank=True)
   last_updated = models.DateTimeField(auto_now=True)
-
-  objects = SingletonManager() # access with .. performance = Performance.objects.get_instance()
-
-  def save(self, *args, **kwargs):
-    self.pk = 1  # Always use primary key 1
-    super().save(*args, **kwargs)
-
-  def delete(self, *args, **kwargs):
-    pass  # Prevent deletion
 
   class Meta:
     verbose_name = "Performance"
     verbose_name_plural = "Performances"
+    unique_together = ('month', 'year')
+    ordering = ['-year', '-month']
 
   def __str__(self):
-    return f'Performance -- Total Deposit: {self.total_deposit}, Total Gain Trading: {self.total_gain_z + self.total_gain_a}'
+    month_name = calendar.month_name[self.month]
+    return f'Performance -- Total Deposit: {self.total_deposit}, Total Gain Trading for {month_name}: {self.total_gain_z + self.total_gain_a}'
   
 
 class PromoCode(models.Model):

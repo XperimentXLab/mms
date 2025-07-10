@@ -4,7 +4,7 @@ import Loading from "../props/Loading"
 import { register } from "./endpoints"
 import Buttons from "../props/Buttons"
 import { Inputss } from "../props/Formss"
-import { InfoPassword } from "../props/Info"
+import { InfoPassword, InfoPersonal } from "../props/Info"
 
 
 const Register = () => {
@@ -110,6 +110,7 @@ const Register = () => {
             label="First Name"
             required={true}
           />
+          <InfoPersonal />
           
           <Inputss 
             type="text"
@@ -119,6 +120,7 @@ const Register = () => {
             label="Last Name"
             required={true}
           />  
+          <InfoPersonal />
 
           <Inputss 
             type="email"

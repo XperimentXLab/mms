@@ -5,7 +5,7 @@ import { PromoCode, updatePassword, updateUserDetails, userDetails } from "../au
 import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
 import { apiCountry, uploadToCloudinary, /*openCloudinaryWidget,*/ type CountryType } from "../auth/api"
-import { InfoDoc } from "../props/Info"
+import { InfoDoc, InfoPersonal } from "../props/Info"
 
 const Profile = () => {
 
@@ -302,6 +302,7 @@ const Profile = () => {
           </form>}
 
           <form className="grid grid-cols-1 gap-1.5" onSubmit={toggleAddress}>
+            <InfoPersonal />
             <Inputss type="text" label='ADDRESS LINE'
               placeholder={addressLine ? addressLine : "Enter your address line"}
               onChange={e => setEditAddressLine(e.target.value)}
@@ -338,7 +339,7 @@ const Profile = () => {
               </select>
 
             </div>
-
+            
             <Buttons type="submit">Save</Buttons>
           </form>
 
@@ -401,14 +402,14 @@ const Profile = () => {
           <Buttons type="submit">Apply</Buttons>
         </form>
 
-        <div className="flex flex-col gap-2 w-full items-center p-3 border rounded-xl shadow-red-300 bg-white shadow-2xl">
+        <div className="flex flex-col gap-2 w-full items-center justify-center p-3 border rounded-xl shadow-red-300 bg-white shadow-2xl">
           <h1 className="font-bold text-lg underline">Verification</h1>
 
           <FixedText label='Status' text={verificationStatusDisplay} />
           {verificationStatus === 'UNDER_REVIEW' && <span className="text-md">Please wait for 24 hours for verification or contact administrator.</span>}
 
           {verificationStatus === 'REQUIRES_ACTION' && 
-          <form className="grid grid-cols-1 gap-2" onSubmit={toggleVerification}>
+          <form className="flex flex-col gap-2 justify-center items-center" onSubmit={toggleVerification}>
             <label className="font-semibold">Upload Document</label>
             <input type="file" 
               className="border p-2 rounded-md cursor-pointer"

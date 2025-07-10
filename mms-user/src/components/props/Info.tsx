@@ -66,6 +66,20 @@ export const InfoDoc = () => {
       <li className="text-gray-600 text-xs ">
         I/C or Driving License
       </li>
+      <img src="../example-doc.jpeg"
+        className="h-50"
+      />
     </ul>
   )
 }
+
+export const InfoPersonal = () => {
+  return (
+    <ul className="list-disc px-6">
+      <li className="text-gray-600 text-xs ">
+        Please fill in information same as identification document.
+      </li>
+    </ul>
+  )
+}
+

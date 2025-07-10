@@ -129,21 +129,21 @@ const WithdrawReq = () => {
       if (point?.includes('PROFIT')) {
         await processWDProfit({
           tx_id: id,
-          action: 'Approve',
+          action: 'Reject',
           reference: ref
         })
       }
       if (point?.includes('COMMISSION')) {
         await processWDCommission({
           tx_id: id,
-          action: 'Approve',
+          action: 'Reject',
           reference: ref
         })
       }
       if (point?.includes('ASSET')) {
         await processWDAsset({
           tx_id: id,
-          action: 'Approve',
+          action: 'Reject',
           reference: ref
         })
       }
@@ -197,10 +197,6 @@ const WithdrawReq = () => {
       accessor: 'actual_amount',
       render: (value: number) => value
     },
-    { header: 'Request Status', 
-      accessor: 'request_status_display',
-      render: (value: string) => value ?  value : 'PENDING'
-     },
     { header: 'Reference', 
       accessor: 'id',
       render: (id: string) => {
@@ -227,26 +223,26 @@ const WithdrawReq = () => {
 
         return (
           <div className="flex gap-2">
-            {row.request_status_display === 'PENDING' && (
-              <Buttons 
-                type="button"
-                disabled={row.request_status_display !== 'PENDING'}
-                onClick={() => handleApprove(row.id)}
-                className="px-3 py-1 cursor-pointer bg-green-500 text-white rounded hover:bg-green-600"
-              > Approve </Buttons>
-            )}
             {row.request_status_display === 'PENDING' ? (
-              <Buttons
-                type="submit"
-                onClick={() => handleReject(row.id)}
-                className={`px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer`}
-              >
-                Reject
-              </Buttons>
+              <div className="flex gap-2">
+                <Buttons 
+                  type="button"
+                  disabled={row.request_status_display !== 'PENDING'}
+                  onClick={() => handleApprove(row.id)}
+                  className="px-3 py-1 cursor-pointer bg-green-500 text-white rounded hover:bg-green-600"
+                > Approve </Buttons>
+                <Buttons
+                  type="submit"
+                  onClick={() => handleReject(row.id)}
+                  className={`px-3 py-1 rounded bg-red-500 hover:bg-red-600 text-white cursor-pointer`}
+                >
+                  Reject
+                </Buttons>
+              </div>
             ) : row.request_status_display === 'REJECTED' ? (
-              <span className="text-red-500">Reject</span>
+              <span className="text-red-500">Rejected</span>
             ) : (
-              <span className="text-green-500">Approve</span>
+              <span className="text-green-500">Approved</span>
             )}
           </div>
         )

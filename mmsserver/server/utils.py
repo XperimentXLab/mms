@@ -668,7 +668,7 @@ class ProfitService:
             
             wallet = withdrawal_request.wallet
 
-            if action == 'APPROVE':
+            if action == 'Approve':
                 # Update request status
                 txn.reference = reference
                 txn.request_status = 'APPROVED'
@@ -683,7 +683,7 @@ class ProfitService:
                 txn.description = f"Profit withdrawal to be received: {actual_amount}"
                 txn.save()
                 
-            elif action == 'REJECTED':
+            elif action == 'Reject':
                 # Refund the amount back to wallet
                 wallet.profit_point_balance += withdrawal_request.amount
                 wallet.save()

@@ -414,13 +414,14 @@ class PerformanceSerializer(serializers.ModelSerializer):
   total_gain_z = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   total_gain_a = serializers.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
 
-
   class Meta:
     model = Performance
     fields = [
       'total_deposit',
       'total_gain_z',
       'total_gain_a',
+      'month',
+      'year',
       'last_updated'
     ]
     read_only_fields = [ 'last_updated' ]
