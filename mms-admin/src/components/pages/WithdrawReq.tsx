@@ -167,7 +167,7 @@ const WithdrawReq = () => {
         const row = transactions.find(user => user.id === id);
         if (!row) return null;
 
-        {row.reference ? row.reference : 
+        {row.reference == '' ?
           
           <input
             ref={(el) => {
@@ -176,7 +176,7 @@ const WithdrawReq = () => {
             defaultValue=""
             placeholder="tx id / rejection reason"
           />
-
+          :  row.reference
         }
       }
     },
