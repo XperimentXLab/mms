@@ -1,4 +1,4 @@
-  import { useEffect, useState } from "react"
+  import { useEffect, useState, useRef } from "react"
 import Loading from "../props/Loading"
 import { getWDReq, processWDAsset } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
@@ -6,7 +6,6 @@ import dayjs from "dayjs";
 import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import { Tables } from "../props/Tables";
-import { RefInput } from "../props/Formss";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -31,7 +30,9 @@ const WithdrawReq = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
-  const [ref, setRef] = useState<string>('')
+  //const [ref, setRef] = useState<string>('')
+  //const [editRef, setEditRef] = useState<string>('')
+  const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
@@ -67,6 +68,8 @@ const WithdrawReq = () => {
 
 
   const handleApprove = async (id: string) => {
+    const ref = inputRefs.current[id]?.value;
+
     if (!ref) {
       alert('Please fill in transaction id first.')
     }
@@ -92,6 +95,7 @@ const WithdrawReq = () => {
   }
 
   const handleReject = async (id: string) => {
+    const ref = inputRefs.current[id]?.value;
     if (!ref) {
       alert('Please fill in rejection reason first!')
     }
@@ -157,14 +161,22 @@ const WithdrawReq = () => {
       render: (value: string) => value ?  value : 'PENDING'
      },
     { header: 'Reference', 
-      accessor: 'reference',
-      render: (value: string) => value ? value : (
-        <RefInput 
-          placeholder="tx id / rejection reason"
-          value={ref}
-          onChange={setRef}
-        />
-      )
+      accessor: 'id',
+      render: (id: string) => {
+
+        const row = transactions.find(user => user.id === id);
+        if (!row) return null;
+
+        {row.reference ? row.reference : 
+          
+          <input
+            ref={el => (inputRefs.current[id] = el)}
+            defaultValue=""
+            placeholder="tx id / rejection reason"
+          />
+
+        }
+      }
     },
     { header: 'Action', accessor: 'id',
       render: (id: string) => {
