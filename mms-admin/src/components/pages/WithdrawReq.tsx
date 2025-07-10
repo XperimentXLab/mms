@@ -174,6 +174,7 @@ const WithdrawReq = () => {
             }}
             defaultValue=""
             placeholder="tx id / rejection reason"
+            className="px-2 py-1 border rounded"
           /> 
       }
     },
