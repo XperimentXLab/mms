@@ -660,6 +660,7 @@ class ProfitService:
             raise ValidationError('Reference is required.')
         
         with db_transaction.atomic():
+
             withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
             txn = withdrawal_request.transaction
             if txn.request_status != 'PENDING':
@@ -698,7 +699,7 @@ class ProfitService:
                 txn.description = f"Withdrawal request {txn.amount} has been refunded"
                 txn.save()
         
-        return txn
+            return txn
 
     @staticmethod
     def convert_to_master_point(user, amount, reference=""):
@@ -799,7 +800,7 @@ class CommissionService:
                 raise ValidationError("This request has already been processed")
             
             wallet = withdrawal_request.wallet
-            
+
             if action == 'Approve':
                 # Update request status
                 
@@ -835,7 +836,7 @@ class CommissionService:
                 txn.description = f"Withdrawal request #{withdrawal_request.id} (Rejected - Refunded)"
                 txn.save()
 
-            return withdrawal_request        
+            return txn       
 
 
     @staticmethod
