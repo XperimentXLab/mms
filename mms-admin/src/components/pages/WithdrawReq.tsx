@@ -166,19 +166,15 @@ const WithdrawReq = () => {
         
         const row = transactions.find(user => user.id === id);
         if (!row) return null;
-        console.log('Ref: ', row.reference)
-
-        {row.reference == '' ?
-          
+        
+        return row.reference ? row.reference :
           <input
             ref={(el) => {
               inputRefs.current[id] = el;
             }}
             defaultValue=""
             placeholder="tx id / rejection reason"
-          />
-          :  row.reference
-        }
+          /> 
       }
     },
     { header: 'Action', accessor: 'id',
