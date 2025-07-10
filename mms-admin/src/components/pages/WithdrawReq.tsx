@@ -163,9 +163,10 @@ const WithdrawReq = () => {
     { header: 'Reference', 
       accessor: 'id',
       render: (id: string) => {
-
+        
         const row = transactions.find(user => user.id === id);
         if (!row) return null;
+        console.log('Ref: ', row.reference)
 
         {row.reference == '' ?
           
