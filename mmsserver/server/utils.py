@@ -539,8 +539,12 @@ class AssetService:
         return asset
     
     @staticmethod
-    def process_withdrawal_request(transaction_id, action):
+    def process_withdrawal_request(transaction_id, action, reference=""):
         """Approves or rejects a PENDING withdrawal."""
+
+        if reference is None:
+            raise ValidationError('Reference is required.')
+
         with db_transaction.atomic():
             trx = Transaction.objects.select_for_update().get(
                 id=transaction_id,
@@ -582,10 +586,12 @@ class AssetService:
                 wallet.save()
 
                 # Mark as approved
+                trx.reference = reference
                 trx.request_status = 'APPROVED'
                 trx.save()
 
             elif action == 'Reject':
+                trx.reference = reference
                 trx.request_status = 'REJECTED'
                 trx.save()
 
@@ -595,7 +601,7 @@ class AssetService:
 class ProfitService:
 
     @staticmethod
-    def request_withdrawal(user, amount, reference=""):
+    def request_withdrawal(user, amount):
         """Request Profit Point withdrawal (min 50 USDT, 3% fee)"""
 
         user_ = User.objects.get(id=user.id)
@@ -639,7 +645,6 @@ class ProfitService:
                 amount=amount,
                 description=f"Profit withdrawal to be received: {actual_amount}",
                 request_status='PENDING',
-                reference=reference
             )
             
             withdrawal_request.transaction = txn
@@ -648,8 +653,11 @@ class ProfitService:
         return withdrawal_request, wallet
 
     @staticmethod
-    def process_withdrawal_request(request_id, action):
+    def process_withdrawal_request(request_id, action, reference=""):
         """Approve or reject a withdrawal request"""
+
+        if reference is None:
+            raise ValidationError('Reference is required.')
 
         withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
         txn = withdrawal_request.transaction
@@ -661,6 +669,7 @@ class ProfitService:
         with db_transaction.atomic():
             if action == 'APPROVE':
                 # Update request status
+                txn.reference = reference
                 txn.request_status = 'APPROVED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
@@ -679,6 +688,7 @@ class ProfitService:
                 wallet.save()
                 
                 # Update request status
+                txn.reference = reference
                 txn.request_status = 'REJECTED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
@@ -722,7 +732,7 @@ class ProfitService:
 
 class CommissionService:
     @staticmethod
-    def request_withdrawal(user, amount, reference=""):
+    def request_withdrawal(user, amount):
         """Request Commission Point withdrawal (min 50 USDT, 3% fee)"""
 
         if amount < 50:
@@ -767,7 +777,6 @@ class CommissionService:
                 amount=amount,
                 description=f"Withdrawal request (Pending): {amount}",
                 request_status='PENDING',
-                reference=reference
             )
             
             withdrawal_request.transaction = txn
@@ -776,8 +785,11 @@ class CommissionService:
         return withdrawal_request, wallet
     
     @staticmethod
-    def process_withdrawal_request(request_id, action):
+    def process_withdrawal_request(request_id, action, reference=""):
         """Approve or reject a withdrawal request"""
+
+        if reference is None:
+            raise ValidationError('Reference is required.')
 
         withdrawal_request = WithdrawalRequest.objects.select_for_update().get(id=request_id)
         txn = withdrawal_request.transaction
@@ -795,6 +807,7 @@ class CommissionService:
                 withdrawal_request.save()
                 
                 # Update transaction description
+                txn.reference = reference
                 txn = withdrawal_request.transaction
                 txn.description = f"Withdrawal request {txn.amount} (Approved)"
                 txn.save()
@@ -816,6 +829,7 @@ class CommissionService:
                 withdrawal_request.save()
                 
                 # Update transaction description
+                txn.reference = reference
                 txn = withdrawal_request.transaction
                 txn.description = f"Withdrawal request #{withdrawal_request.id} (Rejected - Refunded)"
                 txn.save()

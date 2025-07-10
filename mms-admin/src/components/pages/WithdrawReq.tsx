@@ -1,6 +1,6 @@
   import { useEffect, useState, useRef } from "react"
 import Loading from "../props/Loading"
-import { getWDReq, processWDAsset } from "../auth/endpoints"
+import { getWDReq, processWDAsset, processWDCommission, processWDProfit } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
 import dayjs from "dayjs";
 import utc from "dayjs";
@@ -36,6 +36,9 @@ const WithdrawReq = () => {
 
   const [transactions, setTransactions] = useState<Transaction[]>([])
 
+  type pointType = 'PROFIT' | 'COMMISSION' | 'ASSET'
+  const [point, setPoint] = useState<pointType[]>()
+
   const fetchData = async () => {
     try {
       setLoading(true)
@@ -50,6 +53,8 @@ const WithdrawReq = () => {
       }
     });
       setTransactions(formattedData)
+      const pointTypes: pointType[] = Array.from(new Set(response.map((user: any) => user.point_type)));
+      setPoint(pointTypes);
     } catch (error: any) {
       if (error.response && error.response.status == 400 || error.response.status == 401) {
         setErrorMessage(error.response.data.error)
@@ -72,14 +77,32 @@ const WithdrawReq = () => {
 
     if (!ref) {
       alert('Please fill in transaction id first.')
+      return
     }
+
     try {
       setLoading(true)
-      await processWDAsset({
-        tx_id: id,
-        action: 'Approve',
-        reference: ref
-      })
+      if (point?.includes('PROFIT')) {
+        await processWDProfit({
+          tx_id: id,
+          action: 'Approve',
+          reference: ref
+        })
+      }
+      if (point?.includes('COMMISSION')) {
+        await processWDCommission({
+          tx_id: id,
+          action: 'Approve',
+          reference: ref
+        })
+      }
+      if (point?.includes('ASSET')) {
+        await processWDAsset({
+          tx_id: id,
+          action: 'Approve',
+          reference: ref
+        })
+      }
       alert('Transaction approved')
     } catch (error: any) {
       if (error.response && error.response.status == 400 || error.response.status == 401) {
@@ -98,14 +121,32 @@ const WithdrawReq = () => {
     const ref = inputRefs.current[id]?.value;
     if (!ref) {
       alert('Please fill in rejection reason first!')
+      return
     }
+    
     try {
       setLoading(true)
-      await processWDAsset({
-        tx_id: id,
-        action: 'Reject',
-        reference: ref
-      })
+      if (point?.includes('PROFIT')) {
+        await processWDProfit({
+          tx_id: id,
+          action: 'Approve',
+          reference: ref
+        })
+      }
+      if (point?.includes('COMMISSION')) {
+        await processWDCommission({
+          tx_id: id,
+          action: 'Approve',
+          reference: ref
+        })
+      }
+      if (point?.includes('ASSET')) {
+        await processWDAsset({
+          tx_id: id,
+          action: 'Approve',
+          reference: ref
+        })
+      }
       alert('Transaction rejected')
     } catch (error: any) {
       if (error.response && error.response.status == 400 || error.response.status == 401) {
