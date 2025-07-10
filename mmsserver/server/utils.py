@@ -695,11 +695,10 @@ class ProfitService:
                 withdrawal_request.save()
                 
                 # Update transaction description
-                txn = withdrawal_request.transaction
                 txn.description = f"Withdrawal request {txn.amount} has been refunded"
                 txn.save()
         
-            return txn
+        return txn
 
     @staticmethod
     def convert_to_master_point(user, amount, reference=""):
@@ -836,7 +835,7 @@ class CommissionService:
                 txn.description = f"Withdrawal request #{withdrawal_request.id} (Rejected - Refunded)"
                 txn.save()
 
-            return txn       
+        return txn       
 
 
     @staticmethod
