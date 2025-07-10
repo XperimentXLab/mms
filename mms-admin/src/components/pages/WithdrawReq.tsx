@@ -1,4 +1,4 @@
-  import { useEffect, useState, useRef } from "react"
+  import { useEffect, useState,  } from "react"
 import Loading from "../props/Loading"
 import { getWDReq, processWDAsset } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
@@ -170,7 +170,9 @@ const WithdrawReq = () => {
         {row.reference ? row.reference : 
           
           <input
-            ref={el => (inputRefs.current[id] = el)}
+            ref={(el) => {
+              inputRefs.current[id] = el;
+            }}
             defaultValue=""
             placeholder="tx id / rejection reason"
           />
