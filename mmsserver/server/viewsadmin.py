@@ -699,7 +699,7 @@ def get_info_dashboard(request):
   except Exception as e:
     return Response({'error': str(e)}, status=500)
   
-@api_view(['GET', 'PUT']) 
+@api_view(['GET', 'PATCH']) 
 @permission_classes([IsAuthenticated])
 def manage_performance(request):
   user = request.user
