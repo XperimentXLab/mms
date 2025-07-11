@@ -280,9 +280,9 @@ export const getPerformance = async () => {
 }
 
 interface PerformanceData {
-  totalDeposit: number
-  totalGainZ: number
-  totalGainA: number
+  totalDeposit?: number
+  totalGainZ?: number
+  totalGainA?: number
   month: number
   year: number
 }
