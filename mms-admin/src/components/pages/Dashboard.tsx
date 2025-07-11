@@ -15,6 +15,7 @@ import {
   Legend,
 } from 'chart.js';
 import { subDays, format } from "date-fns";
+import { SelectMonth, SelectYear } from "../props/DropDown";
 
 ChartJS.register(
   CategoryScale,
@@ -76,7 +77,7 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
       },
       title: {
         display: true,
-        text: 'Weekly Profits',
+        text: '5 Days Profits',
         color: 'white',
         font: {
           size: 15,
@@ -132,11 +133,17 @@ const Dashboard = () => {
   const [totalProfit, setTotalProfit] = useState<number>(0)
   const [totalUser, setTotalUser] = useState<number>(0)
   const [totalWithdraw, setTotalWithdraw] = useState<number>(0)
-  const [totalDeposit, setTotalDeposit] = useState<number>(0)
+  const [totalWithdrawFee, setTotalWithdrawFee] = useState<number>(0)
+
+  const [currentMonth, setCurrentMonth] = useState<string>('')
+  const [currentYear, setCurrentYear] = useState<string>('')
+  //const [totalDeposit, setTotalDeposit] = useState<number>(0)
   //const [totalGainZ, setTotalGainZ] = useState<number>(0)
   //const [totalGainA, setTotalGainA] = useState<number>(0)
-  const [totalGain, setTotalGain] = useState<number>(0)
+  //const [totalGain, setTotalGain] = useState<number>(0)
   const [dailyProfitByDay, setDailyProfitsByDay] = useState<DailyProfitByDayProps[]>([])
+
+
 
   useEffect(()=> {
     const fetchData = async () => {
@@ -149,9 +156,10 @@ const Dashboard = () => {
         setTotalProfit(resInfoDash.total_profit_balance)
         setTotalUser(resInfoDash.total_user)
         setTotalWithdraw(resInfoDash.total_withdraw_amount)
+        setTotalWithdrawFee(resInfoDash.total_withdraw_fee)
         setDailyProfitsByDay(resInfoDash.daily_profits)
-        setTotalDeposit(resInfoDash.total_deposit)
-        setTotalGain(resInfoDash.total_gain)
+        //setTotalDeposit(resInfoDash.total_deposit)
+        //setTotalGain(resInfoDash.total_gain)
         //setTotalGainZ(resInfoDash.total_gain_z)
         //setTotalGainA(resInfoDash.total_gain_a)
       } catch (error: any) {
@@ -179,11 +187,18 @@ const Dashboard = () => {
         <FixedText label="Total Profit & Commission" text={totalProfit} />
         <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
         <FixedText label="Total Withdraw" text={totalWithdraw} />
-        <FixedText label="Total Deposit" text={totalDeposit} />
-        <FixedText label="Total Trading Gain" text={totalGain} />
-        {/*<FixedText label="Total Gain Trading Z" text={totalGainZ} />
-        <FixedText label="Total Gain Trading A" text={totalGainA} />*/}
+        <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />
       </div>
+
+        {/*
+        <div className="grid grid-cols-2 items-center">
+          <SelectMonth value={currentMonth} 
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentMonth(e.target.value)} />
+          <SelectYear value={currentYear}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentYear(e.target.value)} />
+        </div>
+        */}
+        
 
       <div className="flex justify-center">
         {dailyProfitByDay.length > 0 ? (

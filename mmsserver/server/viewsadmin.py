@@ -450,7 +450,7 @@ def setup_user(request):
       
 
   
-
+#no need
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_profit_sharing(request):
@@ -650,19 +650,38 @@ def process_verification(request):
 @permission_classes([IsAuthenticated])
 def get_info_dashboard(request):
   user = request.user
+  month = request.query_params.get('month')
+  year = request.query_params.get('year')
 
   try:
     if user.is_staff:
 
       total_asset_amount = Asset.objects.aggregate(
-        total=models.Sum('amount'))['total'] or 0
+        total=models.Sum('amount'))['total'] or 0  
       
-      total_profit_balance = Wallet.objects.aggregate(
-        total=models.Sum('profit_point_balance'))['total'] or 0
+
+      all_profit_balance = Wallet.objects.aggregate(
+        total=models.Sum('profit_point_balance'))['total'] or 0 
+      admin_profit = Wallet.objects.filter(user__username=['mmssuper', 'MMSAdmin', 'MMSzaemy',  'MMSzainudin', 'MMSamid']).aggregate(total=models.Sum('profit_point_balance'))['total'] or 0
+      actual_profit_balance = all_profit_balance - admin_profit
+
+      all_affiliate_balance = Wallet.objects.aggregate(
+        total=models.Sum('affiliate_point_balance'))['total'] or 0
+      admin_affiliate = Wallet.objects.filter(user__username=['MMSAdmin']).aggregate(total=models.Sum('affiliate_point_balance'))['total'] or 0
+      actual_affiliate_balance = all_affiliate_balance - admin_affiliate
+
+      all_introducer_balance = Wallet.objects.aggregate(
+        total=models.Sum('introducer_point_balance'))['total'] or 0
+      admin_introducer = Wallet.objects.filter(user__username=['MMSAdmin']).aggregate(total=models.Sum('introducer_point_balance'))['total'] or 0
+      actual_introducer_balance = all_introducer_balance - admin_introducer
       
+      total_profit_balance = actual_profit_balance + actual_affiliate_balance + actual_introducer_balance
+      
+
       total_convert_amount = Transaction.objects.filter(transaction_type='CONVERT').aggregate(
         total=models.Sum('amount'))['total'] or 0
       
+
       daily_profits = (
         Transaction.objects
         .filter(transaction_type='DISTRIBUTION')
@@ -672,13 +691,29 @@ def get_info_dashboard(request):
         .order_by('day')
       )
       
-      total_withdraw_amount = Transaction.objects.filter(transaction_type__in=['WITHDRAWAL']).aggregate(
-        total=models.Sum('amount'))['total'] or 0
+
+      total_withdraw_amount = WithdrawalRequest.objects.aggregate(
+        total=models.Sum('actual_amount'))['total'] or 0
       
-      #total_deposit = performance.total_deposit
-      #total_gain_a = performance.total_gain_a
-      #total_gain_z = performance.total_gain_z
-      #total_gain = total_gain_a + total_gain_z
+      total_withdraw_fee = WithdrawalRequest.objects.aggregate(
+        total=models.Sum('fee'))['total'] or 0 
+      
+
+      if month and year:
+        try:
+          performance = Performance.objects.get(month=month, year=year)
+          serializer = PerformanceSerializer(performance)
+          total_deposit = serializer.data.get('total_deposit')
+          total_gain = serializer.data.get('total_gain')
+          total_gain_a = serializer.data.get('total_gain_a')
+          total_gain_z = serializer.data.get('total_gain_z')
+        except Performance.DoesNotExist:
+          return Response({'error': 'Performance not found'}, status=404)
+      else:
+        total_deposit = 0 
+        total_gain = 0
+        total_gain_a = 0
+        total_gain_z = 0
       
       total_user = User.objects.count()
 
@@ -688,10 +723,11 @@ def get_info_dashboard(request):
         'total_convert_amount': total_convert_amount,
         'daily_profits': list(daily_profits),
         'total_withdraw_amount': total_withdraw_amount,
-        #'total_deposit' : total_deposit,
-        #'total_gain': total_gain,
-        #'total_gain_a': total_gain_a,
-        #'total_gain_z': total_gain_z,
+        'total_withdraw_fee': total_withdraw_fee,
+        'total_deposit' : total_deposit,
+        'total_gain': total_gain,
+        'total_gain_a': total_gain_a,
+        'total_gain_z': total_gain_z,
         'total_user': total_user,
       }, status=200)
     else: 
@@ -707,7 +743,7 @@ def manage_performance(request):
   year = request.data.get('year')
   
   try:
-    if user.is_staff:
+    if user.is_trader:
       performance, created = Performance.objects.get_or_create(month=month, year=year)
 
       if request.method == 'GET':

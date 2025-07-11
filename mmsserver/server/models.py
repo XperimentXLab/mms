@@ -34,6 +34,7 @@ class User(AbstractUser):
   is_staff = models.BooleanField(default=False)
   is_superuser = models.BooleanField(default=False)
   is_campro = models.BooleanField(default=False)
+  is_trader = models.BooleanField(default=False)
 
   beneficiary_name = models.CharField(max_length=255, blank=True, null=True)
   beneficiary_ic = models.CharField(max_length=12, blank=True, null=True, validators=[RegexValidator(r'^\d{12}$', 'IC must be 12 digits')])

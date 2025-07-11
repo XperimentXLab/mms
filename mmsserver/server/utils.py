@@ -11,6 +11,9 @@ from django.db.models import Sum
 logger = logging.getLogger(__name__)
 
 
+# sharing company 80/20 = 13% .. 70/30 = 23% --> super profit -- nnti
+# withdraw fee = 2% --> super profit
+
 def _distribute_affiliate_bonus_for_user(
     downline_user: User,
     daily_rate_percentage: Decimal,
@@ -182,7 +185,6 @@ def distribute_profit_manually():
 
             # Update Downline User's profit_point_balance
             if user_profit_amount > Decimal('0.00'):
-                original_profit_balance = wallet_instance.profit_point_balance
                 wallet_instance.profit_point_balance += user_profit_amount
                 wallets_to_update_profit_balance_list.append(wallet_instance)
 
@@ -602,7 +604,7 @@ class ProfitService:
 
     @staticmethod
     def request_withdrawal(user, amount):
-        """Request Profit Point withdrawal (min 50 USDT, 3% fee)"""
+        """Request Profit Point withdrawal (min 50 USDT, 2% fee)"""
 
         user_ = User.objects.get(id=user.id)
         user_wallet_address = user_.wallet_address
@@ -619,7 +621,7 @@ class ProfitService:
         if wallet.profit_point_balance < amount:
             raise ValidationError("Insufficient Profit Point balance")
         
-        fee_rate = Decimal('0.03') #Fee Rate 3%
+        fee_rate = Decimal('0.02') #Fee Rate 2%
         fee = amount * fee_rate
         wallet.profit_point_balance -= amount
         wallet.save()
@@ -675,7 +677,7 @@ class ProfitService:
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
 
-                fee_rate = Decimal('0.03') #Fee Rate 3%
+                fee_rate = Decimal('0.02') #Fee Rate 2%
                 fee = txn.amount * fee_rate
                 actual_amount = txn.amount - fee
                 
@@ -733,7 +735,7 @@ class ProfitService:
 class CommissionService:
     @staticmethod
     def request_withdrawal(user, amount):
-        """Request Commission Point withdrawal (min 50 USDT, 3% fee)"""
+        """Request Commission Point withdrawal (min 50 USDT, 2% fee)"""
 
         if amount < 50:
             raise ValidationError("Minimum withdrawal amount is 50 USDT")
@@ -743,7 +745,7 @@ class CommissionService:
         if commission_point < amount:
             raise ValidationError("Insufficient Commission Point balance")
         
-        fee_rate = Decimal('0.03') #Fee Rate 3% 
+        fee_rate = Decimal('0.02') #Fee Rate 2% 
         fee = amount * fee_rate
         actual_amount = amount - fee
         
@@ -802,15 +804,17 @@ class CommissionService:
 
             if action == 'Approve':
                 # Update request status
-                
+                txn.reference = reference
                 txn.request_status = 'APPROVED'
                 withdrawal_request.processed_at = timezone.now()
                 withdrawal_request.save()
+
+                fee_rate = Decimal('0.02') #Fee Rate 2%
+                fee = txn.amount * fee_rate
+                actual_amount = txn.amount - fee
                 
                 # Update transaction description
-                txn.reference = reference
-                txn = withdrawal_request.transaction
-                txn.description = f"Withdrawal request {txn.amount} (Approved)"
+                txn.description = f"Profit withdrawal to be received: {actual_amount}"
                 txn.save()
 
             elif action == 'Reject':
@@ -832,7 +836,7 @@ class CommissionService:
                 # Update transaction description
                 txn.reference = reference
                 txn = withdrawal_request.transaction
-                txn.description = f"Withdrawal request #{withdrawal_request.id} (Rejected - Refunded)"
+                txn.description = f"Withdrawal request {refund_amount} has been refunded"
                 txn.save()
 
         return txn       

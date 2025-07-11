@@ -63,12 +63,70 @@ const Setup = () => {
     setEditTotalGainZ(0)
   }
 
-  const handlePerformance = async () => {
+  const handleDeposit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!currentMonth || !currentYear) {
+      alert("Please select a month and year.");
+      return;
+    }
     try {
       setLoading(true)
       await putPerformance({
         totalDeposit: editTotalDeposit,
+        month: Number(currentMonth),
+        year: Number(currentYear)
+      })
+      alert('Performance updated successfully')
+    } catch (error: any) {
+      if (error.response && error.response.status === 400 || error.response.status === 401) {
+        setErrorMessage(error.response.data.error)
+      } else {
+        console.log(error)
+        alert(error.response.data.error)
+      }
+    } finally {
+      setLoading(false)
+      resetForm()
+    }
+  }
+        
+        
+  const handleGainZ = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!currentMonth || !currentYear) {
+      alert("Please select a month and year.");
+      return;
+    }
+    try {
+      setLoading(true)
+      await putPerformance({
         totalGainZ: editTotalGainZ,
+        month: Number(currentMonth),
+        year: Number(currentYear)
+      })
+      alert('Performance updated successfully')
+    } catch (error: any) {
+      if (error.response && error.response.status === 400 || error.response.status === 401) {
+        setErrorMessage(error.response.data.error)
+      } else {
+        console.log(error)
+        alert(error.response.data.error)
+      }
+    } finally {
+      setLoading(false)
+      resetForm()
+    }
+  }
+
+  const handleGainA = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!currentMonth || !currentYear) {
+      alert("Please select a month and year.");
+      return;
+    }
+    try {
+      setLoading(true)
+      await putPerformance({
         totalGainA: editTotalGainA,
         month: Number(currentMonth),
         year: Number(currentYear)
@@ -79,6 +137,7 @@ const Setup = () => {
         setErrorMessage(error.response.data.error)
       } else {
         console.log(error)
+        alert(error.response.data.error)
       }
     } finally {
       setLoading(false)
@@ -106,7 +165,7 @@ const Setup = () => {
       {loading && <Loading />}
 
       <div className="flex flex-col justify-center gap-2 bg-white p-3 w-full rounded-xl">
-
+    
         <div className="grid grid-cols-2 items-center">
           <SelectMonth value={currentMonth} 
             onChange={(e) => setCurrentMonth(e.target.value)} />
@@ -114,31 +173,43 @@ const Setup = () => {
             onChange={(e) => setCurrentYear(e.target.value)} />
         </div>
 
-        <Inputss 
-          type="number"
-          label="Total Deposit"
-          placeholder="Enter amount"
-          onChange={e => setEditTotalDeposit(Number(e.target.value))}
-          value={String(editTotalDeposit)}
-          noNeedPercent={true}
-        />
-        <Inputss 
-          type="number"
-          label="Total Gain Trading Z"
-          placeholder="Enter amount"
-          onChange={e => setEditTotalGainZ(Number(e.target.value))}
-          value={String(editTotalGainZ)}
-          noNeedPercent={true}
-        />
-        <Inputss 
-          type="number"
-          label="Total Gain Trading A"
-          placeholder="Enter amount"
-          onChange={e => setEditTotalGainA(Number(e.target.value))}
-          value={String(editTotalGainA)}
-          noNeedPercent={true}
-        />
-        <Buttons type="button" onClick={handlePerformance}>Update</Buttons>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 justify-between w-full">
+          <form className="flex flex-row gap-2 items-end justify-center" onSubmit={handleDeposit}>
+            <Inputss 
+              type="number"
+              label="Total Deposit"
+              placeholder="Enter amount"
+              onChange={e => setEditTotalDeposit(Number(e.target.value))}
+              value={String(editTotalDeposit)}
+              noNeedPercent={true}
+            />
+            <Buttons type="submit">Save</Buttons>
+          </form>
+
+          <form className="flex flex-row gap-2 items-end justify-center" onSubmit={handleGainZ}>
+            <Inputss 
+              type="number"
+              label="Total Gain Trading Z"
+              placeholder="Enter amount"
+              onChange={e => setEditTotalGainZ(Number(e.target.value))}
+              value={String(editTotalGainZ)}
+              noNeedPercent={true}
+            />
+            <Buttons type="submit">Save</Buttons>
+          </form>
+
+          <form className="flex flex-row gap-2 items-end justify-center" onSubmit={handleGainA}>
+            <Inputss 
+              type="number"
+              label="Total Gain Trading A"
+              placeholder="Enter amount"
+              onChange={e => setEditTotalGainA(Number(e.target.value))}
+              value={String(editTotalGainA)}
+              noNeedPercent={true}
+            />
+            <Buttons type="submit">Save</Buttons>
+          </form>
+        </div>
 
       </div>
 
