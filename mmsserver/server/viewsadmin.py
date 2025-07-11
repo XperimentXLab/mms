@@ -714,8 +714,8 @@ def manage_performance(request):
         serializer = PerformanceSerializer(performance)
         return Response(serializer.data, status=200)
       
-      elif request.method == 'PUT':
-        serializer = PerformanceSerializer(performance, data=request.data, partial=True)
+      elif request.method == 'PATCH':
+        serializer = PerformanceSerializer(performance, data=request.data)
         if serializer.is_valid():
           serializer.save()
           return Response(serializer.data, status=200)
