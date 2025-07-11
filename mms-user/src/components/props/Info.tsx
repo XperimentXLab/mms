@@ -7,7 +7,7 @@ export const InfoWithdraw = () => {
         Minimum withdrawal is 50 USDT.
       </li>
       <li className="text-gray-600 text-xs">
-        Withdrawal fee is 2%.
+        Withdrawal fee is 2%. Fees are subject to change.
       </li>
     </ul>
   )

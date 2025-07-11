@@ -15,7 +15,7 @@ import {
   Legend,
 } from 'chart.js';
 import { subDays, format } from "date-fns";
-import { SelectMonth, SelectYear } from "../props/DropDown";
+//import { SelectMonth, SelectYear } from "../props/DropDown";
 
 ChartJS.register(
   CategoryScale,
@@ -135,8 +135,8 @@ const Dashboard = () => {
   const [totalWithdraw, setTotalWithdraw] = useState<number>(0)
   const [totalWithdrawFee, setTotalWithdrawFee] = useState<number>(0)
 
-  const [currentMonth, setCurrentMonth] = useState<string>('')
-  const [currentYear, setCurrentYear] = useState<string>('')
+  //const [currentMonth, setCurrentMonth] = useState<string>('')
+  //const [currentYear, setCurrentYear] = useState<string>('')
   //const [totalDeposit, setTotalDeposit] = useState<number>(0)
   //const [totalGainZ, setTotalGainZ] = useState<number>(0)
   //const [totalGainA, setTotalGainA] = useState<number>(0)
