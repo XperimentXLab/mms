@@ -287,14 +287,16 @@ interface PerformanceData {
   year: number
 }
 export const putPerformance = async (data: PerformanceData) => {
-  const { totalDeposit, totalGainZ, totalGainA, month, year} = data
-  const response = await api.patch('/manage_performance/', {
-    total_deposit: totalDeposit,
-    total_gain_z: totalGainZ,
-    total_gain_a: totalGainA,
-    month,
-    year
-  })
+  const payload = Object.fromEntries(
+    Object.entries({
+      total_deposit: data.totalDeposit,
+      total_gain_z: data.totalGainZ,
+      total_gain_a: data.totalGainA,
+      month: data.month,
+      year: data.year
+    }).filter(([_, v]) => v !== undefined)
+  )
+  const response = await api.patch('/manage_performance/', payload)
   return response.data
 }
 
