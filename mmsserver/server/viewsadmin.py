@@ -655,11 +655,7 @@ def get_info_dashboard(request):
 
   try:
     if user.is_staff:
-
-      total_asset_amount = Asset.objects.aggregate(
-        total=models.Sum('amount'))['total'] or 0  
       
-
       all_profit_balance = Wallet.objects.aggregate(
         total=models.Sum('profit_point_balance'))['total'] or 0 
       admin_profit = Wallet.objects.filter(user_id__in=['MMS00QVS', 'MMS01FXC', 'MMS0216J',  'MMS02O5G', 'MMS02GKX']).aggregate(total=models.Sum('profit_point_balance'))['total'] or 0
@@ -670,7 +666,7 @@ def get_info_dashboard(request):
         total=models.Sum('affiliate_point_balance'))['total'] or 0
       admin_affiliate = Wallet.objects.filter(user_id__in=['MMS01FXC']).aggregate(total=models.Sum('affiliate_point_balance'))['total'] or 0
       actual_affiliate_balance = all_affiliate_balance - admin_affiliate
-      print(f'admin a: {admin_affiliate}')
+      print(f'admin af: {admin_affiliate}')
 
       all_introducer_balance = Wallet.objects.aggregate(
         total=models.Sum('introducer_point_balance'))['total'] or 0
@@ -720,6 +716,17 @@ def get_info_dashboard(request):
       
       total_user = User.objects.count()
 
+
+      admin_asset = Asset.objects.filter(user_id__in=['MMS00QVS', 'MMS01FXC', 'MMS0216J',  'MMS02O5G', 'MMS02GKX']).aggregate(total=models.Sum('amount'))['total'] or 0
+      print(f'admin as: {admin_asset}')
+      all_asset_amount = Asset.objects.aggregate(
+        total=models.Sum('amount'))['total'] or 0  
+      total_asset_amount = all_asset_amount - admin_asset
+      all_asset_above_10k = Asset.objects.filter(amount__gte=10000).aggregate(total=models.Sum('amount'))['total'] or 0
+      asset_above_10k = Decimal(all_asset_above_10k) - Decimal(admin_asset)
+      asset_below_10k = Asset.objects.filter(amount__lt=10000).aggregate(total=models.Sum('amount'))['total'] or 0
+      
+
       return Response({
         'total_asset_amount': total_asset_amount, 
         'total_profit_balance': total_profit_balance,
@@ -732,6 +739,8 @@ def get_info_dashboard(request):
         'total_gain_a': total_gain_a,
         'total_gain_z': total_gain_z,
         'total_user': total_user,
+        'asset_above_10k': asset_above_10k,
+        'asset_below_10k': asset_below_10k,
       }, status=200)
     else: 
       return Response({'error': 'Permission denied'}, status=403)

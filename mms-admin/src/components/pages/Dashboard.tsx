@@ -142,6 +142,8 @@ const Dashboard = () => {
   const [totalUser, setTotalUser] = useState<number>(0)
   const [totalWithdraw, setTotalWithdraw] = useState<number>(0)
   const [totalWithdrawFee, setTotalWithdrawFee] = useState<number>(0)
+  const [totalAssetAbove10k, setTotalAssetAbove10k] = useState<number>(0)
+  const [totalAssetBelow10k, setTotalAssetBelow10k] = useState<number>(0)
 
   const [currentMonth, setCurrentMonth] = useState<string>('')
   const [currentYear, setCurrentYear] = useState<string>('')
@@ -165,6 +167,9 @@ const Dashboard = () => {
         setTotalWithdraw(resInfoDash.total_withdraw_amount)
         setTotalWithdrawFee(resInfoDash.total_withdraw_fee)
         setDailyProfitsByDay(resInfoDash.daily_profits)
+        setTotalAssetAbove10k(resInfoDash.asset_above_10k)
+        setTotalAssetBelow10k(resInfoDash.asset_below_10k)
+
         setGain(resInfoDash)
         setErrorMessage('')
       } catch (error: any) {
@@ -211,13 +216,16 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2 justify-center">
         <FixedText label="Total User" text={totalUser} />
         <FixedText label="Total Asset" text={totalAsset}/>
+        <FixedText label="Total Asset 10K Above" text={totalAssetAbove10k}/>
+        <FixedText label="Total Asset 10K Below" text={totalAssetBelow10k}/>
         <FixedText label="Total Profit & Commission" text={totalProfit} />
         <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
         <FixedText label="Total Withdraw" text={totalWithdraw} />
         <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />
       </div>
 
-      <div className="flex flex-col items-center bg-white p-2 rounded-xl">
+      <div className="flex flex-col items-center justify-center bg-white p-2 rounded-xl">
+        <span  className="font-bold">Monthly Summary Trading</span>
         <div className="flex flex-row gap-2 w-full">
           <SelectMonth value={currentMonth} 
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentMonth(e.target.value)} />
