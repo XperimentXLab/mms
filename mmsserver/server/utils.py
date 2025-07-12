@@ -482,6 +482,7 @@ class AssetService:
                 asset=asset,
                 transaction_type='WELCOME_BONUS',
                 point_type='ASSET',
+                request_status='APPROVED'
                 amount=Decimal('100.00'),
                 description="Welcome Bonus", #locked for 1 year
                 reference=""
