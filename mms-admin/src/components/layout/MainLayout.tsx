@@ -105,7 +105,7 @@ const MainLayout = () => {
               <span className="text-xs">{time}</span>
             </div>
 
-            <img src="./mmsventure.jpeg" alt="MMS Logo" className="w-10 h-10 rounded-full" />
+            <img src="../mmsventure.jpeg" alt="MMS Logo" className="w-10 h-10 rounded-full" />
 
             <div className="flex flex-col cursor-default">
               <span className="font-semibold">Money Management Solution</span>
@@ -137,7 +137,7 @@ const MainLayout = () => {
 
       {openLogout && <Logout />}
 
-      <div className="mt-15 pb-5 min-h-screen md:bg-[url(../BG-MMS-DESKTOP.png)] bg-[url(../BG-MMS-MOBILE.png)]">
+      <div className="mt-15 pb-5 min-h-screen md:bg-[url(/BG-MMS-DESKTOP.png)] bg-[url(/BG-MMS-MOBILE.png)]">
         <Outlet />
       </div>
 
