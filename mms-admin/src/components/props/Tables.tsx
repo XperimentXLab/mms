@@ -34,6 +34,7 @@ interface ActionProps {
 interface TablesProps {
   columns: TableColumn[];
   data: any[];
+  needDate?: boolean
   action?: ActionProps
   emptyMessage?: string;
   enableFilters?: boolean;
@@ -57,6 +58,7 @@ export interface Data {
 export const Tables = ({ 
   columns, 
   data, 
+  needDate = true,
   emptyMessage = "No data available",
   enableFilters = false, 
   enableSorting = false, 
@@ -142,6 +144,7 @@ export const Tables = ({
             placeholderText="Choose a date"
           />*/}
 
+        {needDate &&
         <div className="flex flex-row gap-2 justify-center items-center">
           <DatePicker
             className="flex border rounded px-2 py-1 text-xs"
@@ -167,7 +170,7 @@ export const Tables = ({
             isClearable
           />
 
-        </div>
+        </div>}
 
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">

@@ -174,7 +174,7 @@ const Setup = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 justify-between w-full">
-          <form className="flex flex-row gap-2 items-end justify-center" onSubmit={handleDeposit}>
+          <form className="flex flex-row gap-2 items-end justify-center w-full" onSubmit={handleDeposit}>
             <Inputss 
               type="number"
               label="Total Deposit"
@@ -186,7 +186,7 @@ const Setup = () => {
             <Buttons type="submit">Save</Buttons>
           </form>
 
-          <form className="flex flex-row gap-2 items-end justify-center" onSubmit={handleGainZ}>
+          <form className="flex flex-row gap-2 items-end justify-center w-full" onSubmit={handleGainZ}>
             <Inputss 
               type="number"
               label="Total Gain Trading Z"
@@ -198,7 +198,7 @@ const Setup = () => {
             <Buttons type="submit">Save</Buttons>
           </form>
 
-          <form className="flex flex-row gap-2 items-end justify-center" onSubmit={handleGainA}>
+          <form className="flex flex-row gap-2 items-end justify-center w-full" onSubmit={handleGainA}>
             <Inputss 
               type="number"
               label="Total Gain Trading A"

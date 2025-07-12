@@ -33,13 +33,13 @@ export const Inputss: React.FC<InputssProps> = ({
   const isPasswordField = type === 'password';
 
   return (
-    <div className={`grid gap-2 relative ${ isPasswordField ? 'grid-rows-3' : 'grid-row-2' }`}>
+    <div className={`grid gap-2 relative w-full grid-row-2`}>
       <span className="font-semibold">{label}</span>
       <input  type={isPasswordField ? (showPassword ? 'text' : 'password') : type} 
         placeholder={placeholder} 
         onChange={onChange}
         value={value}
-        className={className ? className : "border py-1 px-2 rounded-md"} 
+        className={className ? className : "border py-1 px-2 rounded-md w-full"} 
         required={required}
         maxLength={maxLength}
       />
@@ -47,7 +47,7 @@ export const Inputss: React.FC<InputssProps> = ({
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+          className="absolute right-2 transform translate-y-10 cursor-pointer"
         >
           {showPassword ? <GrFormViewHide /> : <BiSolidShow />}
         </button>
@@ -70,7 +70,7 @@ export const InputwithVal: React.FC<InputssProps> = ({
   noNeedPercent,
 }) => {
   return (
-    <div className="grid grid-row-2 gap-2">
+    <div className="grid grid-row-2 gap-2 w-full">
       <span className="font-semibold">{label}</span>
       <div className="grid grid-cols-2 gap-2 ">
         <span className="border px-2 py-1 rounded-md bg-gray-200">
@@ -79,7 +79,7 @@ export const InputwithVal: React.FC<InputssProps> = ({
         <input type={type} placeholder={placeholder} 
           onChange={onChange}
           value={value}
-          className={className ? className : "border py-1 px-2 rounded-md"} 
+          className={className ? className : "border py-1 px-2 rounded-md w-full"} 
           required={required}
           maxLength={maxLength}
         />

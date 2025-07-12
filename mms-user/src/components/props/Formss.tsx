@@ -32,7 +32,7 @@ export const Inputss: React.FC<InputssProps> = ({
   const isPasswordField = type === 'password';
 
   return (
-    <div className={`grid gap-2 relative ${ isPasswordField ? 'grid-rows-3' : 'grid-row-2' }`}>
+    <div className={`grid gap-2 relative grid-row-2`}>
       <span className="font-semibold">{label}</span>
       <input type={isPasswordField ? (showPassword ? 'text' : 'password') : type} 
         placeholder={placeholder} 
@@ -46,7 +46,7 @@ export const Inputss: React.FC<InputssProps> = ({
       <button
         type="button"
         onClick={() => setShowPassword(!showPassword)}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2"
+        className="absolute right-2 transform translate-y-10 cursor-pointer"
       >
         {showPassword ? <GrFormViewHide /> : <BiSolidShow />}
       </button>

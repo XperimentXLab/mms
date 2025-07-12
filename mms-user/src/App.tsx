@@ -1,24 +1,36 @@
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom"
-
-import MainLayout from "./components/layout/MainLayout"
-import Home from "./components/pages/Home"
-import Register from "./components/auth/Register"
-import Profile from "./components/pages/Profile"
-import Wallet from "./components/pages/Wallet"
-import Others from "./components/pages/Others"
-import Assets from "./components/pages/Assets"
-import Login from "./components/auth/Login"
-import ForgotPassword from "./components/auth/ForgotPassword"
-import ResetPasswordConfirm from "./components/auth/ResetPasswordConfirm"
-import Network from "./components/pages/Network"
 import ProtectedRoute from "./components/auth/ProtectedRoute"
-import WalletLayout from "./components/layout/WalletLayout"
-import AssetLayout from "./components/layout/AssetLayout"
-import { AssetStatement, WithdrawalAssetStatement } from "./components/pages/AssetStatement"
-import { CommissionStatement, ConvertStatement, ProfitStatement, TransferStatement, WithdrawalWalletStatement } from "./components/pages/WalletStatement"
-import NotFound from "./components/pages/NotFound"
+import { lazy, Suspense } from "react"
+import Loading from "./components/props/Loading"
 
 //import Updating from "./components/auth/Updating"
+
+const MainLayout = lazy(() => import("./components/layout/MainLayout"))
+const Home = lazy(() => import("./components/pages/Home"))
+const Register = lazy(() => import("./components/auth/Register"))
+const Profile = lazy(() => import("./components/pages/Profile"))
+const Wallet = lazy(() => import("./components/pages/Wallet"))
+const Others = lazy(() => import("./components/pages/Others"))
+const Assets = lazy(() => import("./components/pages/Assets"))
+const Login = lazy(() => import("./components/auth/Login"))
+const ForgotPassword = lazy(() => import("./components/auth/ForgotPassword"))
+const ResetPasswordConfirm = lazy(() => import("./components/auth/ResetPasswordConfirm"))
+const Network = lazy(() => import("./components/pages/Network"))
+const WalletLayout = lazy(() => import("./components/layout/WalletLayout"))
+const AssetLayout = lazy(() => import("./components/layout/AssetLayout"))
+const NotFound = lazy(() => import("./components/pages/NotFound"))
+
+const AssetStatement = lazy(() => import('./components/pages/AssetStatement').then(m => ({ default: m.AssetStatement })))
+const WithdrawalAssetStatement = lazy(() => import('./components/pages/AssetStatement').then(m => ({ default: m.WithdrawalAssetStatement })))
+
+const CommissionStatement = lazy(() => import('./components/pages/WalletStatement').then(m => ({ default: m.CommissionStatement })))
+const ConvertStatement = lazy(() => import('./components/pages/WalletStatement').then(m => ({ default: m.ConvertStatement })))
+const ProfitStatement = lazy(() => import('./components/pages/WalletStatement').then(m => ({ default: m.ProfitStatement })))
+const TransferStatement = lazy(() => import('./components/pages/WalletStatement').then(m => ({ default: m.TransferStatement })))
+const WithdrawalWalletStatement = lazy(() => import('./components/pages/WalletStatement').then(m => ({ default: m.WithdrawalWalletStatement })))
+
+
+
 
 function App() {
 
@@ -89,7 +101,9 @@ function App() {
   ))
 
   return (
-    <RouterProvider router={router} />
+    <Suspense fallback={<Loading />}>
+      <RouterProvider router={router} />
+    </Suspense>
   )
 }
 

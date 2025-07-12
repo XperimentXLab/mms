@@ -268,8 +268,18 @@ export const getAllAssetTX = async () => {
 }
 
 
-export const getInfoDashboard = async () => {
-  const response = await api.get('/get_info_dashboard/')
+interface infoDash {
+  month: string
+  year: number
+}
+export const getInfoDashboard = async (data: infoDash) => {
+  const { month, year,} = data
+  const response = await api.get('/get_info_dashboard/', {
+    params: {
+      month,
+      year
+    }
+  })
   return response.data
 }
 

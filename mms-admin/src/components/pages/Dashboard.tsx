@@ -15,7 +15,8 @@ import {
   Legend,
 } from 'chart.js';
 import { subDays, format } from "date-fns";
-//import { SelectMonth, SelectYear } from "../props/DropDown";
+import { Tables } from "../props/Tables";
+import { SelectMonth, SelectYear } from "../props/DropDown";
 
 ChartJS.register(
   CategoryScale,
@@ -46,7 +47,7 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
 
   // Format dates for display (e.g., "Jul 01")
   const formattedLabels = last7DaysData.map(item => 
-    format(new Date(item.day), 'MMM dd')
+    `${format(new Date(item.day), 'MMM dd')} (${item.total})`
   );
 
   const totalProfit7Days = last7DaysData.reduce((acc, item) => acc + item.total, 0);
@@ -56,7 +57,7 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
     labels: formattedLabels,
     datasets: [
       {
-        label: `Total Profit - ${totalProfit7Days}`,
+        label: `Total Profit - ${totalProfit7Days.toFixed(2)}`,
         data: data.map(item => item.total),
         backgroundColor: 'lightgrey',
         borderColor: 'white',
@@ -77,7 +78,7 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
       },
       title: {
         display: true,
-        text: '5 Days Profits',
+        text: '6 Days Profits',
         color: 'white',
         font: {
           size: 15,
@@ -123,6 +124,13 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
   );
 }
 
+interface GainProps {
+  total_gain_z: number
+  total_gain_a: number
+  total_gain: number
+  total_deposit: number
+}
+
 const Dashboard = () => {
 
   const [loading, setLoading] = useState<boolean>(true)
@@ -135,12 +143,9 @@ const Dashboard = () => {
   const [totalWithdraw, setTotalWithdraw] = useState<number>(0)
   const [totalWithdrawFee, setTotalWithdrawFee] = useState<number>(0)
 
-  //const [currentMonth, setCurrentMonth] = useState<string>('')
-  //const [currentYear, setCurrentYear] = useState<string>('')
-  //const [totalDeposit, setTotalDeposit] = useState<number>(0)
-  //const [totalGainZ, setTotalGainZ] = useState<number>(0)
-  //const [totalGainA, setTotalGainA] = useState<number>(0)
-  //const [totalGain, setTotalGain] = useState<number>(0)
+  const [currentMonth, setCurrentMonth] = useState<string>('')
+  const [currentYear, setCurrentYear] = useState<string>('')
+  const [gain, setGain] = useState<GainProps[]>([])
   const [dailyProfitByDay, setDailyProfitsByDay] = useState<DailyProfitByDayProps[]>([])
 
 
@@ -149,8 +154,10 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const resInfoDash = await getInfoDashboard()
-        console.log(resInfoDash)
+        const resInfoDash = await getInfoDashboard({
+          month: currentMonth, 
+          year: Number(currentYear)
+        })
         setTotalAsset(resInfoDash.total_asset_amount)
         setTotalConvert(resInfoDash.total_convert_amount)
         setTotalProfit(resInfoDash.total_profit_balance)
@@ -158,13 +165,14 @@ const Dashboard = () => {
         setTotalWithdraw(resInfoDash.total_withdraw_amount)
         setTotalWithdrawFee(resInfoDash.total_withdraw_fee)
         setDailyProfitsByDay(resInfoDash.daily_profits)
-        //setTotalDeposit(resInfoDash.total_deposit)
-        //setTotalGain(resInfoDash.total_gain)
-        //setTotalGainZ(resInfoDash.total_gain_z)
-        //setTotalGainA(resInfoDash.total_gain_a)
+        setGain(resInfoDash)
+        setErrorMessage('')
       } catch (error: any) {
         if (error.response && error.response.status === 400 ) {
           setErrorMessage(error.response.data.error)
+        } else if (error.response && error.response.status === 404) {
+          console.error(error.response.data.error)
+          setErrorMessage('')
         } else {
           setErrorMessage(error.message)
         }
@@ -173,7 +181,26 @@ const Dashboard = () => {
       }
     }
     fetchData()
-  }, [])
+  }, [currentMonth, currentYear])
+
+  const columns = [
+    { header: 'Total Deposit',
+      accessor: 'total_deposit',
+      render: (value: number) => value
+    },
+    { header: 'Total Gain Trading',
+      accessor: 'total_gain',
+      render: (value: number) => value
+    },
+    { header: 'Gain Trading Z',
+      accessor: 'total_gain_z',
+      render: (value: number) => value
+    },
+    { header: 'Gain Trading A',
+      accessor: 'total_gain_a',
+      render: (value: number) => value
+    },
+  ]
   
   return (
     <div className="flex flex-col gap-2 justify-center m-4">
@@ -181,7 +208,7 @@ const Dashboard = () => {
       {loading && <Loading />}
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <div className="flex flex-col md:flex-row gap-2 justify-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 justify-center">
         <FixedText label="Total User" text={totalUser} />
         <FixedText label="Total Asset" text={totalAsset}/>
         <FixedText label="Total Profit & Commission" text={totalProfit} />
@@ -190,15 +217,17 @@ const Dashboard = () => {
         <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />
       </div>
 
-        {/*
-        <div className="grid grid-cols-2 items-center">
+      <div className="flex flex-col items-center bg-white p-2 rounded-xl">
+        <div className="flex flex-row gap-2 w-full">
           <SelectMonth value={currentMonth} 
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentMonth(e.target.value)} />
           <SelectYear value={currentYear}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentYear(e.target.value)} />
         </div>
-        */}
-        
+        <Tables columns={columns} data={gain} 
+          needDate={false}
+        />
+      </div>
 
       <div className="flex justify-center">
         {dailyProfitByDay.length > 0 ? (
