@@ -662,20 +662,23 @@ def get_info_dashboard(request):
 
       all_profit_balance = Wallet.objects.aggregate(
         total=models.Sum('profit_point_balance'))['total'] or 0 
-      admin_profit = Wallet.objects.filter(user__username=['mmssuper', 'MMSAdmin', 'MMSzaemy',  'MMSzainudin', 'MMSamid']).aggregate(total=models.Sum('profit_point_balance'))['total'] or 0
+      admin_profit = Wallet.objects.filter(user_id__in=['MMS00QVS', 'MMS01FXC', 'MMS0216J',  'MMS02O5G', 'MMS02GKX']).aggregate(total=models.Sum('profit_point_balance'))['total'] or 0
       actual_profit_balance = all_profit_balance - admin_profit
+      print(f'admin p: {admin_profit}')
 
       all_affiliate_balance = Wallet.objects.aggregate(
         total=models.Sum('affiliate_point_balance'))['total'] or 0
-      admin_affiliate = Wallet.objects.filter(user__username=['MMSAdmin']).aggregate(total=models.Sum('affiliate_point_balance'))['total'] or 0
+      admin_affiliate = Wallet.objects.filter(user_id__in=['MMS01FXC']).aggregate(total=models.Sum('affiliate_point_balance'))['total'] or 0
       actual_affiliate_balance = all_affiliate_balance - admin_affiliate
+      print(f'admin a: {admin_affiliate}')
 
       all_introducer_balance = Wallet.objects.aggregate(
         total=models.Sum('introducer_point_balance'))['total'] or 0
-      admin_introducer = Wallet.objects.filter(user__username=['MMSAdmin']).aggregate(total=models.Sum('introducer_point_balance'))['total'] or 0
+      admin_introducer = Wallet.objects.filter(user_id__in=['MMS01FXC']).aggregate(total=models.Sum('introducer_point_balance'))['total'] or 0
       actual_introducer_balance = all_introducer_balance - admin_introducer
-      
-      total_profit_balance = actual_profit_balance - actual_affiliate_balance - actual_introducer_balance
+      print(f'admin i: {admin_introducer}')
+
+      total_profit_balance = actual_profit_balance + actual_affiliate_balance + actual_introducer_balance
       
 
       total_convert_amount = Transaction.objects.filter(transaction_type='CONVERT').aggregate(
@@ -704,9 +707,9 @@ def get_info_dashboard(request):
           performance = Performance.objects.get(month=month, year=year)
           serializer = PerformanceSerializer(performance)
           total_deposit = serializer.data.get('total_deposit')
-          total_gain = serializer.data.get('total_gain')
           total_gain_a = serializer.data.get('total_gain_a')
           total_gain_z = serializer.data.get('total_gain_z')
+          total_gain = Decimal(total_gain_a) + Decimal(total_gain_z)
         except Performance.DoesNotExist:
           return Response({'error': 'Performance not found'}, status=404)
       else:
