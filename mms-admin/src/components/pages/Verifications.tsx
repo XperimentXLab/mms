@@ -101,11 +101,11 @@ const Verifications = () => {
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
-  const handleWelcomeB = async (id: string) => {
+  const handleWelcomeB = async (id: string, username: string) => {
     try {
       setLoading(true)
       await grantFreeCampro(id)
-      alert('Welcome bonus granted')
+      alert(`Welcome bonus granted ${username}`)
     } catch (error: any) {
       setErrorMessage(error.response.data.error)
     } finally {
@@ -204,7 +204,7 @@ const Verifications = () => {
             {!row.is_campro ?
               <Buttons
                 type="button"
-                onClick={() => handleWelcomeB(row.id)}
+                onClick={() => handleWelcomeB(row.id, row.username)}
                 className="px-3 py-1 rounded bg-green-500 text-white cursor-pointer hover:bg-green-600"
               >
                 Grant
