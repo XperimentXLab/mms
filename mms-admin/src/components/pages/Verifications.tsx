@@ -47,58 +47,52 @@ const Verifications = () => {
     fetchData()
   }, [])
 
-  const handleApprove = (id: string) => {
-    const fetchDataA = async () => {
-      try {
-        setLoading(true)
-          await processVeri({
-            user_id: id,
-            action: 'Approve'
-          })
-        setUserDetailss(prev => prev.map(user => 
-          user.id === id ? { 
-            ...user, 
-            verification_status: 'APPROVED' 
-          } 
-            : user
-        ))
-        alert('Verification approved')
-      } catch (error: any) {
-        setErrorMessage(error.response.data.error)
-      } finally {
-        setLoading(false)
-        fetchData()
-      }
+  const handleApprove = async (id: string) => {
+    try {
+      setLoading(true)
+        await processVeri({
+          user_id: id,
+          action: 'Approve'
+        })
+      setUserDetailss(prev => prev.map(user => 
+        user.id === id ? { 
+          ...user, 
+          verification_status: 'APPROVED' 
+        } 
+          : user
+      ))
+      alert('Verification approved')
+    } catch (error: any) {
+      setErrorMessage(error.response.data.error)
+    } finally {
+      setLoading(false)
+      fetchData()
     }
-    fetchDataA()
   }
 
 
-  const handleReject = (id: string, reason: string) => {
-    const fetchDataR = async () => {
-      try {
-        setLoading(true);
-        await processVeri({
-          user_id: id,
-          action: 'Reject',
-          reject_reason: reason || 'Try again'
-        });
-        setUserDetailss(prev => prev.map(user =>
-          user.id === id ? {
-            ...user,
-            verification_status: 'REJECTED',
-            reject_reason: reason
-          } : user
-        ));
-        alert('Verification rejected');
-      } catch (error: any) {
-        setErrorMessage(error.response?.data?.error || 'Something went wrong');
-      } finally {
-        setLoading(false);
-        fetchData()
-      }
-    };
-    fetchDataR();
+  const handleReject = async (id: string, reason: string) => {
+    try {
+      setLoading(true);
+      await processVeri({
+        user_id: id,
+        action: 'Reject',
+        reject_reason: reason || 'Try again'
+      });
+      setUserDetailss(prev => prev.map(user =>
+        user.id === id ? {
+          ...user,
+          verification_status: 'REJECTED',
+          reject_reason: reason
+        } : user
+      ));
+      alert('Verification rejected');
+    } catch (error: any) {
+      setErrorMessage(error.response?.data?.error || 'Something went wrong');
+    } finally {
+      setLoading(false);
+      fetchData()
+    }
   };
 
 
@@ -107,19 +101,17 @@ const Verifications = () => {
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
-  const handleWelcomeB = (id: string) => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        await grantFreeCampro(id)
-        alert('Welcome bonus granted')
-      } catch (error: any) {
-        setErrorMessage(error.response.data.error)
-      } finally {
-        setLoading(false)
-      }
+  const handleWelcomeB = async (id: string) => {
+    try {
+      setLoading(true)
+      await grantFreeCampro(id)
+      alert('Welcome bonus granted')
+    } catch (error: any) {
+      setErrorMessage(error.response.data.error)
+    } finally {
+      setLoading(false)
+      fetchData()
     }
-    fetchData()
   }
 
   const columns = useMemo(() => [
