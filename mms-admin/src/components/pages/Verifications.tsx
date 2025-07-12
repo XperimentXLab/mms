@@ -201,21 +201,26 @@ const Verifications = () => {
       }
     },
     { header: 'Welcome Bonus', 
-      accessor: 'is_campro',
-      render: (value: userDetail) => (
-        <div>
-          {!value.is_campro ?
-            <Buttons
-              type="button"
-              onClick={() => handleWelcomeB(value.id)}
-              className="px-3 py-1 rounded bg-green-500 text-white cursor-pointer hover:bg-green-600"
-            >
-              Grant
-            </Buttons> : 
-            <span className="text-green-500">Granted</span>
-          }
-        </div>
-      )
+      accessor: 'id',
+      render: (id: string) => {
+
+        const row = userDetailss.find(user => user.id === id);
+        if (!row) return null;
+
+        return(
+          <div>
+            {!row.is_campro ?
+              <Buttons
+                type="button"
+                onClick={() => handleWelcomeB(row.id)}
+                className="px-3 py-1 rounded bg-green-500 text-white cursor-pointer hover:bg-green-600"
+              >
+                Grant
+              </Buttons> : 
+              <span className="text-green-500">Granted</span>
+            }
+          </div>
+      )}
     },
     { header: 'Promo Code',
       accessor: 'promocode',
