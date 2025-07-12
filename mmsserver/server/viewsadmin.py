@@ -675,7 +675,7 @@ def get_info_dashboard(request):
       admin_introducer = Wallet.objects.filter(user__username=['MMSAdmin']).aggregate(total=models.Sum('introducer_point_balance'))['total'] or 0
       actual_introducer_balance = all_introducer_balance - admin_introducer
       
-      total_profit_balance = actual_profit_balance + actual_affiliate_balance + actual_introducer_balance
+      total_profit_balance = actual_profit_balance - actual_affiliate_balance - actual_introducer_balance
       
 
       total_convert_amount = Transaction.objects.filter(transaction_type='CONVERT').aggregate(
