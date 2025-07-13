@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { getInfoDashboard } from "../auth/endpoints"
 import Loading from "../props/Loading"
 import { FixedText } from "../props/Textt"
-import { Line } from 'react-chartjs-2';
+import { Line, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,6 +10,7 @@ import {
   BarElement,
   PointElement,
   LineElement,
+  ArcElement,
   Title,
   Tooltip,
   Legend,
@@ -24,6 +25,7 @@ ChartJS.register(
   BarElement,
   PointElement,
   LineElement,
+  ArcElement,
   Title,
   Tooltip,
   Legend
@@ -33,7 +35,6 @@ interface DailyProfitByDayProps {
   day: string
   total: number
 }
-
 const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
 
   // Filter data for the last 7 days
@@ -119,7 +120,10 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
 
   return (
     <div className="flex justify-center w-full m-3 shadow shadow-neutral-200 rounded-2xl bg-transparent p-3">
-      <Line data={chartData} options={options} />
+      <Line 
+        data={chartData} 
+        options={options}
+      />
     </div>
   );
 }
@@ -129,6 +133,56 @@ interface GainProps {
   total_gain_a: number
   total_gain: number
   total_deposit: number
+}
+
+interface AssetProps {
+  total_asset_amount: number
+  asset_above_10k: number
+  asset_below_10k: number
+}
+const AssetChart = ({ data }: { data: AssetProps}) => {
+
+  const chartData = {
+    labels: ['Asset Sharing (80:20)', 'Asset Sharing (70:30)'],
+    datasets: [
+      {
+        label: 'Asset',
+        data: [data.asset_above_10k, data.asset_below_10k],
+        backgroundColor: ['#32CD32', '#FFD700'], // LIME GREEN and yellow
+        hoverOffset: 8,
+      }
+    ]
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+        labels: {
+          color: 'white'
+        }
+      },
+      title: {
+        display: true,
+        text: `Total Asset | ${data.total_asset_amount.toFixed(2)}`,
+        color: 'white',
+        font: {
+          size: 15,
+        },
+      }
+    }
+  };
+
+
+  return (
+    <div className="flex items-center justify-center p-2 bg-sky-900 rounded-xl h-70">
+      <Pie 
+        data={chartData} 
+        options={options}
+      />
+    </div>
+  );
 }
 
 const Dashboard = () => {
@@ -150,8 +204,6 @@ const Dashboard = () => {
   const [gain, setGain] = useState<GainProps[]>([])
   const [dailyProfitByDay, setDailyProfitsByDay] = useState<DailyProfitByDayProps[]>([])
 
-
-
   useEffect(()=> {
     const fetchData = async () => {
       try {
@@ -160,13 +212,13 @@ const Dashboard = () => {
           month: currentMonth, 
           year: Number(currentYear)
         })
-        setTotalAsset(resInfoDash.total_asset_amount)
         setTotalConvert(resInfoDash.total_convert_amount)
         setTotalProfit(resInfoDash.total_profit_balance)
         setTotalUser(resInfoDash.total_user)
         setTotalWithdraw(resInfoDash.total_withdraw_amount)
         setTotalWithdrawFee(resInfoDash.total_withdraw_fee)
         setDailyProfitsByDay(resInfoDash.daily_profits)
+        setTotalAsset(resInfoDash.total_asset_amount)
         setTotalAssetAbove10k(resInfoDash.asset_above_10k)
         setTotalAssetBelow10k(resInfoDash.asset_below_10k)
 
@@ -206,6 +258,13 @@ const Dashboard = () => {
       render: (value: number) => value
     },
   ]
+
+
+  const dataAsset = {
+    total_asset_amount: totalAsset, 
+    asset_above_10k: totalAssetAbove10k, 
+    asset_below_10k: totalAssetBelow10k
+  }
   
   return (
     <div className="flex flex-col gap-2 justify-center m-4">
@@ -215,26 +274,28 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2 justify-center">
         <FixedText label="Total User" text={totalUser} />
-        <FixedText label="Total Asset" text={totalAsset}/>
-        <FixedText label="Total Asset 10K Above" text={totalAssetAbove10k}/>
-        <FixedText label="Total Asset 10K Below" text={totalAssetBelow10k}/>
         <FixedText label="Total Profit & Commission" text={totalProfit} />
         <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
         <FixedText label="Total Withdraw" text={totalWithdraw} />
         <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />
       </div>
 
-      <div className="flex flex-col items-center justify-center bg-white p-2 rounded-xl">
-        <span  className="font-bold">Monthly Summary Trading</span>
-        <div className="flex flex-row gap-2 w-full">
-          <SelectMonth value={currentMonth} 
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentMonth(e.target.value)} />
-          <SelectYear value={currentYear}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentYear(e.target.value)} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-center justify-center">
+
+        <AssetChart data={dataAsset} />
+
+        <div className="flex flex-col items-center justify-center bg-white p-2 rounded-xl h-full">
+          <span  className="font-bold">Monthly Summary Trading</span>
+          <div className="flex flex-row gap-2 w-full">
+            <SelectMonth value={currentMonth} 
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentMonth(e.target.value)} />
+            <SelectYear value={currentYear}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentYear(e.target.value)} />
+          </div>
+          <Tables columns={columns} data={gain} 
+            needDate={false}
+          />
         </div>
-        <Tables columns={columns} data={gain} 
-          needDate={false}
-        />
       </div>
 
       <div className="flex justify-center">
