@@ -7,6 +7,7 @@ interface ButtonProps {
   onClick?: () => void
   type: 'button' | 'submit' | 'reset'
   disabled?: boolean
+  active?: boolean
 }
 
 const Buttons: React.FC<ButtonProps> = ({
@@ -14,10 +15,11 @@ const Buttons: React.FC<ButtonProps> = ({
   children,
   onClick,
   type,
-  disabled
+  disabled,
+  active = false,
 }) => {
   return (
-    <button type={type} onClick={onClick} disabled={disabled}
+    <button type={type} onClick={onClick} disabled={disabled} aria-pressed={active}
     className={className ? className : `font-semibold bg-black text-white active:bg-red-600 active:text-black hover:bg-red-600 hover:text-black hover:cursor-pointer py-1 px-2 rounded-md`}>
       {children}
     </button>

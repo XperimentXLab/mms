@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 
 # sharing company 80/20 = 13% .. 70/30 = 23% --> super profit -- nnti
-# withdraw fee = 2% --> super profit
 
 def _distribute_affiliate_bonus_for_user(
     downline_user: User,
@@ -42,7 +41,6 @@ def _distribute_affiliate_bonus_for_user(
             l1_bonus_amount = (downline_asset.amount * (daily_rate_percentage / Decimal('100.00')) * l1_bonus_percentage).quantize(Decimal('0.01'))
 
             if l1_bonus_amount > Decimal('0.00'):
-                original_affiliate_balance_l1 = upline_l1_wallet.affiliate_point_balance
                 upline_l1_wallet.affiliate_point_balance += l1_bonus_amount
 
                 metrics['l1_bonuses_paid'] += 1
@@ -82,7 +80,6 @@ def _distribute_affiliate_bonus_for_user(
                         l2_bonus_amount = (downline_asset.amount * (daily_rate_percentage / Decimal('100.00')) * l2_bonus_percentage).quantize(Decimal('0.01'))
 
                         if l2_bonus_amount > Decimal('0.00'):
-                            original_affiliate_balance_l2 = upline_l2_wallet.affiliate_point_balance
                             upline_l2_wallet.affiliate_point_balance += l2_bonus_amount
 
                             metrics['l2_bonuses_paid'] += 1
@@ -112,6 +109,42 @@ def _distribute_affiliate_bonus_for_user(
             logger.info(f"L1 upline {upline_l1_id} for {downline_user.username} is inactive. No L1/L2 affiliate bonus.")
         elif not upline_l1_wallet:
             logger.warning(f"Wallet not found for L1 upline {upline_l1_id}. Skipping L1/L2 affiliate bonus for {downline_user.username}.")
+
+
+def sharing_profit(daily_profit_rate):
+
+    super_user = User.objects.get(is_superuser=True)
+    super_user_wallet = Wallet.objects.get(user=super_user)
+
+    admin_asset = Asset.objects.filter(user_id__in=['MMS00QVS', 'MMS01FXC', 'MMS0216J',  'MMS02O5G', 'MMS02GKX']).aggregate(total=models.Sum('amount'))['total'] or 0
+    print(f'admin as: {admin_asset}')
+    all_asset_above_10k = Asset.objects.filter(amount__gte=10000).aggregate(total=models.Sum('amount'))['total'] or 0
+
+    asset_above_10k = Decimal(all_asset_above_10k) - Decimal(admin_asset)
+    asset_below_10k = Asset.objects.filter(amount__lt=10000).aggregate(total=models.Sum('amount'))['total'] or 0
+
+    with db_transaction.atomic():
+        logger.info(f'Sharing Profit {daily_profit_rate}%')
+        sharing_above_10k = asset_above_10k * Decimal(daily_profit_rate) * Decimal('0.23') # 23%
+        sharing_below_10k = asset_below_10k * Decimal(daily_profit_rate) * Decimal('0.13') # 13%
+
+        total_sharing = sharing_above_10k + sharing_below_10k
+        super_user_wallet.profit_point_balance += total_sharing
+        super_user_wallet.save()
+
+        current_time = timezone.now()
+
+        Transaction.objects.create(
+            user=super_user,
+            wallet=super_user_wallet,
+            transaction_type='SHARING_PROFIT',
+            point_type='PROFIT',
+            amount=total_sharing,
+            description=f'Sharing Profit {total_sharing:.2f} on {current_time.strftime("%Y-%m-%d")}',
+            reference=f'SHARING_PROFIT_{total_sharing:.2f}_{current_time.strftime("%Y%m%d")}'
+        )
+
+        logger.info(f'Sharing profit completed {total_sharing:.2f}')
 
 
 def distribute_profit_manually():
@@ -247,6 +280,8 @@ def distribute_profit_manually():
                 Transaction.objects.bulk_create(affiliate_bonus_transactions_to_create)
             
             logger.info(f"Created {len(user_profit_transactions_to_create)} profit transactions and {len(affiliate_bonus_transactions_to_create)} affiliate bonus transactions.")
+
+            sharing_profit(daily_rate_percentage)
         
         logger.info(f"Manual profit and affiliate distribution completed. Processed {processed_wallets_count} direct profit recipients.")
         return {
@@ -257,6 +292,7 @@ def distribute_profit_manually():
             "profit_tx_created": len(user_profit_transactions_to_create),
             "affiliate_tx_created": len(affiliate_bonus_transactions_to_create),
         }
+    
 
     except OperationalProfit.DoesNotExist:
         logger.error("OperationalProfit record not found.")
@@ -659,6 +695,9 @@ class ProfitService:
     def process_withdrawal_request(request_id, action, reference=""):
         """Approve or reject a withdrawal request"""
 
+        super_user = User.objects.get(is_superuser=True)
+        super_user_wallet = Wallet.objects.get(user=super_user)
+
         if reference is None:
             raise ValidationError('Reference is required.')
         
@@ -681,6 +720,9 @@ class ProfitService:
                 fee_rate = Decimal('0.02') #Fee Rate 2%
                 fee = txn.amount * fee_rate
                 actual_amount = txn.amount - fee
+
+                super_user_wallet.profit_point_balance += fee
+                super_user_wallet.save()
                 
                 # Update transaction description
                 txn.description = f"Profit withdrawal to be received: {actual_amount}"
@@ -791,6 +833,9 @@ class CommissionService:
     def process_withdrawal_request(request_id, action, reference=""):
         """Approve or reject a withdrawal request"""
 
+        super_user = User.objects.get(is_superuser=True)
+        super_user_wallet = Wallet.objects.get(user=super_user)
+
         if reference is None:
             raise ValidationError('Reference is required.')
 
@@ -813,6 +858,9 @@ class CommissionService:
                 fee_rate = Decimal('0.02') #Fee Rate 2%
                 fee = txn.amount * fee_rate
                 actual_amount = txn.amount - fee
+
+                super_user_wallet.profit_point_balance += fee
+                super_user_wallet.save()
                 
                 # Update transaction description
                 txn.description = f"Profit withdrawal to be received: {actual_amount}"

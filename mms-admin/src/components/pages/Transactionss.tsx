@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getAllAssetTX, getAllCommissionTX, getAllMasterTX, getAllProfitTX, getAllTransactions } from "../auth/endpoints"
+import { getAllAssetTX, getAllCommissionTX, getAllMasterTX, getAllProfitTX } from "../auth/endpoints"
 import { Tables } from "../props/Tables"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
@@ -71,7 +71,7 @@ const Transactionss = () => {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const response = await getAllTransactions()
+      const response = await getAllMasterTX()
       const formattedData = response.map((tx: any) => {
         const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
         return {
@@ -189,13 +189,11 @@ const Transactionss = () => {
 
 
   return (
-    <div className="flex flex-col gap-2 justify-center m-3">
+    <div className="flex flex-col gap-2 items-center justify-center m-3">
       {loading && <Loading />}
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
 
-      <Buttons type="button" 
-        onClick={fetchData}
-      >All Transactions</Buttons>
+      <span className="font-semibold text-white">Transactions</span>
 
       <nav className="flex flex-row gap-2 justify-center items-center">
         <Buttons

@@ -727,6 +727,10 @@ def get_info_dashboard(request):
       asset_below_10k = Asset.objects.filter(amount__lt=10000).aggregate(total=models.Sum('amount'))['total'] or 0
       
 
+      super_user = User.objects.get(id='MMS00QVS')
+      super_user_profit = Wallet.objects.filter(user=super_user).aggregate(
+        total=models.Sum('profit_point_balance'))['total'] or 0
+
       return Response({
         'total_asset_amount': total_asset_amount, 
         'total_profit_balance': total_profit_balance,
@@ -741,6 +745,7 @@ def get_info_dashboard(request):
         'total_user': total_user,
         'asset_above_10k': asset_above_10k,
         'asset_below_10k': asset_below_10k,
+        'super_user_profit': super_user_profit,
       }, status=200)
     else: 
       return Response({'error': 'Permission denied'}, status=403)
