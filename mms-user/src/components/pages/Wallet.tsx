@@ -8,10 +8,12 @@ import { FaChevronDown } from "react-icons/fa";
 import { Tables, type TableColumn } from "../props/Tables"
 import { InfoWithdraw } from "../props/Info"
 import { convertCommissionToMaster, convertProfitToMaster, getWallet, transferMasterPoint, userDetails, withdrawProfit } from "../auth/endpoints"
+import dayjs from "dayjs"
 
 
 const Wallet = () => {
 
+  const isSunday = dayjs().tz('Asia/Kuala_Lumpur').day() === 0;
   const [loading, setLoading] = useState<boolean>(true)
 
   // fetch from db
@@ -291,7 +293,7 @@ const Wallet = () => {
               value={String(profitPoint)}
               required={true}
             />
-            <Buttons type="submit" disabled={true}>Withdraw</Buttons>
+            <Buttons type="submit" disabled={isSunday ? false : true}>Withdraw</Buttons>
           </form>
           <InfoWithdraw />
 
@@ -321,7 +323,7 @@ const Wallet = () => {
               value={String(commissionPoint)}
               required={true}
             />
-            <Buttons type="submit" disabled={true}>Withdraw</Buttons>       
+            <Buttons type="submit" disabled={isSunday ? false : true}>Withdraw</Buttons>       
           </form>
           <InfoWithdraw />
 

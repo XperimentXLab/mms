@@ -305,6 +305,7 @@ def get_all_transaction(request):
   except Exception as e:
     return Response({'error': str(e)}, status=400)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_all_master_tx(request):
