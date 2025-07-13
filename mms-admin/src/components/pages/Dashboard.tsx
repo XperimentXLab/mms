@@ -53,13 +53,12 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
 
   const totalProfit7Days = last7DaysData.reduce((acc, item) => acc + item.total, 0);
 
-
   const chartData = {
     labels: formattedLabels,
     datasets: [
       {
         label: `Total Profit - ${totalProfit7Days.toFixed(2)}`,
-        data: data.map(item => item.total),
+        data: last7DaysData.map(item => item.total),
         backgroundColor: 'lightgrey',
         borderColor: 'white',
         borderWidth: 2,
@@ -89,7 +88,7 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
         callbacks: {
           label: (context: any) => {
             const total = context.parsed.y;
-            return `Total: ${total.toFixed(2)}`;
+            return `Total: ${total}`;
           }
         },
       },
