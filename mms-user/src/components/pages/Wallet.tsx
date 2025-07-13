@@ -8,8 +8,11 @@ import { FaChevronDown } from "react-icons/fa";
 import { Tables, type TableColumn } from "../props/Tables"
 import { InfoWithdraw } from "../props/Info"
 import { convertCommissionToMaster, convertProfitToMaster, getWallet, transferMasterPoint, userDetails, withdrawProfit } from "../auth/endpoints"
-import dayjs from "dayjs"
-
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const Wallet = () => {
 
