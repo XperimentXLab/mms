@@ -241,11 +241,49 @@ export const grantFreeCampro = async (user_id: string) => {
   return response.data
 }
 
+interface paramsTx {
+  search?: string,
+  status?: string,
+  transactionType?: string,
+  startDate?: string,
+  endDate?: string,
+  page?: number,
+  pageSize?: number
+}
+export const getAllTransactions = async ( params: paramsTx) => {
+  const { 
+    search, 
+    status, 
+    transactionType, 
+    startDate, 
+    endDate, 
+    page=1, 
+    pageSize=30 
+  } = params
+  const queryParams = new URLSearchParams();
+  if (search) {
+    queryParams.append('search', search);
+  }
+  if (status) {
+    queryParams.append('status', status);
+  }
+  if (transactionType) {
+    queryParams.append('transaction_type', transactionType);
+  }
+  if (startDate) {
+    queryParams.append('start_date', startDate);
+  }
+  if (endDate) {
+    queryParams.append('end_date', endDate);
+  }
 
-export const getAllTransactions = async () => {
-  const response = await api.get('/all_transactions/')
+  queryParams.append('page', page.toString());
+  queryParams.append('page_size', pageSize.toString());
+
+  const response = await api.get(`/all_transactions/?${queryParams.toString()}`)
   return response.data
 }
+
 
 export const getAllMasterTX = async () => {
   const response = await api.get('/all_master_tx/')

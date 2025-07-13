@@ -11,9 +11,9 @@ from rest_framework.response import Response
 from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.tokens import default_token_generator
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.db.models.functions import TruncDate
-
+from rest_framework.pagination import PageNumberPagination
 
 
 @api_view(['POST'])
@@ -295,11 +295,43 @@ def get_all_network(request):
 @permission_classes([IsAuthenticated])
 def get_all_transaction(request):
   user = request.user
+  
   try:
     if user.is_staff:
-      all_transaction = Transaction.objects.all()
-      serializer = TransactionSerializer(all_transaction, many=True)
-      return Response(serializer.data, status=200)
+      # 🔍 
+      search_query = request.GET.get('search', '')
+      status_filter = request.GET.get('status', None)
+      transaction_type_filter = request.GET.get('transaction_type', None)
+      start_date = request.GET.get('start_date', None)
+      end_date = request.GET.get('end_date', None)
+      
+      query = Q()
+      if search_query:
+        query &= Q(user__user_id__icontains=search_query) | Q(user__username__icontains=search_query)
+      
+      if status_filter:
+        query &= Q(request_status=status_filter)
+
+      if transaction_type_filter:
+        query &= Q(transaction_type=transaction_type_filter)
+
+      # ⏱ Default date range fallback
+      if not start_date or not end_date:
+          end_date = timezone.now()
+          start_date = end_date - timedelta(days=7)
+          query &= Q(created_at__range=[start_date, end_date])
+      elif start_date and end_date:
+        query &= Q(created_at__range=[start_date, end_date])
+
+      transactions = Transaction.objects.filter(query).order_by('-created_at')
+
+      # 📄 Pagination
+      paginator = PageNumberPagination()
+      paginator.page_size = int(request.GET.get('page_size', 30))
+      paginated_transactions = paginator.paginate_queryset(transactions, request)
+
+      serializer = TransactionSerializer(paginated_transactions, many=True)
+      return paginator.get_paginated_response(serializer.data)
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
