@@ -120,8 +120,8 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData()
-    if (response.beneficiary_relationship) {
-      setEditBeneficiaryRelationship(response.beneficiary_relationship);
+    if (beneficiaryRelationship) {
+      setEditBeneficiaryRelationship(beneficiaryRelationship);
     }
   }, [beneficiaryRelationship])
 
