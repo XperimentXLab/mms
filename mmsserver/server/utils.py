@@ -125,8 +125,8 @@ def sharing_profit(daily_profit_rate):
 
     with db_transaction.atomic():
         logger.info(f'Sharing Profit {daily_profit_rate}%')
-        sharing_above_10k = asset_above_10k * Decimal(daily_profit_rate) * Decimal('0.23') # 23%
-        sharing_below_10k = asset_below_10k * Decimal(daily_profit_rate) * Decimal('0.13') # 13%
+        sharing_above_10k = asset_above_10k * Decimal(daily_profit_rate) * Decimal('0.0013') # 0.13%
+        sharing_below_10k = asset_below_10k * Decimal(daily_profit_rate) * Decimal('0.0023') # 0.23%
 
         total_sharing = sharing_above_10k + sharing_below_10k
         super_user_wallet.profit_point_balance += total_sharing

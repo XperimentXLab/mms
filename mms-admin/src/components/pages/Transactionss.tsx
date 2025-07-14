@@ -32,7 +32,7 @@ const Transactionss = () => {
   const columns = [
     { header: 'Date',
       accessor: 'created_date',
-      render: (value: string) => value
+      cell: (info: string) => info
     },
     { header: 'Time',
       accessor: 'created_time',
@@ -67,6 +67,56 @@ const Transactionss = () => {
       render: (value: string) => value ? value : '-'
      },
   ]
+
+  /*
+    const columns: ColumnDef<any, any>[] = [
+    {
+      accessorKey: "created_date",
+      header: "Date",
+      cell: info => info.getValue(),
+    },
+    {
+      accessorKey: "created_time",
+      header: "Time",
+      cell: info => info.getValue(),
+    },
+    {
+      accessorKey: "user",
+      header: "User",
+      cell: info => info.getValue(),
+    },
+    {
+      accessorKey: "username",
+      header: "Username",
+      cell: info => info.getValue(),
+    },
+    {
+      accessorKey: "transaction_type",
+      header: "Transaction Type",
+      cell: info => info.getValue(),
+    },
+    {
+      accessorKey: "amount",
+      header: "Amount",
+      cell: info => info.getValue(), // You can format with `toFixed(2)` if needed
+    },
+    {
+      accessorKey: "request_status",
+      header: "Status",
+      cell: info => info.getValue() || "-",
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+      cell: info => info.getValue(),
+    },
+    {
+      accessorKey: "reference",
+      header: "Reference",
+      cell: info => info.getValue() || "-",
+    },
+  ]
+  */
 
   const fetchData = async () => {
     try {
@@ -187,6 +237,51 @@ const Transactionss = () => {
     }
   }
 
+  /*
+  const AllTx = () => {
+    const [search, setSearch] = useState("")
+    const [status, setStatus] = useState("")
+    const [transactionType, setTransactionType] = useState("")
+    const [startDate, setStartDate] = useState("")
+    const [endDate, setEndDate] = useState("")
+
+    return (
+      <div className="space-y-6 p-6 bg-white">
+        {/* Example filters }
+        <div className="space-x-4 flex items-center">
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search..."
+            className="border px-3 py-2 rounded"
+          />
+          <select
+            value={status}
+            onChange={e => setStatus(e.target.value)}
+            className="border px-3 py-2 rounded"
+          >
+            <option value="">All Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+          {/* Add transactionType, startDate, endDate as needed }
+        </div>
+
+        {/* The actual table }
+        <TxTable
+          columns={columns}
+          search={search}
+          status={status}
+          transactionType={transactionType}
+          startDate={startDate}
+          endDate={endDate}
+        />
+      </div>
+    )
+  }*/
+
 
   return (
     <div className="flex flex-col gap-2 items-center justify-center m-3">
@@ -219,6 +314,8 @@ const Transactionss = () => {
         enablePagination={true}
         enableSorting={true}
       />
+
+      {/*<AllTx />*/}
     </div>
   )
 }

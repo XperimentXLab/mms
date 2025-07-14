@@ -59,6 +59,8 @@ const Profile = () => {
   const [errorMessageVeri, setErrorMessageVeri] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
 
+  const [assetP, setAssetP] = useState<number>(0)
+
   const fetchData = async () => {
     try {
       setLoading(true)
@@ -100,6 +102,7 @@ const Profile = () => {
       setEditBeneficiaryPhone(response.beneficiary_phone || '')
 
       setFullName(`${response.first_name} ${response.last_name}`)
+      setAssetP(response.asset_amount || 0)
 
       const countryRes = await apiCountry
       setCountryList(countryRes)
@@ -272,7 +275,7 @@ const Profile = () => {
         <div className="grid grid-rows-3 gap-3 py-3 px-5 shadow-2xl w-full shadow-red-300 bg-white rounded-2xl border items-center">
           <h1 className="font-bold text-lg underline">Personal Information</h1>
 
-          <Spannn label="USERNAME">{username}</Spannn>
+          <Spannn label="USERNAME" assetAmount={assetP}>{username}</Spannn>
           <Spannn label="EMAIL">{email}</Spannn>
           <Spannn label="NAME">{fullName}</Spannn>
           <Spannn label="I/C">{ic}</Spannn>
@@ -306,7 +309,7 @@ const Profile = () => {
 
           <form className="grid grid-cols-1 gap-1.5" onSubmit={toggleAddress}>
             
-            <Inputss type="text" label='ADDRESS LINE'
+            <Inputss type="text" label='ADDRESS'
               placeholder={addressLine ? addressLine : "Enter your address line"}
               onChange={e => setEditAddressLine(e.target.value)}
               value={editAddressLine}

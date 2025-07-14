@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -15,6 +15,8 @@ import 'react-datepicker/dist/react-datepicker.css'
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import { getAllTransactions } from "../auth/endpoints";
+import Loading from "./Loading";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -44,6 +46,9 @@ interface TablesProps {
 
 
 export interface Data {
+  id?: string
+  username?: string
+  asset_amount?: number
   created_date: string;
   amount: string;
   request_status?: string;
@@ -258,7 +263,7 @@ export const Tables = ({
   );
 };
 
-
+////////////////////////////////////////////////////
 
 export const RequestTable = ({ columns, data, emptyMessage = "No data available" }: TablesProps) => {
   return (
@@ -303,3 +308,130 @@ export const RequestTable = ({ columns, data, emptyMessage = "No data available"
     </table>
   );
 };
+
+
+////////////////////////////////////////////////////
+
+interface TxTableProps {
+  columns: ColumnDef<any, any>[]
+  emptyMessage?: string
+  search?: string
+  status?: string
+  transactionType?: string
+  startDate?: string
+  endDate?: string
+}
+
+export const TxTable = ({
+  columns,
+  emptyMessage = "No data available",
+  search = "",
+  status = "",
+  transactionType = "",
+  startDate = "",
+  endDate = "",
+}: TxTableProps) => {
+
+  const [data, setData] = useState<Data[]>([])
+  const [page, setPage] = useState(1)
+  const [pageSize] = useState(30)
+  const [sorting, setSorting] = useState<SortingState>([])
+
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const res = await getAllTransactions({
+          search,
+          status,
+          transactionType,
+          startDate,
+          endDate,
+          page,
+          pageSize,
+        })
+        
+        setData(res?.results ?? []) // adjust if your API response shape differs
+      } catch (error) {
+        console.error("Failed to fetch transactions", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [search, status, transactionType, startDate, endDate, page, pageSize])
+
+
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(), // include only if backend sorts
+  })
+
+  return (
+    <div className="w-full overflow-x-auto flex flex-col gap-2 p-3 bg-white rounded-xl">
+      {loading && <Loading />}
+      {data.length === 0 ? (
+        <p className="text-center text-gray-500">{emptyMessage}</p>
+      ) : (
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th
+                    key={header.id}
+                    className="px-4 py-2 font-semibold text-left cursor-pointer select-none"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getIsSorted() === "asc"
+                      ? " 🔼"
+                      : header.column.getIsSorted() === "desc"
+                      ? " 🔽"
+                      : ""}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map(row => (
+              <tr key={row.id} className="border-b hover:bg-gray-50">
+                {row.getVisibleCells().map(cell => (
+                  <td key={cell.id} className="px-6 py-4">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {/* Pagination */}
+      <div className="flex justify-end mt-4 space-x-2">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(p => Math.max(p - 1, 1))}
+          className="px-3 py-1 border rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
+        <span className="px-3 py-1">Page {page}</span>
+        <button
+          onClick={() => setPage(p => p + 1)}
+          className="px-3 py-1 border rounded"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  )
+}

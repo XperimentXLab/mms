@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react"
 import Loading from "../props/Loading"
-import { getAsset, getDailyTotalProfit, getWallet, userDetails } from "../auth/endpoints"
+import { getDailyTotalProfit, getWallet, userDetails } from "../auth/endpoints"
 import { FixedText } from "../props/Textt"
 import { Tables } from "../props/Tables";
 //import dayjs from "dayjs";
@@ -78,7 +78,6 @@ const Home = () => {
         setLoading(true)
         const respUserDetails = await userDetails()
         const resWallet = await getWallet()
-        const resAsset = await getAsset()
         setUsername(respUserDetails.username)
         setUserId(respUserDetails.id)
         setMasterP(resWallet.master_point_balance || 0)
@@ -87,7 +86,7 @@ const Home = () => {
           Number(resWallet.affiliate_point_balance || 0) +
           Number(resWallet.introducer_point_balance || 0)
         )
-        setAssetP(resAsset.amount || 0)
+        setAssetP(respUserDetails.asset_amount || 0)
 
 
         const resDailyProfit = await getDailyTotalProfit()
@@ -157,7 +156,7 @@ const Home = () => {
       <div className="grid grid-cols-1 gap-3">
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-start sm:justify-center">
-          <FixedText label="USERNAME" text={username} />
+          <FixedText label="USERNAME" text={username} assetAmount={assetP}/>
           <FixedText label="USER ID" text={userId} />
           <FixedText label="Asset" text={assetP.toString()} />
           <FixedText label="Profit" text={profitP.toString()} />

@@ -27,8 +27,16 @@ const User = () => {
       render: (value: string) => value
      },
     { header: 'Username', 
-      accessor: 'username',
-      render: (value: string) => value
+      accessor: 'id',
+      render: (id: string) => {
+        const row = dataUserDetails.find(user => user.id === id);
+        if (!row) return null;
+        return (
+          <span className={`${(row.asset_amount || 0) < 200 ? 'text-slate-500' : 'text-black'}`}>
+            {row.username}
+          </span>
+        )
+      }
      },
     { header: 'I/C', 
       accessor: 'ic',

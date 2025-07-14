@@ -137,9 +137,6 @@ const Wallet = () => {
     e.preventDefault()
     try {
       setLoading(true)
-      if (profitPoint <= 0) {
-        alert('Please enter a valid amount.')
-      }
       setReferenceWithdraw(walletAddress || '')
       await withdrawProfit({
         amount: profitPoint,
@@ -190,9 +187,6 @@ const Wallet = () => {
     e.preventDefault()
     try {
       setLoading(true)
-      if (commissionPoint <= 0) {
-        alert('Please enter a valid amount.')
-      }
       if (walletAddress === undefined) {
         alert('Please set your wallet address in the profile page.')
       }
