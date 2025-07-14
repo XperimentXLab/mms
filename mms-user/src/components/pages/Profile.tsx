@@ -305,7 +305,7 @@ const Profile = () => {
           </form>}
 
           <form className="grid grid-cols-1 gap-1.5" onSubmit={toggleAddress}>
-            <InfoPersonal />
+            
             <Inputss type="text" label='ADDRESS LINE'
               placeholder={addressLine ? addressLine : "Enter your address line"}
               onChange={e => setEditAddressLine(e.target.value)}
@@ -342,7 +342,7 @@ const Profile = () => {
               </select>
 
             </div>
-            
+            <InfoPersonal />
             <Buttons type="submit">Save</Buttons>
           </form>
 
@@ -409,7 +409,7 @@ const Profile = () => {
           <h1 className="font-bold text-lg underline">Verification</h1>
 
           <FixedText label='Status' text={verificationStatusDisplay} />
-          {verificationStatus === 'UNDER_REVIEW' && <span className="text-md">Please wait for 24 hours for verification or contact administrator.</span>}
+          {verificationStatus === 'UNDER_REVIEW' && <span className="text-md">Please wait for 24 hours for verification of your document.</span>}
 
           {verificationStatus === 'REQUIRES_ACTION' && 
           <form className="flex flex-col gap-2 justify-center items-center" onSubmit={toggleVerification}>
