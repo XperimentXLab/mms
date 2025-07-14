@@ -120,7 +120,10 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData()
-  }, [])
+    if (response.beneficiary_relationship) {
+      setEditBeneficiaryRelationship(response.beneficiary_relationship);
+    }
+  }, [beneficiaryRelationship])
 
   const toggleWalletAddress = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -365,7 +368,7 @@ const Profile = () => {
               onChange={e => setEditBeneficiaryRelationship(e.target.value)}
               value={editBeneficiaryRelationship}
             >
-              <option value={beneficiaryRelationship ? beneficiaryRelationship : ''}>Select your relationship</option>
+              <option value=''>Select your relationship</option>
               {beneficiaryRelationshipList.map((relName) => (
                 <option value={relName} key={relName} >
                   {relName}
