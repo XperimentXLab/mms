@@ -9,6 +9,7 @@ interface userDetail {
   username: string
   first_name: string
   last_name: string
+  asset_amount: number
   ic: string
   wallet_address: string | null
   address_line: string | null
@@ -217,7 +218,11 @@ const Verifications = () => {
     { header: 'Promo Code',
       accessor: 'promocode',
       render: (value: string) => value ? value : '-'
-    }
+    },
+    { header: 'Asset', 
+      accessor: 'asset_amount',
+      render: (value: string) => value
+    },
 
   ], [userDetailss])
 
