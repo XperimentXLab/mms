@@ -139,7 +139,7 @@ const Profile = () => {
         phoneNo: editPhoneNo,
         walletAddress: editWalletAddress,
       })
-      alert('Wallet address updated successfully')
+      alert('Profile updated successfully')
     } catch (error: any) {
       console.error(error)
     } finally {
