@@ -78,7 +78,7 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
       },
       title: {
         display: true,
-        text: '6 Days Profits',
+        text: 'Last 6 Days Profits',
         color: 'white',
         font: {
           size: 15,
@@ -88,13 +88,10 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
         callbacks: {
           label: (context: any) => {
             const total = context.parsed.y;
-            return `Total: ${total}`;
+            return `Total: ${total.toFixed(2)}`;
           }
         },
       },
-      datalabels: {
-        display: false
-      }
     },
     scales: {
       x: {
@@ -221,7 +218,14 @@ const Dashboard = () => {
         setTotalAssetAbove10k(resInfoDash.asset_above_10k)
         setTotalAssetBelow10k(resInfoDash.asset_below_10k)
 
-        setGain(resInfoDash)
+        const gainData: GainProps[] = [{
+          total_deposit: resInfoDash.total_deposit,
+          total_gain: resInfoDash.total_gain,
+          total_gain_z: resInfoDash.total_gain_z,
+          total_gain_a: resInfoDash.total_gain_a,
+        }];
+
+        setGain(gainData)
         setErrorMessage('')
       } catch (error: any) {
         if (error.response && error.response.status === 400 ) {
@@ -246,7 +250,7 @@ const Dashboard = () => {
     },
     { header: 'Total Gain Trading',
       accessor: 'total_gain',
-      render: (value: number) => value
+      render: (value: number) => value.toFixed(2)
     },
     { header: 'Gain Trading Z',
       accessor: 'total_gain_z',
