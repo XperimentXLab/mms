@@ -58,9 +58,9 @@ const Setup = () => {
     setMasterAmount('')
     setProfitAmount('')
     setAffiliateAmount('')
-    setEditTotalDeposit(0)
-    setEditTotalGainA(0)
-    setEditTotalGainZ(0)
+    setEditTotalDeposit('')
+    setEditTotalGainA('')
+    setEditTotalGainZ('')
   }
 
   const handleDeposit = async (e: React.FormEvent<HTMLFormElement>) => {
