@@ -16,9 +16,9 @@ const Operation = () => {
   const [activeYearProfit, setActiveYearProfit] = useState<string>("")
   const [lastUpdated, setLastUpdated] = useState<string>("")
 
-  const [todayProfit, setTodayProfit] = useState<number>(0)
-  const [weeklyProfit, setWeeklyProfit] = useState<number>(0)
-  const [monthlyProfit, setMonthlyProfit] = useState<number>(0)
+  const [todayProfit, setTodayProfit] = useState<string>('')
+  const [weeklyProfit, setWeeklyProfit] = useState<string>('')
+  const [monthlyProfit, setMonthlyProfit] = useState<string>('')
   const [inputActiveMonth, setInputActiveMonth] = useState<string>(""); 
   const [inputActiveYear, setInputActiveYear] = useState<string>("");
 
@@ -87,9 +87,9 @@ const Operation = () => {
     try {
       setLoading(true)
       await update_profit({
-        dailyProfitRate: todayProfit,
-        weeklyProfitRate: weeklyProfit,
-        currentMonthProfit: monthlyProfit,
+        dailyProfitRate: Number(todayProfit),
+        weeklyProfitRate: Number(weeklyProfit),
+        currentMonthProfit: Number(monthlyProfit),
         activeMonthProfit: Number(inputActiveMonth),
         activeYearProfit: Number(inputActiveYear),
       })
@@ -212,8 +212,8 @@ const Operation = () => {
             type="number"
             placeholder="Please fill in today profit manually"
             currentValue={dailyProfitRate}
-            onChange={(e) => setTodayProfit(Number(e.target.value))}
-            value={String(todayProfit)}
+            onChange={(e) => setTodayProfit(e.target.value)}
+            value={todayProfit}
             required={true}
           />
           <InputwithVal
@@ -221,8 +221,8 @@ const Operation = () => {
             type="number"
             placeholder="Please fill in weekly profit manually"
             currentValue={weeklyProfitRate}
-            onChange={(e) => setWeeklyProfit(Number(e.target.value))}
-            value={String(weeklyProfit)}
+            onChange={(e) => setWeeklyProfit(e.target.value)}
+            value={weeklyProfit}
             required={true}
           />
           <InputwithVal
@@ -230,8 +230,8 @@ const Operation = () => {
             type="number"
             placeholder="Please set monthly profit manually"
             currentValue={currentMonthProfit}
-            onChange={(e) => setMonthlyProfit(Number(e.target.value))}
-            value={String(monthlyProfit)}
+            onChange={(e) => setMonthlyProfit(e.target.value)}
+            value={monthlyProfit}
             required={true}
           />
           {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
