@@ -51,8 +51,8 @@ const ValueCalculator: React.FC<CalculatorProps> = ({
 
 const Others = () => {
 
-  const [assetAmount, setAssetAmount] = useState(0)
-  const [profitRate, setProfitRate] = useState(0)
+  const [assetAmount, setAssetAmount] = useState<string>('')
+  const [profitRate, setProfitRate] = useState<string>('')
   const [userProfit, setUserProfit] = useState(0);
   const [sharingRatio, setSharingRatio] = useState("");
 
@@ -165,8 +165,8 @@ const Others = () => {
   
   // Calculator Section
   const resetForm = (): void => {
-    setAssetAmount(0)
-    setProfitRate(0)
+    setAssetAmount('')
+    setProfitRate('')
     setUserProfit(0)
     setSharingRatio("")
   }
@@ -182,11 +182,11 @@ const Others = () => {
     setLoading(true);
 
     // Calculate total profit
-    const profit = assetAmount * (profitRate / 100); //to be %
+    const profit = Number(assetAmount) * (Number(profitRate) / 100); //to be %
 
     // Determine sharing ratio based on investment amount
     let userPercent = 0
-    if (assetAmount < 10000) {
+    if (Number(assetAmount) < 10000) {
       userPercent = 0.7; // 70%
       setSharingRatio("70/30");
     } else {
@@ -254,17 +254,17 @@ const Others = () => {
             label="Asset Amount"
             placeholder="Enter amount"
             onChange={(e) => {
-              setAssetAmount(Number(e.target.value));
+              setAssetAmount(e.target.value);
             }}
-            value={assetAmount.toFixed(2)}
+            value={assetAmount}
           />
           <ValueCalculator
             label="Profit Rate (%)"
             placeholder="Enter rate"
             onChange={(e) => {
-              setProfitRate(Number(e.target.value));
+              setProfitRate(e.target.value);
             }}
-            value={profitRate.toFixed(2)}
+            value={profitRate}
           />
           <Buttons type="submit">Calculate</Buttons>
           <Buttons type="button" onClick={resetForm}>
