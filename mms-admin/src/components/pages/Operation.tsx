@@ -252,7 +252,7 @@ const Operation = () => {
             label="Finalized Profit"
             type="number"
             placeholder="Please fill in finalized profit manually"
-            currentValue={monthlyProfit}
+            currentValue={Number(monthlyProfit)}
             onChange={(e) => setInputFinalizedProfitRate(Number(e.target.value))}
             value={String(inputFinalizedProfitRate)}
             required={true}
