@@ -256,7 +256,7 @@ const Others = () => {
             onChange={(e) => {
               setAssetAmount(Number(e.target.value));
             }}
-            value={String(assetAmount)}
+            value={assetAmount.toFixed(2)}
           />
           <ValueCalculator
             label="Profit Rate (%)"
@@ -264,7 +264,7 @@ const Others = () => {
             onChange={(e) => {
               setProfitRate(Number(e.target.value));
             }}
-            value={String(profitRate)}
+            value={profitRate.toFixed(2)}
           />
           <Buttons type="submit">Calculate</Buttons>
           <Buttons type="button" onClick={resetForm}>
