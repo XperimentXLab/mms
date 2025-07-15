@@ -246,7 +246,7 @@ const Dashboard = () => {
   const columns = [
     { header: 'Total Deposit',
       accessor: 'total_deposit',
-      render: (value: number) => value.toFixed(2)
+      render: (value: number) => value
     },
     { header: 'Total Gain Trading',
       accessor: 'total_gain',
@@ -254,11 +254,11 @@ const Dashboard = () => {
     },
     { header: 'Gain Trading Z',
       accessor: 'total_gain_z',
-      render: (value: number) => value.toFixed(2)
+      render: (value: number) => value
     },
     { header: 'Gain Trading A',
       accessor: 'total_gain_a',
-      render: (value: number) => value.toFixed(2)
+      render: (value: number) => value
     },
   ]
 
