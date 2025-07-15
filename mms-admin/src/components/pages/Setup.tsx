@@ -20,9 +20,9 @@ const Setup = () => {
   const [profitAmount, setProfitAmount] = useState<string>('')
   const [affiliateAmount, setAffiliateAmount] = useState<string>('')
 
-  const [editTotalDeposit, setEditTotalDeposit] = useState<number>(0)
-  const [editTotalGainZ, setEditTotalGainZ] = useState<number>(0)
-  const [editTotalGainA, setEditTotalGainA] = useState<number>(0)
+  const [editTotalDeposit, setEditTotalDeposit] = useState<string>('')
+  const [editTotalGainZ, setEditTotalGainZ] = useState<string>('')
+  const [editTotalGainA, setEditTotalGainA] = useState<string>('')
   const [currentMonth, setCurrentMonth] = useState<string>('')
   const [currentYear, setCurrentYear] = useState<string>('')
 
@@ -72,7 +72,7 @@ const Setup = () => {
     try {
       setLoading(true)
       await putPerformance({
-        totalDeposit: editTotalDeposit,
+        totalDeposit: Number(editTotalDeposit),
         month: Number(currentMonth),
         year: Number(currentYear)
       })
@@ -100,7 +100,7 @@ const Setup = () => {
     try {
       setLoading(true)
       await putPerformance({
-        totalGainZ: editTotalGainZ,
+        totalGainZ: Number(editTotalGainZ),
         month: Number(currentMonth),
         year: Number(currentYear)
       })
@@ -127,7 +127,7 @@ const Setup = () => {
     try {
       setLoading(true)
       await putPerformance({
-        totalGainA: editTotalGainA,
+        totalGainA: Number(editTotalGainA),
         month: Number(currentMonth),
         year: Number(currentYear)
       })
@@ -179,8 +179,8 @@ const Setup = () => {
               type="number"
               label="Total Deposit"
               placeholder="Enter amount"
-              onChange={e => setEditTotalDeposit(Number(e.target.value))}
-              value={String(editTotalDeposit)}
+              onChange={e => setEditTotalDeposit(e.target.value)}
+              value={editTotalDeposit}
               noNeedPercent={true}
             />
             <Buttons type="submit">Save</Buttons>
@@ -191,8 +191,8 @@ const Setup = () => {
               type="number"
               label="Total Gain Trading Z"
               placeholder="Enter amount"
-              onChange={e => setEditTotalGainZ(Number(e.target.value))}
-              value={String(editTotalGainZ)}
+              onChange={e => setEditTotalGainZ(e.target.value)}
+              value={editTotalGainZ}
               noNeedPercent={true}
             />
             <Buttons type="submit">Save</Buttons>
@@ -203,8 +203,8 @@ const Setup = () => {
               type="number"
               label="Total Gain Trading A"
               placeholder="Enter amount"
-              onChange={e => setEditTotalGainA(Number(e.target.value))}
-              value={String(editTotalGainA)}
+              onChange={e => setEditTotalGainA(e.target.value)}
+              value={editTotalGainA}
               noNeedPercent={true}
             />
             <Buttons type="submit">Save</Buttons>
