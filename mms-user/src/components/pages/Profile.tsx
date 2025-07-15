@@ -18,6 +18,7 @@ const Profile = () => {
   const [fullName, setFullName] = useState<string>('')
   const [firstName, setFirstName] = useState<string>('')
   const [lastName, setLastName] = useState<string>('')
+  const [phoneNo, setPhoneNo] = useState<string>('')
   const [ic, setIc] = useState<string>('')
   const [walletAddress, setWalletAddress] = useState<string | undefined  | null>(undefined)
   const [addressLine, setAddressLine] = useState<string>('')
@@ -39,6 +40,7 @@ const Profile = () => {
   const [icDocument, setIcDocument] = useState<File | undefined>(undefined)
 
   const [editWalletAddress, setEditWalletAddress] = useState<string>('')
+  const [editPhoneNo, setEditPhoneNo] = useState<string>('')
   const [editAddressLine, setEditAddressLine] = useState<string>('')
   const [editState, setEditState] = useState<string>('')
   const [editCity, setEditCity] = useState<string>('')
@@ -70,6 +72,7 @@ const Profile = () => {
       setEmail(response.email)
       setFirstName(response.first_name)
       setLastName(response.last_name)
+      setPhoneNo(response.phone_no)
       setIc(response.ic)
       setWalletAddress(response.wallet_address)
       setAddressLine(response.address_line)
@@ -133,6 +136,7 @@ const Profile = () => {
     try {
       setLoading(true)
       await updateUserDetails({
+        phoneNo: editPhoneNo,
         walletAddress: editWalletAddress,
       })
       alert('Wallet address updated successfully')
@@ -282,6 +286,12 @@ const Profile = () => {
           <Spannn label="REFERRAL CODE">{refferralCode}</Spannn>
 
           <form onSubmit={toggleWalletAddress} className="grid grid-cols-1 gap-1.5">
+            <Inputss type="text" label='Phone No' 
+              placeholder={phoneNo ? phoneNo : ""}
+              onChange={e => setEditPhoneNo(e.target.value)}
+              value={editPhoneNo}
+            />
+
             <Inputss type="text" label='WALLET ADDRESS (BEP20)' 
               placeholder={walletAddress ? walletAddress : "Enter your wallet address"}
               onChange={e => setEditWalletAddress(e.target.value)}

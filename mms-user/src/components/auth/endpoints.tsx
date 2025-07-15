@@ -8,6 +8,7 @@ interface User {
   email?: string;
   firstName?: string;
   lastName?: string;
+  phoneNo?: string | undefined;
   ic?: string;
   password: string;
   referredBy?: string;
@@ -162,6 +163,7 @@ export const updateUserDetails = async (userData: Partial<User>) => {
     city,
     postcode,
     country,
+    phoneNo,
     firstName,
     lastName,
     walletAddress,
@@ -176,6 +178,7 @@ export const updateUserDetails = async (userData: Partial<User>) => {
   const response = await api.put(`/update_user/`, {
     first_name: firstName,
     last_name: lastName,
+    phone_no: phoneNo,
     address_line: addressLine,
     address_state: state,
     address_city: city,

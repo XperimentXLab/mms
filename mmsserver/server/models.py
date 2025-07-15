@@ -28,6 +28,8 @@ class User(AbstractUser):
   address_postcode = models.CharField(max_length=255, blank=True, null=True)
   address_country = models.CharField(max_length=100, blank=True, null=True, verbose_name='Country')
 
+  phone_no = models.CharField(max_length=15, blank=True, null=True, validators=[RegexValidator(r'^(?:\+?60|0)1\d{7,11}$',
+  'Enter a valid mobile number')])
   referred_by = models.CharField(max_length=8, db_index=True, null=True, blank=True, verbose_name="Referred By (User ID)")
 
   is_active = models.BooleanField(default=True)

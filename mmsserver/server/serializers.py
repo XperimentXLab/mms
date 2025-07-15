@@ -23,6 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
       'last_name',
       'password',
       'ic',
+      'phone_no',
       'email',
       'referred_by',
       'wallet_address',
