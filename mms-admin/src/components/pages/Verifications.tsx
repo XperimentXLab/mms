@@ -148,10 +148,6 @@ const Verifications = () => {
       accessor: 'address_country',
       render: (value: string) => value ? value : '-'
      },
-    { header: 'Status', 
-      accessor: 'verification_status',
-      render: (value: string) => value
-    },
     { header: 'Document', 
       accessor: 'ic_document_url',
       render: (value: string) => (
@@ -215,13 +211,17 @@ const Verifications = () => {
           </div>
       )}
     },
-    { header: 'Promo Code',
-      accessor: 'promocode',
-      render: (value: string) => value ? value : '-'
+    { header: 'Status', 
+      accessor: 'verification_status',
+      render: (value: string) => value
     },
     { header: 'Asset', 
       accessor: 'asset_amount',
       render: (value: string) => value
+    },
+    { header: 'Promo Code',
+      accessor: 'promocode',
+      render: (value: string) => value ? value : '-'
     },
 
   ], [userDetailss])
