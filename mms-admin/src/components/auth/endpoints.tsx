@@ -241,10 +241,12 @@ export const grantFreeCampro = async (user_id: string) => {
   return response.data
 }
 
+
 interface paramsTx {
   search?: string,
   status?: string,
   transactionType?: string,
+  pointType?: string,
   startDate?: string,
   endDate?: string,
   page?: number,
@@ -256,6 +258,7 @@ export const getAllTransactions = async ( params: paramsTx) => {
     status, 
     transactionType, 
     startDate, 
+    pointType,
     endDate, 
     page=1, 
     pageSize=30 
@@ -275,6 +278,10 @@ export const getAllTransactions = async ( params: paramsTx) => {
   }
   if (endDate) {
     queryParams.append('end_date', endDate);
+  }
+
+  if (pointType) {
+    queryParams.append('point_type', pointType)
   }
 
   queryParams.append('page', page.toString());

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -17,6 +17,7 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { getAllTransactions } from "../auth/endpoints";
 import Loading from "./Loading";
+import type { TransactioDetail } from "../pages/Transactionss";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -318,8 +319,16 @@ interface TxTableProps {
   search?: string
   status?: string
   transactionType?: string
+  pointType?: string
   startDate?: string
   endDate?: string
+}
+
+interface ApiResponse {
+  results: TransactioDetail[]
+  totalCount: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
 }
 
 export const TxTable = ({
@@ -328,58 +337,82 @@ export const TxTable = ({
   search = "",
   status = "",
   transactionType = "",
+  pointType = "",
   startDate = "",
   endDate = "",
 }: TxTableProps) => {
 
-  const [data, setData] = useState<Data[]>([])
+  const [data, setData] = useState<TransactioDetail[]>([])
   const [page, setPage] = useState(1)
   const [pageSize] = useState(30)
   const [sorting, setSorting] = useState<SortingState>([])
+  const [globalFilter, setGlobalFilter] = useState<string>("")
 
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const res = await getAllTransactions({
-          search,
-          status,
-          transactionType,
-          startDate,
-          endDate,
-          page,
-          pageSize,
-        })
+  const fetchData = useCallback( async () => {
+    const formattedStartDate = startDate ? dayjs(startDate, "DD/MM/YYYY").format("YYYY-MM-DD") : ""
+    const formattedEndDate = endDate ? dayjs(endDate, "DD/MM/YYYY").format("YYYY-MM-DD") : ""
+
+    try {
+      setLoading(true)
+      const res: ApiResponse = await getAllTransactions({
+        search,
+        status,
+        transactionType,
+        pointType,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+        page,
+        pageSize,
+      })
+
+
+
+      const processedData = res.results.map(tx => ({
+        ...tx,
         
-        setData(res?.results ?? []) // adjust if your API response shape differs
-      } catch (error) {
-        console.error("Failed to fetch transactions", error)
-      } finally {
-        setLoading(false)
-      }
+        created_date: dayjs(tx.created_at).format("DD/MM/YYYY"),
+        created_time: dayjs(tx.created_at).format("hh:mm:ss"),
+      }))
+      setData(processedData)
+
+    } catch (error) {
+      console.error("Failed to fetch transactions", error)
+      setData([])
+    } finally {
+      setLoading(false)
     }
+  }, [search, status, transactionType, startDate, endDate, page, pageSize, pointType])
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1)
+  }, [search, status, transactionType, startDate, endDate, pointType])
+
+  // Fetch data when dependencies change
+  useEffect(() => {
     fetchData()
-  }, [search, status, transactionType, startDate, endDate, page, pageSize])
-
-
+  }, [search, status, transactionType, startDate, endDate, page, pageSize, pointType])
 
   const table = useReactTable({
     data,
     columns,
-    state: { sorting },
+    getFilteredRowModel: getFilteredRowModel(),
+    state: { 
+      sorting, 
+      globalFilter: globalFilter || search 
+    },
+    onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(), // include only if backend sorts
+    manualPagination: true,
   })
 
   return (
     <div className="w-full overflow-x-auto flex flex-col gap-2 p-3 bg-white rounded-xl">
       {loading && <Loading />}
-      {data.length === 0 ? (
-        <p className="text-center text-gray-500">{emptyMessage}</p>
-      ) : (
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map(headerGroup => (
@@ -402,18 +435,24 @@ export const TxTable = ({
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map(row => (
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="px-6 py-4 text-center text-gray-500">
+                  {emptyMessage}
+                </td>
+              </tr>
+            ) : (
+            table.getRowModel().rows.map(row => (
               <tr key={row.id} className="border-b hover:bg-gray-50">
                 {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="px-6 py-4">
+                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
-      )}
 
       {/* Pagination */}
       <div className="flex justify-end mt-4 space-x-2">

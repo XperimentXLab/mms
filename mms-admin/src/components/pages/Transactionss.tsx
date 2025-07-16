@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react"
-import { getAllAssetTX, getAllCommissionTX, getAllMasterTX, getAllProfitTX } from "../auth/endpoints"
-import { Tables } from "../props/Tables"
-import Loading from "../props/Loading"
-import Buttons from "../props/Buttons"
+import { TxTable } from "../props/Tables"
 import dayjs from "dayjs";
 import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
+import type { ColumnDef } from "@tanstack/react-table"
+import { Inputss } from "../props/Formss";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-interface TransactioDetail {
-  created_date: string
-  created_time: string
+export interface TransactioDetail {
+  created_at: string
   user: string;
   username: string
   request_status: string
@@ -24,52 +22,7 @@ interface TransactioDetail {
 
 const Transactionss = () => {
 
-  const [loading, setLoading] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<string>('')
-
-  const [data, setData] = useState<TransactioDetail[]>([])
-
-  const columns = [
-    { header: 'Date',
-      accessor: 'created_date',
-      cell: (info: string) => info
-    },
-    { header: 'Time',
-      accessor: 'created_time',
-      render: (value: string) => value
-    },
-    { header: 'User',
-      accessor: 'user',
-      render: (value: string) => value
-    },
-    { header: 'Username',
-      accessor: 'username',
-      render: (value: string) => value
-    },
-    { header: 'Transaction Type', 
-      accessor: 'transaction_type',
-      render: (value: string) => value
-     },
-    { header: 'Amount', 
-      accessor: 'amount',
-      render: (value: number) => value
-     },
-    { header: 'Status',
-      accessor: 'request_status',
-      render: (value: string) => value ? value : '-'
-    },
-    { header: 'Description', 
-      accessor: 'description',
-      render: (value: string) => value
-     },
-    { header: 'Reference', 
-      accessor: 'reference',
-      render: (value: string) => value ? value : '-'
-     },
-  ]
-
-  /*
-    const columns: ColumnDef<any, any>[] = [
+  const columns: ColumnDef<any, any>[] = [
     {
       accessorKey: "created_date",
       header: "Date",
@@ -88,6 +41,11 @@ const Transactionss = () => {
     {
       accessorKey: "username",
       header: "Username",
+      cell: info => info.getValue(),
+    },
+    {
+      accessorKey: "point_type",
+      header: "Point Type",
       cell: info => info.getValue(),
     },
     {
@@ -116,206 +74,150 @@ const Transactionss = () => {
       cell: info => info.getValue() || "-",
     },
   ]
-  */
 
-  const fetchData = async () => {
-    try {
-      setLoading(true)
-      const response = await getAllMasterTX()
-      const formattedData = response.map((tx: any) => {
-        const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
-        return {
-          ...tx,
-          created_date: dt.format("YYYY-MM-DD"),
-          created_time: dt.format("HH:mm:ss")
-        }
-      });
-      setData(formattedData)
-    } catch (error: any) {
-      if (error.response && error.response.status == 400) {
-        console.error(error)
-        setErrorMessage(error.response.data.error)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(()=>{
-    fetchData()
-  }, [])
-
-  const toggleMasterTx = async () => {
-    try {
-      setLoading(true)
-      const response = await getAllMasterTX()
-      const formattedData = response.map((tx: any) => {
-        const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
-        return {
-          ...tx,
-          created_date: dt.format("YYYY-MM-DD"),
-          created_time: dt.format("HH:mm:ss")
-        }
-      });
-      setData(formattedData)
-    } catch (error: any) {
-      if (error.response && error.response.status == 400) {
-        console.error(error)
-        setErrorMessage(error.response.data.error)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const toggleProfitTx = async () => {
-    try {
-      setLoading(true)
-      const response = await getAllProfitTX()
-      const formattedData = response.map((tx: any) => {
-      const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
-        return {
-          ...tx,
-          created_date: dt.format("YYYY-MM-DD"),
-          created_time: dt.format("HH:mm:ss")
-        }
-      });
-      setData(formattedData)
-    } catch (error: any) {
-      if (error.response && error.response.status == 400) {
-        console.error(error)
-        setErrorMessage(error.response.data.error)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const toggleCommissionTx = async () => {
-    try {
-      setLoading(true)
-      const response = await getAllCommissionTX()
-      const formattedData = response.map((tx: any) => {
-      const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
-        return {
-          ...tx,
-          created_date: dt.format("YYYY-MM-DD"),
-          created_time: dt.format("HH:mm:ss")
-        }
-      });
-      setData(formattedData)
-    } catch (error: any) {
-      if (error.response && error.response.status == 400) {
-        console.error(error)
-        setErrorMessage(error.response.data.error)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const toggleAssetTx = async () => {
-    try {
-      setLoading(true)
-      const response = await getAllAssetTX()
-      const formattedData = response.map((tx: any) => {
-      const dt = dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur");
-        return {
-          ...tx,
-          created_date: dt.format("YYYY-MM-DD"),
-          created_time: dt.format("HH:mm:ss")
-        }
-      });
-      setData(formattedData)
-    } catch (error: any) {
-      if (error.response && error.response.status == 400) {
-        console.error(error)
-        setErrorMessage(error.response.data.error)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  /*
+  
   const AllTx = () => {
-    const [search, setSearch] = useState("")
-    const [status, setStatus] = useState("")
-    const [transactionType, setTransactionType] = useState("")
-    const [startDate, setStartDate] = useState("")
-    const [endDate, setEndDate] = useState("")
+    const [search, setSearch] = useState<string>("")
+    const [status, setStatus] = useState<string>("")
+    const [transactionType, setTransactionType] = useState<string>("")
+    const [pointType, setPointType] = useState<string>("")
+    const [startDate, setStartDate] = useState<string>("")
+    const [endDate, setEndDate] = useState<string>("")
+
+    // Debounced search to avoid excessive API calls
+    const [debouncedSearch, setDebouncedSearch] = useState(search)
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setDebouncedSearch(search)
+      }, 300)
+
+      return () => clearTimeout(timer)
+    }, [search])
+
+    const handleClearFilters = () => {
+      setSearch("")
+      setStatus("")
+      setTransactionType("")
+      setStartDate("")
+      setEndDate("")
+      setPointType("")
+      }
+
+    const hasActiveFilters = search || status || transactionType || startDate || endDate || pointType
 
     return (
-      <div className="space-y-6 p-6 bg-white">
-        {/* Example filters }
-        <div className="space-x-4 flex items-center">
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search..."
-            className="border px-3 py-2 rounded"
-          />
-          <select
-            value={status}
-            onChange={e => setStatus(e.target.value)}
-            className="border px-3 py-2 rounded"
+      <div className="flex flex-col gap-2 justify-center m-3 w-full">
+        
+        <div className="flex flex-col bg-white gap-3 items-center p-2 rounded">
+
+          <div className="flex w-full">
+            <Inputss
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search user id or username"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-2 justify-center">
+            <select
+              value={status}
+              onChange={e => setStatus(e.target.value)}
+              className="border px-3 py-2 rounded"
+            >
+              <option value="">All Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+
+            <select
+              value={pointType}
+              onChange={e => setPointType(e.target.value)}
+              className="border px-3 py-2 rounded"
+            >
+              <option value="">All Point</option>
+              <option value="MASTER">Register Point</option>
+              <option value="PROFIT">Profit</option>
+              <option value="COMMISSION">Commission</option>
+              <option value="ASSET">Asset</option>
+            </select>
+
+            <select
+              value={transactionType}
+              onChange={e => setTransactionType(e.target.value)}
+              className="border px-3 py-2 rounded"
+            >
+              <option value="">All Transaction</option>
+              <option value="WITHDRAWAL">Withdrawal</option>
+              <option value="CONVERT">Convert</option>
+              <option value="TRANSFER">Transfer</option>
+              <option value="DISTRIBUTION">Distribution</option>
+              <option value="AFFILIATE_BONUS">Affiliate Bonus</option>
+              <option value="INTRODUCER_BONUS">Introducer Bonus</option>
+              <option value="ASSET_PLACEMENT">Asset Placement</option>
+              <option value="ASSET_WITHDRAWAL">Asset Withdrawal</option>
+              <option value="WELCOME_BONUS">Welcome Bonus</option>
+              <option value="SHARING_PROFIT">Sharing Profit</option>
+              <option value="MIGRATION">Migration</option>
+
+            </select>
+          </div>
+
+          <div className="flex flex-row items-center gap-2 w-full">
+            <label className="text-sm font-medium text-gray-700 text-nowrap">
+              Start Date
+            </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={e => setStartDate(e.target.value)}
+              className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+
+            <label className="text-sm font-medium text-gray-700 text-nowrap">
+              End Date
+            </label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={e => setEndDate(e.target.value)}
+              className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+        
+        
+        {hasActiveFilters && (
+          <button
+            onClick={handleClearFilters}
+            className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer w-full"
           >
-            <option value="">All Status</option>
-            <option value="PENDING">Pending</option>
-            <option value="APPROVED">Approved</option>
-            <option value="REJECTED">Rejected</option>
-          </select>
-          {/* Add transactionType, startDate, endDate as needed }
+            Clear Filters
+          </button>
+        )}
         </div>
 
-        {/* The actual table }
         <TxTable
           columns={columns}
-          search={search}
+          search={debouncedSearch}
           status={status}
           transactionType={transactionType}
+          pointType={pointType}
           startDate={startDate}
           endDate={endDate}
         />
       </div>
     )
-  }*/
+  }
 
 
   return (
     <div className="flex flex-col gap-2 items-center justify-center m-3">
-      {loading && <Loading />}
-      {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
 
       <span className="font-semibold text-white">Transactions</span>
 
-      <nav className="flex flex-row gap-2 justify-center items-center">
-        <Buttons
-          type="button"
-          onClick={toggleMasterTx}
-        >Register Point</Buttons>
-        <Buttons
-          type="button"
-          onClick={toggleProfitTx}
-        >Profit Point</Buttons>
-        <Buttons
-          type="button"
-          onClick={toggleCommissionTx}
-        >Commission Point</Buttons>
-        <Buttons
-          type="button"
-          onClick={toggleAssetTx}
-        >Asset Point</Buttons>
-      </nav>
-
-      <Tables columns={columns} data={data} 
-        enableFilters={true}
-        enablePagination={true}
-        enableSorting={true}
-      />
-
-      {/*<AllTx />*/}
+      <AllTx />
     </div>
   )
 }

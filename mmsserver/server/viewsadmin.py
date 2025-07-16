@@ -14,6 +14,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Sum, Q
 from django.db.models.functions import TruncDate
 from rest_framework.pagination import PageNumberPagination
+from datetime import datetime, time
 
 
 @api_view(['POST'])
@@ -302,23 +303,31 @@ def get_all_transaction(request):
       search_query = request.GET.get('search', '')
       status_filter = request.GET.get('status', None)
       transaction_type_filter = request.GET.get('transaction_type', None)
+      point_type_filter = request.GET.get('point_type', None)
       start_date = request.GET.get('start_date', None)
       end_date = request.GET.get('end_date', None)
+
+      # Set start to midnight, end to 23:59:59
+      #start_dt = datetime.combine(parse_date(start_date), time.min)
+      #end_dt = datetime.combine(parse_date(end_date_str), time.max)
       
       query = Q()
       if search_query:
-        query &= Q(user__user_id__icontains=search_query) | Q(user__username__icontains=search_query)
+        query &= Q(user__id__icontains=search_query) | Q(user__username__icontains=search_query)
       
       if status_filter:
-        query &= Q(request_status=status_filter)
+        query &= Q(request_status__icontains=status_filter)
 
       if transaction_type_filter:
-        query &= Q(transaction_type=transaction_type_filter)
+        query &= Q(transaction_type__icontains=transaction_type_filter)
+
+      if point_type_filter:
+        query &= Q(point_type__icontains=point_type_filter)
 
       # ⏱ Default date range fallback
       if not start_date or not end_date:
           end_date = timezone.now()
-          start_date = end_date - timedelta(days=7)
+          start_date = end_date - timedelta(days=30)
           query &= Q(created_at__range=[start_date, end_date])
       elif start_date and end_date:
         query &= Q(created_at__range=[start_date, end_date])
