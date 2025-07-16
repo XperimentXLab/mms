@@ -268,7 +268,7 @@ export const LevelDisplay: React.FC<LevelProps> = ({ users }) => {
             {users.map((user) => (
               <tr key={user.id} className="hover:bg-gray-50">
                 <td className="py-2 px-4 border-b text-center">{user.id}</td>
-                <td className="py-2 px-4 border-b text-center">{user.username}</td>
+                <td className={`py-2 px-4 border-b text-center ${(Number(user.asset_amount) || 0) < 200 ? 'text-slate-400' : 'text-black'}`}>{user.username}</td>
                 <td className="py-2 px-4 border-b text-center">{user.asset_amount ? user.asset_amount : 0.00 }</td>
                 <td className="py-2 px-4 border-b text-center">{user.referred_by}</td>
               </tr>
