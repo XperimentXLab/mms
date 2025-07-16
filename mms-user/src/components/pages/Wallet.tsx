@@ -142,7 +142,7 @@ const Wallet = () => {
         amount: profitPoint,
         reference: referenceWithdraw
       })
-      alert(`Successfully requested withdrawal of ${profitPoint} profit points.`)
+      alert(`Successfully requested withdrawal of ${profitPoint} profit points. Please wait 24 hours for approval.`)
       setProfitPoint(0)
     } catch (error: any) {
       console.error('Error during withdrawal:', error)
@@ -195,7 +195,7 @@ const Wallet = () => {
         amount: commissionPoint,
         reference: referenceWithdraw
       })
-      alert(`Successfully requested withdrawal of ${commissionPoint} commission points.`)
+      alert(`Successfully requested withdrawal of ${commissionPoint} commission points. Please wait 24 hours for approval.`)
       setCommissionPoint(0)
     } catch (error: any) {
       console.error('Error during commission withdrawal:', error)
