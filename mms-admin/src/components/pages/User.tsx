@@ -32,7 +32,7 @@ const User = () => {
         const row = dataUserDetails.find(user => user.id === id);
         if (!row) return null;
         return (
-          <span className={`${(row.asset_amount || 0) < 200 ? 'text-slate-500' : 'text-black'}`}>
+          <span className={`${(row.asset_amount || 0) < 200 ? 'text-slate-400' : 'text-black'}`}>
             {row.username}
           </span>
         )
