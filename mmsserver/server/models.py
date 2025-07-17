@@ -126,7 +126,8 @@ class User(AbstractUser):
       return queryset
   
   def get_direct_network(self):
-    return User.objects.filter(referred_by=self.id)
+    direct_network = User.objects.filter(referred_by=self.id)
+    return direct_network
   
   def get_indirect_network(self):
     """
@@ -142,6 +143,7 @@ class User(AbstractUser):
       next_level_users = User.objects.filter(referred_by__in=[user.id for user in current_level_users])
       current_level_users = list(next_level_users)
       depth += 1
+
     return downline
   
   USERNAME_FIELD = 'username'

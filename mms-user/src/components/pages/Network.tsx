@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { userDetails, userNetwork } from "../auth/endpoints"
 import Loading from "../props/Loading"
 import { LevelDisplay } from "../props/Tables"
+import { FixedText } from "../props/Textt"
 
 interface User {
   id: string
@@ -19,6 +20,8 @@ const Network = () => {
   const [level1, setLevel1] = useState<User[]>([])
   const [level2, setLevel2] = useState<User[]>([])
   const [userId, setUserId] = useState<string>('')
+  const [totalAsset, setTotalAsset] = useState<number>(0)
+  const [totalUser, setTotalUser] = useState<number>(0)
 
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -29,6 +32,8 @@ const Network = () => {
       const response = await userNetwork()
       setLevel1(response.level_1 || [])
       setLevel2(response.level_2 || [])
+      setTotalAsset(response.total_asset || 0)
+      setTotalUser(response.total_user || 0)
       const resID = await userDetails()
       setUserId(resID.id)
     } catch (error) {
@@ -47,6 +52,11 @@ const Network = () => {
       <span className="font-bold text-xl">Network</span>
 
       <div className="grid grid-cols-1 gap-3 max-w-full shadow-2xl shadow-red-300 p-5 rounded-xl border">
+        <div className="grid grid-cols-2 gap-2">
+          <FixedText label="Total Asset" text={totalAsset.toString()}/>
+          <FixedText label="Total User" text={totalUser.toString()}/>
+        </div>
+
         {level1 && <span className="font-semibold">{userId} - Level 1 - {level1.length} user</span>}
           <LevelDisplay 
             users={level1}

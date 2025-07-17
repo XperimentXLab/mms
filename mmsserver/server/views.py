@@ -267,9 +267,18 @@ def get_user_network(request):
 
   try:
     network_level = user.get_indirect_network()
+    all_network_users = []
+    for level in network_level:
+      all_network_users.extend(level)
+
+    network_total = Asset.objects.filter(user__in=all_network_users).count()
+    network_level_asset = Asset.objects.filter(user__in=all_network_users).aggregate(total_asset=Sum('amount'))
+
     response_data = {
-        'level_1': [],
-        'level_2': []
+      'level_1': [],
+      'level_2': [],
+      'total_asset': network_level_asset['total_asset'] or 0,
+      'total_user': network_total,
     }
 
     if len(network_level) >= 1:
@@ -278,10 +287,10 @@ def get_user_network(request):
       response_data['level_2'] = UserNetworkSerializer(network_level[1], many=True).data
 
     return Response(response_data, status=200)
-  except User.DoesNotExist(): 
+  except User.DoesNotExist: 
     return Response({'error': 'User does not exist'}, status=400)
   except Exception as e:
-    return Response({'Error getting network': str(e)}, status=500)
+    return Response({'error': str(e)}, status=500)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

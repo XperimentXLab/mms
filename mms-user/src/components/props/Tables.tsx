@@ -46,7 +46,6 @@ export const Tables = ({
   enablePagination = false,
 }: TablesProps) => {
   const [globalFilter, setGlobalFilter] = useState<string>("");
-  //const [dateFilter, setDateFilter] = useState<Date | null>(null);
   const [startDate, setStartDate] = useState<Date | null>(null); 
   const [endDate, setEndDate] = useState<Date | null>(null);    
   const [sorting, setSorting] = useState<SortingState>([])
@@ -116,15 +115,6 @@ export const Tables = ({
           />
 
         )}
-          {/*
-          <DatePicker
-            className="border rounded px-2 py-1 text-xs"
-            selected={dateFilter}
-            onChange={(date) => setDateFilter(date)}
-            dateFormat="dd/MM/yyyy"
-            placeholderText="Choose a date"
-          />*/}
-
         {needDate && <div className="flex flex-row gap-2 justify-center items-center">
           <DatePicker
             className="flex border rounded px-2 py-1 text-xs"

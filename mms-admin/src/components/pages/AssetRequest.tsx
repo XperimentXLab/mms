@@ -3,7 +3,7 @@ import Loading from "../props/Loading"
 import { getPendingTX, processPlaceAsset } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
 import dayjs from "dayjs";
-import utc from "dayjs";
+import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone";
 import { Tables } from "../props/Tables";
 dayjs.extend(utc);
@@ -14,7 +14,7 @@ interface Transaction {
   id: string;
   created_date: string;
   created_time: string;
-  created_datetime: string;
+  user: string;
   username: string; 
   amount: number;
   request_status: 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -35,21 +35,28 @@ const AssetRequest = () => {
     try {
       setLoading(true)
       const response = await getPendingTX()
-      const formattedData = response.map((user: any) => {
-      const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
-      return {
-        ...user,
-        created_date: dt.format("YYYY-MM-DD"),
-        created_time: dt.format("HH:mm:ss"),
-        created_datetime: dt.format("YYYY-MM-DD HH:mm:ss"),
-        username: user.username,
-      }
-    });
+
+      const formattedData = response.map((req: any) => {
+        const dt = dayjs.utc(req.created_at).tz("Asia/Kuala_Lumpur");
+        return {
+          ...req,
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss"),
+          username: req.username,
+        }
+      })
+ 
       setTransactions(formattedData)
     } catch (error: any) {
-      setErrorMessage(error.response.data.error)
+      if (error.response && error.response.status === 400 || error.response.status === 401) {
+        console.error(error.response.data.error)
+        setErrorMessage(error.response.data.error || 'Error fetching data')
+      } else {
+        console.error(error.response.data.error)
+      }
     } finally {
       setLoading(false)
+      
     }
   }
 
@@ -68,7 +75,12 @@ const AssetRequest = () => {
         })
         alert('Transaction approved')
       } catch (error: any) {
-        setErrorMessage(error.response.data.error)
+        if (error.response && error.response.status === 400 || error.response.status === 401) {
+          console.error(error.response.data.error)
+          setErrorMessage(error.response.data.error)
+        } else {
+          console.error(error.response.data.error)
+        }
       } finally {
         setLoading(false)
         fetchData()
@@ -87,7 +99,12 @@ const AssetRequest = () => {
         })
         alert('Transaction rejected')
       } catch (error: any) {
-        setErrorMessage(error.response.data.error)
+        if (error.response && error.response.status === 400 || error.response.status === 401) {
+          console.error(error.response.data.error)
+          setErrorMessage(error.response.data.error)
+        } else {
+          console.error(error.response.data.error)
+        }
       } finally {
         setLoading(false)
         fetchData()
@@ -115,29 +132,30 @@ const AssetRequest = () => {
   const columns = [
     { header: 'Date', 
       accessor: 'created_date',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
      },
     { header: 'Time', 
       accessor: 'created_time',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
      },
     { header: 'User ID', 
       accessor: 'user',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
      },
     { header: 'Username', 
       accessor: 'username',
-      render: (value: string) => value
+      render: (value: string) => value ? value : '-'
      },
     { header: 'Amount', 
       accessor: 'amount',
-      render: (value: number) => value
+      render: (value: number) => value ? value : '-'
      },
     { header: 'Request Status', 
       accessor: 'request_status',
       render: (value: string) => value ?  value : 'PENDING'
      },
-    { header: 'Action', accessor: 'id',
+    { header: 'Action', 
+      accessor: 'id',
       render: (id: string) => {
 
       const row = transactions.find(user => user.id === id);
@@ -171,9 +189,6 @@ const AssetRequest = () => {
     }}
   ]
 
-
-  const data = transactions
-
   return (
     <div className="flex m-5 justify-center flex-col">
       { loading && <Loading />}
@@ -182,7 +197,7 @@ const AssetRequest = () => {
 
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span> }
 
-      <Tables columns={columns} data={data}
+      <Tables columns={columns} data={transactions}
         enableFilters={true}
       />
     </div>
