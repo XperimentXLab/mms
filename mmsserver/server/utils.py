@@ -7,6 +7,8 @@ from .models import *
 from django.http import HttpRequest
 import logging
 from django.db.models import Sum
+from django.utils.timezone import localtime, make_aware
+from datetime import timedelta, timezone as dt_timezone
 
 logger = logging.getLogger(__name__)
 
@@ -749,8 +751,25 @@ class ProfitService:
     def convert_to_master_point(user, amount, reference=""):
         """Convert Profit Point to Master Point (must be multiple of 10)"""
 
-        if amount % 10 != 0:
-            raise ValidationError("Amount must be a multiple of 10")
+        if amount != int(amount):
+            raise ValidationError("Amount need to be whole number")
+
+        # Daily limit check
+        start_of_day = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = start_of_day + timedelta(days=1)
+
+
+        daily_total = Transaction.objects.filter(
+            user=user,
+            transaction_type='CONVERT',
+            point_type='PROFIT',
+            target_point_type='MASTER',
+            created_at__gte=start_of_day,
+            created_at__lt=end_of_day
+        ).aggregate(total=Sum('converted_amount'))['total'] or 0
+
+        if daily_total + amount > 50:
+            raise ValidationError(f"Daily conversion limit exceeded. You can convert {50 - daily_total} more today.")
         
         wallet = Wallet.objects.get(user=user)
         if wallet.profit_point_balance < amount:
@@ -897,8 +916,8 @@ class CommissionService:
         wallet = Wallet.objects.get(user=user)
         commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
 
-        if amount % 10 != 0:
-            raise ValidationError("Amount must be a multiple of 10")
+        if amount != int(amount):
+            raise ValidationError("Amount need to be whole number")
         
         if commission_point < amount:
             raise ValidationError("Insufficient Commission Point balance")
@@ -916,8 +935,10 @@ class CommissionService:
             created_at__lt=end_of_day
         ).aggregate(total=Sum('converted_amount'))['total'] or 0
 
-        if daily_total + amount > 50:
-            raise ValidationError(f"Daily conversion limit exceeded. You can convert {50 - daily_total} more today.")
+        daily_limit = Decimal(daily_total) + Decimal(amount)
+        if daily_limit > Decimal('50'):
+            available = Decimal('50') - Decimal(daily_total)
+            raise ValidationError(f"Daily conversion limit exceeded. You can convert {available} more today.")
 
         with db_transaction.atomic():
             affiliate_point = wallet.affiliate_point_balance

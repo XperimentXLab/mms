@@ -89,7 +89,7 @@ const Wallet = () => {
 
   useEffect(() => {
     fetchData()
-}, [])
+  }, [])
 
 
   const handleTransfer = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -162,12 +162,11 @@ const Wallet = () => {
     e.preventDefault()
     try {
       setLoading(true)
-      if (convertProfit <= 0) {
-        alert('Please enter a valid amount.')
-      }
       await convertProfitToMaster({
         amount: convertProfit
       })
+      alert(`Successfully converted ${convertProfit} profit points to RP.`)
+      setConvertProfit(0)
     } catch (error: any) {
       console.error('Error during profit conversion:', error)
       if (error.response && error.response.status === 400 || error.response.status === 401) {
@@ -215,12 +214,11 @@ const Wallet = () => {
     e.preventDefault()
     try {
       setLoading(true)
-      if (convertCommision <= 0) {
-        alert('Please enter a valid amount.')
-      }
       await convertCommissionToMaster({
         amount: convertCommision
       })
+      alert(`Successfully converted ${convertCommision} profit points to RP.`)
+      setCovertCommision(0)
     } catch (error: any) {
       console.error('Error during commission conversion:', error)
       if (error.response && error.response.status === 400 ||  error.response.status === 401) {

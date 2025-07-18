@@ -49,7 +49,7 @@ const Assets = () => {
       await placeAsset({
         amount: placeAssetPoint
       })
-      alert('Asset placement request submitted!')
+      alert('Asset placement request submitted!. Please wait 24 hours for approval.')
       setPlaceAssetPoint(0)
       resetForm()
     } catch (error: any) {
