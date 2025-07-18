@@ -15,11 +15,11 @@ const User = () => {
 
   const columnsUserDetails = [
     { header: 'Joined Date', 
-      accessor: 'joined_date',
+      accessor: 'created_date',
       render: (value: string) => value
      },
     { header: 'Joined Time', 
-      accessor: 'joined_time',
+      accessor: 'created_time',
       render: (value: string) => value
      },
     { header: 'User ID', 
@@ -27,13 +27,11 @@ const User = () => {
       render: (value: string) => value
      },
     { header: 'Username', 
-      accessor: 'id',
-      render: (id: string) => {
-        const row = dataUserDetails.find(user => user.id === id);
-        if (!row) return null;
+      accessor: 'username',
+      render: (username: string) => {
         return (
-          <span className={`${(row.asset_amount || 0) < 200 ? 'text-slate-400' : 'text-black'}`}>
-            {row.username}
+          <span> {/*className={`${(asset_amount || 0) < 200 ? 'text-slate-400' : 'text-black'}*/}
+            {username}
           </span>
         )
       }
@@ -71,8 +69,8 @@ const User = () => {
         const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
         return {
           ...user,
-          joined_date: dt.format("YYYY-MM-DD"),
-          joined_time: dt.format("HH:mm:ss"),
+          created_date: dt.format("YYYY-MM-DD"),
+          created_time: dt.format("HH:mm:ss"),
         }
       });
         setDataUserDetails(formattedData)

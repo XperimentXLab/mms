@@ -198,8 +198,8 @@ export const Tables = ({
         </thead>
 
         <tbody className="bg-white divide-y divide-gray-200">
-          {table.getPaginationRowModel().rows.length > 0 ? (
-            table.getPaginationRowModel().rows.map((row) => (
+          {table.getRowModel().rows.length > 0 ? (
+            table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-6 py-4 whitespace-nowrap">

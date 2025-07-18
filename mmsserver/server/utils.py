@@ -802,6 +802,9 @@ class CommissionService:
         if amount < 50:
             raise ValidationError("Minimum withdrawal amount is 50 USDT")
         
+        if amount % 10 != 0:
+            raise ValidationError("Amount must be a multiple of 10")
+        
         wallet = Wallet.objects.get(user=user)
         commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
         if commission_point < amount:
