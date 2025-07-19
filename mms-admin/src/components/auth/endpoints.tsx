@@ -241,7 +241,7 @@ export const grantFreeCampro = async (user_id: string) => {
   return response.data
 }
 
-
+export type rangeTypeT = 'month' | 'year' | '3month' | ''
 interface paramsTx {
   search?: string,
   status?: string,
@@ -250,7 +250,10 @@ interface paramsTx {
   startDate?: string,
   endDate?: string,
   page?: number,
-  pageSize?: number
+  pageSize?: number,
+  rangeType?: rangeTypeT,
+  month?: number,
+  year?: number,
 }
 export const getAllTransactions = async ( params: paramsTx) => {
   const { 
@@ -261,7 +264,10 @@ export const getAllTransactions = async ( params: paramsTx) => {
     pointType,
     endDate, 
     page=1, 
-    pageSize=30 
+    pageSize=30,
+    rangeType,
+    month,
+    year
   } = params
   const queryParams = new URLSearchParams();
   if (search) {
@@ -282,6 +288,18 @@ export const getAllTransactions = async ( params: paramsTx) => {
 
   if (pointType) {
     queryParams.append('point_type', pointType)
+  }
+
+  queryParams.append('range_type', rangeType || '');
+  if (rangeType === 'month' && month && year) {
+    queryParams.append('month', month.toString());
+    queryParams.append('year', year.toString());
+  }
+  if (rangeType === 'year') {
+    queryParams.append('year', (year || '').toString());
+  }
+  if (rangeType === '3month') {
+    queryParams.append('range_type', '3month');
   }
 
   queryParams.append('page', page.toString());

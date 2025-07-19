@@ -119,6 +119,7 @@ export const ProfitStatement = () => {
   )
 }
 
+
 export const CommissionStatement = () => {
 
   const [loading, setLoading] = useState(false);
@@ -199,6 +200,7 @@ export const CommissionStatement = () => {
     </div>
   )
 }
+
 
 export const TransferStatement = () => {
 

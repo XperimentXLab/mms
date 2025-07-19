@@ -5,6 +5,7 @@ import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import type { ColumnDef } from "@tanstack/react-table"
 import { Inputss } from "../props/Formss";
+import { SelectMonth, SelectYear } from "../props/DropDown";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -83,6 +84,8 @@ const Transactionss = () => {
     const [pointType, setPointType] = useState<string>("")
     const [startDate, setStartDate] = useState<string>("")
     const [endDate, setEndDate] = useState<string>("")
+    const [month, setMonth] = useState<string>('')
+    const [year, setYear] = useState<string>('')
 
     // Debounced search to avoid excessive API calls
     const [debouncedSearch, setDebouncedSearch] = useState(search)
@@ -186,6 +189,13 @@ const Transactionss = () => {
               className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
+
+          <div className="grid grid-cols-2 items-center">
+            <SelectMonth value={month} 
+              onChange={(e) => setMonth(e.target.value)} />
+            <SelectYear value={year}
+              onChange={(e) => setYear(e.target.value)} />
+          </div>
         
         
         {hasActiveFilters && (
@@ -206,6 +216,8 @@ const Transactionss = () => {
           pointType={pointType}
           startDate={startDate}
           endDate={endDate}
+          month={Number(month)}
+          year={Number(month)}
         />
       </div>
     )

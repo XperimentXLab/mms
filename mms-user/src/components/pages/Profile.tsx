@@ -136,14 +136,15 @@ const Profile = () => {
     try {
       setLoading(true)
       await updateUserDetails({
-        phoneNo: editPhoneNo,
-        walletAddress: editWalletAddress,
+        phoneNo: editPhoneNo ? editPhoneNo : phoneNo,
+        walletAddress: editWalletAddress ? editWalletAddress : (walletAddress || undefined),
       })
       alert('Profile updated successfully')
     } catch (error: any) {
       console.error(error)
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 
@@ -160,6 +161,7 @@ const Profile = () => {
       console.error(error)
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 
@@ -168,17 +170,18 @@ const Profile = () => {
     try {
       setLoading(true)
       await updateUserDetails({
-        addressLine: editAddressLine,
-        state: editState,
-        city: editCity,
-        postcode: editPostcode,
-        country: editCountry,
+        addressLine: editAddressLine ? editAddressLine : addressLine,
+        state: editState ? editState : state,
+        city: editCity ? editCity : city,
+        postcode: editPostcode ? editPostcode : postcode,
+        country: editCountry ? editCountry : country,
       })
       alert('Address updated successfully')
     } catch (error: any) {
       console.error(error)
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 
@@ -187,17 +190,18 @@ const Profile = () => {
     try {
       setLoading(true)
       await updateUserDetails({
-        beneficiaryName: editBeneficiaryName,
-        beneficiaryRelationship: editBeneficiaryRelationship,
-        beneficiaryIc: editBeneficiaryIc,
-        beneficiaryEmail: editBeneficiaryEmail,
-        beneficiaryPhone: editBeneficiaryPhone,
+        beneficiaryName: editBeneficiaryName ? editBeneficiaryName : beneficiaryName,
+        beneficiaryRelationship: editBeneficiaryRelationship ? editBeneficiaryRelationship : beneficiaryRelationship,
+        beneficiaryIc: editBeneficiaryIc ? editBeneficiaryIc : beneficiaryIc,
+        beneficiaryEmail: editBeneficiaryEmail ? editBeneficiaryEmail : beneficiaryEmail,
+        beneficiaryPhone: editBeneficiaryPhone ? editBeneficiaryPhone : beneficiaryPhone,
       })
       alert('Beneficiary information updated successfully')
     } catch (error: any) {
       console.error(error)
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 
@@ -217,6 +221,7 @@ const Profile = () => {
       alert('Failed to upload document.')
     } finally {
       setLoading(false)
+      fetchData()
     }
 
   }
@@ -249,6 +254,7 @@ const Profile = () => {
       }
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 
@@ -266,6 +272,7 @@ const Profile = () => {
       }
     } finally {
       setLoading(false)
+      fetchData()
     }
   }
 

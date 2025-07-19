@@ -15,7 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import { getAllTransactions } from "../auth/endpoints";
+import { getAllTransactions, type rangeTypeT } from "../auth/endpoints";
 import Loading from "./Loading";
 import type { TransactioDetail } from "../pages/Transactionss";
 
@@ -322,6 +322,8 @@ interface TxTableProps {
   pointType?: string
   startDate?: string
   endDate?: string
+  month?: number
+  year?: number
 }
 
 interface ApiResponse {
@@ -340,6 +342,8 @@ export const TxTable = ({
   pointType = "",
   startDate = "",
   endDate = "",
+  month,
+  year,
 }: TxTableProps) => {
 
   const [data, setData] = useState<TransactioDetail[]>([])
@@ -347,8 +351,10 @@ export const TxTable = ({
   const [pageSize] = useState(30)
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState<string>("")
+  const [rangeType, setRangeType] = useState<rangeTypeT>('')
 
   const [loading, setLoading] = useState(false)
+
 
   const fetchData = useCallback( async () => {
     const formattedStartDate = startDate ? dayjs(startDate, "DD/MM/YYYY").format("YYYY-MM-DD") : ""
@@ -356,6 +362,7 @@ export const TxTable = ({
 
     try {
       setLoading(true)
+
       const res: ApiResponse = await getAllTransactions({
         search,
         status,
@@ -365,13 +372,15 @@ export const TxTable = ({
         endDate: formattedEndDate,
         page,
         pageSize,
+        rangeType,
+        month,
+        year,
       })
 
 
 
       const processedData = res.results.map(tx => ({
         ...tx,
-        
         created_date: dayjs(tx.created_at).format("DD/MM/YYYY"),
         created_time: dayjs(tx.created_at).format("hh:mm:ss"),
       }))
@@ -383,17 +392,24 @@ export const TxTable = ({
     } finally {
       setLoading(false)
     }
-  }, [search, status, transactionType, startDate, endDate, page, pageSize, pointType])
+  }, [search, status, transactionType, startDate, endDate, page, pageSize, pointType, month, year])
 
   // Reset to page 1 when filters change
   useEffect(() => {
+    if (month && year) {   //not working
+      setRangeType('month')
+    } else if (year) {
+      setRangeType('year')
+    } else {
+      setRangeType('')
+    }
     setPage(1)
-  }, [search, status, transactionType, startDate, endDate, pointType])
+  }, [search, status, transactionType, startDate, endDate, pointType, month, year, rangeType])
 
   // Fetch data when dependencies change
   useEffect(() => {
     fetchData()
-  }, [search, status, transactionType, startDate, endDate, page, pageSize, pointType])
+  }, [search, status, transactionType, startDate, endDate, page, pageSize, pointType, month, year, rangeType])
 
   const table = useReactTable({
     data,

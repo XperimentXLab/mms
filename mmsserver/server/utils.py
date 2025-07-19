@@ -355,7 +355,7 @@ class WalletService:
 
         sender_wallet = Wallet.objects.get(user=sender)
         if sender_wallet.master_point_balance < amount:
-            raise ValidationError("Insufficient Master Point balance")
+            raise ValidationError("Insufficient Register Point balance")
         
         with db_transaction.atomic():
             sender_wallet.master_point_balance -= Decimal(amount)

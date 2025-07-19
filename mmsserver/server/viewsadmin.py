@@ -306,6 +306,9 @@ def get_all_transaction(request):
       point_type_filter = request.GET.get('point_type', None)
       start_date = request.GET.get('start_date', None)
       end_date = request.GET.get('end_date', None)
+      range_type = request.GET.get('range_type', None) # month | year | 3month
+      month = request.GET.get('month')
+      year = request.GET.get('year')
 
       # Set start to midnight, end to 23:59:59
       #start_dt = datetime.combine(parse_date(start_date), time.min)
@@ -324,11 +327,27 @@ def get_all_transaction(request):
       if point_type_filter:
         query &= Q(point_type__icontains=point_type_filter)
 
+        if range_type == 'month' and month and year:
+          try:
+            start_date = make_aware(datetime(int(year), int(month), 1))
+            if int(month) == 12:
+              end_date = make_aware(datetime(int(year) + 1, 1, 1))
+            else:
+              end_date = make_aware(datetime(int(year), int(month) + 1, 1))
+          except ValueError:
+            return Response({'error': 'Invalid month/year combination'}, status=400)
+        elif range_type == 'year':
+          start_date = timezone.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+          end_date = timezone.now().replace(month=12, day=31, hour=23, minute=59, second=59)
+        elif range_type == '3month':
+          end_date = timezone.now()
+          start_date = end_date - timedelta(days=90)
+
       # ⏱ Default date range fallback
       if not start_date or not end_date:
-          end_date = timezone.now()
-          start_date = end_date - timedelta(days=30)
-          query &= Q(created_at__range=[start_date, end_date])
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=30)
+        query &= Q(created_at__range=[start_date, end_date])
       elif start_date and end_date:
         query &= Q(created_at__range=[start_date, end_date])
 
