@@ -8,6 +8,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import type { ColumnDef } from "@tanstack/react-table";
 import Buttons from "../props/Buttons";
+import DatePicker from "react-datepicker";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -127,7 +128,8 @@ export const CommissionStatement = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("")
 
-  const [selectedDay, setSelectedDay] = useState<string | null>(null)
+  const [selectedDay, setSelectedDay] = useState<string | null>('null')
+  const [selectedMonthYear, setSelectedMonthYear] = useState<string>('')
 
   // affiliate + introducer
   const [commissionBal, setCommissionBal] = useState<number>(0)
@@ -141,7 +143,10 @@ export const CommissionStatement = () => {
           Number(resWallet.affiliate_point_balance || 0) +
           Number(resWallet.introducer_point_balance || 0)
         )
-        const resComTx = await getCommissionDailyTx()
+        const resComTx = await getCommissionDailyTx({
+          month: Number(dayjs(selectedMonthYear).month() + 1), 
+          year: Number(dayjs(selectedMonthYear).year())
+        })
         setData(resComTx)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
@@ -152,7 +157,7 @@ export const CommissionStatement = () => {
       }
     }
     fetchData()
-  }, [])
+  }, [selectedMonthYear])
 
   const columns: ColumnDef<any, any>[] = [
     { header: "Date", 
@@ -213,12 +218,24 @@ export const CommissionStatement = () => {
       <div className="flex flex-row gap-2">
         <span className="font-semibold">Commission Statement | </span>
         <Spannn label="Commission Balance">{commissionBal}</Spannn>
+        <span className="font-semibold">| Select </span>
+        <DatePicker
+          selected={
+            selectedMonthYear && dayjs(selectedMonthYear).isValid()
+              ? dayjs(selectedMonthYear).toDate()
+              : new Date()
+          }
+          onChange={(date: any) => setSelectedMonthYear(date)}
+          dateFormat="MMMM yyyy"
+          showMonthYearPicker
+          className="border px-3 rounded"
+        />
       </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
       <Tables columns={columnComTx} data={data} needDate={false} enablePagination={true}/>
 
-      {selectedDay &&
+      {selectedDay !== null &&
         <div className="flex flex-col gap-2 p-3 translate-y-10 absolute border rounded-lg backdrop-blur-sm bg-white/30">
           <Buttons
             type="button"

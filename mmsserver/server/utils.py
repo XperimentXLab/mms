@@ -392,7 +392,7 @@ class WalletService:
         """Place asset from Master Point"""
 
         amount = Decimal(amount)
-        if amount <= 50:
+        if amount < 50:
             raise ValidationError("Minimum placement amount is 50 USDT")
 
         if amount % 10 != 0:

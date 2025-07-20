@@ -263,8 +263,18 @@ export const getCommissionStatement = async (params: commissionParams) => {
   return response.data
 }
 
-export const getCommissionDailyTx = async () => {
-  const response = await api.get('/user_daily_commission_tx/')
+interface CommissionDailyParams {
+  month?: number
+  year?: number
+}
+export const getCommissionDailyTx = async (params: CommissionDailyParams) => {
+  const { month, year } = params
+  const queryParams = new URLSearchParams()
+  if (month && year) {
+    queryParams.append('month', month.toString())
+    queryParams.append('year', year.toString())
+  }
+  const response = await api.get(`/user_daily_commission_tx/?${queryParams.toString()}`)
   return response.data
 }
 

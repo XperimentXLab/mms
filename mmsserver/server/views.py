@@ -363,10 +363,17 @@ def get_commission_transaction(request):
 def get_accumulate_commission_tx(request):
   user = request.user
   try:
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+    # Base queryset
+    qs = Transaction.objects.filter(point_type='COMMISSION', user=user)
+
+    # Optional filtering by month and year
+    if month and year:
+      qs = qs.filter(created_at__month=month, created_at__year=year)
 
     daily_commission_tx = (
-      Transaction.objects
-      .filter(point_type='COMMISSION', user=user)
+      qs
       .annotate(day=TruncDate('created_at'))  # Extract just the date part
       .values('day')  # Group by day
       .annotate(total=Sum('amount'))  # Sum amounts per day
