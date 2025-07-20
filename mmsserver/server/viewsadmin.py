@@ -14,7 +14,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Sum, Q
 from django.db.models.functions import TruncDate
 from rest_framework.pagination import PageNumberPagination
-from datetime import datetime, time
+from datetime import datetime
 
 
 @api_view(['POST'])
@@ -327,21 +327,21 @@ def get_all_transaction(request):
       if point_type_filter:
         query &= Q(point_type__icontains=point_type_filter)
 
-        if range_type == 'month' and month and year:
-          try:
-            start_date = make_aware(datetime(int(year), int(month), 1))
-            if int(month) == 12:
-              end_date = make_aware(datetime(int(year) + 1, 1, 1))
-            else:
-              end_date = make_aware(datetime(int(year), int(month) + 1, 1))
-          except ValueError:
-            return Response({'error': 'Invalid month/year combination'}, status=400)
-        elif range_type == 'year':
-          start_date = timezone.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
-          end_date = timezone.now().replace(month=12, day=31, hour=23, minute=59, second=59)
-        elif range_type == '3month':
-          end_date = timezone.now()
-          start_date = end_date - timedelta(days=90)
+      if range_type == 'month' and month and year:
+        try:
+          start_date = make_aware(datetime(int(year), int(month), 1))
+          if int(month) == 12:
+            end_date = make_aware(datetime(int(year) + 1, 1, 1))
+          else:
+            end_date = make_aware(datetime(int(year), int(month) + 1, 1))
+        except ValueError:
+          return Response({'error': 'Invalid month/year combination'}, status=400)
+      elif range_type == 'year':
+        start_date = timezone.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_date = timezone.now().replace(month=12, day=31, hour=23, minute=59, second=59)
+      elif range_type == '3month':
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=90)
 
       # ⏱ Default date range fallback
       if not start_date or not end_date:

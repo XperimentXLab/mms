@@ -355,7 +355,6 @@ export const TxTable = ({
 
   const [loading, setLoading] = useState(false)
 
-
   const fetchData = useCallback( async () => {
     const formattedStartDate = startDate ? dayjs(startDate, "DD/MM/YYYY").format("YYYY-MM-DD") : ""
     const formattedEndDate = endDate ? dayjs(endDate, "DD/MM/YYYY").format("YYYY-MM-DD") : ""

@@ -23,6 +23,7 @@ urlpatterns = [
   path('user_asset/', get_asset, name='user_asset'),
   path('user_profit_tx/', get_profit_transaction, name='user_transaction'),
   path('user_commission_tx/', get_commission_transaction, name='user_commission_transaction'),
+  path('user_daily_commission_tx/', get_accumulate_commission_tx, name='user_daily_commission_transaction'),
   path('user_transfer_tx/', get_transfer_transaction, name='user_transfer_transaction'),
   path('user_convert_tx/', get_convert_transaction, name='user_convert_transaction'),
   path('user_profit_commission_wd_tx/', get_profit_commission_wd_transaction, name='user_profit_commission_wd_transaction'),

@@ -13,6 +13,10 @@ from django.core.exceptions import ValidationError
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.contrib.auth.tokens import default_token_generator
+from django.db.models import Sum, Q
+from django.db.models.functions import TruncDate
+from rest_framework.pagination import PageNumberPagination
+from datetime import datetime
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes #force_str
 #from django.core.mail import send_mail
@@ -325,17 +329,55 @@ def get_profit_transaction(request):
   except Transaction.DoesNotExist:
     return Response({'error': 'Profit Transaction not found'}, status=404)
   
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_commission_transaction(request):
   user = request.user
   try:
-    commission_tx = Transaction.objects.filter(user=user, point_type='COMMISSION')
-    serializer = TransactionSerializer(commission_tx, many=True)
-    return Response(serializer.data, status=200)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+
+    query = Q(user=user, point_type='COMMISSION')
+    if start_date and end_date:
+      query &= Q(created_at__date__range=[start_date, end_date])
+    if month and year:
+      query &= Q(created_at__year=year, created_at__month=month)
+
+    commission_tx = Transaction.objects.filter(query).order_by('-created_at')
+
+    # 📄 Pagination
+    paginator = PageNumberPagination()
+    paginator.page_size = int(request.GET.get('page_size', 30))
+    paginated_commission_tx = paginator.paginate_queryset(commission_tx, request)
+    
+    serializer = TransactionSerializer(paginated_commission_tx, many=True)
+    return paginator.get_paginated_response(serializer.data)
   except Transaction.DoesNotExist:
     return Response({'error': 'Commission Transaction not found'}, status=404)
   
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_accumulate_commission_tx(request):
+  user = request.user
+  try:
+
+    daily_commission_tx = (
+      Transaction.objects
+      .filter(point_type='COMMISSION', user=user)
+      .annotate(day=TruncDate('created_at'))  # Extract just the date part
+      .values('day')  # Group by day
+      .annotate(total=Sum('amount'))  # Sum amounts per day
+      .order_by('-day')
+    )
+
+    return Response(list(daily_commission_tx), status=200)
+  except Exception as e:
+    return Response({'error': str(e)}, status=404)
+  
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_transfer_transaction(request):

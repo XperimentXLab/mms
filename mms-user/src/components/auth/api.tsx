@@ -49,7 +49,7 @@ export const useAutoLogout = () => {
 const api = axios.create({
   baseURL: baseURL,
   withCredentials: false,
-  timeout: 3000,
+  timeout: 5000,
 })
 
 // Request interceptor for auth headers

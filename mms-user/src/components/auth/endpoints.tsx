@@ -226,10 +226,48 @@ export const getProfitStatement = async () => {
   return response.data
 }
 
-export const getCommissionStatement = async () => {
-  const response = await api.get('/user_commission_tx/')
+interface commissionParams {
+  startDate?: string
+  endDate?: string
+  month?: number
+  year?: number
+  page?: number
+  pageSize?: number
+}
+export const getCommissionStatement = async (params: commissionParams) => {
+  const {
+    startDate,
+    endDate,
+    month,
+    year,
+    page=1,
+    pageSize,
+  } = params
+
+  const queryParams = new URLSearchParams()
+  if (startDate && endDate) {
+    queryParams.append('start_date', startDate)
+    queryParams.append('end_date', endDate)
+  }
+  if (month && year) {
+    queryParams.append('month', month.toString())
+    queryParams.append('year', year.toString())
+  }
+
+  if (pageSize) {
+    queryParams.append('page_size', pageSize.toString())
+  }
+  queryParams.append('page', page.toString())
+
+  const response = await api.get(`/user_commission_tx/?${queryParams.toString()}`)
   return response.data
 }
+
+export const getCommissionDailyTx = async () => {
+  const response = await api.get('/user_daily_commission_tx/')
+  return response.data
+}
+
 
 export const getTransferStatement = async () => {
   const response = await api.get('/user_transfer_tx/')
