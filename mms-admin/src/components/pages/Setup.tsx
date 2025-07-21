@@ -2,11 +2,12 @@ import { useState } from "react"
 import { Inputss } from "../props/Formss"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
-import { putPerformance, setupUser } from "../auth/endpoints"
+import { getUserInfo, putPerformance, setupUser, updateUserInfo } from "../auth/endpoints"
 import dayjs from "dayjs";
 import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import { SelectMonth, SelectYear } from "../props/DropDown"
+import { FixedText } from "../props/Textt"
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -26,6 +27,15 @@ const Setup = () => {
   const [currentMonth, setCurrentMonth] = useState<string>('')
   const [currentYear, setCurrentYear] = useState<string>('')
 
+  const [userUsername, setUserUsername] = useState<string>('')
+  const [firstName, setFirstName] = useState<string>('')
+  const [lastName, setLastName] = useState<string>('')
+  const [ic, setIc] = useState<string>('')
+  const [editFirstName, setEditFirstName] = useState<string>('')
+  const [editLastName, setEditLastName] = useState<string>('')
+  const [editIc, setEditIc] = useState<string>('')
+
+  const [searchUserId, setSearchUserID] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -61,6 +71,9 @@ const Setup = () => {
     setEditTotalDeposit('')
     setEditTotalGainA('')
     setEditTotalGainZ('')
+    setEditFirstName('')
+    setEditLastName('')
+    setEditIc('')
   }
 
   const handleDeposit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -139,6 +152,75 @@ const Setup = () => {
         console.log(error)
         alert(error.response.data.error)
       }
+    } finally {
+      setLoading(false)
+      resetForm()
+    }
+  }
+
+
+  const toggleFindUser = async (userID: string) => {
+    try {
+      setLoading(true)
+      const response = await getUserInfo({ userID })
+      setUserID(response.user_id)
+      setUserUsername(response.username)
+      setFirstName(response.first_name)
+      setLastName(response.last_name)
+      setIc(response.ic)
+      console.log(userID)
+      console.log(searchUserId)
+    } catch (error: any) {
+      console.error(error)
+      alert(error.response.data.error)
+    } finally {
+      setLoading(false)
+    }
+  }
+  const toggleUpdateUserFN = async () => {
+    try {
+      setLoading(true)
+      await updateUserInfo({
+        firstName: editFirstName,
+        userID: searchUserId
+      })
+      alert('User first name updated successfully')
+    } catch (error: any) {
+      console.error(error)
+      alert(error.response.data.error)
+    } finally {
+      setLoading(false)
+      resetForm()
+    }
+  }
+    const toggleUpdateUserLN = async () => {
+    try {
+      setLoading(true)
+      await updateUserInfo({
+        lastName: editLastName,
+        userID: searchUserId
+      })
+      alert('User last name updated successfully')
+    } catch (error: any) {
+      console.error(error)
+      alert(error.response.data.error)
+    } finally {
+      setLoading(false)
+      resetForm()
+    }
+  }
+    const toggleUpdateUserIC = async () => {
+    try {
+      setLoading(true)
+      console.log(searchUserId)
+      await updateUserInfo({
+        ic: editIc,
+        userID :searchUserId
+      })
+      alert('User I/C updated successfully')
+    } catch (error: any) {
+      console.error(error)
+      alert(error.response.data.ic)
     } finally {
       setLoading(false)
       resetForm()
@@ -252,6 +334,48 @@ const Setup = () => {
 
         <Buttons type="submit">Submit</Buttons>
       </form>
+
+      <div className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
+        <span className="font-semibold">Update User Info</span>
+        <Inputss label="User ID *" placeholder="Enter user"
+          type="text"
+          onChange={e => setSearchUserID(e.target.value)}
+          value={searchUserId}
+          required={true}
+        />
+        <FixedText label="Username" text={userUsername} />
+        <FixedText label="First Name" text={firstName} />
+        <FixedText label="Last Name" text={lastName} />
+        <FixedText label="IC" text={ic} />
+        <Buttons type="button" onClick={()=>toggleFindUser(searchUserId)}>Find</Buttons>
+
+        <div className="flex flex-row gap-2 items-end justify-center w-full">
+          <Inputss label="First Name" placeholder="Enter first name"
+            type="text" 
+            onChange={e => setEditFirstName(e.target.value)}
+            value={editFirstName}
+          />
+          <Buttons type="button" onClick={()=>toggleUpdateUserFN()}>Save</Buttons>
+        </div>
+
+        <div className="flex flex-row gap-2 items-end justify-center w-full">
+          <Inputss label="Last Name" placeholder="Enter last name"
+            type="text" 
+            onChange={e => setEditLastName(e.target.value)}
+            value={editLastName}
+          />
+          <Buttons type="button" onClick={()=>toggleUpdateUserLN()}>Save</Buttons>
+        </div>
+
+        <div className="flex flex-row gap-2 items-end justify-center w-full">
+          <Inputss label="IC" placeholder="Enter ic"
+            type="text" 
+            onChange={e => setEditIc(e.target.value)}
+            value={editIc}
+          />
+          <Buttons type="button" onClick={()=>toggleUpdateUserIC()}>Save</Buttons>
+        </div>
+      </div>
 
       {/*
       <form onSubmit={handleResetAllWallet}>

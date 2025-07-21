@@ -4,7 +4,7 @@ import { BiSolidShow } from "react-icons/bi";
 import { GrFormViewHide } from "react-icons/gr";
 
 
-type InputP = 'text' | 'email' | 'password' | 'number';
+type InputP = 'text' | 'email' | 'password' | 'number'| 'date';
 
 interface InputssProps {
   type: InputP;

@@ -175,6 +175,32 @@ export const setupUser = async (SetupUserData: SetupUserRes) => {
   return response.data
 }
 
+interface updateUserInfoRes {
+  userID: string
+  firstName?: string
+  lastName?:string
+  ic?: string
+}
+export const getUserInfo = async (data: updateUserInfoRes) => {
+  const { userID } = data
+  const response = await api.get('/get_user_info/', {
+    params: {
+      user_id: userID
+    }
+  })
+  return response.data
+}
+export const updateUserInfo = async (data: updateUserInfoRes) => {
+  const { userID, firstName, lastName, ic } = data
+  const response = await api.put('/update_user_info/',{
+    user_id: userID,
+    first_name: firstName,
+    last_name: lastName,
+    ic
+  })
+  return response.data
+}
+
 
 export const getPendingTX = async () => {
   const response = await api.get('/get_pending_transaction/')
