@@ -67,6 +67,8 @@ urlpatterns = [
   path('setup_user/', setup_user, name='setup_user'),
   path('get_pending_transaction/', get_pending_transaction, name='get_pending_transaction'),
   path('get_info_dashboard/', get_info_dashboard, name='get_info_dashboard'),
+  path('get_user_info/', get_user_info, name='get_user_info'),
+  path('update_user_info/', update_user_info, name='update_user_info'),
 
 
   #admin - functionalities

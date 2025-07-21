@@ -336,9 +336,6 @@ def get_all_transaction(request):
             end_date = make_aware(datetime(int(year), int(month) + 1, 1))
         except ValueError:
           return Response({'error': 'Invalid month/year combination'}, status=400)
-      elif range_type == 'year':
-        start_date = timezone.now().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
-        end_date = timezone.now().replace(month=12, day=31, hour=23, minute=59, second=59)
       elif range_type == '3month':
         end_date = timezone.now()
         start_date = end_date - timedelta(days=90)
@@ -508,10 +505,46 @@ def setup_user(request):
       return Response({'error': str(e)}, status=500)
   else:
     return Response({'error': 'Permission denied'}, status=403)
-      
+  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_info(request):
+  user = request.user
+  user_id = request.query_params.get('user_id')
+
+  try:
+    if user.is_staff:
+      get_user = User.objects.get(id=user_id)
+      serializer = UserSerializer(get_user)
+      return Response(serializer.data, status=200)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except User.DoesNotExist:
+    return Response({'error': 'User not found'}, status=404)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
+  
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_user_info(request):
+  user = request.user
+  user_id = request.data.get('user_id')
+
+  try:
+    if user.is_staff:
+      updated_user = User.objects.get(id=user_id)
+      serializer = UserSerializer(updated_user, data=request.data, partial=True)
+      if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=200)
+      else:
+        return Response(serializer.errors, status=400)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    return Response({'error': str(e)}, status=500)
 
   
-#no need
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_profit_sharing(request):

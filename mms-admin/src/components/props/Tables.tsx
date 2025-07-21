@@ -348,7 +348,7 @@ export const TxTable = ({
 
   const [data, setData] = useState<TransactioDetail[]>([])
   const [page, setPage] = useState(1)
-  const [pageSize] = useState(30)
+  const [pageSize, setPageSize] = useState<number>(30)
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState<string>("")
   const [rangeType, setRangeType] = useState<rangeTypeT>('')
@@ -395,10 +395,8 @@ export const TxTable = ({
 
   // Reset to page 1 when filters change
   useEffect(() => {
-    if (month && year) {   //not working
+    if (month && year) {  
       setRangeType('month')
-    } else if (year) {
-      setRangeType('year')
     } else {
       setRangeType('')
     }
@@ -485,6 +483,21 @@ export const TxTable = ({
         >
           Next
         </button>
+        <select
+          className="border rounded px-2 py-1 text-xs cursor-pointer"
+          value={pageSize}
+          onChange={e => {
+            const newSize = Number(e.target.value);
+            setPageSize(newSize);
+          }}
+        >
+          {[30, 40, 50, 100].map(pageSize => (
+            <option key={pageSize} value={pageSize}
+            >
+              Show {pageSize}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   )

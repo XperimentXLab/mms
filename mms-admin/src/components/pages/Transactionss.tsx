@@ -5,7 +5,7 @@ import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import type { ColumnDef } from "@tanstack/react-table"
 import { Inputss } from "../props/Formss";
-import { SelectMonth, SelectYear } from "../props/DropDown";
+import DatePicker from "react-datepicker";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -57,7 +57,7 @@ const Transactionss = () => {
     {
       accessorKey: "amount",
       header: "Amount",
-      cell: info => info.getValue(), // You can format with `toFixed(2)` if needed
+      cell: info => info.getValue(),
     },
     {
       accessorKey: "request_status",
@@ -84,8 +84,7 @@ const Transactionss = () => {
     const [pointType, setPointType] = useState<string>("")
     const [startDate, setStartDate] = useState<string>("")
     const [endDate, setEndDate] = useState<string>("")
-    const [month, setMonth] = useState<string>('')
-    const [year, setYear] = useState<string>('')
+    const [selectedMonthYear, setSelectedMonthYear] = useState<string>('')
 
     // Debounced search to avoid excessive API calls
     const [debouncedSearch, setDebouncedSearch] = useState(search)
@@ -168,35 +167,45 @@ const Transactionss = () => {
             </select>
           </div>
 
-          <div className="flex flex-row items-center gap-2 w-full">
-            <label className="text-sm font-medium text-gray-700 text-nowrap">
-              Start Date
-            </label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={e => setStartDate(e.target.value)}
-              className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-2 w-full">
+
+            <div className="flex flex-row items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 text-nowrap w-full">
+                Start Date :
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div className="flex flex-row items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 text-nowrap w-full">
+                End Date :
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          
+            <DatePicker
+              selected={
+                selectedMonthYear && dayjs(selectedMonthYear).isValid()
+                  ? dayjs(selectedMonthYear).toDate()
+                  : new Date()
+              }
+              onChange={(date: any) => setSelectedMonthYear(date)}
+              dateFormat="MMMM yyyy"
+              showMonthYearPicker
+              className="border px-3 py-2 rounded w-full" 
             />
 
-            <label className="text-sm font-medium text-gray-700 text-nowrap">
-              End Date
-            </label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={e => setEndDate(e.target.value)}
-              className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
           </div>
-
-          <div className="grid grid-cols-2 items-center">
-            <SelectMonth value={month} 
-              onChange={(e) => setMonth(e.target.value)} />
-            <SelectYear value={year}
-              onChange={(e) => setYear(e.target.value)} />
-          </div>
-        
         
         {hasActiveFilters && (
           <button
@@ -216,8 +225,8 @@ const Transactionss = () => {
           pointType={pointType}
           startDate={startDate}
           endDate={endDate}
-          month={Number(month)}
-          year={Number(month)}
+          month={Number(dayjs(selectedMonthYear).month()+1)}
+          year={Number(dayjs(selectedMonthYear).year())}
         />
       </div>
     )

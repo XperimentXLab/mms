@@ -25,25 +25,6 @@ const Register = () => {
 
   const toggleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-/*
-    if (password.length < 8) {
-      return setErrorMessage('Password must be at least 8 characters')
-    } else if (!/[A-Z]/.test(password)) {
-      return setErrorMessage('Password must contain at least 1 uppercase letter')
-    } else if (!/[a-z]/.test(password)) {
-      return setErrorMessage('Password must contain at least 1 lowercase letter')
-    } else if (!/[0-9]/.test(password)) {
-      return setErrorMessage('Password must contain at least 1 number')
-    } else if (password !== confirmPassword) {
-      return setErrorMessage('Password does not match')
-    }
-    if (referredBy && !/^MMS.{5}$/.test(referredBy)) {
-      return setErrorMessage('Invalid Referral ID')
-    }
-    if (ic.length !== 12) {
-      return setErrorMessage('IC number must be 12 digits')
-    }
-*/
 
     try {
       setLoading(true)
