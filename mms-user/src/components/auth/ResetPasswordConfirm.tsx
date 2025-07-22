@@ -69,6 +69,7 @@ const ResetPasswordConfirm = () => {
 
           <div className="grid grid-row-2 gap-2">
             <Inputss type="password" placeholder="Enter password"
+              label="New Password"
               onChange={e => setPassword(e.target.value)}
               value={password}
               required={true}
@@ -77,6 +78,7 @@ const ResetPasswordConfirm = () => {
 
           <div className="grid grid-row-2 gap-2">
             <Inputss type="password" placeholder="Confirm password" 
+              label="Confirm Password"
               onChange={e => setPassword2(e.target.value)}
               value={password2}
               required={true}
