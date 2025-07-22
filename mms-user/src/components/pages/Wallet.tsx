@@ -234,9 +234,9 @@ const Wallet = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 items-center mt-2">
+    <div className="flex flex-col gap-4 items-center mt-2 ">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 ">
-        <div className="flex flex-col border-gray-500 border gap-2 py-2 px-4 rounded-xl shadow-lg shadow-red-600 bg-white">
+        <div className="flex flex-col border-gray-500 border gap-2 py-2 px-4 rounded-xl shadow-md shadow-blue-800 bg-white">
           <Spannn label="Register Point">{masterBalance}</Spannn>
           <form className="flex flex-col gap-1.5" onSubmit={handleTransfer}>
             <div className="flex flex-row gap-1.5">
@@ -276,7 +276,7 @@ const Wallet = () => {
 
         </div>
 
-        <div className="flex flex-col border-gray-500 gap-1.5 border py-2 px-4 rounded-xl shadow-lg shadow-red-600 bg-white">
+        <div className="flex flex-col border-gray-500 gap-1.5 border py-2 px-4 rounded-xl shadow-md shadow-blue-800 bg-white">
 
           <Spannn label="Profit">{profitBalance}</Spannn>
           <Spannn label="Wallet Address">{walletAddress === undefined ? 'Not set' : walletAddress}</Spannn>
@@ -303,7 +303,7 @@ const Wallet = () => {
           </form>
         </div>
 
-        <div className="flex flex-col border-gray-500 gap-1.5 border py-2 px-4 rounded-xl shadow-lg shadow-red-600 bg-white">
+        <div className="flex flex-col border-gray-500 gap-1.5 border py-2 px-4 rounded-xl shadow-md shadow-blue-800 bg-white">
 
           <div className="flex justify-between">
             <Spannn label="Commision">{commissionBalance.toFixed(2)}</Spannn>

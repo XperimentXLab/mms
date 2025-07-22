@@ -107,7 +107,7 @@ export const Tables = ({
   });
 
   return (
-    <div className="w-full overflow-x-auto flex flex-col gap-2">
+    <div className="w-full overflow-x-auto flex flex-col gap-2 p-2 bg-white rounded-xl shadow-md shadow-blue-800">
 
       {enableFilters && (
           <input
@@ -249,7 +249,7 @@ export const LevelDisplay: React.FC<LevelProps> = ({ users }) => {
   }
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto ">
       <table className="min-w-full bg-white border border-gray-200 ">
         <thead>
           <tr className="bg-gray-100">

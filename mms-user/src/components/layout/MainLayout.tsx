@@ -100,10 +100,10 @@ const MainLayout = () => {
 */
 
   return (
-    <div className="flex flex-col relative">
+    <div className="flex flex-col relative bg-black ">
 
       <div className="fixed top-0 left-0 right-0 z-20">
-        <header className="flex justify-between items-center py-2 px-3 bg-linear-to-r from-red-600 to-rose-300 bg-linear border border-black">
+        <header className="flex justify-between items-center m-1 rounded-2xl py-2 px-3 bg-linear-to-r from-blue-800 to-rose-500 bg-linear border border-black">
           <GiHamburgerMenu className="cursor-pointer" onClick={toggleOpen}/>
           <div className="flex items-center gap-4">
 
@@ -124,13 +124,13 @@ const MainLayout = () => {
 
         <div className="flex relative">
         {open && 
-        <nav ref={menuRef} className="absolute flex flex-col w-fit h-fit gap-1 items-center bg-red-500 px-1 py-3">
-          <NavLinkss to={'/'}>Home</NavLinkss>
-          <NavLinkss to={'/profile'} >Profile</NavLinkss>
-          <NavLinkss to={'/network'}>Network</NavLinkss>
-          <NavLinkss to={'/wallet'}>Wallet</NavLinkss>
-          <NavLinkss to={'/asset'}>Asset</NavLinkss>
-          <NavLinkss to={'/others'}>Others</NavLinkss>
+        <nav ref={menuRef} className="absolute flex flex-col -mt-1 ml-1 w-fit h-fit gap-1 rounded-2xl items-center bg-red-500 px-1 py-3">
+          <NavLinkss to={'/'} className="hover:shadow-md shadow-indigo-800">Home</NavLinkss>
+          <NavLinkss to={'/profile'} className="hover:shadow-md shadow-indigo-800">Profile</NavLinkss>
+          <NavLinkss to={'/network'} className="hover:shadow-md shadow-indigo-800">Network</NavLinkss>
+          <NavLinkss to={'/wallet'} className="hover:shadow-md shadow-indigo-800">Wallet</NavLinkss>
+          <NavLinkss to={'/asset'} className="hover:shadow-md shadow-indigo-800">Asset</NavLinkss>
+          <NavLinkss to={'/others'} className="hover:shadow-md shadow-indigo-800">Others</NavLinkss>
           <Buttons type="button" onClick={handleLogout}
             className="hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg cursor-pointer"
           >Logout</Buttons>
@@ -142,8 +142,7 @@ const MainLayout = () => {
 
       {openLogout && <Logout />}
 
-      {/*add background dark crypto*/}
-      <div className="mt-15 mb-5 ">
+      <div className="mt-17 pb-5 min-h-screen md:bg-[url(/BG-MMS-DESKTOP.png)] bg-[url(/BG-MMS-MOBILE.png)]">
         <Outlet />
       </div>
 

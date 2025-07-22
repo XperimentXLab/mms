@@ -2,13 +2,14 @@ interface SpannnProps {
   children: React.ReactNode
   label: string
   assetAmount?: number | undefined
+  className?: string
 }
 
-const Spannn: React.FC<SpannnProps> = ({ children, label, assetAmount = 200 }) => {
+const Spannn: React.FC<SpannnProps> = ({ children, label, assetAmount = 200, className }) => {
   return (
-    <div className="flex gap-2 text-md">
+    <div className={`flex gap-2 text-md ${className}`}>
       <span className="font-bold">{label}: </span>
-      <span className={`font-mono ${assetAmount < 200 ? 'text-slate-400' : 'text-black' }`}>{children}
+      <span className={`font-mono ${assetAmount < 200 ? 'text-slate-400' : 'text-black'}`}>{children}
       </span>
     </div>
   )

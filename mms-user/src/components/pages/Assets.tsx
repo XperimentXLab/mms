@@ -66,9 +66,9 @@ const Assets = () => {
 
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
+    <div className="flex flex-col items-center gap-3 p-4">
 
-      <div className="flex flex-col gap-3 border rounded-xl p-3 w-fit shadow-lg shadow-red-600 bg-white">
+      <div className="flex flex-col gap-3 border rounded-xl p-3 w-fit shadow-md shadow-blue-800 bg-white">
         <Spannn label="Total Asset">{assetBalance}</Spannn>
         <Spannn label="Register Point">{masterBalance}</Spannn>
         <form className="flex gap-1.5" onSubmit={handlePlaceAsset}>

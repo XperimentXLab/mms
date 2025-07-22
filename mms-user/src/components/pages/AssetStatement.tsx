@@ -123,9 +123,9 @@ export const WithdrawalAssetStatement = () => {
   const data = dataRes
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {loading && <Loading />}
-      <span className="font-semibold">
+      <span className="font-semibold bg-white p-2 rounded-lg">
         Withdrawal Statement
       </span>
 
@@ -198,9 +198,9 @@ export const AssetStatement = () => {
   const data = dataRes
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       {loading && <Loading />}
-      <span className="font-semibold">
+      <span className="font-semibold bg-white p-2 rounded-lg">
         Asset Statement
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}

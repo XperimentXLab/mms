@@ -63,9 +63,7 @@ const ResetPasswordConfirm = () => {
         
         <span className="font-bold text-xl">Reset Passsword</span>
 
-        <label className="font-semibold">Please fill in</label>
-
-        <form onSubmit={toggleSubmit} className="grid grid-row-3 items-center justify-center gap-2 p-2">
+        <form onSubmit={toggleSubmit} className="grid grid-row-3 items-center justify-center gap-2 p-3 rounded-xl shadow-xl shadow-red-300">
 
           <div className="grid grid-row-2 gap-2">
             <Inputss type="password" placeholder="Enter password"

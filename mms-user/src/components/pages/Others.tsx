@@ -140,8 +140,14 @@ const Others = () => {
         beginAtZero: true,
         ticks: {
           callback: (value) => `${value}%`,
+          color: 'white',
         },
       },
+      x: {
+        ticks: {
+          color: 'white',
+        },
+      }
     },
     plugins: {
       tooltip: {
@@ -151,11 +157,14 @@ const Others = () => {
       },
       legend: {
         position: 'top',
+        labels: {
+          color: 'white',
+        },
       },
       // This displays the data values above each bar
       datalabels: {
         display: true,
-        color: 'black',
+        color: 'white',
         anchor: 'end',
         align: 'top',
         formatter: (value: number) => `${value}%`,
@@ -201,33 +210,33 @@ const Others = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center gap-3 p-3 items-center">
+    <div className="flex flex-col justify-center gap-3 p-3 items-center mb-3">
 
-      <h1 className="font-bold text-xl">Others</h1>
+      <h1 className="font-bold text-xl text-white">Others</h1>
 
-      <div className="flex flex-col gap-3 justify-center items-center p-3 border rounded-xl w-full shadow-2xl shadow-red-300 bg-white">
-        <span className="font-bold text-md items-center">Performance</span>
+      <div className="flex flex-col gap-3 justify-center items-center p-3 border rounded-xl w-full shadow-md shadow-blue-800 bg-transparent">
+        <span className="font-bold text-md items-center text-white">Performance</span>
 
-        <div className="grid grid-cols-1 gap-4 w-full">
-          <div className="border p-3 rounded-lg text-center">
+        <div className="grid grid-cols-1 gap-4 w-full ">
+          <div className="border p-3 rounded-lg text-center bg-white">
             <h3 className="text-sm text-gray-500">Today's Profit</h3>
             <p className="text-xl font-bold">{todayOperationalProfit.toLocaleString()} %</p>
           </div>
           
-          <div className="border p-3 rounded-lg text-center">
+          <div className="border p-3 rounded-lg text-center bg-white">
             <h3 className="text-sm text-gray-500">Weekly Profit</h3>
             <p className="text-xl font-bold">{weeklyOperationalProfit.toLocaleString()} %</p>
           </div>
           
-          <div className="border p-3 rounded-lg text-center">
+          <div className="border p-3 rounded-lg text-center bg-white">
             <h3 className="text-sm text-gray-500">Monthly Profit</h3>
             <p className="text-xl font-bold">{monthlyOperationalProfit.toLocaleString()} %</p>
           </div>
         </div>  
         
-        <div className="mt-4 w-full">
-          <h3 className="text-lg font-semibold mb-2 text-center">Yearly Profit Trend</h3>
-          <div className="mb-4 mx-auto max-w-xs">
+        <div className="pt-3 w-full inset-shadow-xs inset-shadow-blue-800 backdrop-blur-md rounded-xl">
+          <h3 className="text-lg font-semibold mb-2 text-center text-white ">Yearly Profit Trend</h3>
+          <div className="mb-4 mx-auto max-w-xs bg-white rounded-xl py-1">
             <SelectYear 
               value={selectedChartYear} 
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedChartYear(e.target.value)} 
@@ -235,7 +244,7 @@ const Others = () => {
           </div>
           {chartError && <p className="text-red-500 text-center my-2">{chartError}</p>}
           {finalizedYearlyProfits.length > 0 ? (
-            <div className="h-64 md:h-96"> {/* Responsive height */}
+            <div className="h-64 md:h-96 px-1"> {/* Responsive height */}
               <Bar id="YearlyPerformanceChart" data={chartData} options={chartOptions} />
             </div>
           ) : (
@@ -245,7 +254,7 @@ const Others = () => {
       </div>
 
 
-      <div className="flex flex-col gap-3 justify-center items-center p-3 border rounded-xl w-full shadow-2xl shadow-red-300 bg-white">
+      <div className="flex flex-col gap-3 justify-center items-center p-3 border rounded-xl w-full shadow-md shadow-blue-800 bg-white">
 
         <span className="font-bold text-md items-start">Calculator</span>
 

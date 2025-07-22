@@ -279,11 +279,11 @@ const Profile = () => {
 
   return (
     <div className="flex flex-col items-center p-3 w-full">
-      <h1 className="font-bold text-lg">Edit Profile</h1>
+      <h1 className="font-bold text-lg text-white">Edit Profile</h1>
 
       <div className="flex flex-col gap-4 p-2 items-center">
 
-        <div className="grid grid-rows-3 gap-3 py-3 px-5 shadow-2xl w-full shadow-red-300 bg-white rounded-2xl border items-center">
+        <div className="grid grid-rows-3 gap-3 py-3 px-5 shadow-md w-full shadow-blue-800 bg-white rounded-2xl border items-center">
           <h1 className="font-bold text-lg underline">Personal Information</h1>
 
           <Spannn label="USERNAME" assetAmount={assetP}>{username}</Spannn>
@@ -368,7 +368,7 @@ const Profile = () => {
 
         </div>
 
-        <form className="grid grid-rows-3 gap-3 py-3 px-5 w-full shadow-red-300 bg-white shadow-2xl rounded-2xl border items-center" onSubmit={toggleBeneficiary}>
+        <form className="grid grid-rows-3 gap-3 py-3 px-5 w-full shadow-blue-800 bg-white shadow-md rounded-2xl border items-center" onSubmit={toggleBeneficiary}>
           <h1 className="font-bold text-lg underline">Beneficiary Information</h1>
 
           <Inputss type="text" label='BENEFICIARY NAME'
@@ -411,7 +411,7 @@ const Profile = () => {
           <Buttons type="submit">Save</Buttons>
         </form>
 
-        <form onSubmit={handlePromoCode} className="flex flex-col gap-2 w-full items-center p-3 border rounded-xl shadow-red-300 bg-white shadow-2xl">
+        <form onSubmit={handlePromoCode} className="flex flex-col gap-2 w-full items-center p-3 border rounded-xl shadow-blue-800 bg-white shadow-md">
           <h1 className="font-bold text-lg underline">Promo Code</h1>
 
           <Inputss 
@@ -425,7 +425,7 @@ const Profile = () => {
           <Buttons type="submit">Apply</Buttons>
         </form>
 
-        <div className="flex flex-col gap-2 w-full items-center justify-center p-3 border rounded-xl shadow-red-300 bg-white shadow-2xl">
+        <div className="flex flex-col gap-2 w-full items-center justify-center p-3 border rounded-xl shadow-blue-800 bg-white shadow-md">
           <h1 className="font-bold text-lg underline">Verification</h1>
 
           <FixedText label='Status' text={verificationStatusDisplay} />
@@ -468,7 +468,7 @@ const Profile = () => {
           </form>}
         </div>
 
-        <div className="flex flex-col gap-2 w-full items-center p-3 border rounded-xl shadow-red-300 bg-white shadow-2xl">
+        <div className="flex flex-col gap-2 w-full items-center p-3 border rounded-xl shadow-blue-800 bg-white shadow-md">
           <h1 className="font-bold text-lg underline">Change Password</h1>
 
           <form className="grid grid-cols-1 gap-2" onSubmit={toggleChangePassword}>

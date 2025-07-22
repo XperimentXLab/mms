@@ -49,9 +49,9 @@ const Network = () => {
   return (
     <div className="p-3 flex flex-col items-center justify-center gap-3">
 
-      <span className="font-bold text-xl">Network</span>
+      <span className="font-bold text-xl text-white">Network</span>
 
-      <div className="grid grid-cols-1 gap-3 max-w-full shadow-2xl shadow-red-300 p-5 rounded-xl border">
+      <div className="grid grid-cols-1 gap-3 max-w-full bg-white shadow-md shadow-blue-800  p-5 rounded-xl border">
         <div className="grid grid-cols-2 gap-2">
           <FixedText label="Total Asset" text={totalAsset.toString()}/>
           <FixedText label="Total User" text={totalUser.toString()}/>

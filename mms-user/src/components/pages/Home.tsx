@@ -150,7 +150,7 @@ const Home = () => {
       {loading && <Loading />}
 
       <div>
-        <h1 className="font-bold text-xl">Home</h1>
+        <h1 className="font-bold text-xl text-white">Home</h1>
       </div>
 
       <div className="grid grid-cols-1 gap-3">
@@ -164,7 +164,7 @@ const Home = () => {
           <FixedText label="Register Point" text={masterP.toString()} />
         </div>
 
-        <div className="border rounded-xl p-4 flex items-center flex-col shadow-2xl shadow-red-300 bg-white">
+        <div className="border rounded-xl p-4 flex items-center flex-col shadow-md shadow-blue-800 bg-white">
           <h2 className="font-bold text-lg mb-3">Daily Summary Profit ({fullDate})</h2>
           <div className="overflow-x-auto">
             <Tables 

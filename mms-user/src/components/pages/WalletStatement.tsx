@@ -109,8 +109,8 @@ export const ProfitStatement = () => {
   return (
     <div className="flex flex-col gap-2">
       {loading && <Loading />}
-      <div className="flex flex-row gap-2">
-        <span className="font-semibold">Profit Statement | </span>
+      <div className="flex flex-row gap-2 bg-white p-2 rounded-lg">
+        <span className="font-semibold ">Profit Statement | </span>
         <Spannn label="Profit Balance">{profitBal}</Spannn>
       </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
@@ -128,7 +128,7 @@ export const CommissionStatement = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("")
 
-  const [selectedDay, setSelectedDay] = useState<string | null>('null')
+  const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const [selectedMonthYear, setSelectedMonthYear] = useState<string>('')
 
   // affiliate + introducer
@@ -215,21 +215,23 @@ export const CommissionStatement = () => {
   return (
     <div className="flex flex-col gap-2 relative">
       {loading && <Loading />}
-      <div className="flex flex-row gap-2">
-        <span className="font-semibold">Commission Statement | </span>
-        <Spannn label="Commission Balance">{commissionBal}</Spannn>
-        <span className="font-semibold">| Select </span>
-        <DatePicker
-          selected={
-            selectedMonthYear && dayjs(selectedMonthYear).isValid()
-              ? dayjs(selectedMonthYear).toDate()
-              : new Date()
-          }
-          onChange={(date: any) => setSelectedMonthYear(date)}
-          dateFormat="MMMM yyyy"
-          showMonthYearPicker
-          className="border px-3 rounded"
-        />
+      <div className="flex md:flex-row flex-col gap-3 bg-white p-2 rounded-lg justify-center items-center">
+        <span className="font-bold">Commission Statement </span>
+        <Spannn label="Commission Balance" className="bg-gray-200 py-1 px-2 rounded-lg">{commissionBal}</Spannn>
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">Select </span>
+          <DatePicker
+            selected={
+              selectedMonthYear && dayjs(selectedMonthYear).isValid()
+                ? dayjs(selectedMonthYear).toDate()
+                : new Date()
+            }
+            onChange={(date: any) => setSelectedMonthYear(date)}
+            dateFormat="MMMM yyyy"
+            showMonthYearPicker
+            className="border px-3 rounded"
+          />
+        </div>
       </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
@@ -309,7 +311,7 @@ export const TransferStatement = () => {
   return (
     <div className="flex flex-col gap-2">
       {loading && <Loading />}
-      <span className="font-semibold">
+      <span className="font-semibold bg-white p-2 rounded-lg">
         Transfer Statement
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
@@ -380,7 +382,7 @@ export const ConvertStatement = () => {
   return (
     <div className="flex flex-col gap-2">
       {loading && <Loading />}
-      <span className="font-semibold">
+      <span className="font-semibold bg-white p-2 rounded-lg">
         Convert Statement
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
@@ -451,7 +453,7 @@ export const WithdrawalWalletStatement = () => {
   return (
     <div className="flex flex-col gap-2">
       {loading && <Loading />}
-      <span className="font-semibold">
+      <span className="font-semibold bg-white p-2 rounded-lg">
         Withdrawal Statement
       </span>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
