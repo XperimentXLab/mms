@@ -61,19 +61,23 @@ const ResetPasswordConfirm = () => {
       {loading && <Loading />}
       <span className="font-bold text-xl">Reset Passsword</span>
       <form onSubmit={toggleSubmit} className="grid grid-cols-1 items-center justify-center gap-2">
-        <label>Please fill in</label>
-        <Inputss type="password" placeholder="Enter password"
-          className="border py-1 px-2 rounded-md"
-          onChange={e => setPassword(e.target.value)}
-          value={password}
-          required={true}
-        />
-        <Inputss type="password" placeholder="Confirm password" 
-          className="border py-1 px-2 rounded-md"
-          onChange={e => setPassword2(e.target.value)}
-          value={password2}
-          required={true}
-        />
+        <label className="font-semibold">Please fill in</label>
+        <div className="grid grid-row-2 gap-2">
+          <Inputss type="password" placeholder="Enter password"
+            className="border py-1 px-2 rounded-md"
+            onChange={e => setPassword(e.target.value)}
+            value={password}
+            required={true}
+          />
+        </div>
+        <div className="grid grid-row-2 gap-2">
+          <Inputss type="password" placeholder="Confirm password" 
+            className="border py-1 px-2 rounded-md"
+            onChange={e => setPassword2(e.target.value)}
+            value={password2}
+            required={true}
+          />
+        </div>
         {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
         <Buttons type="submit" >Submit</Buttons>
       </form>
