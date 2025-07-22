@@ -60,8 +60,11 @@ const ResetPasswordConfirm = () => {
     <div className="flex flex-col justify-center items-center gap-2 p-2">
       {loading && <Loading />}
       <span className="font-bold text-xl">Reset Passsword</span>
-      <form onSubmit={toggleSubmit} className="grid grid-cols-1 items-center justify-center gap-2">
-        <label className="font-semibold">Please fill in</label>
+
+      <label className="font-semibold">Please fill in</label>
+
+      <form onSubmit={toggleSubmit} className="grid grid-row-4 items-center justify-center gap-2">
+
         <div className="grid grid-row-2 gap-2">
           <Inputss type="password" placeholder="Enter password"
             className="border py-1 px-2 rounded-md"
@@ -70,6 +73,7 @@ const ResetPasswordConfirm = () => {
             required={true}
           />
         </div>
+
         <div className="grid grid-row-2 gap-2">
           <Inputss type="password" placeholder="Confirm password" 
             className="border py-1 px-2 rounded-md"
@@ -78,8 +82,11 @@ const ResetPasswordConfirm = () => {
             required={true}
           />
         </div>
+
         {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
+
         <Buttons type="submit" >Submit</Buttons>
+
       </form>
       <InfoPassword />
     </div>
