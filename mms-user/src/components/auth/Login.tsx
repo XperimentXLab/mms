@@ -68,25 +68,22 @@ const Login = () => {
         <h1 className="font-bold text-xl">Login</h1>
 
         <form className="grid grid-row-3 gap-5 p-5 shadow-xl shadow-red-300" onSubmit={toggleLogin}>
-          <div className="grid grid-row-2 gap-2">
 
+          <div className="grid grid-row-2 gap-2">
             <Inputss type="text" placeholder="Enter Username"
               label="Username" 
               onChange={(e) => setUsername(e.target.value)}
               value={username}
               required={true}
-              className="border py-1 px-2 rounded-md" 
               />
           </div>
 
           <div className="grid grid-row-2 gap-2">
-
             <Inputss type="password" placeholder="Enter password"
               label="Password" 
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               required={true}
-              className="border py-1 px-2 rounded-md" 
             />
           </div>
 

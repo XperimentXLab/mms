@@ -57,38 +57,39 @@ const ResetPasswordConfirm = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center gap-2 p-2">
+    <div className="flex min-h-screen justify-center">
       {loading && <Loading />}
-      <span className="font-bold text-xl">Reset Passsword</span>
+      <div className="flex flex-col justify-center items-center gap-2 p-4">
+        
+        <span className="font-bold text-xl">Reset Passsword</span>
 
-      <label className="font-semibold">Please fill in</label>
+        <label className="font-semibold">Please fill in</label>
 
-      <form onSubmit={toggleSubmit} className="grid grid-row-4 items-center justify-center gap-2">
+        <form onSubmit={toggleSubmit} className="grid grid-row-3 items-center justify-center gap-2 p-2">
 
-        <div className="grid grid-row-2 gap-2">
-          <Inputss type="password" placeholder="Enter password"
-            className="border py-1 px-2 rounded-md"
-            onChange={e => setPassword(e.target.value)}
-            value={password}
-            required={true}
-          />
-        </div>
+          <div className="grid grid-row-2 gap-2">
+            <Inputss type="password" placeholder="Enter password"
+              onChange={e => setPassword(e.target.value)}
+              value={password}
+              required={true}
+            />
+          </div>
 
-        <div className="grid grid-row-2 gap-2">
-          <Inputss type="password" placeholder="Confirm password" 
-            className="border py-1 px-2 rounded-md"
-            onChange={e => setPassword2(e.target.value)}
-            value={password2}
-            required={true}
-          />
-        </div>
+          <div className="grid grid-row-2 gap-2">
+            <Inputss type="password" placeholder="Confirm password" 
+              onChange={e => setPassword2(e.target.value)}
+              value={password2}
+              required={true}
+            />
+          </div>
 
-        {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
+          {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-        <Buttons type="submit" >Submit</Buttons>
+          <Buttons type="submit" >Submit</Buttons>
 
-      </form>
-      <InfoPassword />
+        </form>
+        <InfoPassword />
+      </div>
     </div>
   )
 }
