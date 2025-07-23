@@ -126,7 +126,7 @@ const Others = () => {
         data: finalizedYearlyProfits.map(item => item.finalized_profit_rate || 0),
         borderColor: "rgb(75, 192, 192)",
         borderWidth: 1,
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        backgroundColor: "#40E0D0",
       },
     ],
   };

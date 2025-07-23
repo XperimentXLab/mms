@@ -115,7 +115,7 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
   }
 
   return (
-    <div className="flex justify-center w-full m-3 shadow shadow-neutral-200 rounded-2xl bg-transparent p-3">
+    <div className="flex justify-center w-full m-3 backdrop-blur-lg rounded-2xl bg-transparent p-3">
       <Line 
         data={chartData} 
         options={options}
@@ -140,11 +140,12 @@ const AssetChart = ({ data }: { data: AssetProps}) => {
 
   const chartData = {
     labels: ['Asset Sharing (80:20)', 'Asset Sharing (70:30)'],
+    
     datasets: [
       {
         label: 'Asset',
         data: [data.asset_above_10k, data.asset_below_10k],
-        backgroundColor: ['#32CD32', '#FFD700'], // LIME GREEN and yellow
+        backgroundColor: ['#10CB81', '#CF2F49'], 
         hoverOffset: 8,
       }
     ]
@@ -155,14 +156,15 @@ const AssetChart = ({ data }: { data: AssetProps}) => {
     plugins: {
       legend: {
         position: 'top' as const,
+
         labels: {
-          color: 'white'
+          color: 'black'
         }
       },
       title: {
         display: true,
         text: `Total Asset | ${data.total_asset_amount.toFixed(2)}`,
-        color: 'white',
+        color: 'black',
         font: {
           size: 15,
         },
@@ -172,7 +174,7 @@ const AssetChart = ({ data }: { data: AssetProps}) => {
 
 
   return (
-    <div className="flex items-center justify-center p-2 bg-sky-900 rounded-xl h-70">
+    <div className="flex items-center justify-center p-2 bg-sky-200 rounded-xl h-70">
       <Pie 
         data={chartData} 
         options={options}

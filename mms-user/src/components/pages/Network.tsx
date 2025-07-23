@@ -53,7 +53,7 @@ const Network = () => {
 
       <div className="grid grid-cols-1 gap-3 max-w-full bg-white shadow-md shadow-blue-800  p-5 rounded-xl border">
         <div className="grid grid-cols-2 gap-2">
-          <FixedText label="Total Asset" text={totalAsset.toString()}/>
+          <FixedText label="Volume Asset" text={totalAsset.toFixed(2)}/>
           <FixedText label="Total User" text={totalUser.toString()}/>
         </div>
 

@@ -238,7 +238,7 @@ export const CommissionStatement = () => {
       <Tables columns={columnComTx} data={data} needDate={false} enablePagination={true}/>
 
       {selectedDay !== null &&
-        <div className="flex flex-col gap-2 p-3 translate-y-10 absolute border rounded-lg backdrop-blur-sm bg-white/30">
+        <div className="flex flex-col gap-2 p-3 translate-y-10 absolute border rounded-lg backdrop-blur-sm bg-white/30 max-w-full">
           <Buttons
             type="button"
             onClick={() => setSelectedDay(null)}
