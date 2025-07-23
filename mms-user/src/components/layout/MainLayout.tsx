@@ -115,7 +115,7 @@ const MainLayout = () => {
             <img src="../mmsventure.jpeg" alt="MMS Logo" className="w-10 h-10 rounded-full" />
 
             <div className="flex flex-col cursor-default">
-              <span className="font-semibold">Money Management Solution</span>
+              <span className="font-semibold text-sm">Money Management Solution</span>
               <span>Welcome, {username}</span>
             </div>
 
