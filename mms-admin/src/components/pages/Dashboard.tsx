@@ -158,13 +158,13 @@ const AssetChart = ({ data }: { data: AssetProps}) => {
         position: 'top' as const,
 
         labels: {
-          color: 'black'
+          color: 'white'
         }
       },
       title: {
         display: true,
         text: `Total Asset | ${data.total_asset_amount.toFixed(2)}`,
-        color: 'black',
+        color: 'white',
         font: {
           size: 15,
         },
@@ -174,7 +174,7 @@ const AssetChart = ({ data }: { data: AssetProps}) => {
 
 
   return (
-    <div className="flex items-center justify-center p-2 bg-sky-200 rounded-xl h-70">
+    <div className="flex items-center justify-center p-2 bg-black rounded-xl h-70">
       <Pie 
         data={chartData} 
         options={options}
