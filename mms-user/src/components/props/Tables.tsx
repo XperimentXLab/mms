@@ -22,6 +22,7 @@ import Loading from "./Loading";
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
+
 export interface TableColumn {
   header: string;
   accessor: string;
@@ -494,3 +495,33 @@ export const CommissionTxTable = ({
   )
 
 }
+
+/////////////////////////////////////////////////////
+
+/*
+interface TableProps {
+  columns: ColumnDef<any, any>[]
+  emptyMessage?: string
+  startDate?: string
+  endDate?: string
+  month?: string
+  year?: string
+}
+
+interface TableData {
+  created_at: string;
+  amount: number;
+  point_type?: string;
+  transaction_type?: string;
+  description: string;
+  //receiver_wallet.user?: string;
+  reference?: string;
+}
+
+interface ApiResponseTable {
+  results: TableData[]
+  totalCount: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+}
+*/
