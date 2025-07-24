@@ -514,7 +514,6 @@ interface TableData {
   point_type?: string;
   transaction_type?: string;
   description: string;
-  //receiver_wallet.user?: string;
   reference?: string;
 }
 
