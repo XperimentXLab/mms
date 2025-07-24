@@ -498,24 +498,33 @@ export const CommissionTxTable = ({
 
 /////////////////////////////////////////////////////
 
-/*
-interface TableProps {
-  columns: ColumnDef<any, any>[]
-  emptyMessage?: string
-  startDate?: string
-  endDate?: string
-  month?: string
-  year?: string
-}
-
 interface TableData {
   created_at: string;
   amount: number;
+  request_status?: string;
   point_type?: string;
   transaction_type?: string;
   description: string;
   reference?: string;
 }
+
+interface TableFetchParams {
+  search?: string
+  status?: string
+  startDate?: string
+  endDate?: string
+  month?: string
+  year?: string
+  page?: number
+  pageSize?: number
+}
+
+interface TableProps {
+  columns: ColumnDef<any, any>[]
+  fetchData: (params: TableFetchParams) => Promise<ApiResponseTable>
+  emptyMessage?: string
+}
+
 
 interface ApiResponseTable {
   results: TableData[]
@@ -523,4 +532,161 @@ interface ApiResponseTable {
   hasNextPage: boolean
   hasPreviousPage: boolean
 }
-*/
+
+export const NewTable = ({
+  columns,
+  fetchData,
+  emptyMessage = "No data available",
+}: TableProps) => {
+
+  const [data, setData] = useState<TableData[]>([])
+  const [search] = useState("")
+  const [status] = useState("")
+  const [startDate] = useState("")
+  const [endDate] = useState("")
+  const [month] = useState<string>()
+  const [year] = useState<string>()
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState<number>(30)
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [globalFilter, setGlobalFilter] = useState<string>("")
+
+  const [loading, setLoading] = useState(false)
+
+  const loadData = useCallback( async () => {
+    const formattedStartDate = startDate ? dayjs(startDate, "DD/MM/YYYY").format("YYYY-MM-DD") : ""
+    const formattedEndDate = endDate ? dayjs(endDate, "DD/MM/YYYY").format("YYYY-MM-DD") : ""
+
+    try {
+      setLoading(true)
+
+      const res: ApiResponseTable = await fetchData({
+        search,
+        status,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+        page,
+        pageSize,
+        month,
+        year,
+      })
+
+      const processedData = res.results.map(tx => ({
+        ...tx,
+        created_date: dayjs(tx.created_at).format("DD/MM/YYYY"),
+        created_time: dayjs(tx.created_at).format("hh:mm:ss"),
+      }))
+      setData(processedData)
+
+    } catch (error) {
+      console.error("Failed to fetch transactions", error)
+      setData([])
+    } finally {
+      setLoading(false)
+    }
+  }, [search, status, startDate, endDate, page, pageSize, month, year])
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1)
+  }, [fetchData, search, status, startDate, endDate, month, year])
+
+  // Fetch data when dependencies change
+  useEffect(() => {
+    loadData()
+  }, [fetchData, search, status, startDate, endDate, page, pageSize, month, year])
+
+  const table = useReactTable({
+    data,
+    columns,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: { 
+      sorting, 
+      globalFilter: globalFilter || search 
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(), // include only if backend sorts
+    manualPagination: true,
+  })
+
+  return (
+    <div className="w-full overflow-x-auto flex flex-col gap-2 p-3 bg-white rounded-xl">
+      {loading && <Loading />}
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th
+                    key={header.id}
+                    className="px-4 py-2 font-semibold text-left cursor-pointer select-none"
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getIsSorted() === "asc"
+                      ? " 🔼"
+                      : header.column.getIsSorted() === "desc"
+                      ? " 🔽"
+                      : ""}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="px-6 py-4 text-center text-gray-500">
+                  {emptyMessage}
+                </td>
+              </tr>
+            ) : (
+            table.getRowModel().rows.map(row => (
+              <tr key={row.id} className="border-b hover:bg-gray-50">
+                {row.getVisibleCells().map(cell => (
+                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            )))}
+          </tbody>
+        </table>
+
+      {/* Pagination */}
+      <div className="flex justify-end mt-4 space-x-2">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(p => Math.max(p - 1, 1))}
+          className="px-3 py-1 border rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
+        <span className="px-3 py-1">Page {page}</span>
+        <button
+          onClick={() => setPage(p => p + 1)}
+          className="px-3 py-1 border rounded"
+        >
+          Next
+        </button>
+        <select
+          className="border rounded px-2 py-1 text-xs cursor-pointer"
+          value={pageSize}
+          onChange={e => {
+            const newSize = Number(e.target.value);
+            setPageSize(newSize);
+          }}
+        >
+          {[30, 40, 50, 100].map(pageSize => (
+            <option key={pageSize} value={pageSize}
+            >
+              Show {pageSize}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  )
+}
