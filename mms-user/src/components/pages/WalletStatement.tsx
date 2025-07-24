@@ -109,7 +109,7 @@ export const ProfitStatement = () => {
   return (
     <div className="flex flex-col gap-2">
       {loading && <Loading />}
-      <div className="flex flex-row gap-2 bg-white p-2 rounded-lg">
+      <div className="flex flex-row justify-between gap-2 bg-white p-2 rounded-lg">
         <span className="font-semibold ">Profit Statement | </span>
         <Spannn label="Profit Balance">{profitBal}</Spannn>
       </div>

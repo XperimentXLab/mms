@@ -174,7 +174,7 @@ const AssetChart = ({ data }: { data: AssetProps}) => {
 
 
   return (
-    <div className="flex items-center justify-center p-2 bg-black rounded-xl h-70">
+    <div className="flex items-center justify-center p-2 bg-transparent backdrop-blur-lg rounded-xl h-70">
       <Pie 
         data={chartData} 
         options={options}

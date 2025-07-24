@@ -142,7 +142,7 @@ const MainLayout = () => {
 
       {openLogout && <Logout />}
 
-      <div className="mt-17 pb-5 min-h-screen md:bg-[url(/BG-MMS-DESKTOP.png)] bg-[url(/BG-MMS-MOBILE.png)]">
+      <div className="mt-17 pb-5 bg-cover w-full min-h-screen md:bg-[url(/BG-MMS-DESKTOP.png)] bg-[url(/BG-MMS-MOBILE.png)]">
         <Outlet />
       </div>
 
