@@ -104,13 +104,33 @@ export const ProfitStatement = () => {
      },
   ];
 
+  /*
+  const columnsTable: ColumnDef<any, any>[] = [
+    { header: "Date", 
+      accessorKey: "created_date",
+      cell: info => info.getValue()
+     },
+    { header: "Time", 
+      accessorKey: "created_time", 
+      cell: info => info.getValue() 
+    },
+    { header: "Description", 
+      accessorKey: "description",
+      cell: info => info.getValue()
+     },
+    { header: "Amount", 
+      accessorKey: "amount",
+      cell: info => info.getValue()
+     },
+  ];*/
+
   const [data, setData] = useState<Data[]>([])
 
   return (
     <div className="flex flex-col gap-2">
       {loading && <Loading />}
       <div className="flex flex-row justify-between gap-2 bg-white p-2 rounded-lg">
-        <span className="font-semibold ">Profit Statement | </span>
+        <span className="font-semibold ">Profit Statement </span>
         <Spannn label="Profit Balance">{profitBal}</Spannn>
       </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
@@ -118,6 +138,13 @@ export const ProfitStatement = () => {
       <Tables columns={columns} data={data} 
         enableSorting={true}
       />
+      {/*
+      <NewTable 
+        columns={columnsTable}
+        fetchData={() => {
+          getProfitTx({})
+        }}
+      />*/}
     </div>
   )
 }

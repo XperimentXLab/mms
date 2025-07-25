@@ -576,6 +576,7 @@ export const NewTable = ({
         created_date: dayjs(tx.created_at).format("DD/MM/YYYY"),
         created_time: dayjs(tx.created_at).format("hh:mm:ss"),
       }))
+      console.log("Res Data:", res)
       setData(processedData)
 
     } catch (error) {

@@ -336,27 +336,6 @@ export const getAllTransactions = async ( params: paramsTx) => {
 }
 
 
-export const getAllMasterTX = async () => {
-  const response = await api.get('/all_master_tx/')
-  return response.data
-}
-
-export const getAllProfitTX = async () => {
-  const response = await api.get('/all_profit_tx/')
-  return response.data
-}
-
-export const getAllCommissionTX = async () => {
-  const response = await api.get('/all_commission_tx/')
-  return response.data
-}
-
-export const getAllAssetTX = async () => {
-  const response = await api.get('/all_asset_tx/')
-  return response.data
-}
-
-
 interface infoDash {
   month: string
   year: number
