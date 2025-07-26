@@ -337,7 +337,6 @@ const Wallet = () => {
               <Tables 
                 columns={columns}
                 data={data}
-                needDate={false}
               />
             </div>
           }

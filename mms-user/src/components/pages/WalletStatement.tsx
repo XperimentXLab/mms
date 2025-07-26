@@ -197,7 +197,7 @@ export const CommissionStatement = () => {
       </div>
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columnComTx} data={data} needDate={false} enablePagination={true}/>
+      <Tables columns={columnComTx} data={data} />
 
       {selectedDay !== null &&
         <div className="flex flex-col gap-2 p-3 translate-y-10 absolute border rounded-lg backdrop-blur-sm bg-white/30 max-w-full">
