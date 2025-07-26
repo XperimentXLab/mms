@@ -323,9 +323,31 @@ def get_asset(request):
 def get_profit_transaction(request):
   user = request.user
   try:
-    profit_tx = Transaction.objects.filter(user=user, point_type='PROFIT')
-    serializer = TransactionSerializer(profit_tx, many=True)
-    return Response(serializer.data, status=200)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    search = request.GET.get('search', '')
+    status = request.GET.get('status')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+
+    query = Q(user=user, point_type='PROFIT')
+    if start_date and end_date:
+      query &= Q(created_at__date__range=[start_date, end_date])
+    if month and year:
+      query &= Q(created_at__year=year, created_at__month=month)
+    if search:
+      query &= Q(description__icontains=search)
+    if status:
+      query &= Q(status=status)
+
+    profit_tx = Transaction.objects.filter(query).order_by('-created_at')
+    # 📄 Pagination
+    paginator = PageNumberPagination()
+    paginator.page_size = int(request.GET.get('page_size', 30))
+    paginated_profit_tx = paginator.paginate_queryset(profit_tx, request)
+    
+    serializer = TransactionSerializer(paginated_profit_tx, many=True)
+    return paginator.get_paginated_response(serializer.data)
   except Transaction.DoesNotExist:
     return Response({'error': 'Profit Transaction not found'}, status=404)
   
@@ -390,31 +412,100 @@ def get_accumulate_commission_tx(request):
 def get_transfer_transaction(request):
   user = request.user
   try:
-    transfer_tx = Transaction.objects.filter(user=user, transaction_type='TRANSFER')
-    serializer = TransactionSerializer(transfer_tx, many=True)
-    return Response(serializer.data, status=200)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    search = request.GET.get('search', '')
+    status = request.GET.get('status')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+
+    query = Q(user=user, transaction_type='TRANSFER')
+    if start_date and end_date:
+      query &= Q(created_at__date__range=[start_date, end_date])
+    if month and year:
+      query &= Q(created_at__year=year, created_at__month=month)
+    if search:
+      query &= Q(description__icontains=search)
+    if status:
+      query &= Q(status=status)
+
+    transfer_tx = Transaction.objects.filter(query).order_by('-created_at')
+    # 📄 Pagination
+    paginator = PageNumberPagination()
+    paginator.page_size = int(request.GET.get('page_size', 30))
+    paginated_transfer_tx = paginator.paginate_queryset(transfer_tx, request)
+
+    serializer = TransactionSerializer(paginated_transfer_tx, many=True)
+    return paginator.get_paginated_response(serializer.data)
   except Transaction.DoesNotExist:
     return Response({'error': 'Transfer Transaction not found'}, status=404)
   
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_convert_transaction(request):
   user = request.user
   try:
-    convert_tx = Transaction.objects.filter(user=user, transaction_type__in=['CONVERT'])
-    serializer = TransactionSerializer(convert_tx, many=True)
-    return Response(serializer.data, status=200)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    search = request.GET.get('search', '')
+    status = request.GET.get('status')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+
+    query = Q(user=user, transaction_type='CONVERT')
+    if start_date and end_date:
+      query &= Q(created_at__date__range=[start_date, end_date])
+    if month and year:
+      query &= Q(created_at__year=year, created_at__month=month)
+    if search:
+      query &= Q(description__icontains=search)
+    if status:
+      query &= Q(status=status)
+
+    convert_tx = Transaction.objects.filter(query).order_by('-created_at')
+    # 📄 Pagination
+    paginator = PageNumberPagination()
+    paginator.page_size = int(request.GET.get('page_size', 30))
+    paginated_convert_tx = paginator.paginate_queryset(convert_tx, request)
+
+    serializer = TransactionSerializer(paginated_convert_tx, many=True)
+    return paginator.get_paginated_response(serializer.data)
   except Transaction.DoesNotExist:
     return Response({'error': 'Convert Transaction not found'}, status=404)
+  
   
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_profit_commission_wd_transaction(request):
   user = request.user
   try:
-    profit_commission_wd_tx = Transaction.objects.filter(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type__in=['WITHDRAWAL'])
-    serializer = TransactionSerializer(profit_commission_wd_tx, many=True)
-    return Response(serializer.data, status=200)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    search = request.GET.get('search', '')
+    status = request.GET.get('status')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+
+    query = Q(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type__in=['WITHDRAWAL'])
+    if start_date and end_date:
+      query &= Q(created_at__date__range=[start_date, end_date])
+    if month and year:
+      query &= Q(created_at__year=year, created_at__month=month)
+    if search:
+      query &= Q(description__icontains=search)
+    if status:
+      query &= Q(status=status)
+
+    profit_commission_wd_tx = Transaction.objects.filter(query).order_by('-created_at')
+    # 📄 Pagination
+    paginator = PageNumberPagination()
+    paginator.page_size = int(request.GET.get('page_size', 30))
+    paginated_profit_commission_wd_tx = paginator.paginate_queryset(profit_commission_wd_tx, request)
+
+    serializer = TransactionSerializer(paginated_profit_commission_wd_tx, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
   except Transaction.DoesNotExist:
     return Response({'error': 'Profit/Commission Withdrawal Transaction not found'}, status=404)
   
@@ -423,9 +514,32 @@ def get_profit_commission_wd_transaction(request):
 def get_asset_transaction(request):
   user = request.user
   try:
-    asset_tx = Transaction.objects.filter(user=user, transaction_type__in=['ASSET_WITHDRAWAL', 'ASSET_PLACEMENT', 'WELCOME_BONUS'])
-    serializer = TransactionSerializer(asset_tx, many=True)
-    return Response(serializer.data, status=200)
+    
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    search = request.GET.get('search', '')
+    status = request.GET.get('status')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+
+    query = Q(user=user, transaction_type__in=['ASSET_WITHDRAWAL', 'ASSET_PLACEMENT', 'WELCOME_BONUS'])
+    if start_date and end_date:
+      query &= Q(created_at__date__range=[start_date, end_date])
+    if month and year:
+      query &= Q(created_at__year=year, created_at__month=month)
+    if search:
+      query &= Q(description__icontains=search)
+    if status:
+      query &= Q(status=status)
+
+    asset_tx = Transaction.objects.filter(query).order_by('-created_at')
+    # 📄 Pagination
+    paginator = PageNumberPagination()
+    paginator.page_size = int(request.GET.get('page_size', 30))
+    paginated_asset_tx = paginator.paginate_queryset(asset_tx, request)
+
+    serializer = TransactionSerializer(paginated_asset_tx, many=True)
+    return paginator.get_paginated_response(serializer.data)
   except Transaction.DoesNotExist:
     return Response({'error': 'Asset Transaction not found'}, status=404)
 
@@ -435,9 +549,32 @@ def get_asset_transaction(request):
 def get_deposit_lock(request):
   user = request.user
   try:
-    deposit_lock = DepositLock.objects.filter(deposit__user=user, deposit__request_status__in=['APPROVED'])
-    serializer = DepositLockSerializer(deposit_lock, many=True)
-    return Response(serializer.data, status=200)
+
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    search = request.GET.get('search', '')
+    status = request.GET.get('status')
+    month = request.GET.get('month')
+    year = request.GET.get('year')
+
+    query = Q(deposit__user=user, deposit__request_status__in=['APPROVED'])
+    if start_date and end_date:
+      query &= Q(created_at__date__range=[start_date, end_date])
+    if month and year:
+      query &= Q(created_at__year=year, created_at__month=month)
+    if search:
+      query &= Q(description__icontains=search)
+    if status:
+      query &= Q(status=status)
+
+    deposit_lock = DepositLock.objects.filter(query).order_by('-created_at')
+    # 📄 Pagination
+    paginator = PageNumberPagination()
+    paginator.page_size = int(request.GET.get('page_size', 30))
+    paginated_deposit_lock = paginator.paginate_queryset(deposit_lock, request)
+
+    serializer = DepositLockSerializer(paginated_deposit_lock, many=True)
+    return paginator.get_paginated_response(serializer.data)
   except DepositLock.DoesNotExist:
     return Response({'error': 'Deposit lock not found'}, status=404)
   

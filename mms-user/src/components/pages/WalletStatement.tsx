@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { CommissionTxTable, Tables } from "../props/Tables";
+import { CommissionTxTable, NewTable, Tables } from "../props/Tables";
 import Spannn from "../props/Textt"
-import { getWallet, getConvertStatement, getProfitCommissionWDStatement, getProfitStatement, getTransferStatement, getCommissionDailyTx } from "../auth/endpoints";
+import { getWallet, getCommissionDailyTx, getProfitTx, getTransferTx, getConvertTx, getProfitCommissionWDTx } from "../auth/endpoints";
 import Loading from "../props/Loading";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -22,34 +22,24 @@ export interface Data {
   reference?: string;
 }
 
-// Helper
-export const fetchAndFormatData = async (apiFn: Function, setData: Function, setError: Function, setLoading: Function) => {
-  try {
-    setLoading(true);
-    const response = await apiFn();
-    const formatted = response.map((item: any) => {
-      const dt = dayjs.utc(item.created_at).tz("Asia/Kuala_Lumpur");
-      return {
-        ...item,
-        created_date: dt.format("YYYY-MM-DD"),
-        created_time: dt.format("HH:mm:ss"),
-      };
-    });
-    setData(formatted);
-  } catch (error: any) {
-    if (error.response && error.response.status === 400) {
-      setError(error.response.data.error);
-    }
-  } finally {
-    setLoading(false);
-  }
-};
-
-/*
-useEffect(() => {
-  fetchAndFormatData(getDepositLock, setDataRes, setErrorMessage, setLoading);
-}, []);
-*/
+const columnsTable: ColumnDef<any, any>[] = [
+  { header: "Date", 
+    accessorKey: "created_date",
+    cell: info => info.getValue()
+    },
+  { header: "Time", 
+    accessorKey: "created_time", 
+    cell: info => info.getValue() 
+  },
+  { header: "Description", 
+    accessorKey: "description",
+    cell: info => info.getValue()
+    },
+  { header: "Amount", 
+    accessorKey: "amount",
+    cell: info => info.getValue()
+    },
+]
 
 
 export const ProfitStatement = () => {
@@ -62,16 +52,6 @@ export const ProfitStatement = () => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await getProfitStatement()
-        const formattedData = response.map((user: any) => {
-        const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
-        return {
-          ...user,
-          created_date: dt.format("YYYY-MM-DD"),
-          created_time: dt.format("HH:mm:ss"),
-        }
-        });
-        setData(formattedData)
         const resWallet = await getWallet()
         setProfitBal(resWallet.profit_point_balance || 0)
       } catch (error: any) {
@@ -85,47 +65,6 @@ export const ProfitStatement = () => {
     fetchData()
   }, [])
 
-  const columns = [
-    { header: "Date", 
-      accessor: "created_date",
-      render: (value: any) => value
-     },
-    { header: "Time", 
-      accessor: "created_time", 
-      render: (value: any) => value 
-    },
-    { header: "Description", 
-      accessor: "description",
-      render: (value: any) => value
-     },
-    { header: "Amount", 
-      accessor: "amount",
-      render: (value: any) => value
-     },
-  ];
-
-  /*
-  const columnsTable: ColumnDef<any, any>[] = [
-    { header: "Date", 
-      accessorKey: "created_date",
-      cell: info => info.getValue()
-     },
-    { header: "Time", 
-      accessorKey: "created_time", 
-      cell: info => info.getValue() 
-    },
-    { header: "Description", 
-      accessorKey: "description",
-      cell: info => info.getValue()
-     },
-    { header: "Amount", 
-      accessorKey: "amount",
-      cell: info => info.getValue()
-     },
-  ];*/
-
-  const [data, setData] = useState<Data[]>([])
-
   return (
     <div className="flex flex-col gap-2">
       {loading && <Loading />}
@@ -133,18 +72,14 @@ export const ProfitStatement = () => {
         <span className="font-semibold ">Profit Statement </span>
         <Spannn label="Profit Balance">{profitBal}</Spannn>
       </div>
-      {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} 
-        enableSorting={true}
-      />
-      {/*
+      {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
+      
       <NewTable 
         columns={columnsTable}
-        fetchData={() => {
-          getProfitTx({})
-        }}
-      />*/}
+        fetchData={getProfitTx}
+        enableFilters={false}
+      />
     </div>
   )
 }
@@ -281,71 +216,16 @@ export const CommissionStatement = () => {
 
 
 export const TransferStatement = () => {
-
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(()=>{
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const response = await getTransferStatement()
-        const formattedData = response.map((user: any) => {
-        const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
-        return {
-          ...user,
-          created_date: dt.format("YYYY-MM-DD"),
-          created_time: dt.format("HH:mm:ss"),
-        }
-        });
-        setData(formattedData)
-      } catch (error: any) {
-        if (error.response && error.response.status === 400) {
-          setErrorMessage(error.response.data.error)
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [])
-
-  const columns = [
-    { header: "Date", 
-      accessor: "created_date",
-      render: (value: any) => value
-     },
-    { header: "Time", 
-      accessor: "created_time",
-      render: (value: any) => value
-     },
-    { header: 'Description', 
-      accessor: 'description',
-      render: (value: any) => value
-    },
-    { header: "Reference", 
-      accessor: "reference",
-      render: (value: any) => value
-     },
-    { header: "Amount", 
-      accessor: "amount",
-      render: (value: any) => value
-     },
-  ];
-
-  const [data, setData] = useState<Data[]>([])
   
   return (
     <div className="flex flex-col gap-2">
-      {loading && <Loading />}
       <span className="font-semibold bg-white p-2 rounded-lg">
         Transfer Statement
       </span>
-      {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} 
-        enableFilters={true}
-        enableSorting={true}
+      <NewTable 
+        columns={columnsTable}
+        fetchData={getTransferTx}
       />
     </div>
   )
@@ -353,142 +233,35 @@ export const TransferStatement = () => {
 
 export const ConvertStatement = () => {
 
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(()=>{
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const response = await getConvertStatement()
-        const formattedData = response.map((user: any) => {
-        const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
-        return {
-          ...user,
-          created_date: dt.format("YYYY-MM-DD"),
-          created_time: dt.format("HH:mm:ss"),
-        }
-        });
-        setData(formattedData)
-      } catch (error: any) {
-        if (error.response && error.response.status === 400) {
-          setErrorMessage(error.response.data.error)
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [])
-
-  const columns = [
-    { header: "Date", 
-      accessor: "created_date",
-      render: (value: any) => value
-     },
-    { header: "Time", 
-      accessor: "created_time",
-      render: (value: any) => value
-     },
-    { header: 'Point', 
-      accessor: 'point_type',
-      render: (value: any) => value
-    },
-    { header: "Description", 
-      accessor: "description",
-      render: (value: any) => value
-     },
-    { header: "Amount", 
-      accessor: "amount",
-      render: (value: any) => value
-     },
-  ]
-
-  const [data, setData] = useState<Data[]>([])
-
   return (
     <div className="flex flex-col gap-2">
-      {loading && <Loading />}
       <span className="font-semibold bg-white p-2 rounded-lg">
         Convert Statement
       </span>
-      {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} 
-        enableFilters={true}
-        enableSorting={true}
+      <NewTable 
+        columns={columnsTable}
+        fetchData={getConvertTx} 
+        enableFilters={false}
       />
+
     </div>
   )
 }
 
 export const WithdrawalWalletStatement = () => {
 
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(()=>{
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const response = await getProfitCommissionWDStatement()
-        const formattedData = response.map((user: any) => {
-        const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
-        return {
-          ...user,
-          created_date: dt.format("YYYY-MM-DD"),
-          created_time: dt.format("HH:mm:ss"),
-        }
-        });
-        setData(formattedData)
-      } catch (error: any) {
-        if (error.response && error.response.status === 400) {
-          setErrorMessage(error.response.data.error)
-        }
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [])
-
-  const columns = [
-    { header: "Date", 
-      accessor: "created_date",
-      render: (value: any) => value
-     },
-    { header: "Time", 
-      accessor: "created_time",
-      render: (value: any) => value
-    },
-    { header: 'Point', 
-      accessor: 'point_type',
-      render: (value: any) => value
-    },
-    { header: 'Description', 
-      accessor: 'description',
-      render: (value: any) => value
-    },
-    { header: "Amount", 
-      accessor: "amount",
-      render: (value: any) => value
-     },
-  ]
-
-  const [data, setData] = useState<Data[]>([])
-
   return (
     <div className="flex flex-col gap-2">
-      {loading && <Loading />}
+
       <span className="font-semibold bg-white p-2 rounded-lg">
         Withdrawal Statement
       </span>
-      {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <Tables columns={columns} data={data} 
-        enableFilters={true}
-        enableSorting={true}
-        enablePagination={true}
+      <NewTable
+        columns={columnsTable}
+        fetchData={getProfitCommissionWDTx}
+        enableFilters={false}
       />
     </div>
   )

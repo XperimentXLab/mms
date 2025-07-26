@@ -1,4 +1,5 @@
 
+import type { TableFetchParams } from "../props/Tables";
 import api, { generateDeviceFingerprint } from "./api";
 
 
@@ -223,15 +224,7 @@ export const getFinalizedYearlyProfits = async (year: number): Promise<Finalized
 
 ////////////////// Transactions Endpoints //////////////////
 
-interface txParams {
-  startDate?: string
-  endDate?: string
-  search?: string
-  month?: number
-  year?: number
-  page?: number
-  pageSize?: number
-}
+export type txParams = TableFetchParams
 
 export const getProfitTx = async (params: txParams) => {
   const {
@@ -260,10 +253,6 @@ export const getProfitTx = async (params: txParams) => {
   }
   queryParams.append('page', page.toString())
   const response = await api.get(`/user_profit_tx/?${queryParams.toString()}`)
-  return response.data
-}
-export const getProfitStatement = async () => {
-  const response = await api.get('/user_profit_tx/')
   return response.data
 }
 
@@ -342,10 +331,6 @@ export const getTransferTx = async (params: txParams) => {
   const response = await api.get(`/user_transfer_tx/?${queryParams.toString()}`)
   return response.data
 }
-export const getTransferStatement = async () => {
-  const response = await api.get('/user_transfer_tx/')
-  return response.data
-}
 
 
 export const getConvertTx = async (params: txParams) => {
@@ -377,10 +362,6 @@ export const getConvertTx = async (params: txParams) => {
   const response = await api.get(`/user_convert_tx/?${queryParams.toString()}`)
   return response.data
 }
-export const getConvertStatement = async () => {
-  const response = await api.get('/user_convert_tx/')
-  return response.data
-}
 
 
 export const getProfitCommissionWDTx = async (params: txParams) => {
@@ -410,10 +391,6 @@ export const getProfitCommissionWDTx = async (params: txParams) => {
   }
   queryParams.append('page', page.toString())
   const response = await api.get(`/user_profit_commission_wd_tx/?${queryParams.toString()}`)
-  return response.data
-}
-export const getProfitCommissionWDStatement = async () => {
-  const response = await api.get('/user_profit_commission_wd_tx/')
   return response.data
 }
 
@@ -463,10 +440,38 @@ export const getAsset = async () => {
   return response.data
 }
 
-export const getDepositLock = async () => {
-  const response = await api.get('/user_deposit_lock/')
+
+export const getDepositLock = async (params: txParams) => {
+  const {
+    startDate,
+    endDate,
+    search,
+    month,
+    year,
+    page = 1,
+    pageSize,
+  } = params
+  const queryParams =  new URLSearchParams()
+  if (startDate && endDate) {
+    queryParams.append('start_date', startDate)
+    queryParams.append('end_date', endDate)
+  }
+  if (search) {
+    queryParams.append('search', search)
+  }
+  if (month && year) {
+    queryParams.append('month', month.toString())
+    queryParams.append('year', year.toString())
+  }
+  if (pageSize) {
+    queryParams.append('page_size', pageSize.toString())
+  }
+  queryParams.append('page', page.toString())
+
+  const response = await api.get(`/user_deposit_lock/?${queryParams.toString()}`)
   return response.data
 }
+
 
 export const getDailyTotalProfit = async () => {
   const response = await api.get('/user_daily_total_profit/')
