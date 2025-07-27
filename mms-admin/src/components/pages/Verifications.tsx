@@ -182,6 +182,7 @@ const Verifications = () => {
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
         <NewTable columns={columns}
           fetchData={getAllUsers}
+          enableDatePicker={false}
           enableStatusCampro={true}
         />
       </div>

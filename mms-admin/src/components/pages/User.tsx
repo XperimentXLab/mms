@@ -66,7 +66,7 @@ const User = () => {
       <NewTable 
         columns={columnsUserDetails}
         fetchData={getAllUsers}
-        enableDatePicker={false}
+        enableDatePicker={true}
       />
 
     </div>
