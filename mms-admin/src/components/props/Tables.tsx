@@ -18,6 +18,7 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { getAllTransactions, type rangeTypeT } from "../auth/endpoints";
 import Loading from "./Loading";
 import type { TransactioDetail } from "../pages/Transactionss";
+import { Inputss } from "./Formss";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -48,16 +49,23 @@ interface TablesProps {
 
 export interface Data {
   id?: string
-  username?: string
-  asset_amount?: number
-  created_date: string;
-  amount: string;
-  request_status?: string;
-  point_type?: string;
-  transaction_type?: string;
-  description: string;
-  receiver?: string;
-  reference?: string;
+  created_at?: string
+  username: string
+  first_name: string
+  last_name: string
+  asset_amount: number
+  ic: string
+  wallet_address: string | null
+  address_line: string | null
+  address_city: string | null
+  address_state: string | null
+  address_postcode: string | null
+  address_country: string | null
+  verification_status: 'REQUIRES_ACTION' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED'
+  ic_document_url?: string | null
+  is_campro?: boolean
+  reject_reason?: string | null
+  promocode?: string | null
 }
 
 
@@ -500,5 +508,289 @@ export const TxTable = ({
         </select>
       </div>
     </div>
+  )
+}
+
+
+
+/////////////////////////// New Table ///////////////////////////////
+
+export interface TableFetchParams {
+  search?: string
+  status?: string
+  isCampro?: string
+  startDate?: string
+  endDate?: string
+  month?: string
+  year?: string
+  page?: number
+  pageSize?: number
+}
+
+interface TableProps {
+  columns: ColumnDef<any, any>[]
+  fetchData: (params: TableFetchParams) => Promise<ApiResponseTable>
+  emptyMessage?: string
+  enableFilters?: boolean
+  enableDatePicker?: boolean
+  enableStatusCampro?: boolean
+}
+
+
+interface ApiResponseTable {
+  results: Data[]
+  totalCount: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+}
+
+export const NewTable = ({
+  columns,
+  fetchData,
+  emptyMessage = "No data available",
+  enableFilters = true,
+  enableDatePicker = true,
+  enableStatusCampro = false,
+}: TableProps) => {
+
+  const [data, setData] = useState<Data[]>([])
+  const [search, setSearch] = useState("")
+  const [status, setStatus] = useState("")
+  const [isCampro, setIsCampro] = useState('')
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
+  const [month] = useState<string>()
+  const [year] = useState<string>()
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState<number>(30)
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [globalFilter, setGlobalFilter] = useState<string>("")
+
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const loadData = useCallback( async () => {
+    const formattedStartDate = startDate ? dayjs(startDate, "DD/MM/YYYY").format("YYYY-MM-DD") : ""
+    const formattedEndDate = endDate ? dayjs(endDate, "DD/MM/YYYY").format("YYYY-MM-DD") : ""
+
+    try {
+      setLoading(true)
+
+      const res: ApiResponseTable = await fetchData({
+        search,
+        status,
+        isCampro,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+        page,
+        pageSize,
+        month,
+        year,
+      })
+
+      const processedData = res.results.map(tx => ({
+        ...tx,
+        created_date: dayjs(tx.created_at).format("DD/MM/YYYY"),
+        created_time: dayjs(tx.created_at).format("hh:mm:ss"),
+      }))
+      console.log("Res Data:", res)
+      setData(processedData)
+
+    } catch (error: any) {
+      console.error("Failed to fetch transactions", error)
+      setData([])
+      if (error.response && error.response.status === 401 || error.response.status === 400) {
+        setErrorMessage(error.response.data.error);
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again later.");
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [search, status, startDate, endDate, page, pageSize, month, year, isCampro])
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1)
+  }, [fetchData, search, status, startDate, endDate, month, year, isCampro])
+
+  // Fetch data when dependencies change
+  useEffect(() => {
+    loadData()
+    console.log(isCampro)
+  }, [fetchData, search, status, startDate, endDate, page, pageSize, month, year, isCampro])
+
+  const table = useReactTable({
+    data,
+    columns,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: { 
+      sorting, 
+      globalFilter: globalFilter || search 
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(), // include only if backend sorts
+    manualPagination: true,
+  })
+
+    const handleClearFilters = () => {
+      setSearch("")
+      setStatus("")
+      setStartDate("")
+      setEndDate("")
+      setIsCampro("")
+      }
+
+    const hasActiveFilters = search || status || startDate || endDate || isCampro
+
+  return (
+    <div className="w-full overflow-x-auto flex flex-col gap-2 p-3 bg-white rounded-xl">
+      {loading && <Loading />}
+      {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
+
+      {enableFilters && <Inputss
+        type="text"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        placeholder="Search user id or username"
+      />}
+
+      {enableDatePicker && (
+        <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-2 justify-center items-center">
+          <div className="flex flex-row items-center gap-2">
+            <label className="text-sm font-medium text-gray-700 text-nowrap w-full">
+              Start Date :
+            </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={e => setStartDate(e.target.value)}
+              className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="flex flex-row items-center gap-2">
+            <label className="text-sm font-medium text-gray-700 text-nowrap w-full">
+              End Date :
+            </label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={e => setEndDate(e.target.value)}
+              className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+      )}
+
+      {enableStatusCampro && <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-2 justify-center">
+        <select
+          value={status}
+          onChange={e => setStatus(e.target.value)}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="">All Verification Status</option>
+          <option value="UNDER_REVIEW">Under Review</option>
+          <option value="APPROVED">Approved</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+
+        <select
+          value={isCampro}
+          onChange={e => setIsCampro(e.target.value)}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="">All Welcome Bonus</option>
+          <option value="true">Granted</option>
+          <option value="false">Pending Grant</option>
+        </select>
+      </div>}
+
+
+      {hasActiveFilters && (
+        <button
+          onClick={handleClearFilters}
+          className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer w-full"
+        >
+          Clear Filters
+        </button>
+      )}
+
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th
+                  key={header.id}
+                  className="px-4 py-2 font-semibold text-left cursor-pointer select-none"
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.column.getIsSorted() === "asc"
+                    ? " 🔼"
+                    : header.column.getIsSorted() === "desc"
+                    ? " 🔽"
+                    : ""}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length} className="px-6 py-4 text-center text-gray-500">
+                {emptyMessage}
+              </td>
+            </tr>
+          ) : (
+          table.getRowModel().rows.map(row => (
+            <tr key={row.id} className="border-b hover:bg-gray-50">
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          )))}
+        </tbody>
+      </table>
+
+    {/* Pagination */}
+    <div className="flex justify-end mt-4 space-x-2">
+      <button
+        disabled={page === 1}
+        onClick={() => setPage(p => Math.max(p - 1, 1))}
+        className="px-3 py-1 border rounded disabled:opacity-50"
+      >
+        Prev
+      </button>
+      <span className="px-3 py-1">Page {page}</span>
+      <button
+        onClick={() => setPage(p => p + 1)}
+        className="px-3 py-1 border rounded"
+      >
+        Next
+      </button>
+      <select
+        className="border rounded px-2 py-1 text-xs cursor-pointer"
+        value={pageSize}
+        onChange={e => {
+          const newSize = Number(e.target.value);
+          setPageSize(newSize);
+        }}
+      >
+        {[30, 40, 50, 100].map(pageSize => (
+          <option key={pageSize} value={pageSize}
+          >
+            Show {pageSize}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
   )
 }

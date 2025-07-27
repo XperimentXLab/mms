@@ -1,3 +1,4 @@
+import type { TableFetchParams } from "../props/Tables"
 import api, { generateDeviceFingerprint } from "./api"
 
 interface LoginRes {
@@ -216,8 +217,43 @@ export const updateProfitSharing = async (amount: number) => {
 }
 
 
-export const getAllUsers = async () => {
-  const response = await api.get('/all_users/')
+export type dataParams = TableFetchParams
+export const getAllUsers = async (params: dataParams) => {
+  const {
+    startDate,
+    endDate,
+    search,
+    status,
+    isCampro,
+    month,
+    year,
+    page = 1,
+    pageSize,
+  } = params
+  const queryParams =  new URLSearchParams()
+  if (startDate && endDate) {
+    queryParams.append('start_date', startDate)
+    queryParams.append('end_date', endDate)
+  }
+  if (search) {
+    queryParams.append('search', search)
+  }
+  if (month && year) {
+    queryParams.append('month', month.toString())
+    queryParams.append('year', year.toString())
+  }
+  if (status) {
+    queryParams.append('status', status)
+  }
+  if (isCampro) {
+    queryParams.append('is_campro', isCampro)
+  }
+  if (pageSize) {
+    queryParams.append('page_size', pageSize.toString())
+  }
+  queryParams.append('page', page.toString())
+
+  const response = await api.get(`/all_users/?${queryParams.toString()}`)
   return response.data
 }
 

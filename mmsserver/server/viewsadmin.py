@@ -269,13 +269,36 @@ def get_all_user(request):
   user = request.user
   try:
     if user.is_staff:
-      all_user = User.objects.all()
-      serializer = UserSerializer(all_user, many=True)
-      return Response(serializer.data, status=200) 
+      search_query = request.GET.get('search', '')
+      status_query = request.GET.get('status', None)
+      is_campro_query = request.GET.get('is_campro', None)
+
+      query = Q()
+      if search_query:
+        query &= Q(id__icontains=search_query) | Q(username__icontains=search_query)
+      if status_query:
+        query &= Q(verification_status__icontains=status_query)
+      if is_campro_query:
+        if is_campro_query.lower() == 'true':
+          is_campro_query = True
+        elif is_campro_query.lower() == 'false':
+          is_campro_query = False
+        query &= Q(is_campro=is_campro_query)
+
+      all_user = User.objects.filter(query).order_by('-created_at').distinct()
+
+      # 📄 Pagination
+      paginator = PageNumberPagination()
+      paginator.page_size = int(request.GET.get('page_size', 30))
+      paginated_all_user = paginator.paginate_queryset(all_user, request)
+
+      serializer = UserSerializer(paginated_all_user, many=True)
+      return paginator.get_paginated_response(serializer.data)
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
     return Response({'error': str(e)}, status=400)
+  
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

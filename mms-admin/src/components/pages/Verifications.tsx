@@ -1,52 +1,15 @@
-import { useEffect, useMemo, useState } from "react"
-import { Tables } from "../props/Tables"
+import { useState } from "react"
+import { NewTable} from "../props/Tables"
 import Loading from "../props/Loading"
 import { getAllUsers, grantFreeCampro, processVeri } from "../auth/endpoints"
 import Buttons, { RejectionInput } from "../props/Buttons"
-
-interface userDetail {
-  id: string
-  username: string
-  first_name: string
-  last_name: string
-  asset_amount: number
-  ic: string
-  wallet_address: string | null
-  address_line: string | null
-  address_city: string | null
-  address_state: string | null
-  address_postcode: string | null
-  address_country: string | null
-  verification_status: 'REQUIRES_ACTION' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED'
-  ic_document_url?: string | null
-  is_campro?: boolean
-  reject_reason?: string | null
-  promocode?: string | null
-}
+import type { ColumnDef } from "@tanstack/react-table"
 
 
 const Verifications = () => {
 
   const [loading, setLoading] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
-
-  const [userDetailss, setUserDetailss] = useState<userDetail[]>([])
-
-  const fetchData = async () => {
-    try {
-      setLoading(true)
-      const response = await getAllUsers()
-      setUserDetailss(response)
-    } catch (error: any) {
-      setErrorMessage(error.response.data.error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
 
   const handleApprove = async (id: string) => {
     try {
@@ -55,19 +18,11 @@ const Verifications = () => {
           user_id: id,
           action: 'Approve'
         })
-      setUserDetailss(prev => prev.map(user => 
-        user.id === id ? { 
-          ...user, 
-          verification_status: 'APPROVED' 
-        } 
-          : user
-      ))
       alert('Verification approved')
     } catch (error: any) {
       setErrorMessage(error.response.data.error)
     } finally {
       setLoading(false)
-      fetchData()
     }
   }
 
@@ -79,20 +34,12 @@ const Verifications = () => {
         user_id: id,
         action: 'Reject',
         reject_reason: reason || 'Try again'
-      });
-      setUserDetailss(prev => prev.map(user =>
-        user.id === id ? {
-          ...user,
-          verification_status: 'REJECTED',
-          reject_reason: reason
-        } : user
-      ));
+      })
       alert('Verification rejected');
     } catch (error: any) {
       setErrorMessage(error.response?.data?.error || 'Something went wrong');
     } finally {
       setLoading(false);
-      fetchData()
     }
   };
 
@@ -111,46 +58,47 @@ const Verifications = () => {
       setErrorMessage(error.response.data.error)
     } finally {
       setLoading(false)
-      fetchData()
     }
   }
 
-  const columns = useMemo(() => [
+  const columns: ColumnDef<any, any>[] = [
     { header: 'First Name', 
-      accessor: 'first_name',
-      render: (value: string) => value ? value : '-'
+      accessorKey: 'first_name',
+      cell: info => info.getValue() ?? '-'
      },
     { header: 'Last Name', 
-      accessor: 'last_name',
-      render: (value: string) => value ? value : '-'
+      accessorKey: 'last_name',
+      cell: info => info.getValue() ?? '-'
      },
     { header: 'I/C', 
-      accessor: 'ic',
-      render: (value: number) => value ? value : '-'
+      accessorKey: 'ic',
+      cell: info => info.getValue() ?? '-'
      },
     { header: 'Address Line', 
-      accessor: 'address_line',
-      render: (value: string) => value ? value : '-'
+      accessorKey: 'address_line',
+      cell: info => info.getValue() ?? '-'
      },
     { header: 'City', 
-      accessor: 'address_city',
-      render: (value: string) => value ? value : '-'
+      accessorKey: 'address_city',
+      cell: info => info.getValue() ?? '-'
      },
     { header: 'State', 
-      accessor: 'address_state',
-      render: (value: string) => value ? value : '-'
+      accessorKey: 'address_state',
+      cell: info => info.getValue() ?? '-'
      },
     { header: 'Postcode', 
-      accessor: 'address_postcode',
-      render: (value: string) => value ? value : '-'
+      accessorKey: 'address_postcode',
+      cell: info => info.getValue() ?? '-'
      },
     { header: 'Country', 
-      accessor: 'address_country',
-      render: (value: string) => value ? value : '-'
+      accessorKey: 'address_country',
+      cell: info => info.getValue() ?? '-'
      },
     { header: 'Document', 
-      accessor: 'ic_document_url',
-      render: (value: string) => (
+      accessorKey: 'ic_document_url',
+      cell: info => {
+        const value = info.getValue()
+        return (
         <button
           onClick={() => handleViewDoc(value)}
           disabled={value ? false : true}
@@ -158,12 +106,12 @@ const Verifications = () => {
         >
           View
         </button>
-      )
+      )}
     },
     { header: 'Action', 
-      accessor: 'id',
-      render: (id: string) => {
-        const row = userDetailss.find(user => user.id === id);
+      accessorKey: 'id',
+      cell: info => {
+        const row = info.row.original
         if (!row) return null;
 
         if (row.verification_status === 'REQUIRES_ACTION') {
@@ -174,14 +122,14 @@ const Verifications = () => {
           <div className="flex gap-2 items-center">
             <Buttons
               type="button"
-              onClick={() => handleApprove(id)}
+              onClick={() => handleApprove(row.id)}
               className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 cursor-pointer"
             >
               Approve
             </Buttons>
 
             <RejectionInput
-              id={id} 
+              id={row.id} 
               onReject={handleReject} 
               initialReason={row.reject_reason || ''}
             />
@@ -190,10 +138,10 @@ const Verifications = () => {
       }
     },
     { header: 'Welcome Bonus', 
-      accessor: 'id',
-      render: (id: string) => {
+      accessorKey: 'id',
+      cell: info => {
 
-        const row = userDetailss.find(user => user.id === id);
+        const row = info.row.original;
         if (!row) return null;
 
         return(
@@ -212,21 +160,18 @@ const Verifications = () => {
       )}
     },
     { header: 'Status', 
-      accessor: 'verification_status',
-      render: (value: string) => value
+      accessorKey: 'verification_status',
+      cell: info => info.getValue()
     },
     { header: 'Asset', 
-      accessor: 'asset_amount',
-      render: (value: string) => value
+      accessorKey: 'asset_amount',
+      cell: info => info.getValue() ?? '0'
     },
     { header: 'Promo Code',
-      accessor: 'promocode',
-      render: (value: string) => value ? value : '-'
-    },
-
-  ], [userDetailss])
-
-  const data = userDetailss
+      accessorKey: 'promocode',
+      cell: info => info.getValue() ?? '-'
+    }
+  ]
 
   return (
     <div className="flex flex-col gap-2 justify-center m-3">
@@ -234,11 +179,10 @@ const Verifications = () => {
       <span className="text-white">Verification</span>
 
       <div className="flex flex-col gap-1">
-        {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
-        <Tables columns={columns} data={data}
-          enableFilters={true}
-          enableSorting={true}
-          enablePagination={true}
+      {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
+        <NewTable columns={columns}
+          fetchData={getAllUsers}
+          enableStatusCampro={true}
         />
       </div>
     </div>
