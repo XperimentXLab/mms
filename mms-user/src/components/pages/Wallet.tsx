@@ -318,7 +318,7 @@ const Wallet = () => {
               value={String(commissionPoint)}
               required={true}
             />
-            <Buttons type="submit" disabled={isSunday ? false : true}>Withdraw</Buttons>       
+            <Buttons type="submit">Withdraw</Buttons>       
           </form>
           <InfoWithdraw />
 

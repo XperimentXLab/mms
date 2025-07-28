@@ -275,7 +275,7 @@ def get_all_user(request):
 
       query = Q()
       if search_query:
-        query &= Q(id__icontains=search_query) | Q(username__icontains=search_query)
+        query &= Q(id__icontains=search_query) | Q(username__icontains=search_query) | Q(email__icontains=search_query) | Q(ic__icontains=search_query) | Q(referred_by__icontains=search_query) | Q(first_name__icontains=search_query) | Q(last_name__icontains=search_query)
       if status_query:
         query &= Q(verification_status__icontains=status_query)
       if is_campro_query:

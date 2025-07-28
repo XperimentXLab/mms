@@ -692,6 +692,7 @@ export const NewTable = ({
           className="border px-3 py-2 rounded"
         >
           <option value="">All Verification Status</option>
+          <option value="REQUIRES_ACTION">Requires Action</option>
           <option value="UNDER_REVIEW">Under Review</option>
           <option value="APPROVED">Approved</option>
           <option value="REJECTED">Rejected</option>
