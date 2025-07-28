@@ -472,9 +472,18 @@ export const getDepositLock = async (params: txParams) => {
   return response.data
 }
 
-
-export const getDailyTotalProfit = async () => {
-  const response = await api.get('/user_daily_total_profit/')
+interface DailyProfitData {
+  start_date?: string;
+  end_date?: string;
+}
+export const getDailyTotalProfit = async (params: DailyProfitData) => {
+  const { start_date, end_date } = params
+  const queryParams = new URLSearchParams();
+  if (start_date && end_date) {
+    queryParams.append('start_date', start_date);
+    queryParams.append('end_date', end_date);
+  }
+  const response = await api.get(`/user_daily_total_profit/?${queryParams.toString()}`)
   return response.data
 }
 

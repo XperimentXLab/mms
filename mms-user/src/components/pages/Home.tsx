@@ -3,6 +3,7 @@ import Loading from "../props/Loading"
 import { getDailyTotalProfit, getWallet, userDetails } from "../auth/endpoints"
 import { FixedText } from "../props/Textt"
 import { Tables } from "../props/Tables";
+
 //import dayjs from "dayjs";
 
 interface ProfitData {
@@ -70,7 +71,13 @@ const Home = () => {
     },
   ]
 
-
+  const today = new Date().toISOString().split('T')[0] // Today's date
+  const [startDate, setStartDate] = useState<string>(today);
+  const [endDate, setEndDate] = useState<string>(today);
+  const todayButton = () => {
+    setStartDate(today);
+    setEndDate(today);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,7 +96,10 @@ const Home = () => {
         setAssetP(respUserDetails.asset_amount || 0)
 
 
-        const resDailyProfit = await getDailyTotalProfit()
+        const resDailyProfit = await getDailyTotalProfit({
+          start_date: startDate,
+          end_date: endDate
+        })
         setDailyProfit(resDailyProfit);
       } catch (error: any) {
         console.error('Error fetching user data:', error)
@@ -102,7 +112,7 @@ const Home = () => {
       }
     }
     fetchData()
-  }, [])
+  }, [startDate, endDate])
 
   // Safe calculation functions
   /*
@@ -165,7 +175,41 @@ const Home = () => {
         </div>
 
         <div className="border rounded-xl p-4 flex items-center flex-col shadow-md shadow-blue-800 bg-white">
-          <h2 className="font-bold text-lg mb-3">Daily Summary Profit ({fullDate})</h2>
+          <h2 className="font-bold text-lg mb-3">
+            <span>Daily Summary Profit </span>
+            <button type="button" 
+            className="cursor-pointer" 
+            onClick={todayButton}>({fullDate})
+            </button>
+          </h2>
+          
+          <div className="flex md:flex-row flex-col gap-2 justify-center items-center">
+            <div className="flex flex-row items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 text-nowrap w-full">
+                Start Date :
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div className="flex flex-row items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 text-nowrap w-full">
+                End Date :
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+                className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          
+
           <div className="overflow-x-auto">
             <Tables 
               columns={tableColumns}

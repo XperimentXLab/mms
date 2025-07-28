@@ -836,9 +836,12 @@ def get_daily_total_profit(request):
   user = request.user
   try:
     today = timezone.localdate()
+    start_date = request.GET.get('start_date', today)
+    end_date = request.GET.get('end_date', today)
+
     transaction = Transaction.objects.filter(user=user, transaction_type__in=['DISTRIBUTION',
     'AFFILIATE_BONUS', 'INTRODUCER_BONUS'],
-    created_at__date=today).values("transaction_type").annotate(
+    created_at__date__range=[start_date, end_date]).values("transaction_type").annotate(
       total_amount=Sum("amount")
     )
     return Response(transaction, status=200)

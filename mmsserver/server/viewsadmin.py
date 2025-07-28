@@ -262,7 +262,7 @@ def get_yearly_profit_total(request):
       # This case should ideally be caught by the 'not year_str' check above
       return Response({'error': 'Error getting yearly total profit, year parameter missing or invalid.'}, status=400)
     
-
+ 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_all_user(request):
