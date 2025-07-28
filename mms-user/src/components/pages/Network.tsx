@@ -48,7 +48,7 @@ const Network = () => {
 
   return (
     <div className="p-3 flex flex-col items-center justify-center gap-3">
-
+      {loading && <Loading />}
       <span className="font-bold text-xl text-white">Network</span>
 
       <div className="grid grid-cols-1 gap-3 max-w-full bg-white shadow-md shadow-blue-800  p-5 rounded-xl border">
@@ -67,7 +67,10 @@ const Network = () => {
           />
       </div>
 
-      {loading && <Loading />}
+      {/*<div className="w-full max-w-4xl bg-white shadow-md shadow-blue-800 p-5 rounded-xl border">
+        <NetworkTree />
+      </div>*/}
+      
     </div>
   )
 }
