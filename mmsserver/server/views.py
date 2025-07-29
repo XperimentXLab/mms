@@ -49,6 +49,7 @@ def refresh_token(request):
     refresh.verify()
     return Response({'access': str(refresh.access_token)})
   except TokenError as e:
+    logger.error(f"Invalid or expired refresh token: {e}")
     return Response({'error': f'Invalid or expired refresh token: {e}'}, status=401)
   
 
@@ -63,6 +64,7 @@ def get_user(request):
     serializer = UserSerializer(user)
     return Response(serializer.data, status=200)
   except Exception as e:
+    logger.error(f"Error retrieving user {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
 @api_view(['GET'])
@@ -96,11 +98,14 @@ def register_user(request):
       user = serializer.save()
       return Response({'message':f'{user.username} successfully registered'}, status=201)
     else:
+      logger.error(f"Error registering user {username}: {serializer.errors}")
       return Response({'error': serializer.errors}, status=400)
     
   except KeyError as e:
+    logger.error(f"Missing required field during user registration: {e}")
     return Response({'error': str(e)}, 400)
   except ValidationError as e:
+    logger.error(f"Validation error during user registration: {e}")
     return Response({'error': str(e)}, 401)
   except Exception as e:
     logger.error(f"Unexpected error during user registration: {e}")
@@ -214,7 +219,7 @@ def request_password_reset_email(request):
       #message = render_to_string(reset_password_template, c)
       message = f"Hello {user.username},\n\nPlease click the link below to reset your password:\n{reset_link}\n\nIf you did not request this, please ignore this email.\n\nThanks,\nThe Team"
 
-      #Email Configuration: The request_password_reset_email view currently logs the reset link to your console/logger. For it to actually send emails, you'll need to configure Django's email settings in your settings.py file (e.g., EMAIL_BACKEND, EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, etc.). Once configured, you can uncomment the send_mail line in views.py.
+      #Email Configuration: For it to actually send emails, you'll need to configure Django's email settings in your settings.py file (e.g., EMAIL_BACKEND, EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, etc.). Once configured, you can uncomment the send_mail line in views.py.
       # TODO: Configure email backend in settings.py and uncomment send_mail
       # send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
       #   logger.info(f"Password reset link for {user.email}: {reset_link} (Email sending is currently simulated)")
@@ -239,6 +244,7 @@ def password_reset_confirm(request, uidb64, token):
     user.set_password(serializer.validated_data['password'])
     user.save()
     return Response({'message': 'Password has been reset successfully.'}, status=200)
+  logger.error(f"Error resetting password for user with uid {uidb64}: {serializer.errors}")
   return Response(serializer.errors, status=400)
   
 
@@ -260,7 +266,7 @@ def update_user(request):
       logger.error(f'Error update user {user.username}: {str(serializer.errors)}')
       return Response(serializer.errors, status=400)
   except Exception as e:
-    logger.error(str(e))
+    logger.error(f'Error update user {user.username}: {str(e)}')
     return Response({'error': str(e)}, status=500)
 
 
@@ -294,6 +300,7 @@ def get_user_network(request):
   except User.DoesNotExist: 
     return Response({'error': 'User does not exist'}, status=400)
   except Exception as e:
+    logger.error(f"Error retrieving user network for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
 @api_view(['GET'])
@@ -305,6 +312,7 @@ def get_wallet(request):
     serializer = WalletSerializer(wallet)
     return Response(serializer.data, status=200)
   except Exception as e:
+    logger.error(f"Error retrieving wallet for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 @api_view(['GET'])
@@ -316,6 +324,7 @@ def get_asset(request):
     serializer = AssetSerializer(asset)
     return Response(serializer.data, status=200)
   except Exception as e:
+    logger.error(f"Error retrieving asset for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
 @api_view(['GET'])
@@ -350,6 +359,9 @@ def get_profit_transaction(request):
     return paginator.get_paginated_response(serializer.data)
   except Transaction.DoesNotExist:
     return Response({'error': 'Profit Transaction not found'}, status=404)
+  except Exception as e:
+    logger.error(f"Error retrieving profit transaction for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=500)
   
 
 @api_view(['GET'])
@@ -379,6 +391,9 @@ def get_commission_transaction(request):
     return paginator.get_paginated_response(serializer.data)
   except Transaction.DoesNotExist:
     return Response({'error': 'Commission Transaction not found'}, status=404)
+  except Exception as e:
+    logger.error(f"Error retrieving commission transaction for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=500)
   
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -404,6 +419,7 @@ def get_accumulate_commission_tx(request):
 
     return Response(list(daily_commission_tx), status=200)
   except Exception as e:
+    logger.error(f"Error retrieving accumulated commission transaction for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=404)
   
 
@@ -439,6 +455,9 @@ def get_transfer_transaction(request):
     return paginator.get_paginated_response(serializer.data)
   except Transaction.DoesNotExist:
     return Response({'error': 'Transfer Transaction not found'}, status=404)
+  except Exception as e:
+    logger.error(f"Error retrieving transfer transaction for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=500)
   
 
 @api_view(['GET'])
@@ -473,6 +492,9 @@ def get_convert_transaction(request):
     return paginator.get_paginated_response(serializer.data)
   except Transaction.DoesNotExist:
     return Response({'error': 'Convert Transaction not found'}, status=404)
+  except Exception as e:
+    logger.error(f"Error retrieving convert transaction for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=500)
   
   
 @api_view(['GET'])
@@ -508,6 +530,9 @@ def get_profit_commission_wd_transaction(request):
 
   except Transaction.DoesNotExist:
     return Response({'error': 'Profit/Commission Withdrawal Transaction not found'}, status=404)
+  except Exception as e:
+    logger.error(f"Error retrieving profit/commission withdrawal transaction for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=500)
   
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -542,6 +567,9 @@ def get_asset_transaction(request):
     return paginator.get_paginated_response(serializer.data)
   except Transaction.DoesNotExist:
     return Response({'error': 'Asset Transaction not found'}, status=404)
+  except Exception as e:
+    logger.error(f"Error retrieving asset transaction for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=500)
 
   
 @api_view(['GET'])
@@ -577,6 +605,9 @@ def get_deposit_lock(request):
     return paginator.get_paginated_response(serializer.data)
   except DepositLock.DoesNotExist:
     return Response({'error': 'Deposit lock not found'}, status=404)
+  except Exception as e:
+    logger.error(f"Error retrieving deposit lock for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=500)
   
 
 ## Wallet ##
@@ -620,6 +651,7 @@ def transfer_master(request):
     return Response({'error': error_msg}, status=401)
     
   except Exception as e:
+    logger.error(f"Error retrieving transfer transaction for {sender} to {receiver_user}: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 @api_view(['POST'])
@@ -657,6 +689,7 @@ def place_asset(request):
     return Response({'error': error_msg}, status=401)
     
   except Exception as e:
+    logger.error(f"Error placing asset for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 
@@ -694,6 +727,7 @@ def withdraw_profit(request):
     return Response({'error': error_msg}, status=401)
     
   except Exception as e:
+    logger.error(f"Error withdrawing profit for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 @api_view(['POST'])
@@ -725,6 +759,7 @@ def convert_profit_to_master(request):
     return Response({'error': error_msg}, status=401)
     
   except Exception as e:
+    logger.error(f"Error converting profit to master for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 
@@ -762,6 +797,7 @@ def withdraw_commission(request):
     return Response({'error': error_msg}, status=401)
     
   except Exception as e:
+    logger.error(f"Error withdrawing commission for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 @api_view(['POST'])
@@ -790,6 +826,7 @@ def convert_commission_to_master(request):
     error_msg = (
       e.args[0] if isinstance(e.args, (list, tuple)) else str(e)
     )
+    logger.error(f"Error converting commission to master for {user.username}: {str(e)}")
     return Response({'error': error_msg}, status=401)
     
 
@@ -826,6 +863,7 @@ def withdraw_asset(request):
     return Response({'error': error_msg}, status=401)
     
   except Exception as e:
+    logger.error(f"Error withdrawing asset for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 
@@ -846,6 +884,7 @@ def get_daily_total_profit(request):
     )
     return Response(transaction, status=200)
   except Exception as e:
+    logger.error(f"Error retrieving daily total profit for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 
@@ -870,4 +909,5 @@ def promo_code(request):
       return Response({'error': 'Invalid promo code'}, status=400)
       
   except Exception as e:
+    logger.error(f"Error applying promo code for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)

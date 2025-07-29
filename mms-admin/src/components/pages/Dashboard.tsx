@@ -202,6 +202,8 @@ const Dashboard = () => {
   const [gain, setGain] = useState<GainProps[]>([])
   const [dailyProfitByDay, setDailyProfitsByDay] = useState<DailyProfitByDayProps[]>([])
 
+  const [sharingProfit, setSharingProfit] = useState<number>(0)
+
   useEffect(()=> {
     const fetchData = async () => {
       try {
@@ -219,6 +221,7 @@ const Dashboard = () => {
         setTotalAsset(resInfoDash.total_asset_amount)
         setTotalAssetAbove10k(resInfoDash.asset_above_10k)
         setTotalAssetBelow10k(resInfoDash.asset_below_10k)
+        setSharingProfit(resInfoDash.super_user_profit)
 
         const gainData: GainProps[] = [{
           total_deposit: resInfoDash.total_deposit,
@@ -283,6 +286,7 @@ const Dashboard = () => {
         <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
         <FixedText label="Total Withdraw" text={totalWithdraw} />
         <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />
+        <FixedText label="Sharing Profit" text={sharingProfit} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-center justify-center">

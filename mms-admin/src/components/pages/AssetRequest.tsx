@@ -198,7 +198,7 @@ const AssetRequest = () => {
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span> }
 
       <Tables columns={columns} data={transactions}
-        enableFilters={true}
+        needDate={false}
       />
     </div>
   )

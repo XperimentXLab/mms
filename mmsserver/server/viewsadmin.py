@@ -92,7 +92,8 @@ def reset_all_wallet_balances(request):
         return Response({'error': 'Permission denied'}, status=403)
 
     except Exception as e:
-        return Response({"error": str(e)}, status=500)
+      logger.error(f"Error resetting wallet balances: {str(e)}")
+      return Response({"error": str(e)}, status=500)
       
 
 
@@ -123,8 +124,10 @@ def manage_admin_mp(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except ValidationError as e:
+    logger.error(f"Validation error managing admin MP: {str(e)}")
     return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
+    logger.error(f"Error managing admin RP: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 
@@ -171,6 +174,7 @@ def manage_operational_profit(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error managing operational profit: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
 
@@ -237,30 +241,33 @@ def manage_monthly_finalized_profit(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error managing monthly finalized profit: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_yearly_profit_total(request):
-    # year = request.data.get('year') # Old way for POST-like GET
-    year_str = request.query_params.get('year') # Correct way for GET
-    if not year_str:
-        return Response({'error': 'Year query parameter is required.'}, status=400)
-    try:
-        year = int(year_str)
-    except ValueError:
-        return Response({'error': 'Year must be an integer.'}, status=400)
+  user = request.user
+  year_str = request.query_params.get('year')
+  try:
+    if user.is_staff:
+      if not year_str:
+          return Response({'error': 'Year query parameter is required.'}, status=400)
+      try:
+          year = int(year_str)
+      except ValueError:
+          return Response({'error': 'Year must be an integer.'}, status=400)
 
-    # Add permission check if necessary, e.g., if only staff can see this
-    # if not request.user.is_staff:
-    #     return Response({'error': 'Permission denied'}, status=403)
-
-    if year: # year is now an int
-      total = MonthlyFinalizedProfit.get_total_yearly_profit(year)
-      return Response({'year': year, 'total_profit_rate': float(total)})
+      if year: 
+        total = MonthlyFinalizedProfit.get_total_yearly_profit(year)
+        return Response({'year': year, 'total_profit_rate': float(total)})
+      else:
+        return Response({'error': 'Error getting yearly total profit.'}, status=400)
     else:
-      # This case should ideally be caught by the 'not year_str' check above
-      return Response({'error': 'Error getting yearly total profit, year parameter missing or invalid.'}, status=400)
+      return Response({'error': 'Permission denied'}, status=403)
+  except Exception as e:
+    logger.error(f"Error getting yearly total profit: {str(e)}")
+    return Response({'error': str(e)}, status=500)
     
  
 @api_view(['GET'])
@@ -297,6 +304,7 @@ def get_all_user(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving all users: {str(e)}")
     return Response({'error': str(e)}, status=400)
   
 
@@ -312,6 +320,7 @@ def get_all_network(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving all network: {str(e)}")
     return Response({'error': str(e)}, status=400)
 
 
@@ -383,6 +392,7 @@ def get_all_transaction(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving all transactions: {str(e)}")
     return Response({'error': str(e)}, status=400)
 
 
@@ -398,6 +408,7 @@ def get_all_master_tx(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving all master transactions: {str(e)}")
     return Response({'error': str(e)}, status=400)
 
 @api_view(['GET'])
@@ -412,6 +423,7 @@ def get_all_profit_tx(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving all profit transactions: {str(e)}")
     return Response({'error': str(e)}, status=400)
 
 @api_view(['GET'])
@@ -426,6 +438,7 @@ def get_all_commission_tx(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving all commission transactions: {str(e)}")
     return Response({'error': str(e)}, status=400)
 
 @api_view(['GET'])
@@ -440,6 +453,7 @@ def get_all_asset_tx(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving all asset transactions: {str(e)}")
     return Response({'error': str(e)}, status=400)
   
 
@@ -455,6 +469,7 @@ def get_pending_transaction(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving pending transactions: {str(e)}")
     return Response({'error': str(e)}, status=400)
   
 @api_view(['GET'])
@@ -469,6 +484,7 @@ def get_all_withdrawal_request(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving all withdrawal requests: {str(e)}")
     return Response({'error': str(e)}, status=400)
   
 @api_view(['GET'])
@@ -483,6 +499,7 @@ def get_all_deposit_lock(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving all deposit locks: {str(e)}")
     return Response({'error': str(e)}, status=400)
 
 @api_view(['GET'])
@@ -496,6 +513,7 @@ def get_total_asset_balance(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving total asset balance: {str(e)}")
     return Response({'error': str(e)}, status=400)
   
 
@@ -523,8 +541,10 @@ def setup_user(request):
       serializer = WalletSerializer(wallet)
       return Response(serializer.data, status=200)
     except ValidationError as e:
+      logger.error(f"Validation error setting up user {username}: {str(e)}")
       return Response({'error': list(e.messages)}, status=400)
     except Exception as e:
+      logger.error(f"Error setting up user {username}: {str(e)}")
       return Response({'error': str(e)}, status=500)
   else:
     return Response({'error': 'Permission denied'}, status=403)
@@ -545,6 +565,7 @@ def get_user_info(request):
   except User.DoesNotExist:
     return Response({'error': 'User not found'}, status=404)
   except Exception as e:
+    logger.error(f"Error retrieving user info for {user_id}: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 @api_view(['PUT'])
@@ -565,6 +586,7 @@ def update_user_info(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error updating user info for {user_id}: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
   
@@ -599,6 +621,7 @@ def update_profit_sharing(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error updating profit sharing: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
 
@@ -618,8 +641,10 @@ def distribute_profit(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except ValidationError as e:
+    logger.error(f"Validation error distributing profit: {str(e)}")
     return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
+    logger.error(f"Error distributing profit: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
 
@@ -636,8 +661,10 @@ def grant_welcome_bonus(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except ValidationError as e:
+    logger.error(f"Validation error granting welcome bonus: {str(e)}")
     return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
+    logger.error(f"Error granting welcome bonus: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
 
@@ -659,8 +686,10 @@ def process_place_asset(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except ValidationError as e:
+    logger.error(f"Validation error processing place asset: {str(e)}")
     return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
+    logger.error(f"Error processing place asset: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 
@@ -683,8 +712,10 @@ def process_withdrawal_asset(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except ValidationError as e:
+    logger.error(f"Validation error processing withdrawal asset: {str(e)}")
     return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
+    logger.error(f"Error processing withdrawal asset: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 
@@ -707,8 +738,10 @@ def process_withdrawal_profit(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except ValidationError as e:
+    logger.error(f"Validation error processing withdrawal profit: {str(e)}")
     return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
+    logger.error(f"Error processing withdrawal profit: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 
@@ -731,8 +764,10 @@ def process_withdrawal_commission(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except ValidationError as e:
+    logger.error(f"Validation error processing withdrawal commission: {str(e)}")
     return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
+    logger.error(f"Error processing withdrawal commission: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 
@@ -760,6 +795,7 @@ def process_verification(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error processing verification for user {user_id}: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
 
@@ -867,6 +903,7 @@ def get_info_dashboard(request):
     else: 
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:
+    logger.error(f"Error retrieving dashboard info: {str(e)}")
     return Response({'error': str(e)}, status=500)
   
 @api_view(['GET', 'PATCH']) 
@@ -897,6 +934,8 @@ def manage_performance(request):
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except ValidationError as e:
+    logger.error(f"Validation error managing performance: {str(e)}")
     return Response({'error': list(e.messages)}, status=401)
   except Exception as e:
+    logger.error(f"Error managing performance: {str(e)}")
     return Response({'error': str(e)}, status=500)

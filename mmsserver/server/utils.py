@@ -13,8 +13,6 @@ from datetime import timedelta, timezone as dt_timezone
 logger = logging.getLogger(__name__)
 
 
-# sharing company 80/20 = 13% .. 70/30 = 23% --> super profit -- nnti
-
 def _distribute_affiliate_bonus_for_user(
     downline_user: User,
     daily_rate_percentage: Decimal,
@@ -125,12 +123,15 @@ def sharing_profit(daily_profit_rate):
     asset_above_10k = Decimal(all_asset_above_10k) - Decimal(admin_asset)
     asset_below_10k = Asset.objects.filter(amount__lt=10000).aggregate(total=models.Sum('amount'))['total'] or 0
 
+    mms03_asset = Asset.objects.filter(user_id__in=['MMS03PF6', 'MMS03PBV', 'MMS03PVL', 'MMS03B7L', 'MMS03O3N']).aggregate(total=models.Sum('amount'))['total'] or 0
+
     with db_transaction.atomic():
         logger.info(f'Sharing Profit {daily_profit_rate}%')
+        sharing_mms03 = mms03_asset * Decimal(daily_profit_rate) * Decimal('0.002') # 0.2%
         sharing_above_10k = asset_above_10k * Decimal(daily_profit_rate) * Decimal('0.0013') # 0.13%
         sharing_below_10k = asset_below_10k * Decimal(daily_profit_rate) * Decimal('0.0023') # 0.23%
 
-        total_sharing = sharing_above_10k + sharing_below_10k
+        total_sharing = sharing_above_10k + sharing_below_10k + sharing_mms03
         super_user_wallet.profit_point_balance += total_sharing
         super_user_wallet.save()
 
