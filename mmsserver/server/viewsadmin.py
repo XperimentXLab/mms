@@ -853,19 +853,20 @@ def get_info_dashboard(request):
 
       if month and year:
         try:
-          performance = Performance.objects.get(month=month, year=year)
+          performance, _ = Performance.objects.get_or_create(month=month, year=year)
           serializer = PerformanceSerializer(performance)
           total_deposit = serializer.data.get('total_deposit')
           total_gain_a = serializer.data.get('total_gain_a')
           total_gain_z = serializer.data.get('total_gain_z')
           total_gain = Decimal(total_gain_a) + Decimal(total_gain_z)
-        except Performance.DoesNotExist:
-          return Response({'error': 'Performance not found'}, status=404)
+        except Exception as e:
+          logger.error(f"Error retrieving performance data for {month}/{year}: {str(e)}")
+          return Response({'error': str(e)}, status=500)
       else:
-        total_deposit = 0 
-        total_gain = 0
-        total_gain_a = 0
-        total_gain_z = 0
+        total_deposit = Decimal('0.00') 
+        total_gain = Decimal('0.00')
+        total_gain_a = Decimal('0.00')
+        total_gain_z = Decimal('0.00')
       
       total_user = User.objects.count()
 

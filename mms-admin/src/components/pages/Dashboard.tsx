@@ -286,7 +286,7 @@ const Dashboard = () => {
         <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
         <FixedText label="Total Withdraw" text={totalWithdraw} />
         <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />
-        <FixedText label="Sharing Profit" text={sharingProfit} />
+        <FixedText label="Total Profit Sharing" text={sharingProfit} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-center justify-center">

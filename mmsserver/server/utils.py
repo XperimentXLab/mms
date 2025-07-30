@@ -127,7 +127,7 @@ def sharing_profit(daily_profit_rate):
 
     with db_transaction.atomic():
         logger.info(f'Sharing Profit {daily_profit_rate}%')
-        sharing_mms03 = mms03_asset * Decimal(daily_profit_rate) * Decimal('0.002') # 0.2%
+        sharing_mms03 = mms03_asset * Decimal(daily_profit_rate) * Decimal('0.0002') # 0.02%
         sharing_above_10k = asset_above_10k * Decimal(daily_profit_rate) * Decimal('0.0013') # 0.13%
         sharing_below_10k = asset_below_10k * Decimal(daily_profit_rate) * Decimal('0.0023') # 0.23%
 
