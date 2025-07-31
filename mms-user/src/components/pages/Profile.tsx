@@ -267,6 +267,7 @@ const Profile = () => {
     } catch (error: any) {
       if (error.response) {
         setErrorMessagePC('Invalid promo code')
+      }
     } finally {
       setLoading(false)
       fetchData()
