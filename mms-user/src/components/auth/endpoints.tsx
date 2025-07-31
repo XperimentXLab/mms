@@ -198,13 +198,15 @@ export const updateUserDetails = async (userData: Partial<User>) => {
 }
 
 
+const acriveDay = new Date().toLocaleDateString('en-US', { day: 'numeric' });
 const activeMonth = new Date().toLocaleDateString('en-US', { month: 'numeric' });
 const activeYear = new Date().toLocaleDateString('en-US', { year: 'numeric' })
 export const getProfit = async () => {
   const response = await api.get('/manage_operational_profit/', {
     params: {
       active_month_profit: Number(activeMonth),
-      active_year_profit: Number(activeYear)
+      active_year_profit: Number(activeYear),
+      active_day_profit: Number(activeDay)
     }
   })
   return response.data
