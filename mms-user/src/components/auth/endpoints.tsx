@@ -198,7 +198,7 @@ export const updateUserDetails = async (userData: Partial<User>) => {
 }
 
 
-const acriveDay = new Date().toLocaleDateString('en-US', { day: 'numeric' });
+const activeDay = new Date().toLocaleDateString('en-US', { day: 'numeric' });
 const activeMonth = new Date().toLocaleDateString('en-US', { month: 'numeric' });
 const activeYear = new Date().toLocaleDateString('en-US', { year: 'numeric' })
 export const getProfit = async () => {
