@@ -135,16 +135,18 @@ def manage_admin_mp(request):
 @permission_classes([IsAuthenticated])
 def manage_operational_profit(request):
   user = request.user       
+  day = request.query_params.get('active_day_profit')
   month = request.query_params.get('active_month_profit')
   year = request.query_params.get('active_year_profit')
+
+  day_ = request.data.get('active_day_profit')
   month_ = request.data.get('active_month_profit')
   year_ = request.data.get('active_year_profit')
-  daily = request.data.get('daily_profit_rate')
 
   try:
     if request.method == 'GET':
       try:
-        operational_profit = OperationalProfit.objects.get(active_month_profit=month, active_year_profit=year)
+        operational_profit = OperationalProfit.objects.get(active_day_profit=day, active_month_profit=month, active_year_profit=year)
       except OperationalProfit.DoesNotExist:
         return Response({'error': 'Operational profit not found'}, status=404)
       serializer = OperationalProfitSerializer(operational_profit)
@@ -152,7 +154,7 @@ def manage_operational_profit(request):
     
     if user.is_staff:
       if request.method == 'POST':
-        if OperationalProfit.objects.filter(active_month_profit=month, active_year_profit=year).exists():
+        if OperationalProfit.objects.filter(active_day_profit=day,active_month_profit=month, active_year_profit=year).exists():
           return Response({'error': 'Operational profit record already exists.'}, status=400)
         serializer = OperationalProfitSerializer(data=request.data)
         if serializer.is_valid(): 
@@ -162,7 +164,7 @@ def manage_operational_profit(request):
           return Response({'error': serializer.errors}, status=400)
         
       elif request.method == 'PUT': 
-        operational_profit, created = OperationalProfit.objects.get_or_create(active_month_profit=month_, active_year_profit=year_)
+        operational_profit, created = OperationalProfit.objects.get_or_create(active_day_profit=day_,active_month_profit=month_, active_year_profit=year_)
         serializer = OperationalProfitSerializer(operational_profit, data=request.data, partial=True)
         if serializer.is_valid():
           serializer.save()

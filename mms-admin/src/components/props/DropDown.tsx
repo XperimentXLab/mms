@@ -6,6 +6,27 @@ interface SelectFixedProps {
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
+export const SelectDay: React.FC<SelectFixedProps> = ({
+  value,
+  onChange,
+}) => {
+
+  const days = Array.from({ length: 31 }, (_, i) => `${i + 1}`);
+
+  return (
+    <div className="flex px-2 py-1 flex-col w-full justify-center">
+      <label className="font-semibold">Select Day</label>
+      <select value={value} onChange={onChange} className="border py-1 px-2 rounded-md">
+        <option value="">Select a day</option>
+        {days.map((day) => (
+          <option key={day} value={day}>{day}</option>
+        ))}
+      </select>
+    </div>
+  )
+}
+
+
 export const SelectMonth: React.FC<SelectFixedProps> = ({
   value,
   onChange,

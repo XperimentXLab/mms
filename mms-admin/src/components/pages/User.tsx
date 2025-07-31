@@ -52,6 +52,18 @@ const User = () => {
       accessorKey: 'asset_amount',
       cell: info => info.getValue() ?? '0'
      },
+    { header: 'Register Point', 
+      accessorKey: 'master_point',
+      cell: info => info.getValue() ?? '0'
+    },
+    { header: 'Profit Point', 
+      accessorKey: 'profit_point',
+      cell: info => info.getValue() ?? '0'
+     },
+    { header: 'Commission Point', 
+      accessorKey: 'commission_point',
+      cell: info => info.getValue() ?? '0'
+     },
     { header: 'Verification', 
       accessorKey: 'verification_status',
       cell: info => info.getValue()

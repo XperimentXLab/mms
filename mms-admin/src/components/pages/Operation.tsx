@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import Buttons from "../props/Buttons"
 import { Inputss, InputwithVal } from "../props/Formss"
-import { SelectMonth, SelectYear } from "../props/DropDown"
+import { SelectDay, SelectMonth, SelectYear } from "../props/DropDown"
 import { distribute_profit, get_profit, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
 import { FixedText } from "../props/Textt"
@@ -12,6 +12,7 @@ const Operation = () => {
   const [dailyProfitRate, setDailyProfitRate] = useState<number>(0)
   const [weeklyProfitRate, setWeeklyProfitRate] = useState<number>(0)
   const [currentMonthProfit, setCurrentMonthProfit] = useState<number>(0)
+  const [activeDayProfit, setActiveDayProfit] = useState<string>("")
   const [activeMonthProfit, setActiveMonthProfit] = useState<string>("")
   const [activeYearProfit, setActiveYearProfit] = useState<string>("")
   const [lastUpdated, setLastUpdated] = useState<string>("")
@@ -19,6 +20,7 @@ const Operation = () => {
   const [todayProfit, setTodayProfit] = useState<string>('')
   const [weeklyProfit, setWeeklyProfit] = useState<string>('')
   const [monthlyProfit, setMonthlyProfit] = useState<string>('')
+  const [inputActiveDay, setInputActiveDay] = useState<string>("");
   const [inputActiveMonth, setInputActiveMonth] = useState<string>(""); 
   const [inputActiveYear, setInputActiveYear] = useState<string>("");
 
@@ -31,36 +33,31 @@ const Operation = () => {
   const [errorMessageF, setErrorMessageF] = useState<string>("")
 
 
-  useEffect(()=>{
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const response = await get_profit()
-        setDailyProfitRate(response.daily_profit_rate || 0)
-        setWeeklyProfitRate(response.weekly_profit_rate || 0)
-        setCurrentMonthProfit(response.current_month_profit || 0)
-        setActiveMonthProfit(response.active_month_profit || null)
-        setActiveYearProfit(response.active_year_profit || null)
+  const findOpsData = async () => {
+    try {
+      setLoading(true)
+      const response = await get_profit({
+        activeDayProfit: Number(inputActiveDay),
+        activeMonthProfit: Number(inputActiveMonth),
+        activeYearProfit: Number(inputActiveYear),
+      })
+      setDailyProfitRate(response.daily_profit_rate || 0)
+      setWeeklyProfitRate(response.weekly_profit_rate || 0)
+      setCurrentMonthProfit(response.current_month_profit || 0)
+      setActiveDayProfit(response.active_day_profit || null)
+      setActiveMonthProfit(response.active_month_profit || null)
+      setActiveYearProfit(response.active_year_profit || null)
 
-        // Initialize input states for the operational profit form
-        setDailyProfitRate(response.daily_profit_rate || 0);
-        setWeeklyProfitRate(response.weekly_profit_rate || 0);
-        setCurrentMonthProfit(response.current_month_profit || 0);
-        setInputActiveMonth(response.active_month_profit);
-        setInputActiveYear(response.active_year_profit);
+      const formattedDate = dayjs().format("YYYY-MM-DD HH:mm:ss");
+      setLastUpdated(formattedDate);
 
-        const formattedDate = dayjs().format("YYYY-MM-DD HH:mm:ss");
-        setLastUpdated(formattedDate);
-
-        console.log(activeMonthProfit, activeYearProfit)
-      } catch (error: any) {
-        console.error('Error fetching operational profit data:', error);
-      } finally {
-        setLoading(false)
-      }
+      console.log(activeMonthProfit, activeYearProfit, activeDayProfit)
+    } catch (error: any) {
+      console.error('Error fetching operational profit data:', error);
+    } finally {
+      setLoading(false)
     }
-    fetchData()
-  }, [])
+  }
 
   /*
   const toggleUpdateMY = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -90,6 +87,7 @@ const Operation = () => {
         dailyProfitRate: Number(todayProfit),
         weeklyProfitRate: Number(weeklyProfit),
         currentMonthProfit: Number(monthlyProfit),
+        activeDayProfit: Number(inputActiveDay),
         activeMonthProfit: Number(inputActiveMonth),
         activeYearProfit: Number(inputActiveYear),
       })
@@ -98,6 +96,7 @@ const Operation = () => {
       setDailyProfitRate(dailyProfitRate)
       setWeeklyProfitRate(weeklyProfitRate)
       setCurrentMonthProfit(currentMonthProfit)
+      setActiveDayProfit(String(inputActiveDay))
       setActiveMonthProfit(String(inputActiveMonth))
       setActiveYearProfit(String(inputActiveYear))
 
@@ -189,7 +188,7 @@ const Operation = () => {
   return (
     <div className="flex flex-col items-center p-4 gap-5">
       {loading && <Loading />}
-      <h1 className="text-2xl font-bold">Operational</h1>
+      <h1 className="text-2xl font-bold text-white">Operational</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <form onSubmit={toggleUpdateProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
@@ -200,7 +199,9 @@ const Operation = () => {
 
           <span className="text-sm">*Please fill in manually (e.g., enter 5.0 for 5.0%)</span>
 
-          <div className="grid grid-cols-2 items-center">
+          <div className="flex flex-col md:flex-row w-full items-center">
+            <SelectDay value={inputActiveDay}
+              onChange={(e) => setInputActiveDay(e.target.value)} />
             <SelectMonth value={inputActiveMonth} 
               onChange={(e) => setInputActiveMonth(e.target.value)} />
             <SelectYear value={inputActiveYear}
@@ -235,6 +236,7 @@ const Operation = () => {
             required={true}
           />
           {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
+          <Buttons type="button" onClick={()=>findOpsData()}>Find</Buttons>
           <Buttons type="submit">Confirm</Buttons>
         </form>
 

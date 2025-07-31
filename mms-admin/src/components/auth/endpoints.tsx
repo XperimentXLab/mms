@@ -1,3 +1,4 @@
+
 import type { TableFetchParams } from "../props/Tables"
 import api, { generateDeviceFingerprint } from "./api"
 
@@ -18,6 +19,7 @@ interface ProfitRes {
   currentMonthProfit?: number
   activeMonthProfit?: number | null;
   activeYearProfit?: number | null;
+  activeDayProfit?: number | null;
 }
 
 interface MonthlyProfitRes {
@@ -91,11 +93,18 @@ export const userDetails = async () => {
 
 const activeMonth = new Date().toLocaleDateString('en-US', { month: 'numeric' });
 const activeYear = new Date().toLocaleDateString('en-US', { year: 'numeric' })
-export const get_profit = async () => {
+const activeDay = new Date().toLocaleDateString('en-US', { day: 'numeric' });
+export const get_profit = async (profitData: ProfitRes) => {
+  const { 
+    activeMonthProfit, 
+    activeYearProfit,
+    activeDayProfit
+  } = profitData
   const response = await api.get('/manage_operational_profit/', {
     params: {
-      active_month_profit: Number(activeMonth),
-      active_year_profit: Number(activeYear)
+      active_day_profit: activeDayProfit || Number( activeDay),
+      active_month_profit: activeMonthProfit || Number(activeMonth),
+      active_year_profit: activeYearProfit || Number(activeYear)
     }
   })
   return response.data
@@ -104,11 +113,13 @@ export const get_profit = async () => {
 export const create_profit = async (profitData: ProfitRes) => {
   const { 
     activeMonthProfit, 
-    activeYearProfit
+    activeYearProfit,
+    activeDayProfit
   } = profitData
   const response = await api.post('/manage_operational_profit/', {
     active_month_profit: activeMonthProfit,
     active_year_profit: activeYearProfit,
+    active_day_profit: activeDayProfit,
   })
   return response.data
 }
@@ -119,12 +130,14 @@ export const update_profit = async (profitData: ProfitRes) => {
     weeklyProfitRate,
     currentMonthProfit,
     activeMonthProfit, 
-    activeYearProfit
+    activeYearProfit,
+    activeDayProfit,
   } = profitData
   const response = await api.put('/manage_operational_profit/', {
     daily_profit_rate: dailyProfitRate, 
     weekly_profit_rate: weeklyProfitRate, 
     current_month_profit: currentMonthProfit,
+    active_day_profit: activeDayProfit,
     active_month_profit: activeMonthProfit,
     active_year_profit: activeYearProfit,
   })

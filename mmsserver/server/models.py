@@ -183,6 +183,7 @@ class OperationalProfit(models.Model):
   daily_profit_rate = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'), help_text='Manually update daily profit rate (e.g., enter 5.0 for 5.0%)')
   weekly_profit_rate = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'), help_text='Manually update weekly profit rate (e.g., enter 5.0 for 5.0%)')
   current_month_profit = models.DecimalField(max_digits=7, decimal_places=2, default=Decimal('0.00'), help_text='Manually update current month profit (e.g., enter 5.0 for 5.0%)')
+  active_day_profit = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(31)], null=True, blank=True, help_text='The day (1-31) for which profit is currently active')
   active_month_profit = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], null=True, blank=True, help_text='The month (1-12) for which profit is currently active')
   active_year_profit = models.IntegerField(help_text='The year for which profit is currently active', null=True, blank=True)
 

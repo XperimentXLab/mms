@@ -13,6 +13,10 @@ class UserSerializer(serializers.ModelSerializer):
   promocode = serializers.SerializerMethodField()
   password = serializers.CharField(write_only=True)
 
+  master_point = serializers.SerializerMethodField()
+  profit_point = serializers.SerializerMethodField()
+  commission_point = serializers.SerializerMethodField()
+
   class Meta:
     address_country = serializers.StringRelatedField()
     model = User
@@ -45,6 +49,9 @@ class UserSerializer(serializers.ModelSerializer):
       'is_campro',
       'created_at',
       'promocode',
+      'master_point',
+      'profit_point',
+      'commission_point'
     ]
     extra_kwargs = {
       'password': {'write_only': True},
@@ -56,6 +63,9 @@ class UserSerializer(serializers.ModelSerializer):
       'created_at': {'read_only': True},
       'asset_amount': {'read_only': True},
       'promocode': {'read_only': True},
+      'master_point': { 'read_only': True},
+      'profit_point': { 'read_only': True},
+      'commission_point': { 'read_only': True}
     }
   def get_asset_amount(self, obj):
     asset = Asset.objects.filter(user=obj).first()
@@ -68,6 +78,21 @@ class UserSerializer(serializers.ModelSerializer):
     if promocode:
       return promocode.code
     return None
+  
+  def get_master_point(self, obj):
+    if obj.wallet:
+      return obj.wallet.master_point_balance
+    return Decimal('0.00')
+  
+  def get_profit_point(self, obj):
+    if obj.wallet:
+      return obj.wallet.profit_point_balance
+    return Decimal('0.00')
+  
+  def get_commission_point(self, obj):
+    if obj.wallet:
+      return obj.wallet.affiliate_point_balance + obj.wallet.introducer_point_balance
+    return Decimal('0.00')
     
   def validate_email(self, value):
     if User.objects.filter(email=value).exists():
@@ -228,6 +253,7 @@ class OperationalProfitSerializer(serializers.ModelSerializer):
       'id',
       'daily_profit_rate',
       'weekly_profit_rate',
+      'active_day_profit', # Model validators (1-31) will be used
       'active_month_profit', # Model validators (1-12) will be used
       'active_year_profit',
       'current_month_profit',
@@ -268,6 +294,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
   request_status_display = serializers.SerializerMethodField()
   username = serializers.CharField(source='user.username', read_only=True)
+  referred_by = serializers.CharField(source='user.referred_by', read_only=True)
 
   class Meta:
     model = Transaction
@@ -283,7 +310,8 @@ class TransactionSerializer(serializers.ModelSerializer):
       'request_status',
       'request_status_display',
       'reference',
-      'description'
+      'description',
+      'referred_by'
     ]
     read_only_fields = [
       'id', 
@@ -292,7 +320,8 @@ class TransactionSerializer(serializers.ModelSerializer):
       'transaction_type', 
       'point_type',
       'converted_amount',
-      'request_status_display'
+      'request_status_display',
+      'referred_by'
     ]
     
   def get_request_status_display(self, obj):

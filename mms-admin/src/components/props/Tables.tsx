@@ -66,6 +66,10 @@ export interface Data {
   is_campro?: boolean
   reject_reason?: string | null
   promocode?: string | null
+  referred_by?: string | null
+  master_point?: number
+  profit_point?: number
+  commission_point?: number
 }
 
 

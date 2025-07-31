@@ -26,7 +26,7 @@ const columnsTable: ColumnDef<any, any>[] = [
   { header: "Date", 
     accessorKey: "created_date",
     cell: info => info.getValue()
-    },
+  },
   { header: "Time", 
     accessorKey: "created_time", 
     cell: info => info.getValue() 
@@ -34,11 +34,15 @@ const columnsTable: ColumnDef<any, any>[] = [
   { header: "Description", 
     accessorKey: "description",
     cell: info => info.getValue()
-    },
+  },
   { header: "Amount", 
     accessorKey: "amount",
     cell: info => info.getValue()
-    },
+  },
+  { header: "Reference", 
+    accessorKey: "reference",
+    cell: info => info.getValue()
+  },
 ]
 
 

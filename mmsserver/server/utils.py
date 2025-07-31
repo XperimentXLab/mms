@@ -638,6 +638,32 @@ class AssetService:
                 trx.save()
 
             return trx
+        
+
+class ConversionLimitService:
+    @staticmethod
+    def check_daily_conversion_limit(user, amount_to_add):
+        """Check combined daily conversion limit for both Profit and Commission"""
+        start_of_day = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = start_of_day + timedelta(days=1)
+
+        # Get total conversions from both sources
+        daily_total = Transaction.objects.filter(
+            user=user,
+            transaction_type='CONVERT',
+            target_point_type='MASTER',
+            created_at__gte=start_of_day,
+            created_at__lt=end_of_day
+        ).exclude(
+            point_type='MASTER'  # Exclude any MASTER-to-MASTER conversions if they exist
+        ).aggregate(total=Sum('converted_amount'))['total'] or 0
+
+        daily_limit = Decimal(daily_total) + Decimal(amount_to_add)
+        if daily_limit > Decimal('50'):
+            available = Decimal('50') - Decimal(daily_total)
+            raise ValidationError(
+                f"You can convert {available} more Master Points today "
+            )
             
 
 class ProfitService:
@@ -750,28 +776,14 @@ class ProfitService:
 
     @staticmethod
     def convert_to_master_point(user, amount, reference=""):
-        """Convert Profit Point to Master Point (must be multiple of 10)"""
+        """Convert Profit Point to Master Point"""
 
         if amount != int(amount):
             raise ValidationError("Amount need to be whole number")
 
-        # Daily limit check
-        start_of_day = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        end_of_day = start_of_day + timedelta(days=1)
+        # Combined daily limit check
+        ConversionLimitService.check_daily_conversion_limit(user, amount)
 
-
-        daily_total = Transaction.objects.filter(
-            user=user,
-            transaction_type='CONVERT',
-            point_type='PROFIT',
-            target_point_type='MASTER',
-            created_at__gte=start_of_day,
-            created_at__lt=end_of_day
-        ).aggregate(total=Sum('converted_amount'))['total'] or 0
-
-        if daily_total + amount > 50:
-            raise ValidationError(f"Daily conversion limit exceeded. You can convert {50 - daily_total} more today.")
-        
         wallet = Wallet.objects.get(user=user)
         if wallet.profit_point_balance < amount:
             raise ValidationError("Insufficient Profit Point balance")
@@ -916,7 +928,7 @@ class CommissionService:
 
     @staticmethod
     def convert_to_master_point(user, amount, reference=""):
-        """Convert Commission Point to Master Point (must be multiple of 10)"""
+        """Convert Commission Point to Master Point"""
         wallet = Wallet.objects.get(user=user)
         commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
 
@@ -926,23 +938,8 @@ class CommissionService:
         if commission_point < amount:
             raise ValidationError("Insufficient Commission Point balance")
         
-        # Daily limit check
-        start_of_day = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        end_of_day = start_of_day + timedelta(days=1)
-
-        daily_total = Transaction.objects.filter(
-            user=user,
-            transaction_type='CONVERT',
-            point_type='COMMISSION',
-            target_point_type='MASTER',
-            created_at__gte=start_of_day,
-            created_at__lt=end_of_day
-        ).aggregate(total=Sum('converted_amount'))['total'] or 0
-
-        daily_limit = Decimal(daily_total) + Decimal(amount)
-        if daily_limit > Decimal('50'):
-            available = Decimal('50') - Decimal(daily_total)
-            raise ValidationError(f"Daily conversion limit exceeded. You can convert {available} more today.")
+        # Combined daily limit check
+        ConversionLimitService.check_daily_conversion_limit(user, amount)
 
         with db_transaction.atomic():
             affiliate_point = wallet.affiliate_point_balance

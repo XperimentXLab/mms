@@ -22,6 +22,7 @@ interface Transaction {
   transaction_type: string;
   description: string;
   reference?: string; // Reason for rejection
+  referred_by?: string | null;
 }
 
 const AssetRequest = () => {
@@ -146,6 +147,10 @@ const AssetRequest = () => {
       accessor: 'username',
       render: (value: string) => value ? value : '-'
      },
+    { header: 'Referral ID', 
+      accessor: 'referred_by',
+      render: (value: string) => value ? value : '-'
+    },
     { header: 'Amount', 
       accessor: 'amount',
       render: (value: number) => value ? value : '-'
@@ -186,8 +191,8 @@ const AssetRequest = () => {
           )}
         </div>
       )
-    }}
-  ]
+    }},
+]
 
   return (
     <div className="flex m-5 justify-center flex-col">
