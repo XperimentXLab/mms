@@ -265,11 +265,8 @@ const Profile = () => {
       await PromoCode(promoCode)
       alert('Promo code successfully entered.')
     } catch (error: any) {
-      if (error.response && error.response.status === 400) {
-        setErrorMessagePC(error.response.data.error)
-      } else {
-        setErrorMessagePC('An unexpected error occurred. Please try again later.');
-      }
+      if (error.response) {
+        setErrorMessagePC('Invalid promo code')
     } finally {
       setLoading(false)
       fetchData()
