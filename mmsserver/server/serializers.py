@@ -463,11 +463,11 @@ class PromoCodeSerializer(serializers.ModelSerializer):
     read_only_fields = ['id', 'user', 'created_at']
   
   def validate_code(self, value):
-    if not isinstance(value, str) or len(value) != 10 or not value.startswith('RSJC'):
-        raise serializers.ValidationError('Invalid promo code.')
+    if not isinstance(value, str) or len(value) != 10 or not value.startswith('XXXX'):
+      raise serializers.ValidationError('Invalid promo code.')
 
     if PromoCode.objects.filter(code=value).exists():
-        raise serializers.ValidationError('Promo code already in use.')
+      raise serializers.ValidationError('Promo code already in use.')
 
     return value
 
