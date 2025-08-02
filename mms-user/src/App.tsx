@@ -1,6 +1,6 @@
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom"
-import ProtectedRoute from "./components/auth/ProtectedRoute"
-import { lazy, Suspense } from "react"
+//import ProtectedRoute from "./components/auth/ProtectedRoute"
+import { Suspense } from "react"
 import Loading from "./components/props/Loading"
 
 import Updating from "./components/auth/Updating"
