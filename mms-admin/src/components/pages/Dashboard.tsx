@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { getInfoDashboard } from "../auth/endpoints"
 import Loading from "../props/Loading"
 import { FixedText } from "../props/Textt"
@@ -17,7 +17,7 @@ import {
 } from 'chart.js';
 import { subDays, format } from "date-fns";
 import { Tables } from "../props/Tables";
-import { SelectMonth, SelectYear } from "../props/DropDown";
+import { SelectYear } from "../props/DropDown";
 
 ChartJS.register(
   CategoryScale,
@@ -125,11 +125,23 @@ const DailyProfitChart = ({ data }: { data: DailyProfitByDayProps[] }) => {
 }
 
 interface GainProps {
+  month: number | string;
   total_gain_z: number
   total_gain_a: number
   total_gain: number
   total_deposit: number
 }
+
+interface MonthlyDataRes {
+  monthly_data: GainProps[];
+  yearly_totals: {
+    total_deposit: number;
+    total_gain_a: number;
+    total_gain_z: number;
+    total_gain: number;
+  }
+}
+
 
 interface AssetProps {
   total_asset_amount: number
@@ -185,6 +197,9 @@ const AssetChart = ({ data }: { data: AssetProps}) => {
 
 const Dashboard = () => {
 
+  const date = new Date()
+  const dateY = date.getFullYear()
+
   const [loading, setLoading] = useState<boolean>(true)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
@@ -197,19 +212,28 @@ const Dashboard = () => {
   const [totalAssetAbove10k, setTotalAssetAbove10k] = useState<number>(0)
   const [totalAssetBelow10k, setTotalAssetBelow10k] = useState<number>(0)
 
-  const [currentMonth, setCurrentMonth] = useState<string>('')
-  const [currentYear, setCurrentYear] = useState<string>('')
-  const [gain, setGain] = useState<GainProps[]>([])
+  const [currentYear, setCurrentYear] = useState<string>(dateY.toString())
+  const [gain, setGain] = useState<MonthlyDataRes[]>([])
   const [dailyProfitByDay, setDailyProfitsByDay] = useState<DailyProfitByDayProps[]>([])
 
   const [sharingProfit, setSharingProfit] = useState<number>(0)
+
+  const defaultMonthlyData: MonthlyDataRes = {
+    monthly_data: [],
+    yearly_totals: {
+      total_deposit: 0,
+      total_gain_a: 0,
+      total_gain_z: 0,
+      total_gain: 0,
+    },
+  };
+  const currentData = gain.length > 0 ? gain[0] : defaultMonthlyData;
 
   useEffect(()=> {
     const fetchData = async () => {
       try {
         setLoading(true)
         const resInfoDash = await getInfoDashboard({
-          month: currentMonth, 
           year: Number(currentYear)
         })
         setTotalConvert(resInfoDash.total_convert_amount)
@@ -223,15 +247,14 @@ const Dashboard = () => {
         setTotalAssetBelow10k(resInfoDash.asset_below_10k)
         setSharingProfit(resInfoDash.super_user_profit)
 
-        const gainData: GainProps[] = [{
-          total_deposit: resInfoDash.total_deposit,
-          total_gain: resInfoDash.total_gain,
-          total_gain_z: resInfoDash.total_gain_z,
-          total_gain_a: resInfoDash.total_gain_a,
+        const gainData: MonthlyDataRes[] = [{
+          monthly_data: resInfoDash.monthly_data,
+          yearly_totals: resInfoDash.yearly_totals
         }];
 
         setGain(gainData)
         setErrorMessage('')
+
       } catch (error: any) {
         if (error.response && error.response.status === 400 ) {
           setErrorMessage(error.response.data.error)
@@ -246,24 +269,76 @@ const Dashboard = () => {
       }
     }
     fetchData()
-  }, [currentMonth, currentYear])
+  }, [currentYear])
 
-  const columns = [
+
+  const tableData = useMemo(() => {
+    // Create a map of existing monthly data for quick lookup
+    const monthlyDataMap = new Map<number, GainProps>();
+    currentData.monthly_data.forEach(item => {
+      monthlyDataMap.set(Number(item.month), {
+        ...item,
+        total_gain: Number(item.total_gain_a) + Number(item.total_gain_z),
+      });
+    })
+
+    // Create rows for all 12 months
+    return Array.from({ length: 12 }, (_, i) => {
+      const month = i + 1;
+      const existingData = monthlyDataMap.get(month);
+      
+      return existingData || {
+        month,
+        total_deposit: 0,
+        total_gain_a: 0,
+        total_gain_z: 0,
+        total_gain: 0,
+      };
+    });
+  }, [currentData]);
+
+  const data: GainProps[] = [
+    ...tableData,
+    {
+      month: 'TOTAL',
+      total_deposit: currentData.yearly_totals.total_deposit,
+      total_gain: Number(currentData.yearly_totals.total_gain_z) + Number(currentData.yearly_totals.total_gain_a),
+      total_gain_z: currentData.yearly_totals.total_gain_z,
+      total_gain_a: currentData.yearly_totals.total_gain_a,
+    }
+  ]
+
+  const typeLabels: Record<string, string> = {
+    1: 'Jan', 2: 'Feb', 3: 'Mar',
+    4: 'Apr', 5: 'May', 6: 'Jun',
+    7: 'Jul', 8: 'Aug', 9: 'Sep', 
+    10: 'Oct', 11: 'Nov', 12: 'Dec',
+  }
+  //////////////////// Table Column //////////////////
+  const tableColumns = [
+    { 
+      header: "Month", 
+      accessor: "month",
+      render: (value: string) => (
+        value === 'TOTAL' ? 
+        <span className="font-semibold">Total</span> : typeLabels[value] || value
+      )
+    },
     { header: 'Total Deposit',
       accessor: 'total_deposit',
-      render: (value: number) => value
+      render: (value: number) => Number(value).toFixed(2)
     },
     { header: 'Total Gain Trading',
       accessor: 'total_gain',
-      render: (value: number) => value.toFixed(2)
+      render: (value: number) => Number(value).toFixed(2)
     },
     { header: 'Gain Trading Z',
       accessor: 'total_gain_z',
-      render: (value: number) => value
+      render: (value: number) => Number(value).toFixed(2)
     },
     { header: 'Gain Trading A',
       accessor: 'total_gain_a',
-      render: (value: number) => value
+      render: (value: number) => Number(value).toFixed(2)
     },
   ]
 
@@ -275,39 +350,40 @@ const Dashboard = () => {
   }
   
   return (
-    <div className="flex flex-col gap-2 justify-center m-4">
-      <span className="text-white">Dashboard</span>
+    <div className="flex flex-col gap-2 justify-center items-center m-4">
+      <span className="text-white font-semibold">Dashboard</span>
       {loading && <Loading />}
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 justify-center">
-        <FixedText label="Total User" text={totalUser} />
-        <FixedText label="Total Profit & Commission" text={totalProfit} />
-        <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
-        <FixedText label="Total Withdraw" text={totalWithdraw} />
-        <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />
-        <FixedText label="Total Profit Sharing" text={sharingProfit} />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 items-center justify-center">
-
+      <div className="flex flex-col md:flex-row gap-4 w-full justify-center">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 justify-center items-center w-full">
+          <FixedText label="Total User" text={totalUser} />
+          <FixedText label="Total Profit & Commission" text={totalProfit} />
+          <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
+          <FixedText label="Total Withdraw" text={totalWithdraw} />
+          <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />
+          <FixedText label="Total Profit Sharing" text={sharingProfit} />
+        </div>
         <AssetChart data={dataAsset} />
 
-        <div className="flex flex-col items-center justify-center bg-white p-2 rounded-xl h-full">
+      </div>
+
+      <div className="flex flex-col gap-2 items-center justify-center w-full">
+
+        <div className="flex flex-col items-center justify-center bg-white p-2 rounded-xl w-full">
           <span  className="font-bold">Monthly Summary Trading</span>
+
           <div className="flex flex-row gap-2 w-full">
-            <SelectMonth value={currentMonth} 
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentMonth(e.target.value)} />
             <SelectYear value={currentYear}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrentYear(e.target.value)} />
           </div>
-          <Tables columns={columns} data={gain} 
-            needDate={false}
+          <Tables columns={tableColumns} data={data} 
           />
         </div>
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center w-full">
         {dailyProfitByDay.length > 0 ? (
           <DailyProfitChart data={dailyProfitByDay} />
         ) : <Loading />}

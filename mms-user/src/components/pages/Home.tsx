@@ -52,7 +52,7 @@ const Home = () => {
     return fixedTypes.map((type) => ({
       transaction_type: type,
       total_amount: totalsMap.get(type) ?? 0,
-      }));
+    }));
   }, [dailyProfit]);
 
 

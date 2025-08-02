@@ -386,17 +386,16 @@ export const getAllTransactions = async ( params: paramsTx) => {
 
 
 interface infoDash {
-  month: string
   year: number
 }
 export const getInfoDashboard = async (data: infoDash) => {
-  const { month, year,} = data
+  const { year=2025 } = data
   const response = await api.get('/get_info_dashboard/', {
     params: {
-      month,
       year
     }
   })
+  console.log(response.data.monthly_data)
   return response.data
 }
 

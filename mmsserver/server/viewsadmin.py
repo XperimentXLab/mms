@@ -805,21 +805,24 @@ def process_verification(request):
 @permission_classes([IsAuthenticated])
 def get_info_dashboard(request):
   user = request.user
-  month = request.query_params.get('month')
-  year = request.query_params.get('year')
+  year = request.GET.get('year', 2025)
 
   try:
     if user.is_staff:
       
       all_profit_balance = Wallet.objects.aggregate(
         total=models.Sum('profit_point_balance'))['total'] or 0 
-      admin_profit = Wallet.objects.filter(user_id__in=['MMS00QVS', 'MMS01FXC', 'MMS0216J',  'MMS02O5G', 'MMS02GKX']).aggregate(total=models.Sum('profit_point_balance'))['total'] or 0
+      admin_profit = Wallet.objects.filter(user_id__in=[
+        'MMS00QVS', 'MMS01FXC', 'MMS0216J',  'MMS02O5G', 'MMS02GKX'
+      ]).aggregate(total=models.Sum('profit_point_balance'))['total'] or 0
       actual_profit_balance = all_profit_balance - admin_profit
       print(f'admin p: {admin_profit}')
 
       all_affiliate_balance = Wallet.objects.aggregate(
         total=models.Sum('affiliate_point_balance'))['total'] or 0
-      admin_affiliate = Wallet.objects.filter(user_id__in=['MMS01FXC']).aggregate(total=models.Sum('affiliate_point_balance'))['total'] or 0
+      admin_affiliate = Wallet.objects.filter(user_id__in=[
+        'MMS01FXC'
+      ]).aggregate(total=models.Sum('affiliate_point_balance'))['total'] or 0
       actual_affiliate_balance = all_affiliate_balance - admin_affiliate
       print(f'admin af: {admin_affiliate}')
 
@@ -853,27 +856,31 @@ def get_info_dashboard(request):
         total=models.Sum('fee'))['total'] or 0 
       
 
-      if month and year:
+      if year is not None:
         try:
-          performance, _ = Performance.objects.get_or_create(month=month, year=year)
-          serializer = PerformanceSerializer(performance)
-          total_deposit = serializer.data.get('total_deposit')
-          total_gain_a = serializer.data.get('total_gain_a')
-          total_gain_z = serializer.data.get('total_gain_z')
-          total_gain = Decimal(total_gain_a) + Decimal(total_gain_z)
+          performance = Performance.objects.filter(year=year).order_by('month')
+          serializer = PerformanceSerializer(performance, many=True)
+
+          # Calculate yearly total
+          yearly_totals = {
+            'total_deposit': sum(Decimal(p['total_deposit']) for p in serializer.data),
+            'total_gain_a': sum(Decimal(p['total_gain_a']) for p in serializer.data),
+            'total_gain_z': sum(Decimal(p['total_gain_z']) for p in serializer.data),
+          }
+
+        except Performance.DoesNotExist:
+          return Response({'error': f'Performance for year {year} not found,'}, status=404)
         except Exception as e:
-          logger.error(f"Error retrieving performance data for {month}/{year}: {str(e)}")
-          return Response({'error': str(e)}, status=500)
-      else:
-        total_deposit = Decimal('0.00') 
-        total_gain = Decimal('0.00')
-        total_gain_a = Decimal('0.00')
-        total_gain_z = Decimal('0.00')
-      
+          logger.error(f"Error retrieving performance data for {year}: {str(e)}")
+          return Response({'error': str(e)}, status=500)    
+
       total_user = User.objects.count()
 
 
-      admin_asset = Asset.objects.filter(user_id__in=['MMS00QVS', 'MMS01FXC', 'MMS0216J',  'MMS02O5G', 'MMS02GKX']).aggregate(total=models.Sum('amount'))['total'] or 0
+      admin_asset = Asset.objects.filter(
+        user_id__in=[
+          'MMS00QVS', 'MMS01FXC', 'MMS0216J',  'MMS02O5G', 'MMS02GKX'
+        ]).aggregate(total=models.Sum('amount'))['total'] or 0
       print(f'admin as: {admin_asset}')
       all_asset_amount = Asset.objects.aggregate(
         total=models.Sum('amount'))['total'] or 0  
@@ -894,10 +901,8 @@ def get_info_dashboard(request):
         'daily_profits': list(daily_profits),
         'total_withdraw_amount': total_withdraw_amount,
         'total_withdraw_fee': total_withdraw_fee,
-        'total_deposit' : total_deposit,
-        'total_gain': total_gain,
-        'total_gain_a': total_gain_a,
-        'total_gain_z': total_gain_z,
+        'monthly_data': serializer.data,
+        'yearly_totals': yearly_totals,
         'total_user': total_user,
         'asset_above_10k': asset_above_10k,
         'asset_below_10k': asset_below_10k,
