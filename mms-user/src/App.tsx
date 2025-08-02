@@ -3,8 +3,9 @@ import ProtectedRoute from "./components/auth/ProtectedRoute"
 import { lazy, Suspense } from "react"
 import Loading from "./components/props/Loading"
 
-//import Updating from "./components/auth/Updating"
+import Updating from "./components/auth/Updating"
 
+/*
 const MainLayout = lazy(() => import("./components/layout/MainLayout"))
 const Home = lazy(() => import("./components/pages/Home"))
 const Register = lazy(() => import("./components/auth/Register"))
@@ -29,14 +30,14 @@ const ProfitStatement = lazy(() => import('./components/pages/WalletStatement').
 const TransferStatement = lazy(() => import('./components/pages/WalletStatement').then(m => ({ default: m.TransferStatement })))
 const WithdrawalWalletStatement = lazy(() => import('./components/pages/WalletStatement').then(m => ({ default: m.WithdrawalWalletStatement })))
 
-
+*/
 
 
 function App() {
 
   const router = createBrowserRouter(createRoutesFromElements(
     <Route>
-      
+      {/*
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<MainLayout />} >
           <Route index element={<Home />} />
@@ -94,8 +95,8 @@ function App() {
       />
       
       <Route path="*" element={<NotFound />} />
-
-      {/*<Route path="*" element={<Updating />} />*/}
+*/}
+      <Route path="*" element={<Updating />} />
       
     </Route>
   ))
