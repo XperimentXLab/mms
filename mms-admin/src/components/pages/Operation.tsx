@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Buttons from "../props/Buttons"
 import { Inputss, InputwithVal } from "../props/Formss"
 import { SelectDay, SelectMonth, SelectYear } from "../props/DropDown"
@@ -32,6 +32,22 @@ const Operation = () => {
   const [errorMessage, setErrorMessage] = useState<string>("")
   const [errorMessageF, setErrorMessageF] = useState<string>("")
 
+  const [todayProfitRate, setTodayProfitRate] = useState<string>('')
+  const date = new Date()
+  const todayD: number = date.getDate()
+  const todayM: number = date.getMonth()+1
+  const todayY: number = date.getFullYear()
+  const dataRes = async ()=>{
+    const res = await get_profit({
+      activeDayProfit: todayD,
+      activeMonthProfit: todayM,
+      activeYearProfit: todayY,
+    })
+    setTodayProfitRate(res.daily_profit_rate || 0)
+  }
+  useEffect (()=>{
+    dataRes()
+  }, [activeDayProfit, activeMonthProfit, activeYearProfit])
 
   const findOpsData = async () => {
     try {
@@ -266,7 +282,7 @@ const Operation = () => {
 
         <form onSubmit={toggleDistributeProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
           <span className="font-semibold">Profit Distribution </span>
-          <FixedText label="Today Profit" text={String(dailyProfitRate)}/>
+          <FixedText label="Today Profit" text={String(todayProfitRate)}/>
           <Buttons type="submit">Distribute</Buttons>
         </form>
 

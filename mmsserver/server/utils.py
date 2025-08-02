@@ -165,7 +165,12 @@ def distribute_profit_manually():
     }
     
     try:
-        operational_profit = OperationalProfit.objects.first()
+        today = timezone.localdate()
+        day = today.day
+        month = today.month
+        year = today.year
+        
+        operational_profit = OperationalProfit.objects.get(active_day_profit=day, active_month_profit=month, active_year_profit=year)
         if not operational_profit:
             logger.error("OperationalProfit record not found.")
             raise Exception("OperationalProfit record not found. Cannot distribute profit.")

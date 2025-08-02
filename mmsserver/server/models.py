@@ -305,16 +305,16 @@ class Asset(models.Model):
 
 class Transaction(models.Model):
   TRANSACTION_TYPES = (
-    ('WITHDRAWAL', 'Withdrawal'), #Master Point, Profit, Affiliate, Introducer >>
-    ('CONVERT', 'Convert'), #Profit, Affiliate, Introducer >> Master Point
-    ('TRANSFER', 'Transfer'), #Master Point > User Master Point
-    ('DISTRIBUTION', 'Distribution'), #Admin > Profit Point
-    ('AFFILIATE_BONUS', 'Affiliate Bonus'), #Admin > Affiliate Point
-    ('INTRODUCER_BONUS', 'Introducer Bonus'), #Admin > Affiliate Point
-    ('ASSET_PLACEMENT', 'Asset Placement'), #Master Point >> Asset
+    ('WITHDRAWAL', 'Withdrawal'), # Profit, Affiliate, Introducer >>
+    ('CONVERT', 'Convert'), # Profit, Affiliate, Introducer >> Master Point
+    ('TRANSFER', 'Transfer'), # Master Point > User Master Point
+    ('DISTRIBUTION', 'Distribution'), # Admin > Profit Point
+    ('AFFILIATE_BONUS', 'Affiliate Bonus'), # Admin > Affiliate Point
+    ('INTRODUCER_BONUS', 'Introducer Bonus'), # Admin > Affiliate Point
+    ('ASSET_PLACEMENT', 'Asset Placement'), # Master Point >> Asset
     ('ASSET_WITHDRAWAL', 'Asset Withdrawal'), #Asset > Profit Point
-    ('WELCOME_BONUS', 'Welcome Bonus'), #Admin > Asset
-    ('SHARING_PROFIT', 'Sharing Profit'), #Admin > Profit Point
+    ('WELCOME_BONUS', 'Welcome Bonus'), # Admin > Asset
+    ('SHARING_PROFIT', 'Sharing Profit'), # Admin > Profit Point
     ('MIGRATION', 'Migration')
   )
     

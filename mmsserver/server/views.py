@@ -374,7 +374,7 @@ def get_commission_transaction(request):
     month = request.GET.get('month')
     year = request.GET.get('year')
 
-    query = Q(user=user, point_type='COMMISSION')
+    query = Q(user=user, point_type='COMMISSION', transaction_type__in=['AFFILIATE_BONUS', 'INTRODUCER_BONUS', 'MIGRATION'])
     if start_date and end_date:
       query &= Q(created_at__date__range=[start_date, end_date])
     if month and year:
@@ -403,7 +403,7 @@ def get_accumulate_commission_tx(request):
     month = request.GET.get('month')
     year = request.GET.get('year')
     # Base queryset
-    qs = Transaction.objects.filter(point_type='COMMISSION', user=user)
+    qs = Transaction.objects.filter(point_type='COMMISSION', user=user, transaction_type__in=['AFFILIATE_BONUS', 'INTRODUCER_BONUS', 'MIGRATION'])
 
     # Optional filtering by month and year
     if month and year:
