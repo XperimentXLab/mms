@@ -261,7 +261,6 @@ const WithdrawReq = () => {
       {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span> }
 
       <Tables columns={columns} data={data}
-        needDate={false}
       />
     </div>
   )
