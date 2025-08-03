@@ -708,7 +708,7 @@ def place_asset(request):
 def withdraw_profit(request):
   user = request.user
   amount = request.data.get('amount', '0.00')
-  reference = request.data.get('reference', f'Profit Withdrawal: {amount}')
+  reference = request.data.get('reference', '')
 
   if not amount:
     return Response({'error': 'Amount is required'}, status=400)

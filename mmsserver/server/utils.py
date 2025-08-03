@@ -754,13 +754,10 @@ class ProfitService:
 
                 fee_rate = Decimal('0.02') #Fee Rate 2%
                 fee = txn.amount * fee_rate
-                actual_amount = txn.amount - fee
 
                 super_user_wallet.profit_point_balance += fee
                 super_user_wallet.save()
                 
-                # Update transaction description
-                txn.description = f"Profit withdrawal to be received: {actual_amount}"
                 txn.save()
                 
             elif action == 'Reject':
@@ -866,7 +863,7 @@ class CommissionService:
                 transaction_type='WITHDRAWAL',
                 point_type='COMMISSION',
                 amount=amount,
-                description=f"Withdrawal request (Pending): {amount}",
+                description=f"Commission withdrawal to be received: {actual_amount}",
                 request_status='PENDING',
                 reference=reference
             )
@@ -904,13 +901,10 @@ class CommissionService:
 
                 fee_rate = Decimal('0.02') #Fee Rate 2%
                 fee = txn.amount * fee_rate
-                actual_amount = txn.amount - fee
 
                 super_user_wallet.profit_point_balance += fee
                 super_user_wallet.save()
                 
-                # Update transaction description
-                txn.description = f"Profit withdrawal to be received: {actual_amount}"
                 txn.save()
 
             elif action == 'Reject':

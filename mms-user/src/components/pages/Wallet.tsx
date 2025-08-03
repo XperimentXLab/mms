@@ -147,7 +147,7 @@ const Wallet = () => {
         alert(error.response.data.error)
       } else {
         console.log(error)
-        alert('Error occured during withdrawal request. Please try again')
+        alert('Error occured during withdrawal profit. Please try again')
       }
     } finally {
       setLoading(false)
@@ -170,7 +170,7 @@ const Wallet = () => {
         alert(error.response.data.error)
       } else {
         console.log(error)
-        alert('Error occured during withdrawal request. Please try again')
+        alert('Error occured during converting profit. Please try again')
       }
     } finally {
       setLoading(false)
@@ -197,7 +197,7 @@ const Wallet = () => {
         alert(error.response.data.error)
       } else {
         console.log(error)
-        alert('Error occured during withdrawal request. Please try again')
+        alert('Error occured during withdrawal commission. Please try again')
       }
     } finally {
       setLoading(false)
