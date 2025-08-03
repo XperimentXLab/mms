@@ -465,12 +465,12 @@ export const processWDCommission = async (data: processWDRes) => {
 }
 
 
-/*
+
 import FileSaver from 'file-saver';
 
 export const downloadExcel = async () => {
   try {
-    const response = await api.get('/api/export-excel/', {
+    const response = await api.get('/export_excel/', {
       responseType: 'blob',
     });
 
@@ -479,12 +479,22 @@ export const downloadExcel = async () => {
     });
 
     FileSaver.saveAs(blob, 'data.xlsx');
+
+    // Create download link
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'report.xlsx');
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+    
   } catch (error) {
     console.error('Excel download failed:', error);
   }
 }
-
-call downloadExcel() from a button
-
+/*
+now using pandas in django
 For production, configure Nginx or your server to handle media/static files properly.
 */

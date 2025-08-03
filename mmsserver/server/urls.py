@@ -4,6 +4,8 @@ from .viewsadmin import *
 
 urlpatterns = [
 
+  path('export_excel/', export_excel, name='export_excel'),
+
   #auth
   path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
   path('token/refresh/', refresh_token, name='token_refresh'),

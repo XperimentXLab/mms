@@ -5,6 +5,8 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import type { ColumnDef } from "@tanstack/react-table";
+
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -70,10 +72,13 @@ const User = () => {
      },
   ]
 
+
   return (
     <div className="flex flex-col gap-3 m-4 justify-center">
 
       <span className="text-white">All Users</span>
+
+      {/*<Buttons type="button" onClick={downloadExcel}>Export</Buttons>*/}
 
       <NewTable 
         columns={columnsUserDetails}

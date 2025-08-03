@@ -950,24 +950,45 @@ def manage_performance(request):
   
 
 
-'''
-from openpyxl import Workbook
-from openpyxl.writer.excel import save_virtual_workbook
 
+import pandas as pd
+from io import BytesIO
+from django.http import HttpResponse
+
+@api_view(['GET'])
 def export_excel(request):
-    wb = Workbook()
-    ws = wb.active
-    ws.title = "Data"
+    # Optional: filter by date range from query params
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    users = User.objects.all()
+    if start_date and end_date:
+        users = users.filter(created_at__range=[start_date, end_date])
 
-    # Example data
-    ws.append(["ID", "Name", "Email"])
-    ws.append([1, "Alice", "alice@example.com"])
-    ws.append([2, "Bob", "bob@example.com"])
+    # Build DataFrame
+    data = []
+    for user in users:
+        data.append({
+          "Joined Date": user.created_at.strftime('%d/%m/%Y'),
+          "Joined Time": user.created_at.strftime('%I:%M:%S %p'),
+          "User ID": user.id,
+          "Username": user.username,
+          "I/C": user.ic,
+          "Email": user.email,
+          "Referral ID": user.referred_by,
+          "Verification": user.verification_status,
+        })
+    df = pd.DataFrame(data)
 
-    response = Response({
-        content=save_virtual_workbook(wb),
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    }, status=200)
-    response['Content-Disposition'] = 'attachment; filename="data.xlsx"'
+    # Export to Excel
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+      df.to_excel(writer, sheet_name='User Report', index=False)
+
+    buffer.seek(0)
+    response = HttpResponse(
+      buffer.getvalue(),
+      content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename="user_report.xlsx"'
     return response
-'''
+
