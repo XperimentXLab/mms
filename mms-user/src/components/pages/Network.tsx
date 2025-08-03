@@ -71,7 +71,7 @@ const Network = () => {
           <LevelDisplay
             users={level2}
           />
-        {level3 && 
+        {level3.length > 0 && 
           <div className="flex flex-col gap-2">
             <span className="font-semibold">{userId} - Level 3 - {level3.length} user</span>
             <LevelDisplay 
@@ -79,7 +79,7 @@ const Network = () => {
             />
           </div>
         }
-        {level4 && 
+        {level4.length > 0 && 
           <div className="flex flex-col gap-2">
             <span className="font-semibold">{userId} - Level 4 - {level4.length} user</span>
             <LevelDisplay 
@@ -87,7 +87,7 @@ const Network = () => {
             />
           </div>
           }
-        {level5 && 
+        {level5.length > 0 && 
           <div className="flex flex-col gap-2">
             <span className="font-semibold">{userId} - Level 5 - {level5.length} user</span>
             <LevelDisplay 
