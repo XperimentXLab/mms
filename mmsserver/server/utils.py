@@ -674,7 +674,7 @@ class ConversionLimitService:
 class ProfitService:
 
     @staticmethod
-    def request_withdrawal(user, amount):
+    def request_withdrawal(user, amount, reference=""):
         """Request Profit Point withdrawal (min 50 USDT, 2% fee)"""
 
         user_ = User.objects.get(id=user.id)
@@ -718,6 +718,7 @@ class ProfitService:
                 amount=amount,
                 description=f"Profit withdrawal to be received: {actual_amount}",
                 request_status='PENDING',
+                reference=reference
             )
             
             withdrawal_request.transaction = txn
@@ -814,7 +815,7 @@ class ProfitService:
 
 class CommissionService:
     @staticmethod
-    def request_withdrawal(user, amount):
+    def request_withdrawal(user, amount, reference=""):
         """Request Commission Point withdrawal (min 50 USDT, 2% fee)"""
 
         if amount < 50:
@@ -862,6 +863,7 @@ class CommissionService:
                 amount=amount,
                 description=f"Withdrawal request (Pending): {amount}",
                 request_status='PENDING',
+                reference=reference
             )
             
             withdrawal_request.transaction = txn
