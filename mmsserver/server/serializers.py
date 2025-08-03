@@ -80,18 +80,21 @@ class UserSerializer(serializers.ModelSerializer):
     return None
   
   def get_master_point(self, obj):
-    if obj.wallet:
-      return obj.wallet.master_point_balance
+    wallet = getattr(obj, 'wallet', None)
+    if wallet:
+      return wallet.master_point_balance
     return Decimal('0.00')
   
   def get_profit_point(self, obj):
-    if obj.wallet:
-      return obj.wallet.profit_point_balance
+    wallet = getattr(obj, 'wallet', None)
+    if wallet:
+      return wallet.profit_point_balance
     return Decimal('0.00')
   
   def get_commission_point(self, obj):
-    if obj.wallet:
-      return obj.wallet.affiliate_point_balance + obj.wallet.introducer_point_balance
+    wallet = getattr(obj, 'wallet', None)
+    if wallet:
+      return wallet.affiliate_point_balance + wallet.introducer_point_balance
     return Decimal('0.00')
     
   def validate_email(self, value):
@@ -170,6 +173,7 @@ class UserSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError({'password': 'This field is required.'})
     
     user = User.objects.create_user(**validated_data, password=password)
+    Wallet.objects.create(user=user)
     return user
 
 class UserNetworkSerializer(serializers.ModelSerializer):
