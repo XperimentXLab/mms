@@ -463,3 +463,28 @@ export const processWDCommission = async (data: processWDRes) => {
   })
   return response.data
 }
+
+
+/*
+import FileSaver from 'file-saver';
+
+export const downloadExcel = async () => {
+  try {
+    const response = await api.get('/api/export-excel/', {
+      responseType: 'blob',
+    });
+
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    FileSaver.saveAs(blob, 'data.xlsx');
+  } catch (error) {
+    console.error('Excel download failed:', error);
+  }
+}
+
+call downloadExcel() from a button
+
+For production, configure Nginx or your server to handle media/static files properly.
+*/

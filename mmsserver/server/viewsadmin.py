@@ -947,3 +947,27 @@ def manage_performance(request):
   except Exception as e:
     logger.error(f"Error managing performance: {str(e)}")
     return Response({'error': str(e)}, status=500)
+  
+
+
+'''
+from openpyxl import Workbook
+from openpyxl.writer.excel import save_virtual_workbook
+
+def export_excel(request):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Data"
+
+    # Example data
+    ws.append(["ID", "Name", "Email"])
+    ws.append([1, "Alice", "alice@example.com"])
+    ws.append([2, "Bob", "bob@example.com"])
+
+    response = Response({
+        content=save_virtual_workbook(wb),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    }, status=200)
+    response['Content-Disposition'] = 'attachment; filename="data.xlsx"'
+    return response
+'''
