@@ -287,6 +287,9 @@ def get_user_network(request):
     response_data = {
       'level_1': [],
       'level_2': [],
+      'level_3': [],
+      'level_4': [],
+      'level_5': [],
       'total_asset': network_level_asset['total_asset'] or 0,
       'total_user': network_total,
     }
@@ -295,6 +298,12 @@ def get_user_network(request):
       response_data['level_1'] = UserNetworkSerializer(network_level[0], many=True).data
     if len(network_level) >= 2:
       response_data['level_2'] = UserNetworkSerializer(network_level[1], many=True).data
+    if len(network_level) >= 3:
+      response_data['level_3'] = UserNetworkSerializer(network_level[2], many=True).data
+    if len(network_level) >= 4:
+      response_data['level_4'] = UserNetworkSerializer(network_level[3], many=True).data
+    if len(network_level) >= 5:
+      response_data['level_5'] = UserNetworkSerializer(network_level[4], many=True).data
 
     return Response(response_data, status=200)
   except User.DoesNotExist: 

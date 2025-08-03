@@ -129,16 +129,16 @@ class User(AbstractUser):
     direct_network = User.objects.filter(referred_by=self.id)
     return direct_network
   
-  def get_indirect_network(self):
+  def get_indirect_network(self, max_depth=5):
     """
     - Retrieves indirect line for this user
     """
     downline = []
     current_level_users = list(self.get_direct_network())
 
-    depth = 0
-    # Process up to 2 levels (depth 0 is the current user, depth 1 is direct, depth 2 is indirect.
-    while current_level_users and depth < 2:
+    depth = 1
+    # depth 0 is the current user, depth 1 is direct, depth 2 is indirect
+    while current_level_users and depth <= max_depth:
       downline.append(current_level_users)
       next_level_users = User.objects.filter(referred_by__in=[user.id for user in current_level_users])
       current_level_users = list(next_level_users)

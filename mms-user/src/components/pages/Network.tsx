@@ -19,6 +19,9 @@ const Network = () => {
 
   const [level1, setLevel1] = useState<User[]>([])
   const [level2, setLevel2] = useState<User[]>([])
+  const [level3, setLevel3] = useState<User[]>([])
+  const [level4, setLevel4] = useState<User[]>([])
+  const [level5, setLevel5] = useState<User[]>([])
   const [userId, setUserId] = useState<string>('')
   const [totalAsset, setTotalAsset] = useState<number>(0)
   const [totalUser, setTotalUser] = useState<number>(0)
@@ -32,6 +35,9 @@ const Network = () => {
       const response = await userNetwork()
       setLevel1(response.level_1 || [])
       setLevel2(response.level_2 || [])
+      setLevel3(response.level_3 || [])
+      setLevel4(response.level_4 || [])
+      setLevel5(response.level_5 || [])
       setTotalAsset(response.total_asset || 0)
       setTotalUser(response.total_user || 0)
       const resID = await userDetails()
@@ -65,6 +71,19 @@ const Network = () => {
           <LevelDisplay
             users={level2}
           />
+        {level3 && <span className="font-semibold">{userId} - Level 3 - {level3.length} user</span>}
+          <LevelDisplay 
+            users={level3}
+          />
+        {level4 && <span className="font-semibold">{userId} - Level 4 - {level4.length} user</span>}
+          <LevelDisplay 
+            users={level4}
+          />
+        {level5 && <span className="font-semibold">{userId} - Level 5 - {level5.length} user</span>}
+          <LevelDisplay 
+            users={level5}
+          />
+          
       </div>
 
       {/*<div className="w-full max-w-4xl bg-white shadow-md shadow-blue-800 p-5 rounded-xl border">
