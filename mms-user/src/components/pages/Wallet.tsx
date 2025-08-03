@@ -7,7 +7,7 @@ import { FaChevronUp } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 import { Tables, type TableColumn } from "../props/Tables"
 import { InfoWithdraw } from "../props/Info"
-import { convertCommissionToMaster, convertProfitToMaster, getWallet, transferMasterPoint, userDetails, withdrawProfit } from "../auth/endpoints"
+import { convertCommissionToMaster, convertProfitToMaster, getWallet, transferMasterPoint, userDetails, withdrawCommission, withdrawProfit } from "../auth/endpoints"
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -41,7 +41,6 @@ const Wallet = () => {
   const [convertCommision, setCovertCommision] = useState<number>(0)
   // reference
   const [reference, setReference] = useState<string>('')
-  const [referenceWithdraw, setReferenceWithdraw] = useState<string>('')
 
   const [bonusUpDown, setBonusUpDown] = useState<boolean>(false)
   const toggleBonusUpDown = () => {
@@ -137,10 +136,8 @@ const Wallet = () => {
     e.preventDefault()
     try {
       setLoading(true)
-      setReferenceWithdraw(walletAddress || '')
       await withdrawProfit({
         amount: profitPoint,
-        reference: referenceWithdraw
       })
       alert(`Successfully requested withdrawal of ${profitPoint} profit points. Please wait 24 hours for approval.`)
       setProfitPoint(0)
@@ -189,10 +186,8 @@ const Wallet = () => {
       if (walletAddress === undefined) {
         alert('Please set your wallet address in the profile page.')
       }
-      setReferenceWithdraw(walletAddress || '')
-      await withdrawProfit({
-        amount: commissionPoint,
-        reference: referenceWithdraw
+      await withdrawCommission({
+        amount: commissionPoint
       })
       alert(`Successfully requested withdrawal of ${commissionPoint} commission points. Please wait 24 hours for approval.`)
       setCommissionPoint(0)

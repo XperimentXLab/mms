@@ -37,7 +37,6 @@ interface TablesProps {
   data: any[];
   action?: ActionProps
   emptyMessage?: string;
-  footerData?: any[];
 }
 
 
@@ -71,7 +70,6 @@ export const Tables = ({
   columns, 
   data, 
   emptyMessage = "No data available",
-  footerData
 }: TablesProps) => {
 
   const columnDefs = useMemo<ColumnDef<any, any>[]>(
@@ -137,15 +135,6 @@ export const Tables = ({
             </tr>
           )}
         </tbody>
-
-        {footerData && footerData.length > 0 &&
-          <tfoot className="bg-gray-50">
-            
-            <tr>
-              
-            </tr>
-            </tfoot>
-        }
 
       </table>
 

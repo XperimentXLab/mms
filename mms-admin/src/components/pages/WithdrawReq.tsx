@@ -3,7 +3,7 @@ import Loading from "../props/Loading"
 import { getWDReq, processWDAsset, processWDCommission, processWDProfit } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
 import dayjs from "dayjs";
-import utc from "dayjs";
+import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { Tables } from "../props/Tables";
 dayjs.extend(utc);
@@ -44,22 +44,24 @@ const WithdrawReq = () => {
       setLoading(true)
       const response = await getWDReq()
       const formattedData = response.map((user: any) => {
-      const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur");
+      const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur")
       return {
         ...user,
         created_date: dt.format("YYYY-MM-DD"),
         created_time: dt.format("HH:mm:ss"),
-        created_datetime: dt.format("YYYY-MM-DD HH:mm:ss"),
       }
     });
       setTransactions(formattedData)
+      console.log(formattedData)
       const pointTypes: pointType[] = Array.from(new Set(response.map((user: any) => user.point_type)));
       setPoint(pointTypes);
     } catch (error: any) {
-      if (error.response && error.response.status == 400 || error.response.status == 401) {
+      if (error.response && error.response.status === 400) {
         setErrorMessage(error.response.data.error)
-        alert(error.response.data.error)
+      } else if (error.response && error.response.status === 401) {
+        setErrorMessage(error.response.data.error)
       } else {
+        setErrorMessage('Error fetching withdraw request')
         console.error(error)
       }
     } finally {
@@ -253,7 +255,7 @@ const WithdrawReq = () => {
   const data = transactions
 
   return (
-    <div className="flex m-5 justify-center flex-col">
+    <div className="flex m-5 justify-center flex-col gap-1">
       { loading && <Loading />}
 
       <span className="font-semibold text-white">Withdrawal Request</span>

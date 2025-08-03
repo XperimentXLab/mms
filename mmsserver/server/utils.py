@@ -818,6 +818,8 @@ class CommissionService:
     def request_withdrawal(user, amount, reference=""):
         """Request Commission Point withdrawal (min 50 USDT, 2% fee)"""
 
+        amount = Decimal(amount)
+
         if amount < 50:
             raise ValidationError("Minimum withdrawal amount is 50 USDT")
         
@@ -825,7 +827,11 @@ class CommissionService:
             raise ValidationError("Amount must be a multiple of 10")
         
         wallet = Wallet.objects.get(user=user)
-        commission_point = wallet.affiliate_point_balance + wallet.introducer_point_balance
+        
+        affiliate_balance = Decimal(wallet.affiliate_point_balance)
+        introducer_balance = Decimal(wallet.introducer_point_balance)
+        
+        commission_point = affiliate_balance + introducer_balance
         if commission_point < amount:
             raise ValidationError("Insufficient Commission Point balance")
         
@@ -845,13 +851,12 @@ class CommissionService:
             )
             
             # Reserve the amount by deducting from balance
-            affiliate_balance = wallet.affiliate_point_balance
             balance_deduct = amount - affiliate_balance
             if affiliate_balance >= amount:
-                wallet.affiliate_point_balance -= Decimal(amount)
+                wallet.affiliate_point_balance -= amount
             else:
                 wallet.affiliate_point_balance = Decimal('0.00')
-                wallet.introducer_point_balance -= Decimal(balance_deduct)
+                wallet.introducer_point_balance -= balance_deduct
             wallet.save()
             
             # Create pending transaction

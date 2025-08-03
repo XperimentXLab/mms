@@ -779,7 +779,7 @@ def withdraw_commission(request):
     return Response({'error': 'Amount must be in number'}, status=400)
 
   try:
-    wallet, withdrawal_request = CommissionService.request_withdrawal(
+    withdrawal_request, wallet = CommissionService.request_withdrawal(
       user,
       amount,
       reference
