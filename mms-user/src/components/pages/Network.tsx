@@ -71,18 +71,30 @@ const Network = () => {
           <LevelDisplay
             users={level2}
           />
-        {level3 && <span className="font-semibold">{userId} - Level 3 - {level3.length} user</span>}
-          <LevelDisplay 
-            users={level3}
-          />
-        {level4 && <span className="font-semibold">{userId} - Level 4 - {level4.length} user</span>}
-          <LevelDisplay 
-            users={level4}
-          />
-        {level5 && <span className="font-semibold">{userId} - Level 5 - {level5.length} user</span>}
-          <LevelDisplay 
-            users={level5}
-          />
+        {level3 && 
+          <div className="flex flex-col gap-2">
+            <span className="font-semibold">{userId} - Level 3 - {level3.length} user</span>
+            <LevelDisplay 
+              users={level3}
+            />
+          </div>
+        }
+        {level4 && 
+          <div className="flex flex-col gap-2">
+            <span className="font-semibold">{userId} - Level 4 - {level4.length} user</span>
+            <LevelDisplay 
+              users={level4}
+            />
+          </div>
+          }
+        {level5 && 
+          <div className="flex flex-col gap-2">
+            <span className="font-semibold">{userId} - Level 5 - {level5.length} user</span>
+            <LevelDisplay 
+              users={level5}
+            />
+          </div>
+        }
           
       </div>
 
