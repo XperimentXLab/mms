@@ -7,6 +7,8 @@ urlpatterns = [
 
   #Export
   path('export_all_user/', export_all_user, name='export_all_user'),
+  path('export_all_verification/', export_all_verification, name='export_all_verification'),
+  path('export_all_tx/', export_all_tx, name='export_all_tx'),
 
   #auth
   path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
@@ -57,10 +59,6 @@ urlpatterns = [
   path('all_network/', get_all_network, name='all_network'),
   path('all_users/', get_all_user, name='all_users'),
   path('all_transactions/', get_all_transaction, name='all_transactions'),
-  path('all_master_tx/', get_all_master_tx, name="all_master_tx"),
-  path('all_profit_tx/', get_all_profit_tx, name="all_profit_tx"),
-  path('all_commission_tx/', get_all_commission_tx, name="all_commission_tx"),
-  path('all_asset_tx/', get_all_asset_tx, name="all_asset_tx"),
   path('all_withdrawal_requests/', get_all_withdrawal_request, name='all_withdrawal_requests'),
   path('all_deposit_locks/', get_all_deposit_lock, name='all_deposit_locks'),
   path('manage_admin_mp/', manage_admin_mp, name='manage_admin_mp'),

@@ -396,67 +396,6 @@ def get_all_transaction(request):
   except Exception as e:
     logger.error(f"Error retrieving all transactions: {str(e)}")
     return Response({'error': str(e)}, status=400)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_all_master_tx(request):
-  user = request.user
-  try:
-    if user.is_staff:
-      all_master_tx = Transaction.objects.filter(point_type__in=['MASTER'])
-      serializer = TransactionSerializer(all_master_tx, many=True)
-      return Response(serializer.data, status=200)
-    else:
-      return Response({'error': 'Permission denied'}, status=403)
-  except Exception as e:
-    logger.error(f"Error retrieving all master transactions: {str(e)}")
-    return Response({'error': str(e)}, status=400)
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_all_profit_tx(request):
-  user = request.user
-  try:
-    if user.is_staff:
-      all_profit_tx = Transaction.objects.filter(point_type__in=['PROFIT'])
-      serializer = TransactionSerializer(all_profit_tx, many=True)
-      return Response(serializer.data, status=200)
-    else:
-      return Response({'error': 'Permission denied'}, status=403)
-  except Exception as e:
-    logger.error(f"Error retrieving all profit transactions: {str(e)}")
-    return Response({'error': str(e)}, status=400)
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_all_commission_tx(request):
-  user = request.user
-  try:
-    if user.is_staff:
-      all_commission_tx = Transaction.objects.filter(point_type__in=['COMMISSION'])
-      serializer = TransactionSerializer(all_commission_tx, many=True)
-      return Response(serializer.data, status=200)
-    else:
-      return Response({'error': 'Permission denied'}, status=403)
-  except Exception as e:
-    logger.error(f"Error retrieving all commission transactions: {str(e)}")
-    return Response({'error': str(e)}, status=400)
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_all_asset_tx(request):
-  user = request.user
-  try:
-    if user.is_staff:
-      all_asset_tx = Transaction.objects.filter(point_type__in=['ASSET'])
-      serializer = TransactionSerializer(all_asset_tx, many=True)
-      return Response(serializer.data, status=200)
-    else:
-      return Response({'error': 'Permission denied'}, status=403)
-  except Exception as e:
-    logger.error(f"Error retrieving all asset transactions: {str(e)}")
-    return Response({'error': str(e)}, status=400)
   
 
 @api_view(['GET'])
@@ -888,7 +827,8 @@ def get_info_dashboard(request):
       all_asset_above_10k = Asset.objects.filter(amount__gte=10000).aggregate(total=models.Sum('amount'))['total'] or 0
       asset_above_10k = Decimal(all_asset_above_10k) - Decimal(admin_asset)
       asset_below_10k = Asset.objects.filter(amount__lt=10000).aggregate(total=models.Sum('amount'))['total'] or 0
-      
+      user_asset_above_10k = Asset.objects.filter(amount__gte=10000).count()
+      user_asset_below_10k = Asset.objects.filter(amount__lt=10000).count()
 
       super_user = User.objects.get(id='MMS00QVS')
       super_user_profit = Wallet.objects.filter(user=super_user).aggregate(
@@ -906,6 +846,8 @@ def get_info_dashboard(request):
         'total_user': total_user,
         'asset_above_10k': asset_above_10k,
         'asset_below_10k': asset_below_10k,
+        'user_asset_above_10k': user_asset_above_10k,
+        'user_asset_below_10k': user_asset_below_10k,
         'super_user_profit': super_user_profit,
       }, status=200)
     else: 

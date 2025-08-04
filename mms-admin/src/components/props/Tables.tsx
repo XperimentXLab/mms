@@ -16,6 +16,7 @@ import { getAllTransactions, type rangeTypeT } from "../auth/endpoints";
 import Loading from "./Loading";
 import type { TransactioDetail } from "../pages/Transactionss";
 import { Inputss } from "./Formss";
+import Buttons from "./Buttons";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -404,6 +405,8 @@ interface TableProps {
   enableFilters?: boolean
   enableDatePicker?: boolean
   enableStatusCampro?: boolean
+  downloadExcel?: () => void
+  enableExport?: boolean
 }
 
 
@@ -421,6 +424,9 @@ export const NewTable = ({
   enableFilters = true,
   enableDatePicker = true,
   enableStatusCampro = false,
+  enableExport = false,
+  downloadExcel,
+
 }: TableProps) => {
 
   const [data, setData] = useState<Data[]>([])
@@ -520,12 +526,15 @@ export const NewTable = ({
       {loading && <Loading />}
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      {enableFilters && <Inputss
-        type="text"
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        placeholder="Search user id or username"
-      />}
+      <div className="flex felx-row gap-3 items-center justify-center">
+        {enableFilters && <Inputss
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search user id or username"
+        />}
+        {enableExport && <Buttons type="button" onClick={downloadExcel}>Export</Buttons>}
+      </div>
 
       {enableDatePicker && (
         <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-2 justify-center items-center">

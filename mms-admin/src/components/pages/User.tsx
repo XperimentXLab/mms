@@ -1,6 +1,6 @@
 
 import { NewTable } from "../props/Tables"
-import { getAllUsers } from "../auth/endpoints"
+import { downloadExcelUser, getAllUsers } from "../auth/endpoints"
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -78,12 +78,12 @@ const User = () => {
 
       <span className="text-white">All Users</span>
 
-      {/*<Buttons type="button" onClick={downloadExcel}>Export</Buttons>*/}
-
       <NewTable 
         columns={columnsUserDetails}
         fetchData={getAllUsers}
         enableDatePicker={true}
+        enableExport={false}
+        downloadExcel={downloadExcelUser}
       />
 
     </div>

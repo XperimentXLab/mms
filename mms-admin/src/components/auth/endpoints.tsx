@@ -1,6 +1,8 @@
 
+
 import type { TableFetchParams } from "../props/Tables"
 import api, { generateDeviceFingerprint } from "./api"
+
 
 interface LoginRes {
   username: string
@@ -466,9 +468,11 @@ export const processWDCommission = async (data: processWDRes) => {
 
 
 
-import FileSaver from 'file-saver';
+//import FileSaver from 'file-saver';
 
-export const downloadExcel = async () => {
+export const downloadExcelUser = async () => {
+
+  //const [loading, setLoading] = useState<boolean>(false)
 
   const date = new Date()
   const dateD = date.getDay()
@@ -477,16 +481,18 @@ export const downloadExcel = async () => {
   const dateT = date.getTime()
 
   try {
+    //setLoading(true)
     const response = await api.get('/export_all_user/', {
       responseType: 'blob',
     });
 
+    /*
     const blob = new Blob([response.data], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    FileSaver.saveAs(blob, 'data.xlsx');
-
+    FileSaver.saveAs(blob, 'Report_AllUser.xlsx');
+    */
     // Create download link
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
@@ -496,11 +502,103 @@ export const downloadExcel = async () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
+
+    
+  } catch (error) {
+    console.error('Excel download failed:', error);
+  } finally {
+    //setLoading(false)
+  }
+
+}
+
+
+export const downloadExcelVerification = async () => {
+
+  const date = new Date()
+  const dateD = date.getDay()
+  const dateM = date.getMonth()
+  const dateY = date.getFullYear()
+  const dateT = date.getTime()
+
+  try {
+    const response = await api.get('/export_all_verification/', {
+      responseType: 'blob',
+    });
+
+    /*
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    FileSaver.saveAs(blob, 'Report_UserVerification.xlsx');
+    */
+    // Create download link
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Report_UserVerification_${dateD}${dateM}${dateY}_${dateT}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
     
   } catch (error) {
     console.error('Excel download failed:', error);
   }
 }
+
+interface paramsExportTx {
+  pointType?: string
+  transactionType?: string
+  startDate?: string
+  endDate?: string
+}
+export const downloadExcelTx = async (params: paramsExportTx) => {
+
+  const { pointType, transactionType, startDate, endDate } = params
+
+  const date = new Date()
+  const dateD = date.getDay()
+  const dateM = date.getMonth()+1
+  const dateY = date.getFullYear()
+  const dateT = date.getTime()
+
+  try {
+    const response = await api.get('/export_all_tx/', {
+      responseType: 'blob',
+      params: {
+        point_type: pointType,
+        transaction_type: transactionType,
+        start_date: startDate,
+        end_date: endDate,
+      }
+    });
+
+    /*
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    FileSaver.saveAs(blob, 'Report_Transactions.xlsx');
+    */
+    // Create download link
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Report_Transactions_${dateD}${dateM}${dateY}_${dateT}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+
+  } catch (error) {
+    console.error('Excel download failed:', error);
+  }
+}
+
+
+
 /*
 now using pandas in django
 For production, configure Nginx

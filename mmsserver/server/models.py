@@ -283,15 +283,15 @@ class Wallet(models.Model):
 
 
 class Asset(models.Model):
-  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assets')
+  user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='asset')
   amount = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   is_free_campro = models.BooleanField(default=False)
 
   @classmethod
   def get_or_create_asset(cls, user):
     asset, created = cls.objects.get_or_create(
-        user=user,
-        defaults={'amount': Decimal('0.00')}  # Default value for new records
+      user=user,
+      defaults={'amount': Decimal('0.00')}  # Default value for new records
     )
     return asset
 
@@ -451,7 +451,7 @@ class Performance(models.Model):
   
 
 class PromoCode(models.Model):
-  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='promo_code')
+  user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='promo_code')
   code = models.CharField(max_length=10, unique=True, help_text='Invalid code')
 
   created_at = models.DateTimeField(auto_now_add=True)

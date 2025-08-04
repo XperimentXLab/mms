@@ -147,11 +147,13 @@ interface AssetProps {
   total_asset_amount: number
   asset_above_10k: number
   asset_below_10k: number
+  user_asset_above_10k: number
+  user_asset_below_10k: number
 }
 const AssetChart = ({ data }: { data: AssetProps}) => {
 
   const chartData = {
-    labels: ['Asset Sharing (80:20)', 'Asset Sharing (70:30)'],
+    labels: [`Asset Sharing (80:20) - ${data.user_asset_above_10k}`, `Asset Sharing (70:30) - ${data.user_asset_below_10k}`],
     
     datasets: [
       {
@@ -209,8 +211,11 @@ const Dashboard = () => {
   const [totalUser, setTotalUser] = useState<number>(0)
   const [totalWithdraw, setTotalWithdraw] = useState<number>(0)
   const [totalWithdrawFee, setTotalWithdrawFee] = useState<number>(0)
+
   const [totalAssetAbove10k, setTotalAssetAbove10k] = useState<number>(0)
   const [totalAssetBelow10k, setTotalAssetBelow10k] = useState<number>(0)
+  const [userAssetAbove10k, setUserAssetAbove10k] = useState<number>(0)
+  const [userAssetBelow10k, setUserAssetBelow10k] = useState<number>(0)
 
   const [currentYear, setCurrentYear] = useState<string>(dateY.toString())
   const [gain, setGain] = useState<MonthlyDataRes[]>([])
@@ -242,9 +247,13 @@ const Dashboard = () => {
         setTotalWithdraw(resInfoDash.total_withdraw_amount)
         setTotalWithdrawFee(resInfoDash.total_withdraw_fee)
         setDailyProfitsByDay(resInfoDash.daily_profits)
+
         setTotalAsset(resInfoDash.total_asset_amount)
         setTotalAssetAbove10k(resInfoDash.asset_above_10k)
         setTotalAssetBelow10k(resInfoDash.asset_below_10k)
+        setUserAssetAbove10k(resInfoDash.user_asset_above_10k)
+        setUserAssetBelow10k(resInfoDash.user_asset_below_10k)
+
         setSharingProfit(resInfoDash.super_user_profit)
 
         const gainData: MonthlyDataRes[] = [{
@@ -346,7 +355,9 @@ const Dashboard = () => {
   const dataAsset = {
     total_asset_amount: totalAsset, 
     asset_above_10k: totalAssetAbove10k, 
-    asset_below_10k: totalAssetBelow10k
+    asset_below_10k: totalAssetBelow10k,
+    user_asset_above_10k: userAssetAbove10k,
+    user_asset_below_10k: userAssetBelow10k,
   }
   
   return (
