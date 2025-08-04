@@ -469,8 +469,15 @@ export const processWDCommission = async (data: processWDRes) => {
 import FileSaver from 'file-saver';
 
 export const downloadExcel = async () => {
+
+  const date = new Date()
+  const dateD = date.getDay()
+  const dateM = date.getMonth()
+  const dateY = date.getFullYear()
+  const dateT = date.getTime()
+
   try {
-    const response = await api.get('/export_excel/', {
+    const response = await api.get('/export_all_user/', {
       responseType: 'blob',
     });
 
@@ -484,7 +491,7 @@ export const downloadExcel = async () => {
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'report.xlsx');
+    link.setAttribute('download', `Report_AllUser_${dateD}${dateM}${dateY}_${dateT}.xlsx`);
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -496,5 +503,19 @@ export const downloadExcel = async () => {
 }
 /*
 now using pandas in django
-For production, configure Nginx or your server to handle media/static files properly.
+For production, configure Nginx
+
+Security Features
+ - SSL/TLS Termination: Encrypts traffic for HTTPS and offloads cert management
+ - Strict Headers: Enforce Content-Security-Policy, X-Frame-Options, etc.
+ - Rate Limiting & IP Blocking: Defends against brute force, abuse, bots
+ - Hide Backend Services: Acts as a shield so attackers don’t hit your Django/FastAPI app directly
+ - Central Auth Logic: Can require JWTs or passkeys before forwarding traffic
+
+Performance & Routing
+ - Static File Delivery: Ultra-fast serving of frontend assets (React/Vite builds)
+ - Reverse Proxying: Cleanly separates concerns — directs /api to backend, / to frontend
+ - Caching Responses: Reduces load on your API by caching repeated requests
+ - Load Balancing: Distributes traffic across multiple backend servers
+ - Gzip Compression: Shrinks responses for faster client load
 */

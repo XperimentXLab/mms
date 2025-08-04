@@ -1,10 +1,12 @@
 from django.urls import path
 from .views import *
 from .viewsadmin import *
+from .viewsexport import *
 
 urlpatterns = [
 
-  path('export_excel/', export_excel, name='export_excel'),
+  #Export
+  path('export_all_user/', export_all_user, name='export_all_user'),
 
   #auth
   path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
