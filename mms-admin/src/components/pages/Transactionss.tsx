@@ -6,6 +6,8 @@ import timezone from "dayjs/plugin/timezone";
 import type { ColumnDef } from "@tanstack/react-table"
 import { Inputss } from "../props/Formss";
 import DatePicker from "react-datepicker";
+import Buttons from "../props/Buttons";
+import { downloadExcelTx } from "../auth/endpoints";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -113,13 +115,14 @@ const Transactionss = () => {
         
         <div className="flex flex-col bg-white gap-3 items-center p-2 rounded">
 
-          <div className="flex w-full">
+          <div className="flex flex-row gap-3 items-end justify-center w-full">
             <Inputss
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search user id or username"
             />
+            <Buttons type="button" onClick={()=>downloadExcelTx({status, search, transactionType, pointType, startDate, endDate})}>Export</Buttons>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-2 justify-center">

@@ -468,7 +468,7 @@ export const processWDCommission = async (data: processWDRes) => {
 
 
 
-//import FileSaver from 'file-saver';
+import FileSaver from 'file-saver';
 
 export const downloadExcelUser = async () => {
 
@@ -481,18 +481,19 @@ export const downloadExcelUser = async () => {
   const dateT = date.getTime()
 
   try {
+    alert('Report export on progress')
     //setLoading(true)
     const response = await api.get('/export_all_user/', {
       responseType: 'blob',
     });
 
-    /*
+    
     const blob = new Blob([response.data], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    FileSaver.saveAs(blob, 'Report_AllUser.xlsx');
-    */
+    FileSaver.saveAs(blob, `Report_AllUser_${dateD}${dateM}${dateY}_${dateT}.xlsx`);
+/*   
     // Create download link
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
@@ -502,8 +503,8 @@ export const downloadExcelUser = async () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
-
-    
+*/
+    alert('Report export success')
   } catch (error) {
     console.error('Excel download failed:', error);
   } finally {
@@ -522,17 +523,18 @@ export const downloadExcelVerification = async () => {
   const dateT = date.getTime()
 
   try {
+    alert('Report export on progress')
     const response = await api.get('/export_all_verification/', {
       responseType: 'blob',
     });
 
-    /*
+    
     const blob = new Blob([response.data], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    FileSaver.saveAs(blob, 'Report_UserVerification.xlsx');
-    */
+    FileSaver.saveAs(blob, `Report_UserVerification_${dateD}${dateM}${dateY}_${dateT}.xlsx`);
+/*    
     // Create download link
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
@@ -542,13 +544,16 @@ export const downloadExcelVerification = async () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
-    
+*/
+    alert('Report export success')
   } catch (error) {
     console.error('Excel download failed:', error);
   }
 }
 
 interface paramsExportTx {
+  search?: string
+  status?: string
   pointType?: string
   transactionType?: string
   startDate?: string
@@ -556,7 +561,7 @@ interface paramsExportTx {
 }
 export const downloadExcelTx = async (params: paramsExportTx) => {
 
-  const { pointType, transactionType, startDate, endDate } = params
+  const { search, status, pointType, transactionType, startDate, endDate } = params
 
   const date = new Date()
   const dateD = date.getDay()
@@ -565,9 +570,12 @@ export const downloadExcelTx = async (params: paramsExportTx) => {
   const dateT = date.getTime()
 
   try {
+    alert('Report export on progress')
     const response = await api.get('/export_all_tx/', {
       responseType: 'blob',
       params: {
+        search,
+        status,
         point_type: pointType,
         transaction_type: transactionType,
         start_date: startDate,
@@ -575,13 +583,14 @@ export const downloadExcelTx = async (params: paramsExportTx) => {
       }
     });
 
-    /*
+    
     const blob = new Blob([response.data], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    FileSaver.saveAs(blob, 'Report_Transactions.xlsx');
-    */
+    FileSaver.saveAs(blob, `Report_Transactions_${dateD}${dateM}${dateY}_${dateT}.xlsx`);
+
+    /*
     // Create download link
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
@@ -591,7 +600,9 @@ export const downloadExcelTx = async (params: paramsExportTx) => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
+    */
 
+    alert('Report export success')
   } catch (error) {
     console.error('Excel download failed:', error);
   }

@@ -314,7 +314,8 @@ class Transaction(models.Model):
     ('ASSET_PLACEMENT', 'Asset Placement'), # Master Point >> Asset
     ('ASSET_WITHDRAWAL', 'Asset Withdrawal'), #Asset > Profit Point
     ('WELCOME_BONUS', 'Welcome Bonus'), # Admin > Asset
-    ('SHARING_PROFIT', 'Sharing Profit'), # Admin > Profit Point
+    ('SHARING_PROFIT', 'Sharing Profit'), # > Profit Point
+    ('WITHDRAWAL_FEE', 'Withdrawal Fee'), # > Profit Point
     ('MIGRATION', 'Migration')
   )
     

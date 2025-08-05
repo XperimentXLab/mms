@@ -82,7 +82,7 @@ const User = () => {
         columns={columnsUserDetails}
         fetchData={getAllUsers}
         enableDatePicker={true}
-        enableExport={false}
+        enableExport={true}
         downloadExcel={downloadExcelUser}
       />
 

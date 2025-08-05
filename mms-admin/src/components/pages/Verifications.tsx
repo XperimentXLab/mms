@@ -184,7 +184,7 @@ const Verifications = () => {
           fetchData={getAllUsers}
           enableDatePicker={false}
           enableStatusCampro={true}
-          enableExport={false}
+          enableExport={true}
           downloadExcel={downloadExcelVerification}
         />
       </div>

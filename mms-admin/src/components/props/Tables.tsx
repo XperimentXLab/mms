@@ -526,7 +526,7 @@ export const NewTable = ({
       {loading && <Loading />}
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      <div className="flex felx-row gap-3 items-center justify-center">
+      <div className="flex flex-row gap-3 items-end justify-center">
         {enableFilters && <Inputss
           type="text"
           value={search}

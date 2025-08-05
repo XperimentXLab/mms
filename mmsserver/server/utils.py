@@ -763,7 +763,7 @@ class ProfitService:
                 Transaction.objects.create(
                     user=super_user,
                     wallet=super_user_wallet,
-                    transaction_type='SHARING_PROFIT',
+                    transaction_type='WITHDRAWAL_FEE',
                     point_type='PROFIT',
                     amount=fee,
                     description=f"Withdrawal Fee of {txn.user}: {fee}",
@@ -921,7 +921,7 @@ class CommissionService:
                 Transaction.objects.create(
                     user=super_user,
                     wallet=super_user_wallet,
-                    transaction_type='SHARING_PROFIT',
+                    transaction_type='WITHDRAWAL_FEE',
                     point_type='PROFIT',
                     amount=fee,
                     description=f"Withdrawal Fee for {txn.user}: {fee}",

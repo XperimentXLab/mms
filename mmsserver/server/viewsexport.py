@@ -6,12 +6,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.http import HttpResponse
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def export_all_user(request):
-  users = User.objects.all()
+  users = User.objects.all().order_by('-created_at')
 
   user_without_asset = User.objects.filter(asset__isnull=True).count()
   print(f'User without Asset: {user_without_asset}')
@@ -58,7 +59,7 @@ def export_all_user(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def export_all_verification(request):
-  users = User.objects.all()
+  users = User.objects.all().order_by('-created_at')
 
   # Build DataFrame
   data = []
@@ -79,7 +80,6 @@ def export_all_verification(request):
       "Document Link": user.ic_document_url,
       "Verification Status": user.verification_status,
       "Welcome Bonus": user.is_campro,
-      "Promo Code": user.promocode.code if hasattr(user, 'promocode') else None,
     })
   df = pd.DataFrame(data)
 
@@ -100,14 +100,26 @@ def export_all_verification(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def export_all_tx(request):
-  point_type = request.GET.get('point_type', None)
-  transaction_type = request.GET.get('transaction_type', None)
-  start_date = request.GET.get('start_date', None)
-  end_date = request.GET.get('end_date', None)
-  txn = Transaction.objects.filter(point_type=point_type, transaction_type=transaction_type)
-
+  search = request.GET.get('search', '')
+  status = request.GET.get('status', '')
+  point_type = request.GET.get('point_type', '')
+  transaction_type = request.GET.get('transaction_type', '')
+  start_date = request.GET.get('start_date', '')
+  end_date = request.GET.get('end_date', '')
+  
+  query = Q()
+  if point_type:
+    query &= Q(point_type=point_type)
+  if transaction_type:
+    query &= Q(transaction_type=transaction_type)
+  if status:
+    query &= Q(request_status=status)
+  if search:
+    query &= Q(user__username__icontains=search) | Q(user__id__icontains=search)
   if start_date or end_date:
-    txn = txn.filter(created_at__range=[start_date, end_date])
+    query &= Q(created_at__range=[start_date, end_date])  
+
+  txn = Transaction.objects.filter(query).order_by('-created_at')
 
   # Build DataFrame
   data = []
