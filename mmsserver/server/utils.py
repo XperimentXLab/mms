@@ -918,6 +918,17 @@ class CommissionService:
                 
                 txn.save()
 
+                Transaction.objects.create(
+                    user=super_user,
+                    wallet=super_user_wallet,
+                    transaction_type='SHARING_PROFIT',
+                    point_type='PROFIT',
+                    amount=fee,
+                    description=f"Withdrawal Fee for {txn.user}: {fee}",
+                    request_status='APPROVED',
+                    reference=reference
+                )
+
             elif action == 'Reject':
                 # Refund the amount back to wallet
                 refund_amount = withdrawal_request.amount
