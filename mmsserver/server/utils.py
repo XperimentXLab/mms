@@ -187,10 +187,10 @@ def distribute_profit_manually():
         eligible_users = User.objects.filter(
             is_active=True,
             wallet__isnull=False,
-            assets__amount__gt=0  # Use 'assets' (the related_name)
-        ).select_related('wallet').prefetch_related('assets')
+            asset__amount__gt=0  # Use 'asset' (the related_name)
+        ).select_related('wallet').prefetch_related('asset')
         all_wallets_map = {user.id: user.wallet for user in eligible_users if hasattr(user, 'wallet')}
-        all_asset_map = {user.id: user.assets.filter(amount__gt=Decimal('0.00')).first() for user in eligible_users}
+        all_asset_map = {user.id: user.asset for user in eligible_users if hasattr(user, 'asset')}
 
 
         wallets_to_update_profit_balance_list = []
@@ -759,6 +759,17 @@ class ProfitService:
                 super_user_wallet.save()
                 
                 txn.save()
+
+                Transaction.objects.create(
+                    user=super_user,
+                    wallet=super_user_wallet,
+                    transaction_type='SHARING_PROFIT',
+                    point_type='PROFIT',
+                    amount=fee,
+                    description=f"Withdrawal Fee of {txn.user}: {fee}",
+                    request_status='APPROVED',
+                    reference=reference
+                )
                 
             elif action == 'Reject':
                 # Refund the amount back to wallet
