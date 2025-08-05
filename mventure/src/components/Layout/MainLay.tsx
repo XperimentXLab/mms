@@ -1,15 +1,19 @@
 import { Outlet } from "react-router-dom"
 import Navigation from "./Navigation"
+import Footer from "./Footer"
 
 
 const MainLay = () => {
   return (
-    <div>
-      <h1>Main Layout</h1>
+    <div className="relative min-h-screen">
 
       <Navigation />
 
       <Outlet />
+
+
+      <Footer />
+
     </div>
   )
 }
