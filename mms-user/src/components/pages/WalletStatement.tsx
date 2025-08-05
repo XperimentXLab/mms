@@ -39,10 +39,6 @@ const columnsTable: ColumnDef<any, any>[] = [
     accessorKey: "amount",
     cell: info => info.getValue()
   },
-  { header: "Reference", 
-    accessorKey: "reference",
-    cell: info => info.getValue()
-  },
 ]
 
 
@@ -255,6 +251,29 @@ export const ConvertStatement = () => {
 
 export const WithdrawalWalletStatement = () => {
 
+  const columnsTableWD: ColumnDef<any, any>[] = [
+    { header: "Date", 
+      accessorKey: "created_date",
+      cell: info => info.getValue()
+    },
+    { header: "Time", 
+      accessorKey: "created_time", 
+      cell: info => info.getValue() 
+    },
+    { header: "Status", 
+      accessorKey: "request_status",
+      cell: info => info.getValue()
+    },
+    { header: "Description", 
+      accessorKey: "description",
+      cell: info => info.getValue()
+    },
+    { header: "Amount", 
+      accessorKey: "amount",
+      cell: info => info.getValue()
+    },
+  ]
+
   return (
     <div className="flex flex-col gap-2">
 
@@ -263,7 +282,7 @@ export const WithdrawalWalletStatement = () => {
       </span>
 
       <NewTable
-        columns={columnsTable}
+        columns={columnsTableWD}
         fetchData={getProfitCommissionWDTx}
         enableFilters={false}
       />
