@@ -9,7 +9,9 @@ const MainLay = () => {
 
       <Navigation />
 
-      <Outlet />
+      <div className="min-h-screen p-2 translate-y-8">
+        <Outlet />
+      </div>
 
 
       <Footer />
