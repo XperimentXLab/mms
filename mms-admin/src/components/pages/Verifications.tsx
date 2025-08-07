@@ -49,6 +49,7 @@ const Verifications = () => {
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
+  /*
   const handleWelcomeB = async (id: string, username: string) => {
     try {
       setLoading(true)
@@ -60,6 +61,7 @@ const Verifications = () => {
       setLoading(false)
     }
   }
+  */
 
   const columns: ColumnDef<any, any>[] = [
     { header: 'First Name', 
@@ -137,6 +139,7 @@ const Verifications = () => {
         );
       }
     },
+    /*
     { header: 'Welcome Bonus', 
       accessorKey: 'id',
       cell: info => {
@@ -159,10 +162,12 @@ const Verifications = () => {
           </div>
       )}
     },
+    */
     { header: 'Status', 
       accessorKey: 'verification_status',
       cell: info => info.getValue()
     },
+    /*
     { header: 'Asset', 
       accessorKey: 'asset_amount',
       cell: info => info.getValue() ?? '0'
@@ -171,6 +176,7 @@ const Verifications = () => {
       accessorKey: 'promocode',
       cell: info => info.getValue() ?? '-'
     }
+    */
   ]
 
   return (
