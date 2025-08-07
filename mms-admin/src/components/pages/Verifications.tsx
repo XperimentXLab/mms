@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { NewTable} from "../props/Tables"
 import Loading from "../props/Loading"
-import { downloadExcelVerification, getAllUsers, grantFreeCampro, processVeri } from "../auth/endpoints"
+import { downloadExcelVerification, getAllUsers, processVeri } from "../auth/endpoints"
 import Buttons, { RejectionInput } from "../props/Buttons"
 import type { ColumnDef } from "@tanstack/react-table"
 
