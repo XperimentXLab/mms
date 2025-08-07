@@ -98,7 +98,7 @@ export const AssetStatement = () => {
   },
   { header: "Status", 
     accessorKey: "status",
-    cell: info => info.getValue()
+    cell: info => info.getValue() ?? '-'
   },
   { header: "Transaction Type",
     accessorKey: "transaction_type",
