@@ -71,6 +71,7 @@ urlpatterns = [
   path('get_info_dashboard/', get_info_dashboard, name='get_info_dashboard'),
   path('get_user_info/', get_user_info, name='get_user_info'),
   path('update_user_info/', update_user_info, name='update_user_info'),
+  path('ops_profit_calender/', get_ops_profit_calender, name='get_ops_profit_calender'),
 
 
   #admin - functionalities

@@ -467,6 +467,12 @@ export const processWDCommission = async (data: processWDRes) => {
 }
 
 
+export const getOpsProfitCal = async () => {
+  const response = await api.get('/ops_profit_calender/')
+  return response.data
+}
+
+
 
 import FileSaver from 'file-saver';
 

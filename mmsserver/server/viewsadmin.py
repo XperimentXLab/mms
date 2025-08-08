@@ -891,5 +891,17 @@ def manage_performance(request):
     return Response({'error': str(e)}, status=500)
   
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_ops_profit_calender(request):
+  user = request.user
+  try:
+    if user.is_staff:
+      ops_profit = OperationalProfit.objects.all()
+      serializer = OperationalProfitSerializer(ops_profit, many=True)
+      return Response(serializer.data)
+  except Exception as e:
+    logger.error(f"Error retrieving operational profit calender: {str(e)}")
+    return Response({'error': str(e)}, status=500)
 
 
