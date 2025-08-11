@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import Buttons from "../props/Buttons"
 import { Inputss, InputwithVal } from "../props/Formss"
 import { SelectDay, SelectMonth, SelectYear } from "../props/DropDown"
-import { distribute_profit, get_profit, getOpsProfitCal, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
+import { distribute_profit, get_profit, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
 import { FixedText } from "../props/Textt"
 import dayjs from "dayjs"
@@ -44,7 +44,6 @@ const Operation = () => {
       activeYearProfit: todayY,
     })
     setTodayProfitRate(res.daily_profit_rate || 0)
-    await getOpsProfitCal()
   }
   useEffect (()=>{
     dataRes()

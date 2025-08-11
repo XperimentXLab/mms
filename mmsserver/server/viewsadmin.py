@@ -897,7 +897,14 @@ def get_ops_profit_calender(request):
   user = request.user
   try:
     if user.is_staff:
-      ops_profit = OperationalProfit.objects.all()
+      month = request.GET.get('month')
+      year = request.GET.get('year')
+
+      query = Q()
+      if month and year:
+        query &= Q(active_month_profit__icontains=month) & Q(active_year_profit__icontains=year)
+
+      ops_profit = OperationalProfit.objects.filter(query).order_by('active_year_profit', 'active_month_profit')
       serializer = OperationalProfitSerializer(ops_profit, many=True)
       return Response(serializer.data)
   except Exception as e:

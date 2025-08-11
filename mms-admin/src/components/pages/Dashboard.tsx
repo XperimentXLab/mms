@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { getInfoDashboard } from "../auth/endpoints"
+import { getInfoDashboard, getOpsProfitCal } from "../auth/endpoints"
 import Loading from "../props/Loading"
 import { FixedText } from "../props/Textt"
 import { Line, Pie } from 'react-chartjs-2';
@@ -18,6 +18,7 @@ import {
 import { subDays, format } from "date-fns";
 import { Tables } from "../props/Tables";
 import { SelectYear } from "../props/DropDown";
+import { type profitsData } from "../props/Calender";
 
 ChartJS.register(
   CategoryScale,
@@ -188,7 +189,7 @@ const AssetChart = ({ data }: { data: AssetProps}) => {
 
 
   return (
-    <div className="flex items-center justify-center p-2 bg-black rounded-xl h-70">
+    <div className="flex items-center justify-center p-2 bg-black rounded-xl h-70 w-full">
       <Pie 
         data={chartData} 
         options={options}
@@ -223,6 +224,8 @@ const Dashboard = () => {
 
   const [sharingProfit, setSharingProfit] = useState<number>(0)
 
+  const [calendersProfit, setCalendersProfit] = useState<profitsData[]>([])
+
   const defaultMonthlyData: MonthlyDataRes = {
     monthly_data: [],
     yearly_totals: {
@@ -256,6 +259,7 @@ const Dashboard = () => {
 
         setSharingProfit(resInfoDash.super_user_profit)
 
+
         const gainData: MonthlyDataRes[] = [{
           monthly_data: resInfoDash.monthly_data,
           yearly_totals: resInfoDash.yearly_totals
@@ -263,6 +267,10 @@ const Dashboard = () => {
 
         setGain(gainData)
         setErrorMessage('')
+
+        const resCal = await getOpsProfitCal()
+        setCalendersProfit(resCal)
+        console.log(calendersProfit)
 
       } catch (error: any) {
         if (error.response && error.response.status === 400 ) {
@@ -376,8 +384,14 @@ const Dashboard = () => {
           <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />
           <FixedText label="Total Profit Sharing" text={sharingProfit} />
         </div>
+        
+
+      </div>
+
+      <div className="gap-2 items-center h-full w-full flex flex-col md:flex-row p-1">
         <AssetChart data={dataAsset} />
 
+        {/*<Calendar data={calendersProfit}/>*/}
       </div>
 
       <div className="flex flex-col gap-2 items-center justify-center w-full">

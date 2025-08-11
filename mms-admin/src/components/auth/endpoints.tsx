@@ -30,6 +30,8 @@ interface MonthlyProfitRes {
   finalizedProfit?: number
 }
 
+const date = new Date()
+const nowYear = date.getFullYear()
 
 export const login = async (loginData: LoginRes): Promise<AuthTokens> => {
   const fingerprint = generateDeviceFingerprint?.()
@@ -388,10 +390,11 @@ export const getAllTransactions = async ( params: paramsTx) => {
 
 
 interface infoDash {
-  year: number
+  month?: number
+  year?: number
 }
 export const getInfoDashboard = async (data: infoDash) => {
-  const { year=2025 } = data
+  const { year=nowYear } = data
   const response = await api.get('/get_info_dashboard/', {
     params: {
       year
