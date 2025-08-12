@@ -69,13 +69,43 @@ const Others = () => {
   const [chartError, setChartError] = useState<string>("");
 
   const [loading, setLoading] = useState<boolean>(false)
+  
+  const time = new Date().toTimeString().split(' ')[0]
+  const nowDate = new Date()
+  const yesterday = new Date(nowDate)
+  yesterday.setDate(nowDate.getDate() - 1)
+  const [yestWeekly, setYestWeekly] = useState<number>(0)
+  const [yestMonthly, setYestMonthly] = useState<number>(0)
+  const [is129, setIs129] = useState<boolean>(false)
+  const todayProfitShow = async () => {
+    try {
+      if (time >= '00:00:00' && time <= '09:00:00') {
+        setIs129(true)
+        setLoading(true)
+        const response = await getProfit({
+          activeDayProfit: yesterday.getDate(),
+          activeMonthProfit: yesterday.getMonth() + 1,
+          activeYearProfit: yesterday.getFullYear(),
+        })
+        setYestWeekly(response.weekly_profit_rate || 0)
+        setYestMonthly(response.current_month_profit || 0)
+      } else {
+        setIs129(false)
+      }
+    } catch (error: any) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   // Fetch operational profits (today, weekly, monthly)
   useEffect(() => {
     const fetchOperationalData = async () => {
       try {
         setLoading(true)
-        const response = await getProfit()
+        const response = await getProfit({})
         setTodayOperationalProfit(response.daily_profit_rate || 0)
         setWeeklyOperationalProfit(response.weekly_profit_rate || 0)
         setMonthlyOperationalProfit(response.current_month_profit || 0)
@@ -87,7 +117,8 @@ const Others = () => {
       }
     }
     fetchOperationalData()
-  }, [])
+    todayProfitShow()
+  }, [todayOperationalProfit])
 
   // Fetch finalized yearly profits for the chart
   useEffect(() => {
@@ -109,8 +140,9 @@ const Others = () => {
         setChartYearlyTotal(0);
       } finally {
         setLoading(false);
+        console.log('Now is', time)
       }
-    };
+    }
     fetchChartData();
   }, [selectedChartYear]);
 
@@ -220,17 +252,23 @@ const Others = () => {
         <div className="grid grid-cols-1 gap-4 w-full ">
           <div className="border p-3 rounded-lg text-center bg-white">
             <h3 className="text-sm text-gray-500">Today's Profit</h3>
-            <p className="text-xl font-bold">{todayOperationalProfit.toLocaleString()} %</p>
+            <p className="text-xl font-bold">
+              {is129 ? '0.00' : todayOperationalProfit.toLocaleString()} 
+            %</p>
           </div>
           
           <div className="border p-3 rounded-lg text-center bg-white">
             <h3 className="text-sm text-gray-500">Weekly Profit</h3>
-            <p className="text-xl font-bold">{weeklyOperationalProfit.toLocaleString()} %</p>
+            <p className="text-xl font-bold">
+              {is129 ? yestWeekly.toLocaleString() : weeklyOperationalProfit.toLocaleString()} 
+            %</p>
           </div>
           
           <div className="border p-3 rounded-lg text-center bg-white">
             <h3 className="text-sm text-gray-500">Monthly Profit</h3>
-            <p className="text-xl font-bold">{monthlyOperationalProfit.toLocaleString()} %</p>
+            <p className="text-xl font-bold">
+              {is129 ? yestMonthly.toLocaleString() : monthlyOperationalProfit.toLocaleString()} 
+            %</p>
           </div>
         </div>  
         
