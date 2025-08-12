@@ -281,6 +281,8 @@ def get_all_user(request):
       search_query = request.GET.get('search', '')
       status_query = request.GET.get('status', None)
       is_campro_query = request.GET.get('is_campro', None)
+      sort_by = request.GET.get('sort_by', 'created_at')
+      order = request.GET.get('order', 'desc')
 
       query = Q()
       if search_query:
@@ -294,7 +296,13 @@ def get_all_user(request):
           is_campro_query = False
         query &= Q(is_campro=is_campro_query)
 
-      all_user = User.objects.filter(query).order_by('-created_at').distinct()
+        # Sorting logic
+      allowed_sort_fields = ['created_at', 'id', 'username', 'email', 'reffered_by', 'ic', 'asset__amount', 'wallet__master_point_balance', 'wallet__profit_point_balance']
+      if sort_by not in allowed_sort_fields:
+        sort_by = 'created_at'  # fallback to safe default
+
+      sort_prefix = '' if order == 'asc' else '-'
+      all_user = User.objects.filter(query).order_by(f'{sort_prefix}{sort_by}').distinct()
 
       # 📄 Pagination
       paginator = PageNumberPagination()

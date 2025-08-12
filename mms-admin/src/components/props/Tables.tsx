@@ -396,6 +396,8 @@ export interface TableFetchParams {
   year?: string
   page?: number
   pageSize?: number
+  sort_by?: string
+  order?: string
 }
 
 interface TableProps {
@@ -468,6 +470,7 @@ export const NewTable = ({
         ...tx,
         created_date: dayjs(tx.created_at).format("DD/MM/YYYY"),
         created_time: dayjs(tx.created_at).format("hh:mm:ss"),
+        created_datetime: dayjs(tx.created_at).format("DD/MM/YYYY hh:mm:ss"),
       }))
       console.log("Res Data:", res)
       setData(processedData)

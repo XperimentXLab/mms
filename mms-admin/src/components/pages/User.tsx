@@ -14,11 +14,7 @@ const User = () => {
 
   const columnsUserDetails: ColumnDef<any, any>[] = [
     { header: 'Joined Date', 
-      accessorKey: 'created_date',
-      cell: info => info.getValue()
-     },
-    { header: 'Joined Time', 
-      accessorKey: 'created_time',
+      accessorKey: 'created_datetime',
       cell: info => info.getValue()
      },
     { header: 'User ID', 

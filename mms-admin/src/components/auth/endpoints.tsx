@@ -246,6 +246,8 @@ export const getAllUsers = async (params: dataParams) => {
     year,
     page = 1,
     pageSize,
+    sort_by,
+    order,
   } = params
   const queryParams =  new URLSearchParams()
   if (startDate && endDate) {
@@ -264,6 +266,12 @@ export const getAllUsers = async (params: dataParams) => {
   }
   if (isCampro) {
     queryParams.append('is_campro', isCampro)
+  }
+  if (sort_by) {
+    queryParams.append('sort_by', sort_by)
+  }
+  if (order) {
+    queryParams.append('order', order)
   }
   if (pageSize) {
     queryParams.append('page_size', pageSize.toString())
