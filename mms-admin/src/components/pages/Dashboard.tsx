@@ -18,7 +18,7 @@ import {
 import { subDays, format } from "date-fns";
 import { Tables } from "../props/Tables";
 import { SelectYear } from "../props/DropDown";
-import { type profitsData } from "../props/Calender";
+import { Calendar, type profitsData } from "../props/Calender";
 
 ChartJS.register(
   CategoryScale,
@@ -270,7 +270,6 @@ const Dashboard = () => {
 
         const resCal = await getOpsProfitCal()
         setCalendersProfit(resCal)
-        console.log(calendersProfit)
 
       } catch (error: any) {
         if (error.response && error.response.status === 400 ) {
@@ -391,7 +390,7 @@ const Dashboard = () => {
       <div className="gap-2 items-center h-full w-full flex flex-col md:flex-row p-1">
         <AssetChart data={dataAsset} />
 
-        {/*<Calendar data={calendersProfit}/>*/}
+        <Calendar data={calendersProfit}/>
       </div>
 
       <div className="flex flex-col gap-2 items-center justify-center w-full">
