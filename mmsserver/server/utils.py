@@ -398,10 +398,10 @@ class WalletService:
             raise ValidationError("Amount is needed")
         
         if not are_in_same_network(sender, receiver):
-            raise ValidationError("Receiver is not in your network line")
+            raise ValidationError("Transfer unsuccessful. User is not in your network line")
         
         if are_in_same_level(sender, receiver):
-            raise ValidationError("Sender and receiver are in the same level")
+            raise ValidationError("Transfer unsuccessful. Users are in the same level")
 
         sender_wallet = Wallet.objects.get(user=sender)
         if sender_wallet.master_point_balance < amount:
