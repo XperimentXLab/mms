@@ -443,6 +443,8 @@ export const NewTable = ({
   const [pageSize, setPageSize] = useState<number>(30)
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState<string>("")
+  const [sortBy, setSortBy] = useState<string>()
+  const [order, setOrder] = useState<string>()
 
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState("");
@@ -464,6 +466,8 @@ export const NewTable = ({
         pageSize,
         month,
         year,
+        sort_by: sortBy,
+        order,
       })
 
       const processedData = res.results.map(tx => ({
@@ -486,18 +490,19 @@ export const NewTable = ({
     } finally {
       setLoading(false)
     }
-  }, [search, status, startDate, endDate, page, pageSize, month, year, isCampro])
+  }, [search, status, startDate, endDate, page, pageSize, month, year, isCampro, sortBy, order])
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1)
-  }, [fetchData, search, status, startDate, endDate, month, year, isCampro])
+  }, [fetchData, search, status, startDate, endDate, month, year, isCampro, sortBy, order])
 
   // Fetch data when dependencies change
   useEffect(() => {
     loadData()
-    console.log(isCampro)
-  }, [fetchData, search, status, startDate, endDate, page, pageSize, month, year, isCampro])
+    console.log(order, sortBy)
+    setErrorMessage("")
+  }, [fetchData, search, status, startDate, endDate, page, pageSize, month, year, isCampro, sortBy, order])
 
   const table = useReactTable({
     data,
@@ -508,7 +513,25 @@ export const NewTable = ({
       globalFilter: globalFilter || search 
     },
     onGlobalFilterChange: setGlobalFilter,
-    onSortingChange: setSorting,
+    onSortingChange: (updaterOrValue) => {
+      setSorting((prev) => {
+        const newSorting: SortingState =
+          typeof updaterOrValue === "function"
+            ? (updaterOrValue as (old: SortingState) => SortingState)(prev)
+            : updaterOrValue;
+
+        // update derived backend params
+        if (newSorting && newSorting.length > 0) {
+          setSortBy(newSorting[0].id); // must match backend field
+          setOrder(newSorting[0].desc ? "desc" : "asc");
+        } else {
+          setSortBy(undefined);
+          setOrder(undefined);
+        }
+
+        return newSorting;
+      });
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(), // include only if backend sorts
     manualPagination: true,

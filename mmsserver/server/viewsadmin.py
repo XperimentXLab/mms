@@ -297,6 +297,15 @@ def get_all_user(request):
         query &= Q(is_campro=is_campro_query)
 
         # Sorting logic
+      if sort_by == 'created_datetime':
+        sort_by = 'created_at'
+      if sort_by == 'asset_amount':
+        sort_by = 'asset__amount'
+      if sort_by == 'master_point':
+        sort_by = 'wallet__master_point_balance'
+      if sort_by == 'profit_point':
+        sort_by = 'wallet__profit_point_balance'
+
       allowed_sort_fields = ['created_at', 'id', 'username', 'email', 'reffered_by', 'ic', 'asset__amount', 'wallet__master_point_balance', 'wallet__profit_point_balance']
       if sort_by not in allowed_sort_fields:
         sort_by = 'created_at'  # fallback to safe default

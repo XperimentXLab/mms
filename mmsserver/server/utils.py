@@ -349,7 +349,45 @@ class UserService:
             )
 
         return wallet 
+    
 
+def are_in_same_network(sender, receiver, max_depth=99): #need review
+    """Check if sender and receiver are connected in either direction"""
+
+    if sender.is_superuser:
+        return True
+
+    except_ids = ['MMS01FXC', 'MMS00QVS']
+
+    downline_sender = sender.get_indirect_network(max_depth=max_depth)
+    downline_receiver = receiver.get_indirect_network(max_depth=max_depth)
+
+    flat_sender = {u.id for level in downline_sender for u in level if u.id not in except_ids}
+    flat_receiver = {u.id for level in downline_receiver for u in level if u.id not in except_ids}
+
+    return receiver.id in flat_sender or sender.id in flat_receiver
+
+import re
+
+def extract_level(user_or_username):
+    """Extract numeric level from user ID"""
+    if isinstance(user_or_username, User):
+        user_id = user_or_username.id
+    else:
+        try:
+            user = User.objects.get(username=user_or_username)
+            user_id = user.id
+        except User.DoesNotExist:
+            print(f"User '{user_or_username}' not found.")
+            return None
+    match = re.match(r'^MMS(\d{2})', user_id)
+    return int(match.group(1)) if match else None
+
+def are_in_same_level(sender, receiver):
+    """Check if sender and receiver are in the same hierarchical level."""
+    level_sender = extract_level(sender)
+    level_receiver = extract_level(receiver)
+    return level_sender is not None and level_sender == level_receiver
 
 class WalletService:
     @staticmethod
@@ -358,6 +396,12 @@ class WalletService:
 
         if amount <= 0:
             raise ValidationError("Amount is needed")
+        
+        if not are_in_same_network(sender, receiver):
+            raise ValidationError("Receiver is not in your network line")
+        
+        if are_in_same_level(sender, receiver):
+            raise ValidationError("Sender and receiver are in the same level")
 
         sender_wallet = Wallet.objects.get(user=sender)
         if sender_wallet.master_point_balance < amount:
