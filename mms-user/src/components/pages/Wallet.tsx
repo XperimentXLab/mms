@@ -95,9 +95,6 @@ const Wallet = () => {
     e.preventDefault()
     try {
       setLoading(true)
-      if (masterPoint <= 0 || receiver.trim() === '') {
-        alert('Please enter a valid amount and receiver username.')
-      }
       await transferMasterPoint({
         amount: masterPoint,
         receiver,

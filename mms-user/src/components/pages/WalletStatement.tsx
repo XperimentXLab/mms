@@ -24,12 +24,8 @@ export interface Data {
 
 const columnsTable: ColumnDef<any, any>[] = [
   { header: "Date", 
-    accessorKey: "created_date",
+    accessorKey: "created_datetime",
     cell: info => info.getValue()
-  },
-  { header: "Time", 
-    accessorKey: "created_time", 
-    cell: info => info.getValue() 
   },
   { header: "Description", 
     accessorKey: "description",
@@ -96,6 +92,10 @@ export const CommissionStatement = () => {
   // affiliate + introducer
   const [commissionBal, setCommissionBal] = useState<number>(0)
 
+  const date = new Date()
+  const dateM = dayjs(date).month() + 1
+  const dateY = dayjs(date).year()
+
   useEffect(()=>{
     const fetchData = async () => {
       try {
@@ -106,8 +106,8 @@ export const CommissionStatement = () => {
           Number(resWallet.introducer_point_balance || 0)
         )
         const resComTx = await getCommissionDailyTx({
-          month: Number(dayjs(selectedMonthYear).month() + 1), 
-          year: Number(dayjs(selectedMonthYear).year())
+          month: Number(dayjs(selectedMonthYear).month() + 1) || dateM, 
+          year: Number(dayjs(selectedMonthYear).year()) || dateY
         })
         setData(resComTx)
       } catch (error: any) {
@@ -123,12 +123,8 @@ export const CommissionStatement = () => {
 
   const columns: ColumnDef<any, any>[] = [
     { header: "Date", 
-      accessorKey: "created_date",
+      accessorKey: "created_datetime",
       cell: info => info.getValue()
-     },
-    { header: "Time", 
-      accessorKey: "created_time", 
-      cell: info => info.getValue() 
     },
     { header: "Type", 
       accessorKey: "transaction_type",
@@ -173,13 +169,12 @@ export const CommissionStatement = () => {
     }
   ]
 
-
   return (
     <div className="flex flex-col gap-2 relative">
       {loading && <Loading />}
       <div className="flex md:flex-row flex-col gap-3 bg-white p-2 rounded-lg justify-center items-center">
         <span className="font-bold">Commission Statement </span>
-        <Spannn label="Commission Balance" className="bg-gray-200 py-1 px-2 rounded-lg">{commissionBal}</Spannn>
+        <Spannn label="Commission Balance" className="bg-gray-200 py-1 px-2 rounded-lg">{commissionBal.toFixed(2)}</Spannn>
         <div className="flex items-center gap-2">
           <span className="font-semibold">Select </span>
           <DatePicker
@@ -191,7 +186,7 @@ export const CommissionStatement = () => {
             onChange={(date: any) => setSelectedMonthYear(date)}
             dateFormat="MMMM yyyy"
             showMonthYearPicker
-            className="border px-3 rounded"
+            className="border-2 px-3 rounded"
           />
         </div>
       </div>
@@ -253,12 +248,8 @@ export const WithdrawalWalletStatement = () => {
 
   const columnsTableWD: ColumnDef<any, any>[] = [
     { header: "Date", 
-      accessorKey: "created_date",
+      accessorKey: "created_datetime",
       cell: info => info.getValue()
-    },
-    { header: "Time", 
-      accessorKey: "created_time", 
-      cell: info => info.getValue() 
     },
     { header: "Status", 
       accessorKey: "request_status",

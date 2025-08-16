@@ -16,11 +16,7 @@ export const WithdrawalAssetStatement = () => {
 
   const columns: ColumnDef<any, any>[] = [
     { header: "Date", 
-      accessorKey: "created_date",
-      cell: info => info.getValue()
-    },
-    { header: "Time", 
-      accessorKey: "created_time",
+      accessorKey: "created_datetime",
       cell: info => info.getValue()
     },
     { header: "Amount Locked (50%)", 
@@ -103,12 +99,8 @@ export const AssetStatement = () => {
 
   const columnsTable: ColumnDef<any, any>[] = [
   { header: "Date", 
-    accessorKey: "created_date",
+    accessorKey: "created_datetime",
     cell: info => info.getValue()
-    },
-  { header: "Time", 
-    accessorKey: "created_time", 
-    cell: info => info.getValue() 
   },
   { header: "Status", 
     accessorKey: "status",

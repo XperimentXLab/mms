@@ -437,8 +437,24 @@ export const putPerformance = async (data: PerformanceData) => {
 }
 
 
-export const getWDReq = async () => {
-  const response = await api.get('/all_withdrawal_requests/')
+export const getWDReq = async (params: paramsExportTx) => {
+  const { search, status, startDate, endDate } = params
+
+  const queryParams = new URLSearchParams()
+  if (search) {
+    queryParams.append('search', search)
+  }
+  if (status) {
+    queryParams.append('status', status)
+  }
+  if (startDate) {
+    queryParams.append('start_date', startDate)
+  }
+  if (endDate) {
+    queryParams.append('end_date', endDate)
+  }
+
+  const response = await api.get(`/all_withdrawal_requests/?${queryParams.toString()}`)
   return response.data
 }
 

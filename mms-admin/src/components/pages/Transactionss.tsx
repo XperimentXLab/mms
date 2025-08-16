@@ -27,13 +27,8 @@ const Transactionss = () => {
 
   const columns: ColumnDef<any, any>[] = [
     {
-      accessorKey: "created_date",
+      accessorKey: "created_datetime",
       header: "Date",
-      cell: info => info.getValue(),
-    },
-    {
-      accessorKey: "created_time",
-      header: "Time",
       cell: info => info.getValue(),
     },
     {
@@ -90,15 +85,12 @@ const Transactionss = () => {
 
     // Debounced search to avoid excessive API calls
     const [debouncedSearch, setDebouncedSearch] = useState(search)
-
     useEffect(() => {
       const timer = setTimeout(() => {
         setDebouncedSearch(search)
       }, 300)
-
       return () => clearTimeout(timer)
     }, [search])
-
     const handleClearFilters = () => {
       setSearch("")
       setStatus("")
@@ -106,7 +98,7 @@ const Transactionss = () => {
       setStartDate("")
       setEndDate("")
       setPointType("")
-      }
+    }
 
     const hasActiveFilters = search || status || transactionType || startDate || endDate || pointType
 

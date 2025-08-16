@@ -637,7 +637,7 @@ def transfer_master(request):
   reference = request.data.get('reference', '')
 
   if not receiver_username or not amount:
-    return Response({'error': 'Receiver ID and amount are required'}, status=400)
+    return Response({'error': 'Receiver username and amount are required'}, status=400)
   try:
     amount = Decimal(amount)
   except:

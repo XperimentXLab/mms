@@ -436,7 +436,22 @@ def get_all_withdrawal_request(request):
   user = request.user
   try:
     if user.is_staff:
-      all_withdrawal_request = WithdrawalRequest.objects.all()
+
+      search_query = request.GET.get('search', '')
+      status_filter = request.GET.get('status', None)
+      start_date = request.GET.get('start_date', None)
+      end_date = request.GET.get('end_date', None)
+
+      query = Q()
+
+      if search_query:
+        query &= Q(transaction__user__id__icontains=search_query) | Q(transaction__user__username__icontains=search_query)
+      if status_filter:
+        query &= Q(transaction__request_status__icontains=status_filter)
+      if start_date and end_date:
+        query &= Q(created_at__range=[start_date, end_date])
+
+      all_withdrawal_request = WithdrawalRequest.objects.filter(query).order_by('-created_at')
       serializer = WithdrawalRequestSerializer(all_withdrawal_request, many=True)
       return Response(serializer.data, status=200)
     else:

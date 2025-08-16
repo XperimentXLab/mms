@@ -398,7 +398,7 @@ class WalletService:
             raise ValidationError("Amount is needed")
         
         if not are_in_same_network(sender, receiver):
-            raise ValidationError("Transfer unsuccessful. User is not in your network line")
+            raise ValidationError("Transfer unsuccessful. Not allowed to transfer to this user.")
         
         if are_in_same_level(sender, receiver):
             raise ValidationError("Transfer unsuccessful. Users are in the same level")

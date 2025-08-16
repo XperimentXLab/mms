@@ -41,8 +41,7 @@ const AssetRequest = () => {
         const dt = dayjs.utc(req.created_at).tz("Asia/Kuala_Lumpur");
         return {
           ...req,
-          created_date: dt.format("YYYY-MM-DD"),
-          created_time: dt.format("HH:mm:ss"),
+          created_datetime: dt.format("DD/MM/YYYY hh:mm:ss"),
           username: req.username,
         }
       })
@@ -132,11 +131,7 @@ const AssetRequest = () => {
 
   const columns = [
     { header: 'Date', 
-      accessor: 'created_date',
-      render: (value: string) => value ? value : '-'
-     },
-    { header: 'Time', 
-      accessor: 'created_time',
+      accessor: 'created_datetime',
       render: (value: string) => value ? value : '-'
      },
     { header: 'User ID', 
