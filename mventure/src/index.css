@@ -1,1 +1,9 @@
-@import "tailwindcss"
+@import url('https://fonts.googleapis.com/css2?family=Prosto+One&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Concert+One&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Stylish&display=swap');
+
+
+@import "tailwindcss";
+

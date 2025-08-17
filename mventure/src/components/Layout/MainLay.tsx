@@ -5,14 +5,13 @@ import Footer from "./Footer"
 
 const MainLay = () => {
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen ">
 
       <Navigation />
 
-      <div className="min-h-screen p-2 translate-y-8">
+      <div className="min-h-screen p-2 pt-9">
         <Outlet />
       </div>
-
 
       <Footer />
 
