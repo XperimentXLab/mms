@@ -11,8 +11,7 @@ const Footer = () => {
 
         <div className="flex flex-col gap-1">
           <NavLink to="/join">Join Us</NavLink>
-          <span>How it works</span>
-          <span>Who Can Join</span>
+          <NavLink to='/performance'>Performance</NavLink>
         </div>
 
         <div className="flex flex-col gap-1">
