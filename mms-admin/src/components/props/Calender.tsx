@@ -86,15 +86,24 @@ export const Calendar: React.FC<CalendarProps> = ({ data }: {data: profitsData[]
     setCurrentDate(new Date(year, month + 1, 1));
   };
 
+  const monthlyProfit = data
+    .filter(item =>
+      item.active_year_profit === year &&
+      item.active_month_profit === month + 1 // JS months are 0-indexed
+    )
+    .reduce((sum, item) => sum + Number(item.daily_profit_rate ?? 0), 0)
+    .toFixed(2);
+
   return (
     <div className="flex flex-col mx-auto p-4 border rounded bg-white w-full">
-      <h2 className="flex justify-center font-bold">Calendar Profit (%)</h2>
+      <h2 className="flex justify-center font-bold">Calendar Profit</h2>
       <div className="header flex justify-between items-center mb-4">
         <button onClick={goToPrevMonth}
           className="cursor-pointer"
         ><GrCaretPrevious /></button>
         <h2>
-          {currentDate.toLocaleString('default', { month: 'long' })} {year}
+          {currentDate.toLocaleString('default', { month: 'long' })} {year} 
+          <span className="font-semibold"> ({monthlyProfit}%)</span>
         </h2>
         <button onClick={goToNextMonth}
           className="cursor-pointer"        
