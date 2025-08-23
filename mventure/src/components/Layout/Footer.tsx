@@ -5,9 +5,9 @@ import { NavLink } from "react-router-dom"
 
 const Footer = () => {
   return (
-    <div className="fixed w-full bottom-0">
+    <div className="w-full bottom-0">
       
-      <div className="bg-red-600 px-2 py-1 grid grid-cols-3 gap-3">
+      <div className="bg-red-600 px-5 py-3 grid grid-cols-3 gap-3">
 
         <div className="flex flex-col gap-1">
           <NavLink to="/join">Join Us</NavLink>
@@ -29,6 +29,8 @@ const Footer = () => {
         </div>
         
       </div>
+
+      <h1 className="flex justify-center bg-gray-500 text-white">&copy; 2025 MMS All rights reserved.</h1>
 
     </div>
   )

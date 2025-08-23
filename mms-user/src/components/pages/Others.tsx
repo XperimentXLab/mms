@@ -140,7 +140,6 @@ const Others = () => {
         setChartYearlyTotal(0);
       } finally {
         setLoading(false);
-        console.log('Now is', time)
       }
     }
     fetchChartData();

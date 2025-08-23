@@ -32,7 +32,7 @@ const Mission = () => {
 const AboutUs = () => {
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="font-extrabold">About Us</h1>
+      <h1 className="font-semibold text-3xl font-['Prosto_One']">About Us</h1>
 
       <AboutUsSimple />
 
