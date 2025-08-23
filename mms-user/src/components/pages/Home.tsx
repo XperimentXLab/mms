@@ -40,17 +40,6 @@ const Home = () => {
 
   const [loading, setLoading] = useState<boolean>(false)
 
-  const time = new Date().toTimeString().split(' ')[0]
-  const [is129, setIs129] = useState<boolean>(false)
-  const isIt129 = async () => {
-    if (time >= '00:00:00' && time <= '09:00:00') {
-      setIs129(true)
-    } else {
-      setIs129(false)
-    }
-  }
-
-
   const fixedTypes = ["DISTRIBUTION", "AFFILIATE_BONUS", "INTRODUCER_BONUS"];
 
   const fixedRows = useMemo(() => {
@@ -121,7 +110,6 @@ const Home = () => {
         setLoading(false)
       }
     }
-    isIt129()
     fetchData()
   }, [startDate, endDate])
 
@@ -152,7 +140,7 @@ const Home = () => {
       accessor: "total_amount",
       render: (value: number) => {
         return (
-          is129 ? '0.00' : value?.toFixed(2) || "0.00"
+          value?.toFixed(2) || "0.00"
         )
       }
     },

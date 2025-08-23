@@ -484,12 +484,13 @@ export const getDepositLock = async (params: txParams) => {
   return response.data
 }
 
+const today = new Date().toISOString().split('T')[0] // Today's date
 interface DailyProfitData {
   start_date?: string;
   end_date?: string;
 }
 export const getDailyTotalProfit = async (params: DailyProfitData) => {
-  const { start_date, end_date } = params
+  const { start_date=today, end_date=today } = params
   const queryParams = new URLSearchParams();
   if (start_date && end_date) {
     queryParams.append('start_date', start_date);
