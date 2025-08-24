@@ -14,7 +14,8 @@ const HowItWorks = () => {
 
   return (
     <Transition show={isMount}
-      enterFrom={"scale-25"}
+      enterFrom={"translate-x-100 opacity-0"}
+      enterTo={"translate-y-0 opacity-100"}
     >
       <div className="flex flex-col gap-2 bg-gray-200 p-2 rounded-2xl items-center transition-all duration-1500">
 

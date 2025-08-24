@@ -1,7 +1,7 @@
 
 export const AboutUsSimple = () => {
   return (
-    <div className="font-['Stylish']">
+    <div className="flex font-['Stylish'] bg-black text-amber-200 p-3  rounded-t-2xl items-center text-shadow-amber-400 text-shadow-xs">
       We are a team of financial experts dedicated to helping you grow your wealth. We specialize in professional crypto fund management, providing a service that’s both safe and easy to use. Our goal is to empower you to build a secure financial future without the daily stress of active trading.
     </div>
   )
@@ -31,7 +31,7 @@ const Mission = () => {
 
 const AboutUs = () => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4 p-2">
       <h1 className="font-semibold text-3xl font-['Prosto_One']">About Us</h1>
 
       <AboutUsSimple />

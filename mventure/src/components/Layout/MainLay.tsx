@@ -5,7 +5,7 @@ import Footer from "./Footer"
 
 const MainLay = () => {
   return (
-    <div className="relative min-h-full">
+    <div className="relative min-h-full text-lg">
 
       <Navigation />
 

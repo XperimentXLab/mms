@@ -15,9 +15,9 @@ const Body = () => {
   
 
   return (
-    <div className="flex flex-col gap-4 backdrop-blur-xl  p-3">
+    <div className="flex flex-col gap-4 backdrop-blur-xl p-3">
 
-      <h2 className="font-bold text-4xl font-['Prosto_One']">Grow Your Wealth. We Handle the Crypto.</h2>
+      <h2 className="font-bold text-4xl md:text-5xl font-['Prosto_One']">Grow Your Wealth. We Handle the Crypto.</h2>
 
       <Transition show={isMount}
         enterFrom="-translate-x-70 ease-out"
