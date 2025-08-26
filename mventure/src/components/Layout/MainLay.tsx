@@ -9,7 +9,7 @@ const MainLay = () => {
 
       <Navigation />
 
-      <div className="min-h-screen p-2 pt-9">
+      <div className="min-h-screen p-2 md:pt-13 pt-11">
         <Outlet />
       </div>
 

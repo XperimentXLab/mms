@@ -1,11 +1,12 @@
 import { VscActivateBreakpoints } from "react-icons/vsc"
 import HowItWorks from "./HowItWorks"
 import WhoCanJoin from "./WhoCanJoin"
+import RegisterNow from "./RegisterNow"
 
 
 const JoinUs = () => {
   return (
-    <div className="flex flex-col md:flex-row gap-2 p-3">
+    <div className="flex flex-col md:flex-row gap-5 p-3">
 
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
@@ -34,11 +35,15 @@ const JoinUs = () => {
           </ul>
         </div>
 
+        <RegisterNow />
+
         <WhoCanJoin />
 
       </div>
 
       <HowItWorks />
+
+      <div className="hidden md:block flex-1"></div>
       
     </div>
   )

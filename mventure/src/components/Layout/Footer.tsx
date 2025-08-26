@@ -10,17 +10,17 @@ const Footer = () => {
       <div className="bg-red-600 px-5 py-3 grid grid-cols-3 gap-3">
 
         <div className="flex flex-col gap-1">
-          <NavLink to="/join">Join Us</NavLink>
-          <NavLink to='/performance'>Performance</NavLink>
+          <NavLink to="/join" className={"hover:text-amber-500  hover:font-semibold"}>Join Us</NavLink>
+          <NavLink to='/performance' className={"hover:text-amber-500 hover:font-semibold"}>Performance</NavLink>
         </div>
 
         <div className="flex flex-col gap-1">
-          <NavLink to="/about">About Us</NavLink>
-          <NavLink to="/faqs">FAQs</NavLink >
+          <NavLink to="/about" className={"hover:text-amber-500 hover:font-semibold"}>About Us</NavLink>
+          <NavLink to="/faqs" className={"hover:text-amber-500 hover:font-semibold"}>FAQs</NavLink >
         </div>
 
         <div className="flex flex-col gap-1">
-          <NavLink to="/contact">Contact Us</NavLink>
+          <NavLink to="/contact" className={"hover:text-amber-500 hover:font-semibold"}>Contact Us</NavLink>
           <div className="flex flex-row gap-2 hover:cursor-pointer">
             <FaWhatsapp />
             <MdOutlineEmail />

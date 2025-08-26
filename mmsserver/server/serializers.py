@@ -159,7 +159,7 @@ class UserSerializer(serializers.ModelSerializer):
   
   def validate_referred_by(self, value):
     if not (isinstance(value, str) and len(value) == 8 and value.startswith('MMS')):
-      raise serializers.ValidationError(f'Invalid Referral ID format.')
+      raise serializers.ValidationError(f'Invalid Referral ID.')
     if not User.objects.filter(id=value).exists():
       raise serializers.ValidationError(f'Referral ID does not exist.')
     return value

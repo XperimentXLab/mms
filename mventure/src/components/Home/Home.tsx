@@ -27,7 +27,7 @@ const Home = () => {
         enterFrom="translate-y-100 ease-in-out"
         enterTo="translate-y-0"
       >
-        <div className="transition-all duration-700 bg-black text-white rounded-t-2xl text-shadow-amber-400 text-shadow-xs">
+        <div className="transition-all duration-700">
           <AboutUsSimple />
         </div>
       </Transition>

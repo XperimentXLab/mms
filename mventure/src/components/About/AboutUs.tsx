@@ -1,7 +1,7 @@
 
 export const AboutUsSimple = () => {
   return (
-    <div className="flex font-['Stylish'] bg-black text-amber-200 p-3  rounded-t-2xl items-center text-shadow-amber-400 text-shadow-xs">
+    <div className="flex font-['Stylish'] bg-black text-amber-200 p-3  rounded-t-2xl items-center text-shadow-amber-400 text-shadow-xs shadow-md shadow-slate-900 bg-gradient-to-t from-emerald-900 via-slate-900 to-black">
       We are a team of financial experts dedicated to helping you grow your wealth. We specialize in professional crypto fund management, providing a service that’s both safe and easy to use. Our goal is to empower you to build a secure financial future without the daily stress of active trading.
     </div>
   )

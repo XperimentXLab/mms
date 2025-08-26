@@ -17,7 +17,7 @@ const HowItWorks = () => {
       enterFrom={"translate-x-100 opacity-0"}
       enterTo={"translate-y-0 opacity-100"}
     >
-      <div className="flex flex-col gap-2 bg-gray-200 p-2 rounded-2xl items-center transition-all duration-1500">
+      <div className="flex flex-col gap-3 p-4 rounded-2xl items-center transition-all duration-1500 shadow-md shadow-gray-700 bg-gradient-to-l from-slate-400 via-neutral-300 to-stone-400">
 
         <h2 className="text-xl font-['Concert_One']">
           How It Works: Your Path to Passive Investing

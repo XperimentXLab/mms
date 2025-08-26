@@ -22,7 +22,7 @@ const Side = () => {
           enterFrom="opacity-0"
           enterTo="opacity-100"
         >
-          <li className="transition-all duration-1500 ease-in bg-indigo-400 border-2 border-indigo-600 rounded-lg p-1">
+          <li className="transition-all duration-1500 ease-in  bg-gradient-to-br bg-indigo-400 border-2 via-rose-300 border-violet-600 rounded-lg p-1 text-blue-950">
             ✨ Passive Income
           </li>
         </Transition>
@@ -31,7 +31,7 @@ const Side = () => {
           enterFrom="opacity-0"
           enterTo="opacity-100"
         >
-          <li className="transition-all duration-1800 ease-in bg-indigo-400 border-2 border-indigo-600 rounded-lg p-1">
+          <li className="transition-all duration-1500 ease-in  bg-gradient-to-br bg-indigo-400 border-2 via-rose-300 border-violet-600 rounded-lg p-1 text-blue-950">
             ✨ More Time for Yourself
           </li>
         </Transition>
@@ -40,7 +40,7 @@ const Side = () => {
           enterFrom="opacity-0"
           enterTo="opacity-100"
         >
-          <li className="transition-all duration-2100 ease-in bg-indigo-400 border-2 border-indigo-600 rounded-lg p-1">
+          <li className="transition-all duration-1500 ease-in  bg-gradient-to-br bg-indigo-400 border-2 via-rose-300 border-violet-600 rounded-lg p-1 text-blue-950">
             ✨ Security if You Lose Your Job
           </li>
         </Transition>

@@ -17,7 +17,7 @@ const WhoCanJoin = () => {
       enterFrom={"scale-25"}
       enterTo={"opacity-100"}
     >
-      <div className="flex flex-col gap-2 bg-indigo-300 py-1 px-3 transition-all hover:transition-shadow hover:shadow-xl duration-500 rounded-2xl items-center">
+      <div className="flex flex-col gap-2 bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 p-3 transition-all shadow-md shadow-blue-800 duration-500 rounded-2xl items-center">
         <h1 className="text-2xl font-['Concert_One']">Who Can Join Us?</h1>
 
         <span>
