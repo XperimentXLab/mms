@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom"
 
 const Navigation = () => {
   return (
-    <div className="fixed min-w-screen z-30 bg-amber-50">
+    <div className="fixed min-w-full z-30 bg-amber-50">
       <div className="flex justify-between py-2 md:py-3 px-3 bg-gradient-to-tl from-red-500 to-purple-400 via-black text-white bg- m-1 rounded-xl text-md md:text-xl">
         <h1>Logo</h1>
         <nav className="flex gap-4 items-center justify-center font-['Montserrat_Alternates'] ">
