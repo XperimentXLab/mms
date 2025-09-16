@@ -39,9 +39,9 @@ function App() {
   const router = createBrowserRouter(createRoutesFromElements(
     <Route>
       
-      <Route element={<ProtectedRoute />} errorElement={<NotFound />}>
+      <Route element={<ProtectedRoute />} >
         
-        <Route path="/" element={<MainLayout />} >
+        <Route path="/" element={<MainLayout />} errorElement={<NotFound />}>
           <Route index element={<Home />} />
           <Route path="profile" element={
             <Profile />

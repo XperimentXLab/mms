@@ -2,6 +2,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 import ProtectedRoute from "./components/auth/ProtectedRoute"
 import { lazy, Suspense } from "react"
 import Loading from "./components/props/Loading"
+import { ToastContainer } from "react-toastify"
 
 const Login = lazy(() => import("./components/auth/Login"))
 const MainLayout = lazy(() => import("./components/layout/MainLayout"))
@@ -42,6 +43,7 @@ function App() {
 
   return (
     <Suspense fallback={<Loading />}>
+      <ToastContainer />
       <RouterProvider router={router} />
     </Suspense>
   )
