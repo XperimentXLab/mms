@@ -8,6 +8,7 @@ import timezone from "dayjs/plugin/timezone";
 import { Tables } from "../props/Tables";
 import { Inputss } from "../props/Formss";
 import { FixedText } from "../props/Textt";
+import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -110,7 +111,7 @@ const WithdrawReq = () => {
     const ref = inputRefs.current[id]?.value;
 
     if (!ref) {
-      alert('Please fill in transaction id first.')
+      NotiErrorAlert('Please fill in transaction id first.')
       return
     }
 
@@ -137,13 +138,14 @@ const WithdrawReq = () => {
           reference: ref
         })
       }
-      alert('Transaction approved')
+      NotiSuccessAlert('Transaction approved')
     } catch (error: any) {
       if (error.response && error.response.status == 400 || error.response.status == 401) {
         setErrorMessage(error.response.data.error)
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       } else {
         console.error(error)
+        NotiErrorAlert('Something went wrong. Please try again.')
       }
     } finally {
       setLoading(false)
@@ -154,7 +156,7 @@ const WithdrawReq = () => {
   const handleReject = async (id: string) => {
     const ref = inputRefs.current[id]?.value;
     if (!ref) {
-      alert('Please fill in rejection reason first!')
+      NotiErrorAlert('Please fill in rejection reason first!')
       return
     }
     
@@ -181,13 +183,14 @@ const WithdrawReq = () => {
           reference: ref
         })
       }
-      alert('Transaction rejected')
+      NotiSuccessAlert('Transaction rejected')
     } catch (error: any) {
       if (error.response && error.response.status == 400 || error.response.status == 401) {
         setErrorMessage(error.response.data.error)
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       } else {
         console.error(error)
+        NotiErrorAlert('Something went wrong. Please try again.')
       }
     } finally {
       setLoading(false)

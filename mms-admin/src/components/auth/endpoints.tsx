@@ -1,5 +1,6 @@
 
 
+import { NotiErrorAlert, NotiInfoAlert, NotiSuccessAlert } from "../props/Noti"
 import type { TableFetchParams } from "../props/Tables"
 import api, { generateDeviceFingerprint } from "./api"
 
@@ -514,7 +515,7 @@ export const downloadExcelUser = async () => {
   const dateT = date.getTime()
 
   try {
-    alert('Report export on progress')
+    NotiInfoAlert('Report export on progress')
     //setLoading(true)
     const response = await api.get('/export_all_user/', {
       responseType: 'blob',
@@ -537,9 +538,10 @@ export const downloadExcelUser = async () => {
     link.remove();
     window.URL.revokeObjectURL(url);
 */
-    alert('Report export success')
+    NotiSuccessAlert('Report export success')
   } catch (error) {
-    console.error('Excel download failed:', error);
+    console.error('Excel download failed:', error)
+    NotiErrorAlert('Report export failed')
   } finally {
     //setLoading(false)
   }
@@ -556,7 +558,7 @@ export const downloadExcelVerification = async () => {
   const dateT = date.getTime()
 
   try {
-    alert('Report export on progress')
+    NotiInfoAlert('Report export on progress')
     const response = await api.get('/export_all_verification/', {
       responseType: 'blob',
     });
@@ -578,9 +580,10 @@ export const downloadExcelVerification = async () => {
     link.remove();
     window.URL.revokeObjectURL(url);
 */
-    alert('Report export success')
+    NotiSuccessAlert('Report export success')
   } catch (error) {
     console.error('Excel download failed:', error);
+    NotiErrorAlert('Report export failed')
   }
 }
 
@@ -603,7 +606,7 @@ export const downloadExcelTx = async (params: paramsExportTx) => {
   const dateT = date.getTime()
 
   try {
-    alert('Report export on progress')
+    NotiInfoAlert('Report export on progress')
     const response = await api.get('/export_all_tx/', {
       responseType: 'blob',
       params: {
@@ -635,9 +638,10 @@ export const downloadExcelTx = async (params: paramsExportTx) => {
     window.URL.revokeObjectURL(url);
     */
 
-    alert('Report export success')
+    NotiSuccessAlert('Report export success')
   } catch (error) {
     console.error('Excel download failed:', error);
+    NotiErrorAlert('Report export failed')
   }
 }
 

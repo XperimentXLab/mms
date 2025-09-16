@@ -19,7 +19,7 @@ const router = createBrowserRouter(createRoutesFromElements(
   <Route>
     <Route path="/login" element={<Login />} />
 
-    <Route element={<ProtectedRoute />} >
+    <Route element={<ProtectedRoute />}>
       <Route element={<MainLayout />}>
 
         <Route path="/" element={<Dashboard />}/>

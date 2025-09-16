@@ -6,6 +6,7 @@ import Loading from "../props/Loading";
 import Buttons from "../props/Buttons";
 import { logout, getUsername } from "../auth/endpoints";
 import { useAutoLogout } from "../auth/api";
+import { NotiSuccessAlert } from "../props/Noti";
 
 
 const MainLayout = () => {
@@ -29,8 +30,10 @@ const MainLayout = () => {
     try {
       setLoading(true)
       await logout()
-      alert('Logout successful.')
-      navigate('/login')
+      NotiSuccessAlert('Logout successful.')
+      setTimeout(() => {
+        navigate('/login')
+      }, 2000)
     } catch (error) {
       console.error('Logout error:', error)
     } finally {

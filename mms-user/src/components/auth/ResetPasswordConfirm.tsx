@@ -5,6 +5,7 @@ import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
 import Loading from "../props/Loading"
 import { InfoPassword } from "../props/Info";
+import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti"
 
 const ResetPasswordConfirm = () => {
 
@@ -46,10 +47,11 @@ const ResetPasswordConfirm = () => {
           password, 
           password2
         })
-        alert('Password reset successfully')
+        NotiSuccessAlert('Password reset successfully')
         navigate('/login')
       } catch (error: any) {
         console.error(error)
+        NotiErrorAlert('Error resetting password. Please try again later.')
       } finally {
         setLoading(false)
       }

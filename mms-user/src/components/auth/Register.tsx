@@ -5,6 +5,7 @@ import { register } from "./endpoints"
 import Buttons from "../props/Buttons"
 import { Inputss } from "../props/Formss"
 import { InfoPassword, InfoPersonal } from "../props/Info"
+import { NotiSuccessAlert } from "../props/Noti"
 
 
 const Register = () => {
@@ -37,8 +38,10 @@ const Register = () => {
         firstName,
         lastName
       })
-      alert('User successfully register')
-      navigate('/login')
+      NotiSuccessAlert('User successfully register')
+      setTimeout(() => {
+        navigate('/login')
+      }, 2000)
     } catch (error: any) {
       if (error.response && (error.response.status === 400 || error.response.status === 401)) {
         console.log(error.response.data.error)

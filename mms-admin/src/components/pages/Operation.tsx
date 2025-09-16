@@ -6,6 +6,7 @@ import { distribute_profit, get_profit, update_monthly_finalized_profit, update_
 import Loading from "../props/Loading"
 import { FixedText } from "../props/Textt"
 import dayjs from "dayjs"
+import { NotiErrorAlert, NotiInfoAlert, NotiSuccessAlert } from "../props/Noti"
 
 const Operation = () => {
 
@@ -94,7 +95,7 @@ const Operation = () => {
   const toggleUpdateProfit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!inputActiveMonth || !inputActiveYear) {
-      alert("Please select an active month and year.");
+      NotiErrorAlert("Please select an active month and year.");
       return;
     }
     try {
@@ -107,7 +108,7 @@ const Operation = () => {
         activeMonthProfit: Number(inputActiveMonth),
         activeYearProfit: Number(inputActiveYear),
       })
-      alert('Profit updated successfully')
+      NotiSuccessAlert('Profit updated successfully')
 
       setDailyProfitRate(dailyProfitRate)
       setWeeklyProfitRate(weeklyProfitRate)
@@ -118,7 +119,7 @@ const Operation = () => {
 
     } catch (error: any) {
       setErrorMessage(error.response.data.error)
-      alert('Failed to update operational profit. Please try again.');
+      NotiErrorAlert('Failed to update operational profit. Please try again.');
     } finally {
       setLoading(false)
     }
@@ -128,7 +129,7 @@ const Operation = () => {
   const toggleMFinalized = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!finalizedSelectedMonth || !finalizedSelectedYear) {
-      alert("Please select a month and year.");
+      NotiErrorAlert("Please select a month and year.");
       return;
     }
     try {
@@ -138,7 +139,7 @@ const Operation = () => {
         year: Number(finalizedSelectedYear),
         finalizedProfit: inputFinalizedProfitRate
       })
-      alert('Finalized profit updated successfully')
+      NotiSuccessAlert('Finalized profit updated successfully')
       setFinalizedSelectedMonth("")
       setFinalizedSelectedYear("")
       setInputFinalizedProfitRate(0)
@@ -160,8 +161,8 @@ const Operation = () => {
     try {
       setLoading(true)
       const response = await distribute_profit()
-      alert(response.message)
-      alert(JSON.stringify(response.metrics))
+      NotiSuccessAlert(response.message)
+      NotiInfoAlert(JSON.stringify(response.metrics))
       /*
       {
         "metrics": {
@@ -178,7 +179,7 @@ const Operation = () => {
       }
       */
     } catch (error: any) {
-      alert('Failed to distribute profit. Please try again.');
+      NotiErrorAlert('Failed to distribute profit. Please try again.');
     } finally {
       setLoading(false)
     }

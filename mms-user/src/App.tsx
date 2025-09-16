@@ -2,6 +2,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 import ProtectedRoute from "./components/auth/ProtectedRoute"
 import { lazy, Suspense } from "react"
 import Loading from "./components/props/Loading"
+import { ToastContainer } from "react-toastify"
 
 //const Updating = lazy(() => import("./components/auth/Updating"))
 
@@ -38,7 +39,8 @@ function App() {
   const router = createBrowserRouter(createRoutesFromElements(
     <Route>
       
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute />} errorElement={<NotFound />}>
+        
         <Route path="/" element={<MainLayout />} >
           <Route index element={<Home />} />
           <Route path="profile" element={
@@ -93,8 +95,6 @@ function App() {
         path="/reset-password-confirm/:uidb64/:token" 
         element={<ResetPasswordConfirm />} 
       />
-      
-      <Route path="*" element={<NotFound />} />
 
       {/*<Route path="*" element={<Updating />} />*/}
       
@@ -103,6 +103,7 @@ function App() {
 
   return (
     <Suspense fallback={<Loading />}>
+      <ToastContainer />
       <RouterProvider router={router} />
     </Suspense>
   )

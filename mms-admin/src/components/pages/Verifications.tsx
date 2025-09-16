@@ -4,6 +4,7 @@ import Loading from "../props/Loading"
 import { downloadExcelVerification, getAllUsers, processVeri } from "../auth/endpoints"
 import Buttons, { RejectionInput } from "../props/Buttons"
 import type { ColumnDef } from "@tanstack/react-table"
+import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti"
 
 
 const Verifications = () => {
@@ -18,9 +19,10 @@ const Verifications = () => {
           user_id: id,
           action: 'Approve'
         })
-      alert('Verification approved')
+      NotiSuccessAlert('Verification approved')
     } catch (error: any) {
       setErrorMessage(error.response.data.error)
+      NotiErrorAlert(error.response.data.error)
     } finally {
       setLoading(false)
     }
@@ -35,9 +37,10 @@ const Verifications = () => {
         action: 'Reject',
         reject_reason: reason || 'Try again'
       })
-      alert('Verification rejected');
+      NotiSuccessAlert('Verification rejected');
     } catch (error: any) {
       setErrorMessage(error.response?.data?.error || 'Something went wrong');
+      NotiErrorAlert(error.response?.data?.error || 'Something went wrong');
     } finally {
       setLoading(false);
     }

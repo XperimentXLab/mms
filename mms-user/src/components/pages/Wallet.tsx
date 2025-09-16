@@ -11,6 +11,7 @@ import { convertCommissionToMaster, convertProfitToMaster, getWallet, transferMa
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti"
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -100,15 +101,15 @@ const Wallet = () => {
         receiver,
         reference
       })
-      alert(`Successfully transferred ${masterPoint} RP to ${receiver}.`)
+      NotiSuccessAlert(`Successfully transferred ${masterPoint} RP to ${receiver}.`)
       setMasterPoint(0)
       setReceiver('')
     } catch (error: any) {
       if (error.response && error.response.status === 400 || error.response.status === 401) {
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       } else {
         console.log(error)
-        alert('Error occured during transfering. Please try again')
+        NotiErrorAlert('Error occured during transfering. Please try again')
       }
     } finally {
       setLoading(false)
@@ -136,15 +137,15 @@ const Wallet = () => {
       await withdrawProfit({
         amount: profitPoint,
       })
-      alert(`Successfully requested withdrawal of ${profitPoint} profit points. Please wait 24 hours for approval.`)
+      NotiSuccessAlert(`Successfully requested withdrawal of ${profitPoint} profit points. Please wait 24 hours for approval.`)
       setProfitPoint(0)
     } catch (error: any) {
       console.error('Error during withdrawal:', error)
       if (error.response && error.response.status === 400 || error.response.status === 401) {
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       } else {
         console.log(error)
-        alert('Error occured during withdrawal profit. Please try again')
+        NotiErrorAlert('Error occured during withdrawal profit. Please try again')
       }
     } finally {
       setLoading(false)
@@ -159,15 +160,15 @@ const Wallet = () => {
       await convertProfitToMaster({
         amount: convertProfit
       })
-      alert(`Successfully converted ${convertProfit} profit points to RP.`)
+      NotiSuccessAlert(`Successfully converted ${convertProfit} profit points to RP.`)
       setConvertProfit(0)
     } catch (error: any) {
       console.error('Error during profit conversion:', error)
       if (error.response && error.response.status === 400 || error.response.status === 401) {
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       } else {
         console.log(error)
-        alert('Error occured during converting profit. Please try again')
+        NotiErrorAlert('Error occured during converting profit. Please try again')
       }
     } finally {
       setLoading(false)
@@ -181,20 +182,20 @@ const Wallet = () => {
     try {
       setLoading(true)
       if (walletAddress === undefined) {
-        alert('Please set your wallet address in the profile page.')
+        NotiErrorAlert('Please set your wallet address in the profile page.')
       }
       await withdrawCommission({
         amount: commissionPoint
       })
-      alert(`Successfully requested withdrawal of ${commissionPoint} commission points. Please wait 24 hours for approval.`)
+      NotiSuccessAlert(`Successfully requested withdrawal of ${commissionPoint} commission points. Please wait 24 hours for approval.`)
       setCommissionPoint(0)
     } catch (error: any) {
       console.error('Error during commission withdrawal:', error)
       if (error.response && error.response.status === 400 ||  error.response.status === 401) {
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       } else {
         console.log(error)
-        alert('Error occured during withdrawal commission. Please try again')
+        NotiErrorAlert('Error occured during withdrawal commission. Please try again')
       }
     } finally {
       setLoading(false)
@@ -209,15 +210,15 @@ const Wallet = () => {
       await convertCommissionToMaster({
         amount: convertCommision
       })
-      alert(`Successfully converted ${convertCommision} profit points to RP.`)
+      NotiSuccessAlert(`Successfully converted ${convertCommision} profit points to RP.`)
       setCovertCommision(0)
     } catch (error: any) {
       console.error('Error during commission conversion:', error)
       if (error.response && error.response.status === 400 ||  error.response.status === 401) {
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       } else {
         console.log(error)
-        alert('Error occured during converting. Please try again')
+        NotiErrorAlert('Error occured during converting. Please try again')
       }
     } finally {
       setLoading(false)

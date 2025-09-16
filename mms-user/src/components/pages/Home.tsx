@@ -4,7 +4,6 @@ import { getDailyTotalProfit, getWallet, userDetails } from "../auth/endpoints"
 import { FixedText } from "../props/Textt"
 import { Tables } from "../props/Tables";
 
-//import dayjs from "dayjs";
 
 interface ProfitData {
   transaction_type: string;

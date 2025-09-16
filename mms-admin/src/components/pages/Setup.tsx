@@ -8,6 +8,7 @@ import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import { SelectMonth, SelectYear } from "../props/DropDown"
 import { FixedText } from "../props/Textt"
+import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti"
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -50,12 +51,14 @@ const Setup = () => {
         profitAmount: Number(profitAmount),
         affiliateAmount: Number(affiliateAmount)
       })
-      alert('User setup success !')
+      NotiSuccessAlert('User setup success !')
     } catch (error: any) {
       if (error.response && error.response.status === 500) {
-        setErrorMessage('An unexpected error occurred. Please try again later.');
+        setErrorMessage('An unexpected error occurred. Please try again later.')
+        NotiErrorAlert('An unexpected error occurred. Please try again later.')
       } else {
         setErrorMessage(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       }
     } finally {
       setLoading(false)
@@ -79,7 +82,7 @@ const Setup = () => {
   const handleDeposit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!currentMonth || !currentYear) {
-      alert("Please select a month and year.");
+      NotiErrorAlert("Please select a month and year.");
       return;
     }
     try {
@@ -89,13 +92,13 @@ const Setup = () => {
         month: Number(currentMonth),
         year: Number(currentYear)
       })
-      alert('Performance updated successfully')
+      NotiSuccessAlert('Performance updated successfully')
     } catch (error: any) {
       if (error.response && error.response.status === 400 || error.response.status === 401) {
         setErrorMessage(error.response.data.error)
       } else {
         console.log(error)
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       }
     } finally {
       setLoading(false)
@@ -107,7 +110,7 @@ const Setup = () => {
   const handleGainZ = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!currentMonth || !currentYear) {
-      alert("Please select a month and year.");
+      NotiErrorAlert("Please select a month and year.");
       return;
     }
     try {
@@ -117,13 +120,13 @@ const Setup = () => {
         month: Number(currentMonth),
         year: Number(currentYear)
       })
-      alert('Performance updated successfully')
+      NotiSuccessAlert('Performance updated successfully')
     } catch (error: any) {
       if (error.response && error.response.status === 400 || error.response.status === 401) {
         setErrorMessage(error.response.data.error)
       } else {
         console.log(error)
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       }
     } finally {
       setLoading(false)
@@ -134,7 +137,7 @@ const Setup = () => {
   const handleGainA = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!currentMonth || !currentYear) {
-      alert("Please select a month and year.");
+      NotiErrorAlert("Please select a month and year.");
       return;
     }
     try {
@@ -144,13 +147,13 @@ const Setup = () => {
         month: Number(currentMonth),
         year: Number(currentYear)
       })
-      alert('Performance updated successfully')
+      NotiSuccessAlert('Performance updated successfully')
     } catch (error: any) {
       if (error.response && error.response.status === 400 || error.response.status === 401) {
         setErrorMessage(error.response.data.error)
       } else {
         console.log(error)
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       }
     } finally {
       setLoading(false)
@@ -168,11 +171,10 @@ const Setup = () => {
       setFirstName(response.first_name)
       setLastName(response.last_name)
       setIc(response.ic)
-      console.log(userID)
-      console.log(searchUserId)
+
     } catch (error: any) {
       console.error(error)
-      alert(error.response.data.error)
+      NotiErrorAlert(error.response.data.error)
     } finally {
       setLoading(false)
     }
@@ -184,10 +186,10 @@ const Setup = () => {
         firstName: editFirstName,
         userID: searchUserId
       })
-      alert('User first name updated successfully')
+      NotiSuccessAlert('User first name updated successfully')
     } catch (error: any) {
       console.error(error)
-      alert(error.response.data.error)
+      NotiErrorAlert(error.response.data.error)
     } finally {
       setLoading(false)
       resetForm()
@@ -200,10 +202,10 @@ const Setup = () => {
         lastName: editLastName,
         userID: searchUserId
       })
-      alert('User last name updated successfully')
+      NotiSuccessAlert('User last name updated successfully')
     } catch (error: any) {
       console.error(error)
-      alert(error.response.data.error)
+      NotiErrorAlert(error.response.data.error)
     } finally {
       setLoading(false)
       resetForm()
@@ -217,10 +219,10 @@ const Setup = () => {
         ic: editIc,
         userID :searchUserId
       })
-      alert('User I/C updated successfully')
+      NotiSuccessAlert('User I/C updated successfully')
     } catch (error: any) {
       console.error(error)
-      alert(error.response.data.ic)
+      NotiErrorAlert(error.response.data.ic)
     } finally {
       setLoading(false)
       resetForm()

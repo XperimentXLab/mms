@@ -4,6 +4,7 @@ import Buttons from "../props/Buttons"
 import Spannn from "../props/Textt"
 import { InfoPlaceAsset } from "../props/Info"
 import { getAsset, getWallet, placeAsset } from "../auth/endpoints"
+import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti"
 
 
 const Assets = () => {
@@ -44,19 +45,17 @@ const Assets = () => {
     try {
       setLoading(true)
       if (placeAssetPoint <= 0) {
-        alert('Please enter a valid amount.')
+        NotiErrorAlert('Please enter a valid amount.')
       }
       await placeAsset({
         amount: placeAssetPoint
       })
-      alert(`${placeAssetPoint} asset placement request submitted. Please wait 24 hours for approval.`)
+      NotiSuccessAlert(`${placeAssetPoint} asset placement request submitted. Please wait 24 hours for approval.`)
       setPlaceAssetPoint(0)
       resetForm()
     } catch (error: any) {
-      if (error.response && error.response.status === 400) {
-        alert(error.response.data.error)
-      } else {
-        alert(error.response.data.error)
+      if (error.response) {
+        NotiErrorAlert(error.response.data.error)
       }
     } finally {
       setLoading(false)

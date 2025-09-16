@@ -15,6 +15,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels"
 import { Bar } from "react-chartjs-2";
 import { getFinalizedYearlyProfits, getProfit, type FinalizedMonthlyProfit } from "../auth/endpoints";
 import { SelectYear } from "../props/DropDown";
+import { NotiErrorAlert } from "../props/Noti";
 
 ChartJS.register(
   CategoryScale,
@@ -215,7 +216,7 @@ const Others = () => {
     e.preventDefault();
     
     if (!assetAmount || !profitRate) {
-      alert("Please fill in all fields to calculate.");
+      NotiErrorAlert("Please fill in all fields to calculate.");
       return;
     }
 

@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { reset_password_request } from "./endpoints"
 import Buttons from "../props/Buttons"
 import { useNavigate } from "react-router-dom"
+import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti"
 
 const ForgotPassword = () => {
 
@@ -13,10 +14,11 @@ const ForgotPassword = () => {
     e.preventDefault()
     try {
       await reset_password_request(email)
-      alert('Password reset request has been sent. Please check with administrator for further action.')
+      NotiSuccessAlert('Password reset request has been sent. Please check with administrator for further action.')
       setEmail('')
     } catch (error: any) {
       console.error(error)
+      NotiErrorAlert('Error sending password reset request. Please try again later.')
     }
   }
 

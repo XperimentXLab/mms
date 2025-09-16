@@ -6,6 +6,7 @@ import { Inputss } from "../props/Formss"
 import Buttons from "../props/Buttons"
 import { apiCountry, uploadToCloudinary, /*openCloudinaryWidget,*/ type CountryType } from "../auth/api"
 import { InfoDoc, InfoPersonal } from "../props/Info"
+import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti"
 
 const Profile = () => {
 
@@ -115,9 +116,7 @@ const Profile = () => {
       setLoading(true)
       console.error('Error fetching user data:', error)
       if (error.response) {
-        console.error('Response data:', error.response.data)
-        console.error('Response status:', error.response.status)
-        alert(error.response.data.error)
+        NotiErrorAlert(error.response.data.error)
       }
     } finally {
       setLoading(false)
@@ -139,7 +138,7 @@ const Profile = () => {
         phoneNo: editPhoneNo ? editPhoneNo : phoneNo,
         walletAddress: editWalletAddress ? editWalletAddress : (walletAddress || undefined),
       })
-      alert('Profile updated successfully')
+      NotiSuccessAlert('Profile updated successfully')
     } catch (error: any) {
       console.error(error)
     } finally {
@@ -156,7 +155,7 @@ const Profile = () => {
         firstName: editFirstName,
         lastName: editLastName,
       })
-      alert('Name successfully saved')
+      NotiSuccessAlert('Name successfully saved')
     } catch (error: any) {
       console.error(error)
     } finally {
@@ -176,7 +175,7 @@ const Profile = () => {
         postcode: editPostcode ? editPostcode : postcode,
         country: editCountry ? editCountry : country,
       })
-      alert('Address updated successfully')
+      NotiSuccessAlert('Address updated successfully')
     } catch (error: any) {
       console.error(error)
     } finally {
@@ -196,7 +195,7 @@ const Profile = () => {
         beneficiaryEmail: editBeneficiaryEmail ? editBeneficiaryEmail : beneficiaryEmail,
         beneficiaryPhone: editBeneficiaryPhone ? editBeneficiaryPhone : beneficiaryPhone,
       })
-      alert('Beneficiary information updated successfully')
+      NotiSuccessAlert('Beneficiary information updated successfully')
     } catch (error: any) {
       console.error(error)
     } finally {
@@ -211,14 +210,14 @@ const Profile = () => {
     try {
       setLoading(true)
       if (!icDocument) {
-        alert('Please select a document to upload.')
+        NotiErrorAlert('Please select a document to upload.')
         return
       }
       await uploadToCloudinary(icDocument, refferralCode)
-      alert('Document uploaded successfully.')
+      NotiSuccessAlert('Document uploaded successfully.')
     } catch (error: any) {
       console.error(error.message)
-      alert('Failed to upload document.')
+      NotiErrorAlert('Failed to upload document.')
     } finally {
       setLoading(false)
       fetchData()
@@ -241,7 +240,7 @@ const Profile = () => {
         newPassword,
         newConfirmPassword: confirmPassword,
       })
-      alert('Password changed successfully')
+      NotiSuccessAlert('Password changed successfully')
       resetFormChangeP()
     } catch (error: any) {
       console.error(error)     
@@ -263,7 +262,7 @@ const Profile = () => {
     try {
       setLoading(true)
       await PromoCode(promoCode)
-      alert('Promo code successfully entered.')
+      NotiSuccessAlert('Promo code successfully entered.')
     } catch (error: any) {
       if (error.response) {
         setErrorMessagePC('Invalid promo code')

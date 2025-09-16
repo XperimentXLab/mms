@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone";
 import { Tables } from "../props/Tables";
+import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -73,7 +74,7 @@ const AssetRequest = () => {
           tx_id: id,
           action: 'Approve'
         })
-        alert('Transaction approved')
+        NotiSuccessAlert('Transaction approved')
       } catch (error: any) {
         if (error.response && error.response.status === 400 || error.response.status === 401) {
           console.error(error.response.data.error)
@@ -97,7 +98,7 @@ const AssetRequest = () => {
           tx_id: id,
           action: 'Reject'
         })
-        alert('Transaction rejected')
+        NotiErrorAlert('Transaction rejected')
       } catch (error: any) {
         if (error.response && error.response.status === 400 || error.response.status === 401) {
           console.error(error.response.data.error)
