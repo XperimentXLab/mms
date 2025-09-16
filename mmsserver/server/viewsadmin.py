@@ -453,7 +453,14 @@ def get_all_withdrawal_request(request):
 
       all_withdrawal_request = WithdrawalRequest.objects.filter(query).order_by('-created_at')
       serializer = WithdrawalRequestSerializer(all_withdrawal_request, many=True)
-      return Response(serializer.data, status=200)
+
+      total_actual_wd = WithdrawalRequest.objects.filter(query).aggregate(
+        total=models.Sum('actual_amount'))['total'] or 0
+
+      return Response({
+        'results': serializer.data,
+        'total_actual_wd': total_actual_wd
+      }, status=200)
     else:
       return Response({'error': 'Permission denied'}, status=403)
   except Exception as e:

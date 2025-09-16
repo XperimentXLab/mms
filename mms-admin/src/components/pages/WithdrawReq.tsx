@@ -1,12 +1,13 @@
   import { useEffect, useState, useRef } from "react"
 import Loading from "../props/Loading"
-import { downloadExcelTx, getWDReq, processWDAsset, processWDCommission, processWDProfit } from "../auth/endpoints"
+import { getWDReq, processWDAsset, processWDCommission, processWDProfit } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { Tables } from "../props/Tables";
 import { Inputss } from "../props/Formss";
+import { FixedText } from "../props/Textt";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -42,6 +43,7 @@ const WithdrawReq = () => {
 
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [debouncedSearch, setDebouncedSearch] = useState(search)
+  const [totalActWd, setTotalActWd] = useState<number>(0)
 
   type pointType = 'PROFIT' | 'COMMISSION' | 'ASSET'
   const [point, setPoint] = useState<pointType[]>()
@@ -55,7 +57,10 @@ const WithdrawReq = () => {
         startDate,
         endDate
       })
-      const formattedData = response.map((user: any) => {
+      setTotalActWd(response.total_actual_wd)
+      const results = response.results || []; // fallback to empty array
+
+      const formattedData = results.map((user: any) => {
       const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur")
       return {
         ...user,
@@ -63,9 +68,10 @@ const WithdrawReq = () => {
       }
     });
       setTransactions(formattedData)
-      console.log(formattedData)
-      const pointTypes: pointType[] = Array.from(new Set(response.map((user: any) => user.point_type)));
+
+      const pointTypes: pointType[] = Array.from(new Set(formattedData.map((user: any) => user.point_type)));
       setPoint(pointTypes);
+      setErrorMessage('')
     } catch (error: any) {
       if (error.response && error.response.status === 400) {
         setErrorMessage(error.response.data.error)
@@ -284,15 +290,16 @@ const WithdrawReq = () => {
 
       <div className="flex flex-col bg-white gap-3 items-center p-2 rounded">
 
-        <div className="flex flex-row w-full items-end gap-2">
+        <div className="flex flex-row w-full items-end justify-center gap-2">
           <Inputss
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search user id or username"
           />
-          <Buttons type="button" onClick={()=>downloadExcelTx({status, search, startDate, endDate})}>Export</Buttons>
           
+          <FixedText label="Total Actual Amount Withdrawal" text={totalActWd.toFixed(2)} />
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-2 justify-center">

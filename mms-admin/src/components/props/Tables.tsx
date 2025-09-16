@@ -81,9 +81,9 @@ export const Tables = ({
         cell: col.render
           ? (info) => col.render?.(info.getValue())
           : undefined,
-      })),
-    [columns]
-  );
+      }
+    )
+  ), [columns]);
 
   const table = useReactTable({
     data,
@@ -99,6 +99,7 @@ export const Tables = ({
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
+
                 <th
                   key={header.id}
                   onClick={
