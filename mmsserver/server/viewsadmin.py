@@ -1,7 +1,6 @@
 from .models import *
 from .serializers import *
 from .utils import *
-from django.conf import settings
 import requests
 from decimal import Decimal
 from rest_framework.authentication import authenticate
@@ -15,7 +14,6 @@ from django.db.models import Sum, Q
 from django.db.models.functions import TruncDate
 from rest_framework.pagination import PageNumberPagination
 from datetime import datetime
-
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -43,6 +41,7 @@ def login_admin(request):
         return Response({'error': 'CAPTCHA verification failed'}, status=400)
       """
 
+        
       refresh = RefreshToken.for_user(user)
       return Response({
         'access': str(refresh.access_token),
@@ -361,9 +360,6 @@ def get_all_transaction(request):
       month = request.GET.get('month')
       year = request.GET.get('year')
 
-      # Set start to midnight, end to 23:59:59
-      #start_dt = datetime.combine(parse_date(start_date), time.min)
-      #end_dt = datetime.combine(parse_date(end_date_str), time.max)
       
       query = Q()
       if search_query:
@@ -441,6 +437,8 @@ def get_all_withdrawal_request(request):
       status_filter = request.GET.get('status', None)
       start_date = request.GET.get('start_date', None)
       end_date = request.GET.get('end_date', None)
+      month = request.GET.get('month')
+      year = request.GET.get('year')
 
       query = Q()
 
@@ -448,8 +446,13 @@ def get_all_withdrawal_request(request):
         query &= Q(transaction__user__id__icontains=search_query) | Q(transaction__user__username__icontains=search_query)
       if status_filter:
         query &= Q(transaction__request_status__icontains=status_filter)
-      if start_date and end_date:
-        query &= Q(created_at__range=[start_date, end_date])
+      if start_date:
+        if end_date:
+          query &= date_filter_q('created_at', start_date, end_date)
+        else:
+          query &= date_filter_q('created_at', start_date)
+      if month and year:
+        query &= Q(created_at__year=year, created_at__month=month)
 
       all_withdrawal_request = WithdrawalRequest.objects.filter(query).order_by('-created_at')
       serializer = WithdrawalRequestSerializer(all_withdrawal_request, many=True)

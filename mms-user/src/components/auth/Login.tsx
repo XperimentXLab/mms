@@ -64,10 +64,10 @@ const Login = () => {
   return (
     <div className="flex min-h-screen justify-center">
 
-      <div className="flex flex-col items-center p-4 justify-center gap-5">
+      <div className="flex flex-col items-center p-4 justify-center gap-5 w-100">
         <h1 className="font-bold text-xl">Login</h1>
 
-        <form className="grid grid-row-3 gap-5 p-5 shadow-xl shadow-red-300" onSubmit={toggleLogin}>
+        <form className="grid grid-row-3 gap-5 p-5 rounded-xl shadow-md shadow-red-300 w-full" onSubmit={toggleLogin}>
 
           <div className="grid grid-row-2 gap-2">
             <Inputss type="text" placeholder="Enter Username"

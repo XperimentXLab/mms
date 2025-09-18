@@ -1049,3 +1049,79 @@ def get_client_ip(request: HttpRequest) -> str:
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip or '0.0.0.0'
+
+
+# utils/timezone_helpers.py
+
+import pytz
+from datetime import datetime, date, time
+from django.utils import timezone
+from django.db.models import Q
+
+DEFAULT_TIMEZONE = 'Asia/Kuala_Lumpur'
+
+def get_timezone(tz_name=None):
+    return pytz.timezone(tz_name or DEFAULT_TIMEZONE)
+
+def date_filter_q(field_name, start_date_input, end_date_input=None, tz_name=None):
+    """
+    Returns a Q object to filter a DateTimeField by local calendar date(s) in given timezone.
+    Accepts:
+      - str in 'YYYY-MM-DD' format
+      - datetime.date
+      - datetime.datetime (will use its date part)
+
+    Usage:
+        date_filter_q('created_at', '2025-04-01')
+        date_filter_q('created_at', some_datetime_obj)
+        date_filter_q('created_at', some_date_obj, '2025-04-05')
+    """
+    tz = get_timezone(tz_name)
+
+    # Normalize start_date_input to date
+    if isinstance(start_date_input, str):
+        try:
+            start_dt = datetime.strptime(start_date_input, '%Y-%m-%d').date()
+        except ValueError:
+            raise ValueError(f"Invalid date string: {start_date_input}. Expected format: YYYY-MM-DD")
+    elif isinstance(start_date_input, datetime):
+        start_dt = start_date_input.date()  # Extract date part
+    elif isinstance(start_date_input, date):
+        start_dt = start_date_input
+    else:
+        raise TypeError(f"start_date_input must be str, datetime, or date. Got {type(start_date_input)}")
+
+    # Normalize end_date_input to date (if provided)
+    if end_date_input:
+        if isinstance(end_date_input, str):
+            try:
+                end_dt = datetime.strptime(end_date_input, '%Y-%m-%d').date()
+            except ValueError:
+                raise ValueError(f"Invalid end date string: {end_date_input}. Expected format: YYYY-MM-DD")
+        elif isinstance(end_date_input, datetime):
+            end_dt = end_date_input.date()
+        elif isinstance(end_date_input, date):
+            end_dt = end_date_input
+        else:
+            raise TypeError(f"end_date_input must be str, datetime, or date. Got {type(end_date_input)}")
+    else:
+        end_dt = None
+
+    # Build local datetime range
+    if end_dt:
+        start_local = tz.localize(datetime.combine(start_dt, time.min))
+        end_local = tz.localize(datetime.combine(end_dt, time.max))
+    else:
+        start_local = tz.localize(datetime.combine(start_dt, time.min))
+        end_local = tz.localize(datetime.combine(start_dt, time.max))
+
+    # Convert to UTC for querying
+    start_utc = start_local.astimezone(pytz.UTC)
+    end_utc = end_local.astimezone(pytz.UTC)
+
+    return Q(
+        **{
+            f"{field_name}__gte": start_utc,
+            f"{field_name}__lte": end_utc
+        }
+    )

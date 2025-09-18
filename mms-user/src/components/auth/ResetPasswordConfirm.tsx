@@ -61,11 +61,11 @@ const ResetPasswordConfirm = () => {
   return (
     <div className="flex min-h-screen justify-center">
       {loading && <Loading />}
-      <div className="flex flex-col justify-center items-center gap-2 p-4">
+      <div className="flex flex-col justify-center items-center gap-2 p-4 w-100">
         
         <span className="font-bold text-xl">Reset Passsword</span>
 
-        <form onSubmit={toggleSubmit} className="grid grid-row-3 items-center justify-center gap-2 p-3 rounded-xl shadow-xl shadow-red-300">
+        <form onSubmit={toggleSubmit} className="grid grid-row-3 w-full items-center justify-center gap-2 p-3 rounded-xl shadow-md shadow-red-300">
 
           <div className="grid grid-row-2 gap-2">
             <Inputss type="password" placeholder="Enter password"

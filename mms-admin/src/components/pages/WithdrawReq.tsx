@@ -9,6 +9,7 @@ import { Tables } from "../props/Tables";
 import { Inputss } from "../props/Formss";
 import { FixedText } from "../props/Textt";
 import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti";
+import DatePicker from "react-datepicker";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -38,6 +39,8 @@ const WithdrawReq = () => {
   const [startDate, setStartDate] = useState<string>("")
   const [endDate, setEndDate] = useState<string>("")
 
+  const [selectedMonthYear, setSelectedMonthYear] = useState<string>('')
+
   //const [ref, setRef] = useState<string>('')
   //const [editRef, setEditRef] = useState<string>('')
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
@@ -49,6 +52,10 @@ const WithdrawReq = () => {
   type pointType = 'PROFIT' | 'COMMISSION' | 'ASSET'
   const [point, setPoint] = useState<pointType[]>()
 
+  const date = new Date()
+  const dateM = dayjs(date).month() + 1
+  const dateY = dayjs(date).year()
+
   const fetchData = async () => {
     try {
       setLoading(true)
@@ -56,7 +63,9 @@ const WithdrawReq = () => {
         search: debouncedSearch,
         status,
         startDate,
-        endDate
+        endDate,
+        month: Number(dayjs(selectedMonthYear).month() + 1) || dateM, 
+        year: Number(dayjs(selectedMonthYear).year()) || dateY
       })
       setTotalActWd(response.total_actual_wd)
       const results = response.results || []; // fallback to empty array
@@ -89,7 +98,7 @@ const WithdrawReq = () => {
 
   useEffect(() => {
     fetchData()
-  }, [debouncedSearch, status, startDate, endDate])
+  }, [debouncedSearch, status, startDate, endDate, selectedMonthYear])
 
   // Debounced search to avoid excessive API calls
   useEffect(() => {
@@ -338,6 +347,21 @@ const WithdrawReq = () => {
               value={endDate}
               onChange={e => setEndDate(e.target.value)}
               className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">Select </span>
+            <DatePicker
+              selected={
+                selectedMonthYear && dayjs(selectedMonthYear).isValid()
+                  ? dayjs(selectedMonthYear).toDate()
+                  : new Date()
+              }
+              onChange={(date: any) => setSelectedMonthYear(date)}
+              dateFormat="MMMM yyyy"
+              showMonthYearPicker
+              className="border-2 px-3 rounded"
             />
           </div>
         </div>

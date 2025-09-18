@@ -439,7 +439,7 @@ export const putPerformance = async (data: PerformanceData) => {
 
 
 export const getWDReq = async (params: paramsExportTx) => {
-  const { search, status, startDate, endDate } = params
+  const { search, status, startDate, endDate, month, year } = params
 
   const queryParams = new URLSearchParams()
   if (search) {
@@ -453,6 +453,10 @@ export const getWDReq = async (params: paramsExportTx) => {
   }
   if (endDate) {
     queryParams.append('end_date', endDate)
+  }
+  if (month && year) {
+    queryParams.append('month', month.toString())
+    queryParams.append('year', year.toString())
   }
 
   const response = await api.get(`/all_withdrawal_requests/?${queryParams.toString()}`)
@@ -594,6 +598,9 @@ interface paramsExportTx {
   transactionType?: string
   startDate?: string
   endDate?: string
+  month?: number
+  year?: number
+
 }
 export const downloadExcelTx = async (params: paramsExportTx) => {
 

@@ -19,7 +19,8 @@ from rest_framework.pagination import PageNumberPagination
 from datetime import datetime
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes #force_str
-#from django.core.mail import send_mail
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, Content, From, To
 #from django.template.loader import render_to_string 
 
 import logging
@@ -51,6 +52,7 @@ def refresh_token(request):
   except TokenError as e:
     logger.error(f"Invalid or expired refresh token: {e}")
     return Response({'error': f'Invalid or expired refresh token: {e}'}, status=401)
+  
   
 
 ############################################
@@ -136,11 +138,14 @@ def login(request):
     if not resultCaptcha.get("success"):
       return Response({'error': 'CAPTCHA verification failed'}, status=400)
     """
+
     refresh = RefreshToken.for_user(user)
     return Response({
       'access': str(refresh.access_token),
       'refresh': str(refresh),
     })
+  
+    
   else:
     logger.error(f"Error logging in for {username}")
     return Response({'error': 'Invalid credentials'}, status=400)
@@ -203,30 +208,30 @@ def request_password_reset_email(request):
 
       frontend_url = 'https://mmsventure.io'
       reset_link = f"{frontend_url}/reset-password-confirm/{uidb64}/{token}/"
-      
-      subject = 'Password Reset Requested'
-      reset_password_template = "password_reset_email.html"
-      c = {
-          "email": user.email,
-          "domain": frontend_url, # or your frontend domain
-          "site_name": "Test1-Project",
-          "uid": uidb64,
-          "user": user,
-          "token": token,
-          "protocol": 'https' if not settings.DEBUG else 'http',
-          "reset_link": reset_link,
-      }
-      #message = render_to_string(reset_password_template, c)
-      message = f"Hello {user.username},\n\nPlease click the link below to reset your password:\n{reset_link}\n\nIf you did not request this, please ignore this email.\n\nThanks,\nThe Team"
+      subject_ = 'Password Reset Requested'
 
-      #Email Configuration: For it to actually send emails, you'll need to configure Django's email settings in your settings.py file (e.g., EMAIL_BACKEND, EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, etc.). Once configured, you can uncomment the send_mail line in views.py.
-      # TODO: Configure email backend in settings.py and uncomment send_mail
-      # send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
-      #   logger.info(f"Password reset link for {user.email}: {reset_link} (Email sending is currently simulated)")
-      # print(f"DEBUG: Password reset link for {user.email}: {reset_link}") # For local testing if email is not set up
+      try:
+        message = Mail(
+          from_email=From('noreply@mmsventure.io', 'MMS Venture'),
+          to_emails=To(email),
+          subject=subject_,
+        )
+
+        # Create Content object
+        # content = Content("text/plain", message_)
+        # message.add_content(content)
+        message.template_id = settings.TEMPLATE_ID
+        message.dynamic_template_data = {
+          'reset_link': reset_link
+        }
+
+        sg = SendGridAPIClient(api_key=settings.SENDGRID_API_KEY)
+        sg.send(message)
+      except Exception as e:
+        print(f'Error sending email: {e}')
+        return Response({'error': 'Error sending email'}, status=500)
 
       logger.info(f"Password reset link for {user.email}: {reset_link}")
-      print(f"Password reset link for {user.email}: {reset_link}")
       return Response({'message': 'If an account with this email, a password reset link will be sent.', 'reset_link': reset_link}, status=200)
     except User.DoesNotExist:
       return Response({'message': 'If an account with this email exists, a password reset link has been sent.'}, status=200)
@@ -349,8 +354,11 @@ def get_profit_transaction(request):
     year = request.GET.get('year')
 
     query = Q(user=user, point_type='PROFIT')
-    if start_date and end_date:
-      query &= Q(created_at__date__range=[start_date, end_date])
+    if start_date:
+      if end_date:
+        query &= date_filter_q('created_at', start_date, end_date)
+      else:
+        query &= date_filter_q('created_at', start_date)
     if month and year:
       query &= Q(created_at__year=year, created_at__month=month)
     if search:
@@ -445,8 +453,11 @@ def get_transfer_transaction(request):
     year = request.GET.get('year')
 
     query = Q(user=user, transaction_type='TRANSFER')
-    if start_date and end_date:
-      query &= Q(created_at__date__range=[start_date, end_date])
+    if start_date:
+      if end_date:
+        query &= date_filter_q('created_at', start_date, end_date)
+      else:
+        query &= date_filter_q('created_at', start_date)
     if month and year:
       query &= Q(created_at__year=year, created_at__month=month)
     if search:
@@ -482,8 +493,11 @@ def get_convert_transaction(request):
     year = request.GET.get('year')
 
     query = Q(user=user, transaction_type='CONVERT')
-    if start_date and end_date:
-      query &= Q(created_at__date__range=[start_date, end_date])
+    if start_date:
+      if end_date:
+        query &= date_filter_q('created_at', start_date, end_date)
+      else:
+        query &= date_filter_q('created_at', start_date)
     if month and year:
       query &= Q(created_at__year=year, created_at__month=month)
     if search:
@@ -519,8 +533,11 @@ def get_profit_commission_wd_transaction(request):
     year = request.GET.get('year')
 
     query = Q(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type__in=['WITHDRAWAL'])
-    if start_date and end_date:
-      query &= Q(created_at__date__range=[start_date, end_date])
+    if start_date:
+      if end_date:
+        query &= date_filter_q('created_at', start_date, end_date)
+      else:
+        query &= date_filter_q('created_at', start_date)
     if month and year:
       query &= Q(created_at__year=year, created_at__month=month)
     if search:
@@ -557,8 +574,11 @@ def get_asset_transaction(request):
     year = request.GET.get('year')
 
     query = Q(user=user, transaction_type__in=['ASSET_WITHDRAWAL', 'ASSET_PLACEMENT', 'WELCOME_BONUS'])
-    if start_date and end_date:
-      query &= Q(created_at__date__range=[start_date, end_date])
+    if start_date:
+      if end_date:
+        query &= date_filter_q('created_at', start_date, end_date)
+      else:
+        query &= date_filter_q('created_at', start_date)
     if month and year:
       query &= Q(created_at__year=year, created_at__month=month)
     if search:
@@ -595,8 +615,11 @@ def get_deposit_lock(request):
     year = request.GET.get('year')
 
     query = Q(deposit__user=user, deposit__request_status__in=['APPROVED'])
-    if start_date and end_date:
-      query &= Q(created_at__date__range=[start_date, end_date])
+    if start_date:
+      if end_date:
+        query &= date_filter_q('created_at', start_date, end_date)
+      else:
+        query &= date_filter_q('created_at', start_date)
     if month and year:
       query &= Q(created_at__year=year, created_at__month=month)
     if search:

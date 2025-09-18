@@ -109,6 +109,7 @@ export const CommissionStatement = () => {
           month: Number(dayjs(selectedMonthYear).month() + 1) || dateM, 
           year: Number(dayjs(selectedMonthYear).year()) || dateY
         })
+        
         setData(resComTx)
       } catch (error: any) {
         if (error.response && error.response.status === 400) {
