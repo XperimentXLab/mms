@@ -282,10 +282,14 @@ def get_all_user(request):
       is_campro_query = request.GET.get('is_campro', None)
       sort_by = request.GET.get('sort_by', 'created_at')
       order = request.GET.get('order', 'desc')
+      start_date = request.GET.get('start_date', None)
+      end_date = request.GET.get('end_date', None)
 
       query = Q()
       if search_query:
         query &= Q(id__icontains=search_query) | Q(username__icontains=search_query) | Q(email__icontains=search_query) | Q(ic__icontains=search_query) | Q(referred_by__icontains=search_query) | Q(first_name__icontains=search_query) | Q(last_name__icontains=search_query)
+      if start_date and end_date:
+          query &= date_filter_q('created_at', start_date, end_date)
       if status_query:
         query &= Q(verification_status__icontains=status_query)
       if is_campro_query:

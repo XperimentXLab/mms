@@ -30,7 +30,7 @@ const monthLabels = [
 const fixedProfits = [
   5.1, 3.1, 3.2, 
   3.4, 3.78, 5.0, 
-  5.55, 4.1, 
+  5.55, 5.43, 
 ];
 const totalProfit = fixedProfits.reduce((sum, val) => sum + val, 0).toFixed(2);
 

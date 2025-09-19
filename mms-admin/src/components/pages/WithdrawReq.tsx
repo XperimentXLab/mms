@@ -302,7 +302,7 @@ const WithdrawReq = () => {
 
       <div className="flex flex-col bg-white gap-3 items-center p-2 rounded">
 
-        <div className="flex flex-row w-full items-end justify-center gap-2">
+        <div className="flex flex-col sm:flex-row w-full items-end justify-center gap-2">
           <Inputss
             type="text"
             value={search}
@@ -314,7 +314,8 @@ const WithdrawReq = () => {
 
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-2 justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-3 justify-center">
+
           <select
             value={status}
             onChange={e => setStatus(e.target.value)}
@@ -325,6 +326,21 @@ const WithdrawReq = () => {
             <option value="APPROVED">Approved</option>
             <option value="REJECTED">Rejected</option>
           </select>
+
+          <div className="flex flex-row items-center justify-between gap-2 w-full">
+            <span className="font-semibold">Select </span>
+            <DatePicker
+              selected={
+                selectedMonthYear && dayjs(selectedMonthYear).isValid()
+                  ? dayjs(selectedMonthYear).toDate()
+                  : new Date()
+              }
+              onChange={(date: any) => setSelectedMonthYear(date)}
+              dateFormat="MMMM yyyy"
+              showMonthYearPicker
+              className="border-2 px-3 py-2 rounded"
+            />
+          </div>
         
           <div className="flex flex-row items-center gap-2">
             <label className="text-sm font-medium text-gray-700 text-nowrap w-full">
@@ -350,20 +366,6 @@ const WithdrawReq = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="font-semibold">Select </span>
-            <DatePicker
-              selected={
-                selectedMonthYear && dayjs(selectedMonthYear).isValid()
-                  ? dayjs(selectedMonthYear).toDate()
-                  : new Date()
-              }
-              onChange={(date: any) => setSelectedMonthYear(date)}
-              dateFormat="MMMM yyyy"
-              showMonthYearPicker
-              className="border-2 px-3 rounded"
-            />
-          </div>
         </div>
 
         {hasActiveFilters && (
