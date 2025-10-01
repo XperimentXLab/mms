@@ -227,7 +227,7 @@ export const CommissionTxTable = ({
 
       const processedData = res.results.map(tx => ({
         ...tx,
-        created_datetime: dayjs(tx.created_at).format("DD/MM/YYYY HH:mm:ss"),
+        created_datetime: dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur").format("DD/MM/YYYY HH:mm:ss"),
       }))
       setData(processedData)
 
@@ -430,7 +430,7 @@ export const NewTable = ({
 
       const processedData = res.results.map(tx => ({
         ...tx,
-        created_datetime: dayjs(tx.created_at).format("DD/MM/YYYY HH:mm:ss"),
+        created_datetime: dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur").format("DD/MM/YYYY HH:mm:ss"),
       }))
       console.log("Res Data:", res)
       setData(processedData)
