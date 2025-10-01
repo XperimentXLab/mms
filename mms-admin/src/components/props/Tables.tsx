@@ -260,7 +260,7 @@ export const TxTable = ({
 
       const processedData = res.results.map(tx => ({
         ...tx,
-        created_datetime: dayjs(tx.created_at).format("DD/MM/YYYY hh:mm:ss"),
+        created_datetime: dayjs(tx.created_at).format("DD/MM/YYYY HH:mm:ss"),
       }))
       setData(processedData)
 
@@ -472,7 +472,7 @@ export const NewTable = ({
 
       const processedData = res.results.map(tx => ({
         ...tx,
-        created_datetime: dayjs(tx.created_at).format("DD/MM/YYYY hh:mm:ss"),
+        created_datetime: dayjs(tx.created_at).format("DD/MM/YYYY HH:mm:ss"),
       }))
 
       setData(processedData)

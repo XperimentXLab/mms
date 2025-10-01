@@ -42,7 +42,7 @@ const AssetRequest = () => {
         const dt = dayjs.utc(req.created_at).tz("Asia/Kuala_Lumpur");
         return {
           ...req,
-          created_datetime: dt.format("DD/MM/YYYY hh:mm:ss"),
+          created_datetime: dt.format("DD/MM/YYYY HH:mm:ss"),
           username: req.username,
         }
       })

@@ -74,7 +74,7 @@ const WithdrawReq = () => {
       const dt = dayjs.utc(user.created_at).tz("Asia/Kuala_Lumpur")
       return {
         ...user,
-        created_datetime: dt.format("DD/MM/YYYY hh:mm:ss")
+        created_datetime: dt.format("DD/MM/YYYY HH:mm:ss")
       }
     });
       setTransactions(formattedData)
