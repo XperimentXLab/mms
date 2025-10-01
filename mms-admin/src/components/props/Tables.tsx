@@ -17,7 +17,11 @@ import Loading from "./Loading";
 import type { TransactioDetail } from "../pages/Transactionss";
 import { Inputss } from "./Formss";
 import Buttons from "./Buttons";
+import utc from 'dayjs/plugin/utc'
+import timezone from "dayjs/plugin/timezone";
 
+dayjs.extend(utc);
+dayjs.extend(timezone)
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 

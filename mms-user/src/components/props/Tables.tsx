@@ -16,7 +16,11 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { getCommissionStatement } from "../auth/endpoints";
 import Loading from "./Loading";
 import { Inputss } from "./Formss";
+import utc from 'dayjs/plugin/utc'
+import timezone from "dayjs/plugin/timezone";
 
+dayjs.extend(utc);
+dayjs.extend(timezone)
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
