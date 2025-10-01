@@ -395,9 +395,9 @@ def get_all_transaction(request):
       if not start_date or not end_date:
         end_date = timezone.now()
         start_date = end_date - timedelta(days=30)
-        query &= Q(created_at__range=[start_date, end_date])
+        query &= Q(date_filter_q('created_at'))
       elif start_date and end_date:
-        query &= Q(created_at__range=[start_date, end_date])
+        query &= Q(date_filter_q('created_at', start_date, end_date))
 
       transactions = Transaction.objects.filter(query).order_by('-created_at')
 
