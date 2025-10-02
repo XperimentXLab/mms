@@ -390,9 +390,8 @@ def get_all_transaction(request):
       elif range_type == '3month':
         end_date = timezone.now()
         start_date = end_date - timedelta(days=90)
-
-      # ⏱ Default date range fallback
-      if range_type is None:
+      else:
+        # ⏱ Default date range fallback
         if start_date and end_date:
           query &= date_filter_q('created_at', start_date, end_date)
         else: 
