@@ -387,17 +387,19 @@ def get_all_transaction(request):
             end_date = make_aware(datetime(int(year), int(month) + 1, 1))
         except ValueError:
           return Response({'error': 'Invalid month/year combination'}, status=400)
+
       elif range_type == '3month':
         end_date = timezone.now()
         start_date = end_date - timedelta(days=90)
 
-      if start_date and end_date:
-        query &= date_filter_q('created_at', start_date, end_date)
-      else:
-        # ⏱ Default date range fallback
-        start_date = timezone.now() - timedelta(days=30)
+      # ✅ Fallback: last 30 days if no valid range_type
+      if not start_date and not end_date:
         end_date = timezone.now()
-        query &= date_filter_q('created_at', start_date, end_date)
+        start_date = end_date - timedelta(days=30)
+
+      # Apply date filter
+      query &= date_filter_q('created_at', start_date, end_date)
+
 
       transactions = Transaction.objects.filter(query).order_by('-created_at')
 
