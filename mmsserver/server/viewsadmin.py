@@ -1,7 +1,7 @@
 from .models import *
 from .serializers import *
 from .utils import *
-import requests
+import calendar
 from decimal import Decimal
 from rest_framework.authentication import authenticate
 from rest_framework.decorators import api_view, permission_classes
@@ -381,10 +381,8 @@ def get_all_transaction(request):
       if range_type == 'month' and month and year:
         try:
           start_date = make_aware(datetime(int(year), int(month), 1))
-          if int(month) == 12:
-            end_date = make_aware(datetime(int(year) + 1, 1, 1))
-          else:
-            end_date = make_aware(datetime(int(year), int(month) + 1, 1))
+          last_day = calendar.monthrange(int(year), int(month))[1]
+          end_date = make_aware(datetime(int(year), int(month), last_day, 23, 59, 59))
         except ValueError:
           return Response({'error': 'Invalid month/year combination'}, status=400)
 
