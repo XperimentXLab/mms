@@ -392,7 +392,7 @@ def get_all_transaction(request):
         start_date = end_date - timedelta(days=90)
 
       # ⏱ Default date range fallback
-      if month is None:
+      if range_type is None:
         if start_date and end_date:
           query &= date_filter_q('created_at', start_date, end_date)
         else: 
