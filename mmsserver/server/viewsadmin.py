@@ -392,10 +392,13 @@ def get_all_transaction(request):
         start_date = end_date - timedelta(days=90)
 
       # ⏱ Default date range fallback
-      if start_date:
-        query &= date_filter_q('created_at', start_date)
-      elif start_date and end_date:
-        query &= date_filter_q('created_at', start_date, end_date)
+      if month is None:
+        if start_date and end_date:
+          query &= date_filter_q('created_at', start_date, end_date)
+        else: 
+          start_date = timezone.now() - timedelta(days=30)
+          end_date = timezone.now()
+          query &= date_filter_q('created_at', start_date, end_date)
 
       transactions = Transaction.objects.filter(query).order_by('-created_at')
 
