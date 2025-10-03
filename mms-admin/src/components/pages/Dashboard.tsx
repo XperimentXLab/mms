@@ -212,6 +212,7 @@ const Dashboard = () => {
   const [totalUser, setTotalUser] = useState<number>(0)
   const [totalWithdraw, setTotalWithdraw] = useState<number>(0)
   const [totalWithdrawFee, setTotalWithdrawFee] = useState<number>(0)
+  const [accumulatedTotal, setAccumulatedTotal] = useState<number>(0)
 
   const [totalAssetAbove10k, setTotalAssetAbove10k] = useState<number>(0)
   const [totalAssetBelow10k, setTotalAssetBelow10k] = useState<number>(0)
@@ -259,6 +260,8 @@ const Dashboard = () => {
 
         setSharingProfit(resInfoDash.super_user_profit)
 
+        const accumulateTotal = resInfoDash.total_profit_balance + resInfoDash.total_convert_amount + resInfoDash.total_withdraw_amount + resInfoDash.super_user_profit
+        setAccumulatedTotal(accumulateTotal.toFixed(2))
 
         const gainData: MonthlyDataRes[] = [{
           monthly_data: resInfoDash.monthly_data,
@@ -377,7 +380,8 @@ const Dashboard = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 justify-center items-center w-full">
           <FixedText label="Total User" text={totalUser} />
-          <FixedText label="Total Profit & Commission" text={totalProfit} />
+          <FixedText label="Profit & Commission in Wallet" text={totalProfit} /> 
+          <FixedText label="Accumulated Profit & Commission" text={accumulatedTotal} /> 
           <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
           <FixedText label="Total Withdraw" text={totalWithdraw} />
           <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />

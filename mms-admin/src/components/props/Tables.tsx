@@ -260,7 +260,11 @@ export const TxTable = ({
         year,
       })
 
-
+      if (month && year) {  
+        setRangeType('month')
+      } else {
+        setRangeType('')
+      }
 
       const processedData = res.results.map(tx => ({
         ...tx,
@@ -278,18 +282,14 @@ export const TxTable = ({
 
   // Reset to page 1 when filters change
   useEffect(() => {
-    if (month && year) {  
-      setRangeType('month')
-    } else {
-      setRangeType('')
-    }
     setPage(1)
-  }, [search, status, transactionType, startDate, endDate, pointType, month, year, rangeType])
+  }, [search, status, transactionType, startDate, endDate, pointType, month, year])
 
   // Fetch data when dependencies change
   useEffect(() => {
+    console.log(rangeType)
     fetchData()
-  }, [search, status, transactionType, startDate, endDate, page, pageSize, pointType, month, year, rangeType])
+  }, [search, status, transactionType, startDate, endDate, page, pageSize, pointType, month, year])
 
   const table = useReactTable({
     data,

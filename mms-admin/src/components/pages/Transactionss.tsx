@@ -81,7 +81,9 @@ const Transactionss = () => {
     const [pointType, setPointType] = useState<string>("")
     const [startDate, setStartDate] = useState<string>("")
     const [endDate, setEndDate] = useState<string>("")
-    const [selectedMonthYear, setSelectedMonthYear] = useState<string>('')
+    const [selectedMonthYear, setSelectedMonthYear] = useState<Date | null>(null)
+    const [selectedMonth, setSelectedMonth] = useState<number>(0)
+    const [selectedYear, setSelectedYear] = useState<number>(0)
 
     // Debounced search to avoid excessive API calls
     const [debouncedSearch, setDebouncedSearch] = useState(search)
@@ -188,13 +190,23 @@ const Transactionss = () => {
               />
             </div>
           
-            <DatePicker
-              selected={
-                selectedMonthYear && dayjs(selectedMonthYear).isValid()
-                  ? dayjs(selectedMonthYear).toDate()
-                  : new Date()
-              }
-              onChange={(date: any) => setSelectedMonthYear(date)}
+            <DatePicker // Let's change to MUI (Material UI) Date Pickers 
+              selected={selectedMonthYear}
+              onChange={(date: Date | null) => {
+                setTimeout(() => {
+                  setSelectedMonthYear(date)
+                  if (date) {
+                    setSelectedMonth(dayjs(date).month() + 1)
+                    setSelectedYear(dayjs(date).year())
+                  } else {
+                    setSelectedMonth(0)
+                    setSelectedYear(0)
+                  }
+                  setStartDate('')
+                  setEndDate(''), 
+                  0
+                })
+              }}
               dateFormat="MMMM yyyy"
               showMonthYearPicker
               className="border px-3 py-2 rounded w-full" 
@@ -220,8 +232,8 @@ const Transactionss = () => {
           pointType={pointType}
           startDate={startDate}
           endDate={endDate}
-          month={Number(dayjs(selectedMonthYear).month()+1)}
-          year={Number(dayjs(selectedMonthYear).year())}
+          month={selectedMonth}
+          year={selectedYear}
         />
       </div>
     )

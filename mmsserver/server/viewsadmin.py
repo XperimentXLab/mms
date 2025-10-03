@@ -798,7 +798,7 @@ def get_info_dashboard(request):
       all_profit_balance = Wallet.objects.aggregate(
         total=models.Sum('profit_point_balance'))['total'] or 0 
       admin_profit = Wallet.objects.filter(user_id__in=[
-        'MMS00QVS', 'MMS01FXC', 'MMS0216J',  'MMS02O5G', 'MMS02GKX'
+        'MMS00QVS', 'MMS01FXC' # mmssuper, MMSAdmin
       ]).aggregate(total=models.Sum('profit_point_balance'))['total'] or 0
       actual_profit_balance = all_profit_balance - admin_profit
       print(f'admin p: {admin_profit}')
