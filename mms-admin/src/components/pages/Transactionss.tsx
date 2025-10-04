@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react"
 import { TxTable } from "../props/Tables"
-import dayjs from "dayjs";
+import dayjs /*{ Dayjs }*/ from "dayjs";
 import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import type { ColumnDef } from "@tanstack/react-table"
 import { Inputss } from "../props/Formss";
 import DatePicker from "react-datepicker";
+//import { LocalizationProvider } from '@mui/x-date-pickers'
+//import { DatePicker as NewDatePicker } from "@mui/x-date-pickers";
+//import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import Buttons from "../props/Buttons";
 import { downloadExcelTx } from "../auth/endpoints";
 dayjs.extend(utc);
@@ -81,7 +84,7 @@ const Transactionss = () => {
     const [pointType, setPointType] = useState<string>("")
     const [startDate, setStartDate] = useState<string>("")
     const [endDate, setEndDate] = useState<string>("")
-    const [selectedMonthYear, setSelectedMonthYear] = useState<Date | null>(null)
+    const [selectedMonthYear, setSelectedMonthYear] = useState<Date | undefined>()
     const [selectedMonth, setSelectedMonth] = useState<number>(0)
     const [selectedYear, setSelectedYear] = useState<number>(0)
 
@@ -189,12 +192,29 @@ const Transactionss = () => {
                 className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+
+            {/*
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <NewDatePicker 
+                label={'Select Month and Year'} 
+                views={['month', 'year']} 
+                value={selectedMonthYear}
+                onChange={(date) => {
+                  setSelectedMonthYear(date as Dayjs | undefined)
+                  setSelectedMonth(Number(date?.startOf('month').format('MM')))
+                  setSelectedYear(Number(date?.startOf('year').format('YYYY')))
+                }}
+                format="YYYY-MM"
+                
+              />
+            </LocalizationProvider>
+            */}
           
-            <DatePicker // Let's change to MUI (Material UI) Date Pickers 
+            <DatePicker 
               selected={selectedMonthYear}
               onChange={(date: Date | null) => {
                 setTimeout(() => {
-                  setSelectedMonthYear(date)
+                  setSelectedMonthYear(date as Date | undefined)
                   if (date) {
                     setSelectedMonth(dayjs(date).month() + 1)
                     setSelectedYear(dayjs(date).year())

@@ -380,8 +380,8 @@ const Dashboard = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 justify-center items-center w-full">
           <FixedText label="Total User" text={totalUser} />
+          <FixedText label="Accumulated Profit & Commission" text={accumulatedTotal} />
           <FixedText label="Profit & Commission in Wallet" text={totalProfit} /> 
-          <FixedText label="Accumulated Profit & Commission" text={accumulatedTotal} /> 
           <FixedText label="Total Convert (Compounding)" text={totalConvert}/>
           <FixedText label="Total Withdraw" text={totalWithdraw} />
           <FixedText label="Total Withdraw Fee" text={totalWithdrawFee} />
