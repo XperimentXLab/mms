@@ -360,7 +360,6 @@ def get_all_transaction(request):
       point_type_filter = request.GET.get('point_type', None)
       start_date = request.GET.get('start_date', None)
       end_date = request.GET.get('end_date', None)
-      range_type = request.GET.get('range_type', None) # month | year | 3month
       month = request.GET.get('month')
       year = request.GET.get('year')
 
@@ -378,20 +377,13 @@ def get_all_transaction(request):
       if point_type_filter:
         query &= Q(point_type__icontains=point_type_filter)
 
-      if range_type == 'month' and month and year:
-        try:
-          start_date = make_aware(datetime(int(year), int(month), 1))
-          last_day = calendar.monthrange(int(year), int(month))[1]
-          end_date = make_aware(datetime(int(year), int(month), last_day, 23, 59, 59))
-        except ValueError:
-          return Response({'error': 'Invalid month/year combination'}, status=400)
-
-      elif range_type == '3month':
-        end_date = timezone.now()
-        start_date = end_date - timedelta(days=90)
+      if month and year:
+        start_date = make_aware(datetime(int(year), int(month), 1))
+        last_day = calendar.monthrange(int(year), int(month))[1]
+        end_date = make_aware(datetime(int(year), int(month), last_day, 23, 59, 59))
 
       # ✅ Fallback: last 30 days if no valid range_type
-      if not start_date and not end_date:
+      else:
         end_date = timezone.now()
         start_date = end_date - timedelta(days=30)
 

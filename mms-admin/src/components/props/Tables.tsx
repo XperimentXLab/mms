@@ -12,7 +12,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import { getAllTransactions, type rangeTypeT } from "../auth/endpoints";
+import { getAllTransactions } from "../auth/endpoints";
 import Loading from "./Loading";
 import type { TransactioDetail } from "../pages/Transactionss";
 import { Inputss } from "./Formss";
@@ -235,7 +235,6 @@ export const TxTable = ({
   const [pageSize, setPageSize] = useState<number>(30)
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState<string>("")
-  const [rangeType, setRangeType] = useState<rangeTypeT>('')
 
   const [loading, setLoading] = useState(false)
 
@@ -255,16 +254,9 @@ export const TxTable = ({
         endDate: formattedEndDate,
         page,
         pageSize,
-        rangeType,
         month,
         year,
       })
-
-      if (month && year) {  
-        setRangeType('month')
-      } else {
-        setRangeType('')
-      }
 
       const processedData = res.results.map(tx => ({
         ...tx,
@@ -287,7 +279,6 @@ export const TxTable = ({
 
   // Fetch data when dependencies change
   useEffect(() => {
-    console.log(rangeType)
     fetchData()
   }, [search, status, transactionType, startDate, endDate, page, pageSize, pointType, month, year])
 
@@ -309,6 +300,7 @@ export const TxTable = ({
   return (
     <div className="w-full overflow-x-auto flex flex-col gap-2 p-3 bg-white rounded-xl">
       {loading && <Loading />}
+      
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map(headerGroup => (
