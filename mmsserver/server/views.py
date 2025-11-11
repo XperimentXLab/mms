@@ -2,7 +2,7 @@ from .models import *
 from .serializers import *
 from .utils import *
 from django.conf import settings
-import requests
+import json
 from rest_framework.authentication import authenticate
 from rest_framework.decorators import api_view, permission_classes, APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -16,12 +16,10 @@ from django.contrib.auth.tokens import default_token_generator
 from django.db.models import Sum, Q
 from django.db.models.functions import TruncDate
 from rest_framework.pagination import PageNumberPagination
-from datetime import datetime
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes #force_str
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Content, From, To
-#from django.template.loader import render_to_string 
+
+from mailjet_rest import Client
 
 import logging
 
@@ -201,7 +199,13 @@ def request_password_reset_email(request):
   serializer = PasswordResetSerializer(data=request.data)
   if serializer.is_valid():
     email = serializer.validated_data['email']
+
+    mailjet_api_key = settings.MAILJET_API_KEY
+    mailjet_api_secret = settings.MAILJET_API_SECRET
+    template_id = settings.TEMPLATE_ID
+
     try:
+      mailjet = Client(auth=(mailjet_api_key, mailjet_api_secret), version='v3.1')
       user = User.objects.get(email=email)
       uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
       token = default_token_generator.make_token(user)
@@ -209,35 +213,49 @@ def request_password_reset_email(request):
       frontend_url = 'https://mmsventure.io'
       reset_link = f"{frontend_url}/reset-password-confirm/{uidb64}/{token}/"
       subject_ = 'Password Reset Requested'
+        
+      data = {
+        'Messages': [
+          {
+            "From": {
+              "Email": "noreply@mmsventure.io",
+              "Name": "MMS Venture"
+            },
+            "To": [
+              {
+                "Email": email,
+                "Name": user.username
+              }
+            ],
+            "TemplateID": int(template_id),
+            "TemplateLanguage": True,
+            "Subject": subject_,
+            "Variables": {
+              "reset_link": reset_link
+            },
+            "ReplyTo": {
+              "Email": "mventure.info@gmail.com",
+              "Name": "MVenture"
+            }
+          }
+        ]
+      }
 
-      try:
-        message = Mail(
-          from_email=From('noreply@mmsventure.io', 'MMS Venture'),
-          to_emails=To(email),
-          subject=subject_,
-        )
-
-        # Create Content object
-        # content = Content("text/plain", message_)
-        # message.add_content(content)
-        message.template_id = settings.TEMPLATE_ID
-        message.dynamic_template_data = {
-          'reset_link': reset_link
-        }
-
-        sg = SendGridAPIClient(api_key=settings.SENDGRID_API_KEY)
-        sg.send(message)
-      except Exception as e:
-        print(f'Error sending email: {e}')
+      result = mailjet.send.create(data=data)
+      if result.status_code == 200:
+        logger.info(f"Password reset link for {user.email}: {reset_link}")
+        print(f"Password reset link for {user.email}: {reset_link}")
+        return Response({'message': 'A password reset link will be sent to the provided email address.'}, status=200)
+      else:
+        logger.error(f"Mailjet error: {result.status_code}, {result.json()}")
         return Response({'error': 'Error sending email'}, status=500)
 
-      logger.info(f"Password reset link for {user.email}: {reset_link}")
-      return Response({'message': 'If an account with this email, a password reset link will be sent.', 'reset_link': reset_link}, status=200)
     except User.DoesNotExist:
-      return Response({'message': 'If an account with this email exists, a password reset link has been sent.'}, status=200)
+      logger.error(f"There is no user with the provided email exists: {email}")
+      return Response({'error': 'There is no user with the provided email exists.'}, status=404)
     except Exception as e:
       logger.error(f"Error sending password reset email: {e}", exc_info=True)
-      return Response({'error': 'User with this email does not exist.'}, status=404)
+      return Response({'error': f"Error sending password reset email: {e}"}, status=400)
   return Response(serializer.errors, status=400)
 
 @api_view(['POST'])
