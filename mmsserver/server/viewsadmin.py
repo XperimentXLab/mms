@@ -8,12 +8,14 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
-from django.contrib.auth.tokens import default_token_generator
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Sum, Q
 from django.db.models.functions import TruncDate
 from rest_framework.pagination import PageNumberPagination
 from datetime import datetime
+import stripe
+from django.conf import settings
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -949,4 +951,46 @@ def get_ops_profit_calender(request):
     logger.error(f"Error retrieving operational profit calender: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def customer_portal(request):
+  user = request.user
 
+  try:
+    if user.is_staff:
+      stripe.api_key = settings.STRIPE_API_KEY
+      stripe_customer_id = settings.STRIPE_CUS_ID
+      billing_config_id = settings.BILLING_CONFIG_ID
+      frontend_url = settings.FRONTEND_URL
+
+      portal_session = stripe.billing_portal.Session.create(
+        customer=stripe_customer_id,
+        return_url=f'{frontend_url}/bills/',
+        configuration=billing_config_id
+      )
+
+      checkout_session =  stripe.checkout.Session.create(
+        mode= 'subscription',
+        customer= stripe_customer_id,
+        line_items= [{
+          'price':'price_1Sdq2d03ZzE8NvtFkfyKcvzt', 
+          'quantity': 1 
+        }],
+        success_url= f'{frontend_url}/success?session_id={{CHECKOUT_SESSION_ID}}',
+        cancel_url= f'{frontend_url}/',
+      )
+
+      return Response({'portal': checkout_session.url}, status=200)
+    
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+      
+  except stripe.error.StripeError as e:
+    logger.error(f"Stripe error: {str(e)}")
+    return Response({'error': str(e)}, status=400)
+  except ValidationError as e:
+    logger.error(f"Validation Error: {str(e)}")
+    return Response({'error': str(e)}, status=500)
+  except Exception as e:
+    logger.error(f"error: {str(e)}")
+    return Response({'error': str(e)}, status=500)

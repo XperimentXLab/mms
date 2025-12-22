@@ -7,6 +7,7 @@ import Buttons from "../props/Buttons";
 import { logout, getUsername } from "../auth/endpoints";
 import { useAutoLogout } from "../auth/api";
 import { NotiSuccessAlert } from "../props/Noti";
+import { BillsDetails } from "../pages/Bills";
 
 
 const MainLayout = () => {
@@ -129,7 +130,12 @@ const MainLayout = () => {
           <NavLinkss to={'/asset/requests'}>Asset Request</NavLinkss>
           <NavLinkss to={'/withdraw/requests'}>Withdraw Request</NavLinkss>
           <NavLinkss to={'/transaction'}>Transaction</NavLinkss>
-          <Buttons type="button" onClick={handleLogout}
+          <Buttons type="button"
+            onClick={BillsDetails}
+            className="hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg cursor-pointer"
+          >Bills</Buttons>
+          <Buttons type="button" 
+            onClick={handleLogout}
             className="hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg cursor-pointer"
           >Logout</Buttons>
         </nav>

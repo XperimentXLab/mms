@@ -260,3 +260,8 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
 MAILJET_API_SECRET = os.environ.get('MAILJET_API_SECRET')
 TEMPLATE_ID = os.environ.get('TEMPLATE_ID')
+
+STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
+STRIPE_CUS_ID = os.environ.get('STRIPE_CUS_ID')
+BILLING_CONFIG_ID = os.environ.get('BILLING_CONFIG_ID')
+FRONTEND_URL = os.environ.get('FRONTEND_URL')

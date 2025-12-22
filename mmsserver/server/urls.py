@@ -17,6 +17,9 @@ urlpatterns = [
   path('login/', login, name='login'),
   path('logout/', logout, name='logout'),
 
+  #bills
+  path('customer_portal/', customer_portal, name='customer_portal'),
+
   #forgot password
   path('password_reset/', request_password_reset_email, name='password_reset'),
   path('password_reset_confirm/<uidb64>/<token>/', password_reset_confirm, name='password_reset_confirm'),

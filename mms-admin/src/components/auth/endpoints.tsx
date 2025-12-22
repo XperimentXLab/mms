@@ -495,6 +495,12 @@ export const getOpsProfitCal = async () => {
 }
 
 
+export const customerPortal = async () => {
+  const response = await api.post('/customer_portal/')
+  return response.data
+}
+
+
 
 import FileSaver from 'file-saver';
 
