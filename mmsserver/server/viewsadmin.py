@@ -973,7 +973,7 @@ def customer_portal(request):
         mode= 'subscription',
         customer= stripe_customer_id,
         line_items= [{
-          'price':'price_1Sdq2d03ZzE8NvtFkfyKcvzt', 
+          'price':'price_1ShQep03ZzE8NvtFOYLMYCTf', 
           'quantity': 1 
         }],
         success_url= f'{frontend_url}/success?session_id={{CHECKOUT_SESSION_ID}}',
