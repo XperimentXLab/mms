@@ -965,7 +965,7 @@ def customer_portal(request):
 
       portal_session = stripe.billing_portal.Session.create(
         customer=stripe_customer_id,
-        return_url=f'{frontend_url}/bills/',
+        return_url=f'{frontend_url}/',
         configuration=billing_config_id
       )
 
@@ -976,11 +976,11 @@ def customer_portal(request):
           'price':'price_1ShQep03ZzE8NvtFOYLMYCTf', 
           'quantity': 1 
         }],
-        success_url= f'{frontend_url}/success?session_id={{CHECKOUT_SESSION_ID}}',
+        success_url= f'{frontend_url}/',
         cancel_url= f'{frontend_url}/',
       )
 
-      return Response({'portal': checkout_session.url}, status=200)
+      return Response({'portal': portal_session.url}, status=200)
     
     else:
       return Response({'error': 'Permission denied'}, status=403)
