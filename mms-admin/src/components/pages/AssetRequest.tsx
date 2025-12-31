@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import Loading from "../props/Loading"
-import { getPendingTX, processPlaceAsset } from "../auth/endpoints"
+import { getPendingTX, processPlaceAsset, processWDAsset } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc"
@@ -67,13 +67,27 @@ const AssetRequest = () => {
 
 
   const handleApprove = (id: string) => {
+    const row = transactions.find(tx => tx.id === id);
+    if (!row) return;
+
     const fetchDataA = async () => {
       try {
         setLoading(true)
-        await processPlaceAsset({
-          tx_id: id,
-          action: 'Approve'
-        })
+        
+        // Use different endpoint based on transaction type
+        if (row.transaction_type === 'ASSET_PLACEMENT') {
+          await processPlaceAsset({
+            tx_id: id,
+            action: 'Approve'
+          })
+        } else if (row.transaction_type === 'ASSET_WITHDRAWAL') {
+          await processWDAsset({
+            tx_id: id,
+            action: 'Approve',
+            reference: 'Approved'
+          })
+        }
+        
         NotiSuccessAlert('Transaction approved')
       } catch (error: any) {
         if (error.response && error.response.status === 400 || error.response.status === 401) {
@@ -91,13 +105,27 @@ const AssetRequest = () => {
   }
 
   const handleReject = (id: string) => {
+    const row = transactions.find(tx => tx.id === id);
+    if (!row) return;
+
     const fetchDataPA = async () => {
       try {
         setLoading(true)
-        await processPlaceAsset({
-          tx_id: id,
-          action: 'Reject'
-        })
+        
+        // Use different endpoint based on transaction type
+        if (row.transaction_type === 'ASSET_PLACEMENT') {
+          await processPlaceAsset({
+            tx_id: id,
+            action: 'Reject'
+          })
+        } else if (row.transaction_type === 'ASSET_WITHDRAWAL') {
+          await processWDAsset({
+            tx_id: id,
+            action: 'Reject',
+            reference: 'Rejected'
+          })
+        }
+        
         NotiErrorAlert('Transaction rejected')
       } catch (error: any) {
         if (error.response && error.response.status === 400 || error.response.status === 401) {
@@ -133,23 +161,27 @@ const AssetRequest = () => {
   const columns = [
     { header: 'Date', 
       accessor: 'created_datetime',
-      render: (value: string) => value ? value : '-'
+      render: (info: string) => info ?? '-'
      },
     { header: 'User ID', 
       accessor: 'user',
-      render: (value: string) => value ? value : '-'
-     },
+      render: (info: string) => info ?? '-'
+    },
     { header: 'Username', 
       accessor: 'username',
-      render: (value: string) => value ? value : '-'
+      render: (info: string) => info ?? '-'
      },
     { header: 'Referral ID', 
       accessor: 'referred_by',
-      render: (value: string) => value ? value : '-'
+      render: (info: string) => info ?? '-'
+    },
+    { header: 'Type',
+      accessor: 'transaction_type',
+      render: (info: string) => info ?? '-'
     },
     { header: 'Amount', 
       accessor: 'amount',
-      render: (value: number) => value ? value : '-'
+      render: (info: string) => info ?? '-'
      },
     { header: 'Request Status', 
       accessor: 'request_status',
@@ -181,9 +213,9 @@ const AssetRequest = () => {
               Reject
             </Buttons>
           ) : row.request_status === 'REJECTED' ? (
-            <span className="text-red-500">Reject</span>
+            <span className="text-red-500">Rejected</span>
           ) : (
-            <span className="text-green-500">Approve</span>
+            <span className="text-green-500">Approved</span>
           )}
         </div>
       )

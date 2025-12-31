@@ -1,16 +1,21 @@
 import { NewTable } from "../props/Tables"
-import {getAssetTx, getDepositLock } from "../auth/endpoints"
+import {getAssetTx, getDepositLock, withdrawAsset } from "../auth/endpoints"
 import Buttons from "../props/Buttons"
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import type { ColumnDef } from "@tanstack/react-table"
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti";
+import Loading from "../props/Loading";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 
 export const WithdrawalAssetStatement = () => {
+
+  const [loading, setLoading] = useState<boolean>(false)
+  const isSunday = dayjs().tz('Asia/Kuala_Lumpur').day() === 0; 
 
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
@@ -21,7 +26,11 @@ export const WithdrawalAssetStatement = () => {
     },
     { header: "Amount Locked (50%)", 
       accessorKey: "amount_6m_locked",
-      cell: info => info.getValue()
+      cell: info => {
+        const amountLocked = info.row.original.amount_6m_locked
+        const amountUnlocked = info.row.original.amount_6m_unlocked
+        return amountLocked - amountUnlocked
+      }
     },
     { header: 'Days Left', 
       accessorKey: 'days_until_6m',
@@ -29,7 +38,11 @@ export const WithdrawalAssetStatement = () => {
     },
     { header: "Amount Locked (50%)", 
       accessorKey: "amount_1y_locked",
-      cell: info => info.getValue()
+      cell: info => {
+        const amountLocked = info.row.original.amount_1y_locked
+        const amountUnlocked = info.row.original.amount_1y_unlocked
+        return amountLocked - amountUnlocked
+      }
     },
     { header: 'Days Left', 
       accessorKey: 'days_until_1y',
@@ -39,8 +52,10 @@ export const WithdrawalAssetStatement = () => {
       accessorKey: "withdrawable_now",
       cell: info => (
         <input
-          type="text"
-          placeholder={info.row.original.withdrawable_now}
+          type="number"
+          placeholder={info.row.original.withdrawable_now?.toString() || "0"}
+          max={info.row.original.withdrawable_now}
+          step="10"
           ref={(el) => {
             inputRefs.current[info.row.original.id] = el;
           }}
@@ -51,36 +66,56 @@ export const WithdrawalAssetStatement = () => {
     },
     { header: "Action", 
       accessorKey: "action",
-      cell: info => ( 
-      <div className="flex gap-2">
-        {(info.row.original.days_until_6m < 0 || info.row.original.days_until_1y < 0) ? (
+      cell: info => {
+        const withdrawableAmount = info.row.original.withdrawable_now
+        const isUnlocked = withdrawableAmount > 0
+        const buttonUnlocked = !isUnlocked && isSunday
+
+        return (
+        <div className="flex gap-2">
           <Buttons
             type="button"
-            //onClick={() => handleWithdraw(info.row.original.id)}
-            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+            disabled={buttonUnlocked}
+            onClick={() => handleWithdraw(info.row.original.id)}
+            className={`px-3 py-1 rounded ${
+              buttonUnlocked 
+                ? 'bg-green-500 text-white hover:bg-green-600 hover:cursor-pointer' 
+                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+            }`}
           >
             Withdraw
           </Buttons>
-        ): 
-        <Buttons
-          type="button"
-          disabled={true}
-        >Withdraw</Buttons>
-        }
-      </div>
-      )
+        </div>
+        )
+      }
     },
   ]
   
-/*
-  const handleWithdraw = (id: string) => {
-    const withdraw = inputRefs.current[id]?.value; //call api insert the withdraw amount
-    // call an API to update the status
+  const handleWithdraw = async (depositLockId: string) => {
+    
+    const withdrawAmount = inputRefs.current[depositLockId]?.value
+
+    if (!withdrawAmount || Number(withdrawAmount) <= 0) {
+      NotiErrorAlert("Please enter a valid withdrawal amount");
+      return;
+    }
+
+    try {
+      setLoading(true)
+      await withdrawAsset({
+        amount: Number(withdrawAmount)
+      })
+      NotiSuccessAlert("Withdrawal request submitted! Please wait for approval. Your request will be updated in 48 hours.")
+    } catch (error: any) {
+      NotiErrorAlert(error.response.data.error)
+    } finally {
+      setLoading(false)
+    }
   }
-*/
 
   return (
     <div className="flex flex-col gap-2">
+      {loading && <Loading />}
 
       <span className="font-semibold bg-white p-2 rounded-lg">
         Withdrawal Statement

@@ -596,11 +596,11 @@ class AssetService:
     def withdraw_asset(user, amount, description="", reference=""):
         """Withdraw asset to Profit"""
         
-        if amount < 50:
-            raise ValidationError("Minimum withdrawal amount is 50 USDT")
+        if amount < 0:
+            raise ValidationError("Please enter a valid withdrawal amount")
 
-        if amount % 10 != 0:
-            raise ValidationError("Amount must be a multiple of 10")
+        if amount % 5 != 0:
+            raise ValidationError("Amount must be a multiple of 5")
 
         asset = Asset.objects.get(user=user)
         if asset.amount < amount:
@@ -614,19 +614,19 @@ class AssetService:
         total_withdrawable = sum(lock.withdrawable_now or Decimal('0.00') for lock in locks)        
         if amount > total_withdrawable:
             raise ValidationError(
-            f"Only {total_withdrawable} is withdrawable (50% after 6M, 100% after 1Y)"
+            f"Only {total_withdrawable} is withdrawable"
         )
        
         Transaction.objects.create(
-                user=user,
-                asset=asset,
-                transaction_type='ASSET_WITHDRAWAL',
-                point_type='ASSET',
-                amount=amount,
-                description=description,
-                request_status='PENDING',
-                reference=reference,
-            )
+            user=user,
+            asset=asset,
+            transaction_type='ASSET_WITHDRAWAL',
+            point_type='ASSET',
+            amount=amount,
+            description=description,
+            request_status='PENDING',
+            reference=reference,
+        )
         return asset
     
     @staticmethod

@@ -436,7 +436,6 @@ export const NewTable = ({
         ...tx,
         created_datetime: dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur").format("DD/MM/YYYY HH:mm:ss"),
       }))
-      console.log("Res Data:", res)
       setData(processedData)
 
     } catch (error: any) {

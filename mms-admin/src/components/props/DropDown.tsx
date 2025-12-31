@@ -56,7 +56,7 @@ export const SelectYear: React.FC<SelectFixedProps> = ({
   onChange,
 }) => {
 
-  const years = Array.from({ length: 2 }, (_, i) => `${new Date().getFullYear() - i}`);
+  const years = Array.from({ length: 3 }, (_, i) => `${new Date().getFullYear() - i}`);
 
   return (
     <div className="flex px-2 py-1 flex-col w-full justify-center">

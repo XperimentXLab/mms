@@ -415,7 +415,7 @@ def get_pending_transaction(request):
   user = request.user
   try:
     if user.is_staff:
-      pending_transaction = Transaction.objects.filter(request_status='PENDING', transaction_type__in=['ASSET_PLACEMENT'])
+      pending_transaction = Transaction.objects.filter(request_status='PENDING', transaction_type__in=['ASSET_PLACEMENT', 'ASSET_WITHDRAWAL']).order_by('-created_at')
       serializer= TransactionSerializer(pending_transaction, many=True)
       return Response(serializer.data, status=200)
     else:

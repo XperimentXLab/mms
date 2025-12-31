@@ -1,6 +1,6 @@
   import { useEffect, useState, useRef } from "react"
 import Loading from "../props/Loading"
-import { getWDReq, processWDAsset, processWDCommission, processWDProfit } from "../auth/endpoints"
+import { getWDReq, processWDCommission, processWDProfit } from "../auth/endpoints"
 import Buttons from "../props/Buttons";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -126,6 +126,7 @@ const WithdrawReq = () => {
 
     try {
       setLoading(true)
+      // Only process PROFIT and COMMISSION, not ASSET (which is now in AssetRequest)
       if (point?.includes('PROFIT')) {
         await processWDProfit({
           tx_id: id,
@@ -135,13 +136,6 @@ const WithdrawReq = () => {
       }
       if (point?.includes('COMMISSION')) {
         await processWDCommission({
-          tx_id: id,
-          action: 'Approve',
-          reference: ref
-        })
-      }
-      if (point?.includes('ASSET')) {
-        await processWDAsset({
           tx_id: id,
           action: 'Approve',
           reference: ref
@@ -171,6 +165,7 @@ const WithdrawReq = () => {
     
     try {
       setLoading(true)
+
       if (point?.includes('PROFIT')) {
         await processWDProfit({
           tx_id: id,
@@ -180,13 +175,6 @@ const WithdrawReq = () => {
       }
       if (point?.includes('COMMISSION')) {
         await processWDCommission({
-          tx_id: id,
-          action: 'Reject',
-          reference: ref
-        })
-      }
-      if (point?.includes('ASSET')) {
-        await processWDAsset({
           tx_id: id,
           action: 'Reject',
           reference: ref

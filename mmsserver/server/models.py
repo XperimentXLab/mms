@@ -416,14 +416,14 @@ class DepositLock(models.Model):
     age = current_time - self.deposit.created_at
 
     if self.is_free_campro:  # Full lock for 1 year
-        return (self.deposit.amount - self.amount_1y_unlocked) if age >= timedelta(days=365) else Decimal('0.00')
+      return (self.deposit.amount - self.amount_1y_unlocked) if age >= timedelta(days=365) else Decimal('0.00')
 
     if age >= timedelta(days=365):  # Both 6m & 1y unlocked
-        return (self.amount_6m_locked - self.amount_6m_unlocked) + (self.amount_1y_locked - self.amount_1y_unlocked)
+      return (self.amount_6m_locked - self.amount_6m_unlocked) + (self.amount_1y_locked - self.amount_1y_unlocked)
     elif age >= timedelta(days=180):  # Only 6m unlocked
-        return (self.amount_6m_locked - self.amount_6m_unlocked)
+      return (self.amount_6m_locked - self.amount_6m_unlocked)
     else:
-        return Decimal('0.00')
+      return Decimal('0.00')
 
   def __str__(self):
     return f"Lock for {self.deposit.amount} (Deposit: {self.deposit.created_at})"

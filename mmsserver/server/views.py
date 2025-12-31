@@ -550,7 +550,7 @@ def get_profit_commission_wd_transaction(request):
     month = request.GET.get('month')
     year = request.GET.get('year')
 
-    query = Q(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type__in=['WITHDRAWAL'])
+    query = Q(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type__in=['WITHDRAWAL', 'ASSET_WITHDRAWAL'])
     if start_date:
       if end_date:
         query &= date_filter_q('created_at', start_date, end_date)
