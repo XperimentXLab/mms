@@ -67,18 +67,15 @@ export const WithdrawalAssetStatement = () => {
     { header: "Action", 
       accessorKey: "action",
       cell: info => {
-        const withdrawableAmount = info.row.original.withdrawable_now
-        const isUnlocked = withdrawableAmount > 0
-        const buttonUnlocked = !isUnlocked && isSunday
 
         return (
         <div className="flex gap-2">
           <Buttons
             type="button"
-            disabled={buttonUnlocked}
+            disabled={isSunday ? false : true}
             onClick={() => handleWithdraw(info.row.original.id)}
             className={`px-3 py-1 rounded ${
-              buttonUnlocked 
+              isSunday ? false : true 
                 ? 'bg-green-500 text-white hover:bg-green-600 hover:cursor-pointer' 
                 : 'bg-gray-300 text-gray-600 cursor-not-allowed'
             }`}
