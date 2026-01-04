@@ -75,7 +75,7 @@ export const WithdrawalAssetStatement = () => {
             disabled={!isSunday}
             onClick={() => handleWithdraw(info.row.original.id)}
             className={`px-3 py-1 rounded ${
-              !isSunday 
+              isSunday 
                 ? 'bg-green-500 text-white hover:bg-green-600 hover:cursor-pointer' 
                 : 'bg-gray-300 text-gray-600 cursor-not-allowed'
             }`}
