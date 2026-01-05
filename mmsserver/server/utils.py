@@ -593,8 +593,8 @@ class AssetService:
             return trx
 
     @staticmethod
-    def withdraw_asset(user, amount, description="", reference=""):
-        """Withdraw asset to Profit"""
+    def withdraw_asset(user, amount, description="", depositlock_id=None):
+        """Withdraw asset to Profit - Freeze asset amount, unlock only on approval"""
         
         if amount < 0:
             raise ValidationError("Please enter a valid withdrawal amount")
@@ -606,16 +606,15 @@ class AssetService:
         if asset.amount < amount:
             raise ValidationError("Insufficient Asset balance")
         
-        locks = DepositLock.objects.filter(
-            deposit__user=user,
-            deposit__transaction_type='ASSET_PLACEMENT'
-        ).select_related('deposit').order_by('deposit__created_at')
+        lock = DepositLock.objects.get(id=depositlock_id)
 
-        total_withdrawable = sum(lock.withdrawable_now or Decimal('0.00') for lock in locks)        
+        total_withdrawable = lock.withdrawable_now - lock.freeze_amount       
         if amount > total_withdrawable:
             raise ValidationError(
             f"Only {total_withdrawable} is withdrawable"
         )
+        lock.freeze_amount += Decimal(amount)
+        lock.save()
        
         Transaction.objects.create(
             user=user,
@@ -625,36 +624,34 @@ class AssetService:
             amount=amount,
             description=description,
             request_status='PENDING',
-            reference=reference,
+            reference=str(lock.id),
         )
+
+        # Update asset balance
+        asset.amount -= amount
+        asset.save()
+        
         return asset
     
     @staticmethod
-    def process_withdrawal_request(transaction_id, action, reference=""):
+    def process_withdrawal_request(transaction_id, action):
         """Approves or rejects a PENDING withdrawal."""
-
-        if reference is None:
-            raise ValidationError('Reference is required.')
 
         with db_transaction.atomic():
             trx = Transaction.objects.select_for_update().get(
                 id=transaction_id,
             )
+            amount = trx.amount
+            lock = DepositLock.objects.get(id=int(trx.reference))
             
             if action == 'Approve':
-                # Deduct from locks and balance
-                locks = DepositLock.objects.filter(
-                    deposit__user=trx.user
-                ).order_by('deposit__created_at')
 
-                remaining_to_deduct = trx.amount
-                for lock in locks:
+                available = lock.withdrawable_now
+                remaining_to_deduct = amount
+                while remaining_to_deduct > 0:
+                    deduct_amount = min(available, remaining_to_deduct)
                     if remaining_to_deduct <= 0:
                         break
-
-                    available = lock.withdrawable_now
-                    deduct_amount = min(available, remaining_to_deduct)
-                    
                     if deduct_amount > 0:
                         age = timezone.now() - lock.deposit.created_at
                         if age >= timedelta(days=365):
@@ -664,28 +661,26 @@ class AssetService:
                         lock.save()
                         remaining_to_deduct -= deduct_amount
 
-                if remaining_to_deduct > 0:
-                    raise ValidationError("Insufficient unlocked funds (race condition)")
-
-                # Update asset balance
-                asset = trx.asset
-                asset.amount -= trx.amount
-                asset.save()
-
                 wallet = Wallet.objects.get(user=trx.user)
-                wallet.profit_point_balance += Decimal(trx.amount)
+                wallet.profit_point_balance += Decimal(amount)
                 wallet.save()
 
                 # Mark as approved
-                trx.reference = reference
                 trx.request_status = 'APPROVED'
                 trx.save()
 
             elif action == 'Reject':
-                trx.reference = reference
+
+                # Restore asset balance (unfreeze the amount)
+                asset = trx.asset
+                asset.amount += trx.amount
+                asset.save()
+
                 trx.request_status = 'REJECTED'
                 trx.save()
 
+            lock.freeze_amount -= Decimal(amount)
+            lock.save()
             return trx
         
 

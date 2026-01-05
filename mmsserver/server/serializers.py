@@ -416,7 +416,8 @@ class DepositLockSerializer(serializers.ModelSerializer):
       'days_until_6m',
       'days_until_1y',
       'withdrawable_now',
-      'request_status_display'
+      'request_status_display',
+      'freeze_amount'
     ]
     read_only_fields = [
       'id',
@@ -430,6 +431,7 @@ class DepositLockSerializer(serializers.ModelSerializer):
       'days_until_6m',
       'days_until_1y',
       'withdrawable_now',
+      'freeze_amount'
     ]
 
   def get_request_status_display(self, obj):

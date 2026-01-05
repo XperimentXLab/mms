@@ -887,9 +887,9 @@ def convert_commission_to_master(request):
 def withdraw_asset(request):
   user = request.user
   amount = request.data.get('amount', '0.00')
+  depositlock_id = request.data.get('depositlock_id')
   description = request.data.get('description', f'Asset Withdrawal: {amount}')
-  reference = request.data.get('reference', '')
-
+  
   if not amount:
     return Response({'error': 'Amount is required'}, status=400)
   try:
@@ -902,7 +902,7 @@ def withdraw_asset(request):
       user,
       amount,
       description,
-      reference
+      depositlock_id,
     )
     serializer = AssetSerializer(result)
     return Response(serializer.data, status=200)

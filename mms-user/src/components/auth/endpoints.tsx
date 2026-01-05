@@ -521,6 +521,7 @@ export const transferMasterPoint = async (transferMasterData: TransferMasterData
 interface TransData {
   amount: number
   reference?: string
+  id?: string
 }
 
 export const convertProfitToMaster = async (convertProfitData: TransData) => {
@@ -581,9 +582,9 @@ export const withdrawCommission = async (withdrawCommissionData: TransData) => {
 }
 
 export const withdrawAsset = async (withdrawAssetData: TransData) => {
-  const { amount, reference } = withdrawAssetData
+  const { amount, reference, id } = withdrawAssetData
   const response = await api.post('/withdraw_asset/', {
-    amount, reference
+    amount, reference, depositlock_id: id
   })
   return response.data
 }

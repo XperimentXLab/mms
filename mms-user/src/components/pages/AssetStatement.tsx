@@ -15,6 +15,7 @@ dayjs.extend(timezone);
 export const WithdrawalAssetStatement = () => {
 
   const [loading, setLoading] = useState<boolean>(false)
+  const [refreshCounter, setRefreshCounter] = useState<number>(0);
   const isSunday = dayjs().tz('Asia/Kuala_Lumpur').day() === 0; 
 
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
@@ -50,11 +51,13 @@ export const WithdrawalAssetStatement = () => {
     },
     { header: "Available Withdraw", 
       accessorKey: "withdrawable_now",
-      cell: info => (
+      cell: info => {
+        const maxAmount = info.row.original.withdrawable_now - info.row.original.freeze_amount
+        return (
         <input
           type="number"
-          placeholder={info.row.original.withdrawable_now?.toString() || "0"}
-          max={info.row.original.withdrawable_now}
+          placeholder={maxAmount.toString() || "0"}
+          max={maxAmount.toString()}
           step="10"
           ref={(el) => {
             inputRefs.current[info.row.original.id] = el;
@@ -62,7 +65,7 @@ export const WithdrawalAssetStatement = () => {
           className="px-2 py-1 border rounded"
         />
         
-      )
+      )}
     },
     { header: "Action", 
       accessorKey: "action",
@@ -100,9 +103,11 @@ export const WithdrawalAssetStatement = () => {
     try {
       setLoading(true)
       await withdrawAsset({
-        amount: Number(withdrawAmount)
+        amount: Number(withdrawAmount),
+        id: depositLockId
       })
       NotiSuccessAlert("Withdrawal request submitted! Please wait for approval. Your request will be updated in 48 hours.")
+      setRefreshCounter(prev => prev + 1);
     } catch (error: any) {
       NotiErrorAlert(error.response.data.error)
     } finally {
@@ -121,6 +126,7 @@ export const WithdrawalAssetStatement = () => {
       <NewTable columns={columns}
         fetchData={getDepositLock}
         enableFilters={false}
+        refreshCounter={refreshCounter}
       />
     </div>
   )

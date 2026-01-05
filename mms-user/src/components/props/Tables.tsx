@@ -381,6 +381,7 @@ interface TableProps {
   emptyMessage?: string
   enableFilters?: boolean
   enableDatePicker?: boolean
+  refreshCounter?: number
 }
 
 
@@ -397,6 +398,7 @@ export const NewTable = ({
   emptyMessage = "No data available",
   enableFilters = true,
   enableDatePicker = true,
+  refreshCounter = 0
 }: TableProps) => {
 
   const [data, setData] = useState<TableData[]>([])
@@ -459,7 +461,7 @@ export const NewTable = ({
   // Fetch data when dependencies change
   useEffect(() => {
     loadData()
-  }, [fetchData, search, status, startDate, endDate, page, pageSize, month, year])
+  }, [fetchData, search, status, startDate, endDate, page, pageSize, month, year, refreshCounter])
 
   const table = useReactTable({
     data,
