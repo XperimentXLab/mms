@@ -69,7 +69,7 @@ const Home = () => {
     },
   ]
 
-  const today = new Date().toISOString().split('T')[0] // Today's date
+  const today = new Date().toLocaleDateString('en-CA') // Today's date
   const [startDate, setStartDate] = useState<string>(today);
   const [endDate, setEndDate] = useState<string>(today);
   const todayButton = () => {

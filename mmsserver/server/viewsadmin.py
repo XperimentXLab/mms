@@ -16,6 +16,8 @@ from rest_framework.pagination import PageNumberPagination
 from datetime import datetime
 import stripe
 from django.conf import settings
+import pytz
+from django.utils.timezone import localtime, now
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -617,6 +619,17 @@ def distribute_profit(request):
 
   try:
     if user.is_staff:
+
+      malaysia_tz = pytz.timezone('Asia/Kuala_Lumpur')
+      today_my = localtime(now(), malaysia_tz).date()
+
+      asset_req = Transaction.objects.filter(transaction_type='ASSET_PLACEMENT', request_status='PENDING')
+      profit_released = Transaction.objects.filter(transaction_type='DISTRIBUTION', created_at__date=today_my)
+      if asset_req.exists():
+        return Response({'error': 'There are pending asset placements. Please process them before distributing profit.'}, status=400)
+      elif profit_released.exists():
+        return Response({'error': 'Profit has already been distributed for today.'}, status=400)
+      else:
         result = distribute_profit_manually()
         return Response(result, status=200)
     else:
