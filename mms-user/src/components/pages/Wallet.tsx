@@ -272,7 +272,7 @@ const Wallet = () => {
         <div className="flex flex-col border-gray-500 gap-1.5 border py-2 px-4 rounded-xl shadow-md shadow-blue-800 bg-white">
 
           <Spannn label="Profit">{profitBalance}</Spannn>
-          <Spannn label="Wallet Address">{walletAddress === undefined ? 'Not set' : walletAddress}</Spannn>
+          <Spannn label="Wallet Address">{walletAddress === undefined ? 'Not set' : walletAddress.substring(0, 12)}</Spannn>
 
           <form className="flex gap-1.5" onSubmit={handleWithdrawProfit}>
             <InputNormal placeholder="Enter amount"
