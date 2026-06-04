@@ -20,7 +20,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes #force_str
 
 from mailjet_rest import Client
-
+from django.utils.timezone import localtime
+import pytz
 import logging
 
 logger = logging.getLogger(__name__)
@@ -889,6 +890,10 @@ def withdraw_asset(request):
   amount = request.data.get('amount', '0.00')
   depositlock_id = request.data.get('depositlock_id')
   description = request.data.get('description', f'Asset Withdrawal: {amount}')
+
+  now = timezone.now()
+  malaysia_tz = pytz.timezone('Asia/Kuala_Lumpur')
+  today_my = localtime(now, malaysia_tz).date()
   
   if not amount:
     return Response({'error': 'Amount is required'}, status=400)
@@ -896,6 +901,13 @@ def withdraw_asset(request):
     amount = Decimal(amount)
   except:
     return Response({'error': 'Amount must be in number'}, status=400)
+  
+  if amount <= 0 or amount > 1000:
+    return Response({'error': 'Maximum withdrawal amount is 1000'}, status=400)
+  
+  tx_asset_wd = Transaction.objects.filter(user=user, transaction_type='ASSET_WITHDRAWAL', created_at__date=today_my).aggregate(total_withdrawn=Sum('amount'))['total_withdrawn'] or Decimal('0.00')
+  if tx_asset_wd + amount > 1000:
+    return Response({'error': 'Weekly asset withdrawal limit of 1000 exceeded'}, status=400)
 
   try:
     result = AssetService.withdraw_asset(

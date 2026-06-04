@@ -99,6 +99,10 @@ export const WithdrawalAssetStatement = () => {
       NotiErrorAlert("Please enter a valid withdrawal amount");
       return;
     }
+    if (Number(withdrawAmount) > 1000) {
+      NotiErrorAlert("Maximum withdrawal amount is 1000");
+      return;
+    }
 
     try {
       setLoading(true)

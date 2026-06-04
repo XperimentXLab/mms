@@ -162,7 +162,23 @@ const Operation = () => {
       setLoading(true)
       const response = await distribute_profit()
       NotiSuccessAlert(response.message)
-      NotiInfoAlert(JSON.stringify(response.metrics))
+      const metrics = response.metrics || {}
+      NotiInfoAlert(`
+        Users with Profit: ${metrics.users_with_profit}, \n
+        Total Profit Distributed: ${metrics.total_profit_distributed}, \n
+        L1 Bonuses Paid: ${metrics.l1_bonuses_paid}, \n
+        L2 Bonuses Paid: ${metrics.l2_bonuses_paid}, \n
+        Skipped Users: ${metrics.skipped_users}`
+      )
+      NotiInfoAlert(`
+        Profit Wallets Updated: ${response.profit_wallets_updated}, \n
+        Affiliate Wallets Updated: ${response.affiliate_wallets_updated}
+      `)
+      NotiInfoAlert(`
+        Profit Transactions Created: ${response.profit_tx_created}, \n
+        Affiliate Transactions Created: ${response.affiliate_tx_created}
+      `)
+      NotiInfoAlert(`Affiliate 1 Year Ended: ${response.affiliate_1y_ended}`)
       /*
       {
         "metrics": {
@@ -175,7 +191,8 @@ const Operation = () => {
         "profit_wallets_updated": ..,
         "affiliate_wallets_updated": ..,
         "profit_tx_created": ..,
-        "affiliate_tx_created": ..
+        "affiliate_tx_created": ..,
+        "affiliate_1y_ended": ..,
       }
       */
     } catch (error: any) {

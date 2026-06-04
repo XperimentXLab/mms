@@ -7,8 +7,7 @@ from .models import *
 from django.http import HttpRequest
 import logging
 from django.db.models import Sum
-from django.utils.timezone import localtime, make_aware
-from datetime import timedelta, timezone as dt_timezone
+from datetime import timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +19,17 @@ def _distribute_affiliate_bonus_for_user(
     affiliate_transactions_list: list,
     all_wallets_map: dict, # Map of {user_id: wallet_instance}
     all_asset_map: dict, # Map of {user_id: asset_instance}
+    all_user_first_asset_placement_map: dict, # Map of {user_id: first_asset_placement_transaction}
     metrics: dict,
 ):
     """
     Calculates and prepares affiliate bonuses for L1 and L2 uplines.
     Modifies wallet objects in-place and appends to transaction list.
+    Affiliate bonus available for 1 year after downline first asset placement.
     """
+
+    affiliate_1y_ended_list = []
+    except_ids = ['MMS01FXC', 'MMS00QVS']  # Admin/Superuser IDs that continue receiving bonuses indefinitely
 
     # Level 1 Upline
     if downline_user.referred_by:
@@ -35,8 +39,19 @@ def _distribute_affiliate_bonus_for_user(
         upline_l1_wallet = all_wallets_map.get(upline_l1_id)
         upline_l1_asset = all_asset_map.get(upline_l1_id)
         downline_asset = all_asset_map.get(downline_user.id)
+        downline_first_placement = all_user_first_asset_placement_map.get(downline_user.id)
 
-        if upline_l1_wallet and upline_l1_wallet.user.is_active and upline_l1_asset and upline_l1_asset.amount > Decimal('0.00'): # Check if L1 user is active and has place asset
+        if downline_first_placement is None:
+            logger.warning(f"No asset placement found for downline user {downline_user.username} (ID: {downline_user.id}). Skipping affiliate bonus calculation.")
+            return
+        
+        # Check 1-year window ONLY for regular users (exclude admin/superuser IDs)
+        elif timezone.now() > downline_first_placement.created_at + timedelta(days=365) and downline_user.id not in except_ids:
+            logger.warning(f"Downline user {downline_user.username} (ID: {downline_user.id}). The 1-year affiliate bonus has ended.")
+            affiliate_1y_ended_list.append(downline_user.id)
+            return
+
+        elif upline_l1_wallet and upline_l1_wallet.user.is_active and upline_l1_asset and upline_l1_asset.amount > Decimal('0.00'): # Check if L1 user is active and has place asset
             l1_bonus_percentage = Decimal('0.05')  # 5%
             l1_bonus_amount = (downline_asset.amount * (daily_rate_percentage / Decimal('100.00')) * l1_bonus_percentage).quantize(Decimal('0.01'))
 
@@ -191,7 +206,7 @@ def distribute_profit_manually():
         ).select_related('wallet').prefetch_related('asset')
         all_wallets_map = {user.id: user.wallet for user in eligible_users if hasattr(user, 'wallet')}
         all_asset_map = {user.id: user.asset for user in eligible_users if hasattr(user, 'asset')}
-
+        all_user_first_asset_placement_map = {user.id: Transaction.objects.filter(user=user, transaction_type='ASSET_PLACEMENT').order_by('created_at').first() for user in eligible_users}
 
         wallets_to_update_profit_balance_list = []
         user_profit_transactions_to_create = []
@@ -248,13 +263,14 @@ def distribute_profit_manually():
                 )
                 
                 # ---- DISTRIBUTE AFFILIATE BONUSES ----
-                _distribute_affiliate_bonus_for_user(
+                affiliate_1y_ended_list = _distribute_affiliate_bonus_for_user(
                     downline_user=downline_user,
                     daily_rate_percentage=daily_rate_percentage,
                     wallets_needing_affiliate_update_list=wallets_to_update_affiliate_balance_list,
                     affiliate_transactions_list=affiliate_bonus_transactions_to_create,
                     all_wallets_map=all_wallets_map,
                     all_asset_map=all_asset_map,
+                    all_user_first_asset_placement_map=all_user_first_asset_placement_map,
                     metrics=metrics
                 )
             
@@ -299,6 +315,7 @@ def distribute_profit_manually():
             "affiliate_wallets_updated": len(set(wallets_to_update_affiliate_balance_list)), # Count unique
             "profit_tx_created": len(user_profit_transactions_to_create),
             "affiliate_tx_created": len(affiliate_bonus_transactions_to_create),
+            "affliate_1y_ended": len(affiliate_1y_ended_list)
         }
     
 
@@ -313,7 +330,7 @@ class UserService:
     @staticmethod
     def setup_user(user_id, master_amount, profit_amount, affiliate_amount):
         user = User.objects.get(id=user_id)
-        wallet, created = Wallet.objects.get_or_create(user=user)
+        wallet, _ = Wallet.objects.get_or_create(user=user)
         
         with db_transaction.atomic():
             wallet.master_point_balance += Decimal(master_amount)
