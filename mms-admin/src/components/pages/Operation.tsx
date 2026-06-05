@@ -196,7 +196,11 @@ const Operation = () => {
       }
       */
     } catch (error: any) {
-      NotiErrorAlert('Failed to distribute profit. Please try again.');
+      if (error.response && error.response.status === 400 ) {
+        NotiErrorAlert(error.response.data.error)
+      } else {
+        NotiErrorAlert('Failed to distribute profit. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
