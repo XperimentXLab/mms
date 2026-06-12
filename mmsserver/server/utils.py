@@ -43,13 +43,13 @@ def _distribute_affiliate_bonus_for_user(
 
         if downline_first_placement is None:
             logger.warning(f"No asset placement found for downline user {downline_user.username} (ID: {downline_user.id}). Skipping affiliate bonus calculation.")
-            return
+            return affiliate_1y_ended_list
         
         # Check 1-year window ONLY for regular users (exclude admin/superuser IDs)
         elif timezone.now() > downline_first_placement.created_at + timedelta(days=365) and downline_user.id not in except_ids:
             logger.warning(f"Downline user {downline_user.username} (ID: {downline_user.id}). The 1-year affiliate bonus has ended.")
             affiliate_1y_ended_list.append(downline_user.id)
-            return
+            return affiliate_1y_ended_list
 
         elif upline_l1_wallet and upline_l1_wallet.user.is_active and upline_l1_asset and upline_l1_asset.amount > Decimal('0.00'): # Check if L1 user is active and has place asset
             l1_bonus_percentage = Decimal('0.05')  # 5%
@@ -84,7 +84,7 @@ def _distribute_affiliate_bonus_for_user(
                     # Avoid L2 being the original downline user or same as L1
                     if upline_l2_id == downline_user.id or upline_l2_id == upline_l1_id:
                         logger.warning(f"Skipping L2 affiliate bonus for {upline_l2_id} due to potential referral loop with {downline_user.id} or {upline_l1_id}.")
-                        return # Stop further L2 processing for this branch
+                        return affiliate_1y_ended_list # Stop further L2 processing for this branch
 
                     upline_l2_wallet = all_wallets_map.get(upline_l2_id)
                     upline_l2_asset = all_asset_map.get(upline_l2_id)
@@ -124,6 +124,8 @@ def _distribute_affiliate_bonus_for_user(
             logger.info(f"L1 upline {upline_l1_id} for {downline_user.username} is inactive. No L1/L2 affiliate bonus.")
         elif not upline_l1_wallet:
             logger.warning(f"Wallet not found for L1 upline {upline_l1_id}. Skipping L1/L2 affiliate bonus for {downline_user.username}.")
+    
+    return affiliate_1y_ended_list
 
 
 def sharing_profit(daily_profit_rate):
@@ -213,6 +215,7 @@ def distribute_profit_manually():
         
         wallets_to_update_affiliate_balance_list = []
         affiliate_bonus_transactions_to_create = []
+        all_affiliate_1y_ended_list = []  # Track all users whose 1-year affiliate bonus has ended
 
         processed_wallets_count = 0
 
@@ -263,7 +266,7 @@ def distribute_profit_manually():
                 )
                 
                 # ---- DISTRIBUTE AFFILIATE BONUSES ----
-                affiliate_1y_ended_list = _distribute_affiliate_bonus_for_user(
+                affiliate_1y_ended_batch = _distribute_affiliate_bonus_for_user(
                     downline_user=downline_user,
                     daily_rate_percentage=daily_rate_percentage,
                     wallets_needing_affiliate_update_list=wallets_to_update_affiliate_balance_list,
@@ -273,6 +276,7 @@ def distribute_profit_manually():
                     all_user_first_asset_placement_map=all_user_first_asset_placement_map,
                     metrics=metrics
                 )
+                all_affiliate_1y_ended_list.extend(affiliate_1y_ended_batch)
             
             processed_wallets_count += 1
         
@@ -315,7 +319,7 @@ def distribute_profit_manually():
             "affiliate_wallets_updated": len(set(wallets_to_update_affiliate_balance_list)), # Count unique
             "profit_tx_created": len(user_profit_transactions_to_create),
             "affiliate_tx_created": len(affiliate_bonus_transactions_to_create),
-            "affliate_1y_ended": len(affiliate_1y_ended_list)
+            "affliate_1y_ended": len(all_affiliate_1y_ended_list)
         }
     
 
