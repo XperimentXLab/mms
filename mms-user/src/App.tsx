@@ -1,12 +1,12 @@
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom"
-import ProtectedRoute from "./components/auth/ProtectedRoute"
+//import ProtectedRoute from "./components/auth/ProtectedRoute"
 import { lazy, Suspense } from "react"
 import Loading from "./components/props/Loading"
 import { ToastContainer } from "react-toastify"
 
-//const Updating = lazy(() => import("./components/auth/Updating"))
+const Updating = lazy(() => import("./components/auth/Updating"))
 
-
+{/*
 const MainLayout = lazy(() => import("./components/layout/MainLayout"))
 const Home = lazy(() => import("./components/pages/Home"))
 const Register = lazy(() => import("./components/auth/Register"))
@@ -30,7 +30,7 @@ const ConvertStatement = lazy(() => import('./components/pages/WalletStatement')
 const ProfitStatement = lazy(() => import('./components/pages/WalletStatement').then(m => ({ default: m.ProfitStatement })))
 const TransferStatement = lazy(() => import('./components/pages/WalletStatement').then(m => ({ default: m.TransferStatement })))
 const WithdrawalWalletStatement = lazy(() => import('./components/pages/WalletStatement').then(m => ({ default: m.WithdrawalWalletStatement })))
-
+*/}
 
 
 
@@ -38,7 +38,7 @@ function App() {
 
   const router = createBrowserRouter(createRoutesFromElements(
     <Route>
-      
+      {/*
       <Route element={<ProtectedRoute />} >
         
         <Route path="/" element={<MainLayout />} errorElement={<NotFound />}>
@@ -95,8 +95,8 @@ function App() {
         path="/reset-password-confirm/:uidb64/:token" 
         element={<ResetPasswordConfirm />} 
       />
-
-      {/*<Route path="*" element={<Updating />} />*/}
+      */}
+      <Route path="*" element={<Updating />} />
       
     </Route>
   ))
