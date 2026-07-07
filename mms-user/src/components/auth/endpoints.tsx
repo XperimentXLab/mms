@@ -589,3 +589,7 @@ export const withdrawAsset = async (withdrawAssetData: TransData) => {
   return response.data
 }
 
+export const withdrawalWindowStatus = async () => {
+  const response = await api.get('/withdrawal_window_status/')
+  return response.data
+}

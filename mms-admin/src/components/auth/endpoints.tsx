@@ -500,6 +500,15 @@ export const customerPortal = async () => {
   return response.data
 }
 
+export const getWithdrawalWindow = async () => {
+  const response = await api.get('/get_withdrawal_window/') // date, is_active
+  return response.data
+}
+export const updateWithdrawalWindow = async () => {
+  const response = await api.post('/toggle_withdrawal_window/') // toogle ON/OFF
+  return response.data
+}
+
 
 
 import FileSaver from 'file-saver';

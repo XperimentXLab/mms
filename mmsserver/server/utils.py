@@ -19,17 +19,19 @@ def _distribute_affiliate_bonus_for_user(
     affiliate_transactions_list: list,
     all_wallets_map: dict, # Map of {user_id: wallet_instance}
     all_asset_map: dict, # Map of {user_id: asset_instance}
-    all_user_first_asset_placement_map: dict, # Map of {user_id: first_asset_placement_transaction}
+    all_user_bfr1yr_deposit_lock_map: dict, # Map of {user_id: deposit_lock}
+    all_user_aftr1yr_deposit_lock_map: dict, # Map of {user_id: deposit_lock}
     metrics: dict,
 ):
     """
     Calculates and prepares affiliate bonuses for L1 and L2 uplines.
     Modifies wallet objects in-place and appends to transaction list.
-    Affiliate bonus available for 1 year after downline first asset placement.
+    Affiliate bonus available for 1 year only for downline deposit lock.
     """
 
-    affiliate_1y_ended_list = []
-    except_ids = ['MMS01FXC', 'MMS00QVS']  # Admin/Superuser IDs that continue receiving bonuses indefinitely
+    except_ids = ['MMS01FXC', 'MMS00QVS']  # Admin/Superuser IDs will not receive affiliate bonuses
+    special_ids =['MMS02O5G', 'MMS03PF6', 'MMS02GKX', 'MMS03PVL', 'MMS0216J', 'MMS03PBV', 'MMS04F8Y' ] # IDs that continue to receive affiliate bonuses even if already more than 1 year deposit lock [ MMS02O5G MMSzainudin, MMS03PF6 MMSazilah, MMS02GKX MMSamid, MMS03PVL MMSazlina, MMS0216J ⁠MMSzaemy, MMS03PBV ⁠MMSamima, MMS04F8Y MMShafizh ]
+
 
     # Level 1 Upline
     if downline_user.referred_by:
@@ -38,22 +40,34 @@ def _distribute_affiliate_bonus_for_user(
         # but we primarily need their wallet from the map.
         upline_l1_wallet = all_wallets_map.get(upline_l1_id)
         upline_l1_asset = all_asset_map.get(upline_l1_id)
-        downline_asset = all_asset_map.get(downline_user.id)
-        downline_first_placement = all_user_first_asset_placement_map.get(downline_user.id)
+        downline_deposit_lock_bfr1yr = all_user_bfr1yr_deposit_lock_map.get(downline_user.id) or DepositLock.objects.none()
+        downline_deposit_lock_aftr1yr = all_user_aftr1yr_deposit_lock_map.get(downline_user.id) or DepositLock.objects.none()
 
-        if downline_first_placement is None:
-            logger.warning(f"No asset placement found for downline user {downline_user.username} (ID: {downline_user.id}). Skipping affiliate bonus calculation.")
-            return affiliate_1y_ended_list
-        
-        # Check 1-year window ONLY for regular users (exclude admin/superuser IDs)
-        elif timezone.now() > downline_first_placement.created_at + timedelta(days=365) and downline_user.id not in except_ids:
-            logger.warning(f"Downline user {downline_user.username} (ID: {downline_user.id}). The 1-year affiliate bonus has ended.")
-            affiliate_1y_ended_list.append(downline_user.id)
-            return affiliate_1y_ended_list
-
-        elif upline_l1_wallet and upline_l1_wallet.user.is_active and upline_l1_asset and upline_l1_asset.amount > Decimal('0.00'): # Check if L1 user is active and has place asset
+        total_downline_deposit_lock_amount = Decimal('0.00')
+        total_downline_deposit_lock_amount_special = Decimal('0.00')
+        all_total_downline_deposit_lock_amount = Decimal('0.00')
+        if upline_l1_wallet and upline_l1_wallet.user.is_active and upline_l1_asset and upline_l1_asset.amount > Decimal('0.00') and upline_l1_id not in except_ids: # Check if L1 user is active and has place asset and not in except_ids
             l1_bonus_percentage = Decimal('0.05')  # 5%
-            l1_bonus_amount = (downline_asset.amount * (daily_rate_percentage / Decimal('100.00')) * l1_bonus_percentage).quantize(Decimal('0.01'))
+
+            # Calculate total downline deposit lock amount before 1 year for L1 bonus eligibility
+            if downline_deposit_lock_bfr1yr.exists():
+                amount_6mlocked = downline_deposit_lock_bfr1yr.aggregate(total=Sum('amount_6m_locked'))['total'] or Decimal('0.00')
+                amount_6munlocked = downline_deposit_lock_bfr1yr.aggregate(total=Sum('amount_6m_unlocked'))['total'] or Decimal('0.00')
+                amount_1ylocked = downline_deposit_lock_bfr1yr.aggregate(total=Sum('amount_1y_locked'))['total'] or Decimal('0.00')
+                amount_1yunlocked = downline_deposit_lock_bfr1yr.aggregate(total=Sum('amount_1y_unlocked'))['total'] or Decimal('0.00')
+                amount_freeze = downline_deposit_lock_bfr1yr.aggregate(total=Sum('freeze_amount'))['total'] or Decimal('0.00')
+                total_downline_deposit_lock_amount = ((amount_6mlocked + amount_1ylocked + amount_freeze) -  (amount_6munlocked + amount_1yunlocked)).quantize(Decimal('0.01'))
+
+            if downline_deposit_lock_aftr1yr.exists() and upline_l1_id in special_ids:
+                amount_6mlocked = downline_deposit_lock_aftr1yr.aggregate(total=Sum('amount_6m_locked'))['total'] or Decimal('0.00')
+                amount_6munlocked = downline_deposit_lock_aftr1yr.aggregate(total=Sum('amount_6m_unlocked'))['total'] or Decimal('0.00')
+                amount_1ylocked = downline_deposit_lock_aftr1yr.aggregate(total=Sum('amount_1y_locked'))['total'] or Decimal('0.00')
+                amount_1yunlocked = downline_deposit_lock_aftr1yr.aggregate(total=Sum('amount_1y_unlocked'))['total'] or Decimal('0.00')
+                amount_freeze = downline_deposit_lock_aftr1yr.aggregate(total=Sum('freeze_amount'))['total'] or Decimal('0.00')
+                total_downline_deposit_lock_amount_special = ((amount_6mlocked + amount_1ylocked + amount_freeze) -  (amount_6munlocked + amount_1yunlocked)).quantize(Decimal('0.01'))
+
+            all_total_downline_deposit_lock_amount = total_downline_deposit_lock_amount + total_downline_deposit_lock_amount_special
+            l1_bonus_amount = (all_total_downline_deposit_lock_amount * (daily_rate_percentage / Decimal('100.00')) * l1_bonus_percentage).quantize(Decimal('0.01'))
 
             if l1_bonus_amount > Decimal('0.00'):
                 upline_l1_wallet.affiliate_point_balance += l1_bonus_amount
@@ -84,15 +98,40 @@ def _distribute_affiliate_bonus_for_user(
                     # Avoid L2 being the original downline user or same as L1
                     if upline_l2_id == downline_user.id or upline_l2_id == upline_l1_id:
                         logger.warning(f"Skipping L2 affiliate bonus for {upline_l2_id} due to potential referral loop with {downline_user.id} or {upline_l1_id}.")
-                        return affiliate_1y_ended_list # Stop further L2 processing for this branch
+                        return # Stop further L2 processing for this branch
 
                     upline_l2_wallet = all_wallets_map.get(upline_l2_id)
                     upline_l2_asset = all_asset_map.get(upline_l2_id)
+                    downline_deposit_lock_bfr1yr_2 = all_user_bfr1yr_deposit_lock_map.get(downline_user.id) or DepositLock.objects.none()
+                    downline_deposit_lock_aftr1yr_2 = all_user_aftr1yr_deposit_lock_map.get(downline_user.id) or DepositLock.objects.none()
 
-                    if upline_l2_wallet and upline_l2_wallet.user.is_active and upline_l1_asset and upline_l2_asset.amount > Decimal('0.00'): # Check if L2 user is active and has place asset
+                    total_downline_deposit_lock_amount_2 = Decimal('0.00')
+                    total_downline_deposit_lock_amount_2_special = Decimal('0.00')
+                    all_total_downline_deposit_lock_amount_2 = Decimal('0.00')
+                    if upline_l2_wallet and upline_l2_wallet.user.is_active and upline_l1_asset and upline_l2_asset.amount > Decimal('0.00') and upline_l2_id not in except_ids: # Check if L2 user is active and has place asset and not in except_ids
+
+                        # Calculate total downline deposit lock amount before 1 year for L2 bonus eligibility
+                        if downline_deposit_lock_bfr1yr_2.exists():
+                            amount_6mlocked = downline_deposit_lock_bfr1yr_2.aggregate(total=Sum('amount_6m_locked'))['total'] or Decimal('0.00')
+                            amount_6munlocked = downline_deposit_lock_bfr1yr_2.aggregate(total=Sum('amount_6m_unlocked'))['total'] or Decimal('0.00')
+                            amount_1ylocked = downline_deposit_lock_bfr1yr_2.aggregate(total=Sum('amount_1y_locked'))['total'] or Decimal('0.00')
+                            amount_1yunlocked = downline_deposit_lock_bfr1yr_2.aggregate(total=Sum('amount_1y_unlocked'))['total'] or Decimal('0.00')
+                            amount_freeze = downline_deposit_lock_bfr1yr_2.aggregate(total=Sum('freeze_amount'))['total'] or Decimal('0.00')
+                            total_downline_deposit_lock_amount_2 = ((amount_6mlocked + amount_1ylocked + amount_freeze) -  (amount_6munlocked + amount_1yunlocked)).quantize(Decimal('0.01'))
+
+                        # Calculate total downline deposit lock amount after 1 year for special bonus eligibility
+                        if downline_deposit_lock_aftr1yr_2.exists() and upline_l2_id in special_ids:
+                            amount_6mlocked = downline_deposit_lock_aftr1yr_2.aggregate(total=Sum('amount_6m_locked'))['total'] or Decimal('0.00')
+                            amount_6munlocked = downline_deposit_lock_aftr1yr_2.aggregate(total=Sum('amount_6m_unlocked'))['total'] or Decimal('0.00')
+                            amount_1ylocked = downline_deposit_lock_aftr1yr_2.aggregate(total=Sum('amount_1y_locked'))['total'] or Decimal('0.00')
+                            amount_1yunlocked = downline_deposit_lock_aftr1yr_2.aggregate(total=Sum('amount_1y_unlocked'))['total'] or Decimal('0.00')
+                            amount_freeze = downline_deposit_lock_aftr1yr_2.aggregate(total=Sum('freeze_amount'))['total'] or Decimal('0.00')
+                            total_downline_deposit_lock_amount_2_special = ((amount_6mlocked + amount_1ylocked + amount_freeze) - (amount_6munlocked + amount_1yunlocked)).quantize(Decimal('0.01'))
+
                         l2_bonus_percentage = Decimal('0.02')  # 2%
                         # L2 bonus is also based on the original downline's earned profit
-                        l2_bonus_amount = (downline_asset.amount * (daily_rate_percentage / Decimal('100.00')) * l2_bonus_percentage).quantize(Decimal('0.01'))
+                        all_total_downline_deposit_lock_amount_2 = total_downline_deposit_lock_amount_2 + total_downline_deposit_lock_amount_2_special
+                        l2_bonus_amount = (all_total_downline_deposit_lock_amount_2 * (daily_rate_percentage / Decimal('100.00')) * l2_bonus_percentage).quantize(Decimal('0.01'))
 
                         if l2_bonus_amount > Decimal('0.00'):
                             upline_l2_wallet.affiliate_point_balance += l2_bonus_amount
@@ -124,8 +163,6 @@ def _distribute_affiliate_bonus_for_user(
             logger.info(f"L1 upline {upline_l1_id} for {downline_user.username} is inactive. No L1/L2 affiliate bonus.")
         elif not upline_l1_wallet:
             logger.warning(f"Wallet not found for L1 upline {upline_l1_id}. Skipping L1/L2 affiliate bonus for {downline_user.username}.")
-    
-    return affiliate_1y_ended_list
 
 
 def sharing_profit(daily_profit_rate):
@@ -145,8 +182,8 @@ def sharing_profit(daily_profit_rate):
     with db_transaction.atomic():
         logger.info(f'Sharing Profit {daily_profit_rate}%')
         sharing_mms03 = mms03_asset * Decimal(daily_profit_rate) * Decimal('0.0002') # 0.02%
-        sharing_above_10k = asset_above_10k * Decimal(daily_profit_rate) * Decimal('0.0013') # 0.13%
-        sharing_below_10k = asset_below_10k * Decimal(daily_profit_rate) * Decimal('0.0023') # 0.23%
+        sharing_above_10k = asset_above_10k * Decimal(daily_profit_rate) * Decimal('0.0018') # 0.18%
+        sharing_below_10k = asset_below_10k * Decimal(daily_profit_rate) * Decimal('0.0028') # 0.28%
 
         total_sharing = sharing_above_10k + sharing_below_10k + sharing_mms03
         super_user_wallet.profit_point_balance += total_sharing
@@ -208,21 +245,40 @@ def distribute_profit_manually():
         ).select_related('wallet').prefetch_related('asset')
         all_wallets_map = {user.id: user.wallet for user in eligible_users if hasattr(user, 'wallet')}
         all_asset_map = {user.id: user.asset for user in eligible_users if hasattr(user, 'asset')}
-        all_user_first_asset_placement_map = {user.id: Transaction.objects.filter(user=user, transaction_type='ASSET_PLACEMENT').order_by('created_at').first() for user in eligible_users}
+
+        one_year_ago = timezone.now() - timedelta(days=365)
+
+        # All user DEPOSIT LOCK before 1 year ---------------------------------------------------------
+        all_user_bfr1yr_deposit_lock_map = {
+            user.id: DepositLock.objects.filter(
+                deposit__user=user,
+                deposit__created_at__lt=one_year_ago,
+            )
+            for user in eligible_users
+        }
+
+        # All user DEPOSIT LOCK after 1 year ---------------------------------------------------------
+        all_user_aftr1yr_deposit_lock_map = {
+            user.id: DepositLock.objects.filter(
+                deposit__user=user,
+                deposit__created_at__gte=one_year_ago,
+            )
+            for user in eligible_users
+        }
+
 
         wallets_to_update_profit_balance_list = []
         user_profit_transactions_to_create = []
         
         wallets_to_update_affiliate_balance_list = []
         affiliate_bonus_transactions_to_create = []
-        all_affiliate_1y_ended_list = []  # Track all users whose 1-year affiliate bonus has ended
 
         processed_wallets_count = 0
 
         # Iterate over the values of the map (the wallet objects)
         for wallet_instance in all_wallets_map.values():
-            downline_user = wallet_instance.user
-            asset_obj = Asset.objects.filter(user=downline_user).first()
+            user_wallet = wallet_instance.user
+            asset_obj = Asset.objects.filter(user=user_wallet).first()
             if not asset_obj or asset_obj.amount is None:
                 continue
             asset_balance = Decimal(asset_obj.amount)
@@ -236,13 +292,13 @@ def distribute_profit_manually():
                 continue
 
             if asset_balance < Decimal('10000.00'):
-                user_share_ratio = Decimal('0.70') #"70/30"
+                user_share_ratio = Decimal('0.65') #"65/35"
             else:
-                user_share_ratio = Decimal('0.80') #"80/20"
+                user_share_ratio = Decimal('0.75') #"75/25"
 
             user_profit_amount = (raw_profit * user_share_ratio).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
-            # Update Downline User's profit_point_balance
+            # Update User's profit_point_balance
             if user_profit_amount > Decimal('0.00'):
                 wallet_instance.profit_point_balance += user_profit_amount
                 wallets_to_update_profit_balance_list.append(wallet_instance)
@@ -253,7 +309,7 @@ def distribute_profit_manually():
                 current_time = timezone.now()
                 user_profit_transactions_to_create.append(
                     Transaction(
-                        user=downline_user,
+                        user=user_wallet,
                         wallet=wallet_instance,
                         transaction_type='DISTRIBUTION',
                         point_type='PROFIT',
@@ -266,17 +322,17 @@ def distribute_profit_manually():
                 )
                 
                 # ---- DISTRIBUTE AFFILIATE BONUSES ----
-                affiliate_1y_ended_batch = _distribute_affiliate_bonus_for_user(
-                    downline_user=downline_user,
+                _distribute_affiliate_bonus_for_user(
+                    downline_user=user_wallet,
                     daily_rate_percentage=daily_rate_percentage,
                     wallets_needing_affiliate_update_list=wallets_to_update_affiliate_balance_list,
                     affiliate_transactions_list=affiliate_bonus_transactions_to_create,
                     all_wallets_map=all_wallets_map,
                     all_asset_map=all_asset_map,
-                    all_user_first_asset_placement_map=all_user_first_asset_placement_map,
+                    all_user_bfr1yr_deposit_lock_map=all_user_bfr1yr_deposit_lock_map,
+                    all_user_aftr1yr_deposit_lock_map=all_user_aftr1yr_deposit_lock_map,
                     metrics=metrics
                 )
-                all_affiliate_1y_ended_list.extend(affiliate_1y_ended_batch)
             
             processed_wallets_count += 1
         
@@ -319,7 +375,6 @@ def distribute_profit_manually():
             "affiliate_wallets_updated": len(set(wallets_to_update_affiliate_balance_list)), # Count unique
             "profit_tx_created": len(user_profit_transactions_to_create),
             "affiliate_tx_created": len(affiliate_bonus_transactions_to_create),
-            "affliate_1y_ended": len(all_affiliate_1y_ended_list)
         }
     
 
@@ -615,13 +670,35 @@ class AssetService:
 
     @staticmethod
     def withdraw_asset(user, amount, description="", depositlock_id=None):
-        """Withdraw asset to Profit - Freeze asset amount, unlock only on approval"""
+        """
+        Withdraw asset to Profit - Freeze asset amount, unlock only on approval
+        Withdrawal every 14 days, max 1k per withdraw
+        """
+
+        # Withdrawal allowed only on Sundays and every 14 days since the lead_date (Sunday 2026-07-05)
+        today = timezone.localdate()
+        lead_date = date(2026, 7, 5)
+        next_allowed_date = lead_date + timedelta(days=14)
+        days_since_lead = (today - lead_date).days
+        if days_since_lead < 0 or days_since_lead % 14 != 0:
+            # find the next valid date for a helpful error message
+            if days_since_lead < 0:
+                next_allowed_date = lead_date
+            else:
+                cycles_passed = days_since_lead // 14
+                next_allowed_date = lead_date + timedelta(days=(cycles_passed + 1) * 14)
+            raise ValidationError(
+                f"Next withdrawal is allowed on {next_allowed_date.strftime('%Y-%m-%d')}."
+            )
         
-        if amount < 0:
+        if amount < 0: 
             raise ValidationError("Please enter a valid withdrawal amount")
 
         if amount % 5 != 0:
             raise ValidationError("Amount must be a multiple of 5")
+        
+        if amount > 1000:
+            raise ValidationError("Maximum withdrawal amount is 1000")
 
         asset = Asset.objects.get(user=user)
         if asset.amount < amount:
@@ -748,9 +825,24 @@ class ProfitService:
         if amount % 10 != 0:
             raise ValidationError("Amount must be a multiple of 10")
         
+        today = timezone.localdate()
+        if not WithdrawalWindow.objects.filter(date=today, is_active=True).exists():
+            raise ValidationError("Profit Point withdrawal is only allowed on specific days.")
+        
         wallet = Wallet.objects.get(user=user)
         if wallet.profit_point_balance < amount:
             raise ValidationError("Insufficient Profit Point balance")
+
+        txn_this_month = Transaction.objects.filter(
+            user=user,
+            transaction_type='WITHDRAWAL',
+            point_type='PROFIT',
+            created_at__month=timezone.now().month,
+            created_at__year=timezone.now().year
+        ).exists()
+        if txn_this_month:
+            raise ValidationError("You can only request one Profit Point withdrawal per month")
+        
         
         fee_rate = Decimal('0.02') #Fee Rate 2%
         fee = amount * fee_rate
@@ -893,6 +985,10 @@ class CommissionService:
         
         if amount % 10 != 0:
             raise ValidationError("Amount must be a multiple of 10")
+        
+        today = timezone.localdate()
+        if not WithdrawalWindow.objects.filter(date=today, is_active=True).exists():
+            raise ValidationError("Commission Point withdrawal is only allowed on specific days.")
         
         wallet = Wallet.objects.get(user=user)
         

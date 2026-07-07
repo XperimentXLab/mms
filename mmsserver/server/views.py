@@ -973,3 +973,19 @@ def promo_code(request):
   except Exception as e:
     logger.error(f"Error applying promo code for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
+  
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def withdrawal_window_status(request):
+  user = request.user
+
+  try:
+    today = timezone.localdate()
+    is_open = WithdrawalWindow.objects.filter(date=today, is_active=True).exists()
+    return Response({'is_open': is_open}, status=200)
+  except ValidationError as e:
+    logger.error(f"Validation Error for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=400)
+  except Exception as e:
+    logger.error(f"Exception Error for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=500)

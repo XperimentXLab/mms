@@ -39,6 +39,7 @@ urlpatterns = [
   path('user_asset_tx/', get_asset_transaction, name='user_asset_transaction'),
   path('user_deposit_lock/', get_deposit_lock, name='user_deposit_lock'),
   path('user_daily_total_profit/', get_daily_total_profit, name="user_daily_total_profit"),
+  path('withdrawal_window_status/', withdrawal_window_status, name="withdrawal_window_status"),
 
   #updating
   path('update_password/', update_password, name='update_password'),
@@ -75,6 +76,7 @@ urlpatterns = [
   path('get_user_info/', get_user_info, name='get_user_info'),
   path('update_user_info/', update_user_info, name='update_user_info'),
   path('ops_profit_calender/', get_ops_profit_calender, name='get_ops_profit_calender'),
+  path('get_withdrawal_window/', withdrawal_window, name='get_withdrawal_window'), 
 
 
   #admin - functionalities
@@ -88,5 +90,6 @@ urlpatterns = [
   path('reset_all_wallet_balances/', reset_all_wallet_balances, name='reset_all_wallet_balances'),
   path('process_verification/', process_verification, name='process_verification'),
   path('manage_performance/', manage_performance, name='manage_performance'),
+  path('toggle_withdrawal_window/', withdrawal_window, name='toggle_withdrawal_window'), 
 
 ]

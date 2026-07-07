@@ -16,7 +16,15 @@ export const WithdrawalAssetStatement = () => {
 
   const [loading, setLoading] = useState<boolean>(false)
   const [refreshCounter, setRefreshCounter] = useState<number>(0);
-  const isSunday = dayjs().tz('Asia/Kuala_Lumpur').day() === 0; 
+
+  const LEAD_DATE = dayjs.tz('2026-07-05', 'Asia/Kuala_Lumpur').startOf('day');
+  const today = dayjs().tz('Asia/Kuala_Lumpur').startOf('day');
+  const daysSinceLead = today.diff(LEAD_DATE, 'day');
+  const isWithdrawDay = daysSinceLead >= 0 && daysSinceLead % 14 === 0;
+  const cyclesPassed = Math.floor(daysSinceLead / 14);
+  const nextAllowedDate = daysSinceLead < 0
+    ? LEAD_DATE
+    : LEAD_DATE.add((cyclesPassed + 1) * 14, 'day');
 
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
@@ -75,15 +83,19 @@ export const WithdrawalAssetStatement = () => {
         <div className="flex gap-2">
           <Buttons
             type="button"
-            disabled={!isSunday}
+            disabled={!isWithdrawDay}
             onClick={() => handleWithdraw(info.row.original.id)}
             className={`px-3 py-1 rounded ${
-              isSunday 
+              isWithdrawDay 
                 ? 'bg-green-500 text-white hover:bg-green-600 hover:cursor-pointer' 
                 : 'bg-gray-300 text-gray-600 cursor-not-allowed'
             }`}
           >
-            Withdraw
+            { 
+              isWithdrawDay ? 
+              'Withdraw' : 
+              `Next Withdraw: ${nextAllowedDate.format('YYYY-MM-DD')}`
+            }
           </Buttons>
         </div>
         )

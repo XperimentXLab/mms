@@ -464,3 +464,12 @@ class PromoCode(models.Model):
   class Meta:
     verbose_name = "Promo Code"
     verbose_name_plural = "Promo Codes"
+
+
+class WithdrawalWindow(models.Model):
+  date = models.DateField(unique=True, help_text='The date for the withdrawal window.')
+  is_active = models.BooleanField(default=False, help_text='Indicates if the withdrawal window is active for this date.')
+  updated_at = models.DateTimeField(auto_now=True, help_text='Timestamp of the last update to this withdrawal window.')
+
+  def __str__(self):
+    return f"Withdrawal Window - {self.date} - {'ON' if self.is_active else 'OFF'}"

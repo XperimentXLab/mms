@@ -436,12 +436,12 @@ class DepositLockSerializer(serializers.ModelSerializer):
 
   def get_request_status_display(self, obj):
     if obj.deposit:
-        return obj.deposit.request_status
+      return obj.deposit.request_status
     return None
   
   def get_deposit_amount(self, obj):
     if obj.deposit:
-        return obj.deposit.amount
+      return obj.deposit.amount
     return None
     
 class PerformanceSerializer(serializers.ModelSerializer):
@@ -477,4 +477,9 @@ class PromoCodeSerializer(serializers.ModelSerializer):
 
     return value
 
-  
+
+class WithdrawalWindowSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = WithdrawalWindow
+    fields = ['id', 'date', 'is_active', 'updated_at']
+

@@ -1,8 +1,8 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Inputss } from "../props/Formss"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
-import { getUserInfo, putPerformance, setupUser, updateUserInfo } from "../auth/endpoints"
+import { getUserInfo, getWithdrawalWindow, putPerformance, setupUser, updateUserInfo, updateWithdrawalWindow } from "../auth/endpoints"
 import dayjs from "dayjs";
 import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -229,6 +229,30 @@ const Setup = () => {
     }
   }
 
+  const [getWdWin, setGetWdWin] = useState<{is_active: boolean, date: string}>({is_active: false, date: ''})
+  const on = getWdWin.is_active === true
+  const withdrawalDate = getWdWin.date
+  const fetchWindow = async ()=>{
+    const resStatus = await getWithdrawalWindow()
+    setGetWdWin(resStatus)
+  }
+  useEffect(()=>{
+    fetchWindow()
+  },[])
+  const withdrawalWindowUpdate = async () => {
+    try {
+      setLoading(true)
+      await updateWithdrawalWindow()
+      NotiSuccessAlert('Withdrawal button updated successfully')
+      fetchWindow()
+    } catch (error: any) {  
+      NotiErrorAlert(error.response.data.error)
+    } finally {
+      setLoading(false)
+      fetchWindow()
+    }
+  }
+
   /*
   const handleResetAllWallet = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -248,7 +272,17 @@ const Setup = () => {
 
       {loading && <Loading />}
 
-      <div className="flex flex-col justify-center gap-2 bg-white p-3 w-full rounded-xl">
+      <div className="flex flex-row justify-between items-center gap-3 w-full h-17 p-4 border rounded-xl shadow-md bg-white shadow-blue-800">
+        <FixedText label={`Withdrawal Day ${withdrawalDate}`} text={on ? 'ON' : 'OFF'} />
+        <div className={`${on ? 'bg-green-400 justify-end' : 'bg-gray-600 justify-start'} transition-transform flex rounded-full flex-1/7 h-full border`}>
+          <button 
+            onClick={withdrawalWindowUpdate}
+            className={`cursor-pointer rounded-full w-1/2 h-full border bg-white`}
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col justify-center gap-2 bg-white p-3 w-full rounded-xl shadow-blue-800">
     
         <div className="grid grid-cols-2 items-center">
           <SelectMonth value={currentMonth} 
@@ -297,7 +331,7 @@ const Setup = () => {
 
       </div>
 
-      <form onSubmit={toggleSetupUser} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">        
+      <form onSubmit={toggleSetupUser} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-blue-800">        
         <span className="font-semibold">Setup User Master Wallet</span>
 
         {errorMessage && <span className="text-sm text-red-500">{errorMessage}</span>}
@@ -337,7 +371,7 @@ const Setup = () => {
         <Buttons type="submit">Submit</Buttons>
       </form>
 
-      <div className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
+      <div className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-blue-800">
         <span className="font-semibold">Update User Info</span>
         <Inputss label="User ID *" placeholder="Enter user"
           type="text"

@@ -17,7 +17,7 @@ from datetime import datetime
 import stripe
 from django.conf import settings
 import pytz
-from django.utils.timezone import localtime, now
+from django.utils.timezone import localtime, now, make_aware
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -1005,4 +1005,41 @@ def customer_portal(request):
     return Response({'error': str(e)}, status=500)
   except Exception as e:
     logger.error(f"error: {str(e)}")
+    return Response({'error': str(e)}, status=500)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def withdrawal_window(request):
+  user = request.user
+
+  try:
+    
+      if request.method == 'GET':
+        today = timezone.localdate()
+        window = WithdrawalWindow.objects.filter(date=today).first()
+        is_active = window.is_active if window else False
+        return Response({
+          'is_active': is_active if window else False, 
+          'date': today if window else today
+        }, status=200) 
+
+      elif request.method == 'POST':
+        if user.is_trader:
+          today = timezone.localdate()
+          window, _ = WithdrawalWindow.objects.get_or_create(date=today)
+          window.is_active = not window.is_active
+          window.save()
+          return Response({
+            'date': window.date,
+            'is_active': window.is_active
+          }, status=200)
+        else:
+          return Response({'error': 'Permission denied'}, status=403)
+        
+  except ValidationError as e:
+    logger.error(f"Validation Error: {str(e)}")
+    return Response({'error': str(e)}, status=400)
+  except Exception as e:
+    logger.error(f"Exception Error: {str(e)}")
     return Response({'error': str(e)}, status=500)

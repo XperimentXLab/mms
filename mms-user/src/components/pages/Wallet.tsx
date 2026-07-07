@@ -7,7 +7,7 @@ import { FaChevronUp } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 import { Tables, type TableColumn } from "../props/Tables"
 import { InfoWithdraw } from "../props/Info"
-import { convertCommissionToMaster, convertProfitToMaster, getWallet, transferMasterPoint, userDetails, withdrawCommission, withdrawProfit } from "../auth/endpoints"
+import { convertCommissionToMaster, convertProfitToMaster, getWallet, transferMasterPoint, userDetails, withdrawalWindowStatus, withdrawCommission, withdrawProfit } from "../auth/endpoints"
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -17,10 +17,8 @@ dayjs.extend(timezone);
 
 const Wallet = () => {
 
-  const isSunday = dayjs().tz('Asia/Kuala_Lumpur').day() === 0;
   const [loading, setLoading] = useState<boolean>(true)
 
-  // fetch from db
   //const [userID, setUserID] = useState<string>('')
   //const [username, setUsername] = useState<string>('')
   const [masterBalance, setMasterBalance] = useState<number>(0)
@@ -42,6 +40,8 @@ const Wallet = () => {
   const [convertCommision, setCovertCommision] = useState<number>(0)
   // reference
   const [reference, setReference] = useState<string>('')
+
+  const [isWithdrawDay, setIsWithdrawDay] = useState<boolean>(false)
 
   const [bonusUpDown, setBonusUpDown] = useState<boolean>(false)
   const toggleBonusUpDown = () => {
@@ -67,6 +67,7 @@ const Wallet = () => {
       setLoading(true)
       const resUserDetails = await userDetails()
       const resWallet = await getWallet()
+      const resWdWinStatus = await withdrawalWindowStatus()
       setWalletAddress(resUserDetails.wallet_address || undefined)
       setMasterBalance(resWallet.master_point_balance || 0)
       setProfitBalance(resWallet.profit_point_balance || 0)
@@ -76,6 +77,7 @@ const Wallet = () => {
         Number(resWallet.affiliate_point_balance || 0) +
         Number(resWallet.introducer_point_balance || 0)
       )
+      setIsWithdrawDay(resWdWinStatus.is_open || false)
 
       // Request Deposit Master Point
       //setUserID(resUserDetails.id)
@@ -281,7 +283,7 @@ const Wallet = () => {
               value={String(profitPoint)}
               required={true}
             />
-            <Buttons type="submit" disabled={isSunday ? false : true}>Withdraw</Buttons>
+            <Buttons type="submit" disabled={isWithdrawDay === false ? true : false}>Withdraw</Buttons>
           </form>
           <InfoWithdraw />
 
@@ -311,7 +313,7 @@ const Wallet = () => {
               value={String(commissionPoint)}
               required={true}
             />
-            <Buttons type="submit">Withdraw</Buttons>       
+            <Buttons type="submit" disabled={isWithdrawDay === false ? true : false}>Withdraw</Buttons>       
           </form>
           <InfoWithdraw />
 
