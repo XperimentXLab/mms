@@ -246,13 +246,14 @@ def distribute_profit_manually():
         all_wallets_map = {user.id: user.wallet for user in eligible_users if hasattr(user, 'wallet')}
         all_asset_map = {user.id: user.asset for user in eligible_users if hasattr(user, 'asset')}
 
-        one_year_ago = timezone.now() - timedelta(days=365)
+        today = timezone.localdate()
+        one_year_ago = today - timedelta(days=365)
 
         # All user DEPOSIT LOCK before 1 year ---------------------------------------------------------
         all_user_bfr1yr_deposit_lock_map = {
             user.id: DepositLock.objects.filter(
                 deposit__user=user,
-                deposit__created_at__lt=one_year_ago,
+                deposit__created_at__gte=one_year_ago,
             )
             for user in eligible_users
         }
@@ -261,7 +262,7 @@ def distribute_profit_manually():
         all_user_aftr1yr_deposit_lock_map = {
             user.id: DepositLock.objects.filter(
                 deposit__user=user,
-                deposit__created_at__gte=one_year_ago,
+                deposit__created_at__lt=one_year_ago,
             )
             for user in eligible_users
         }
