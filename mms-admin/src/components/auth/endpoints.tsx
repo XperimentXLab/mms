@@ -509,6 +509,11 @@ export const updateWithdrawalWindow = async () => {
   return response.data
 }
 
+export const revokeProfitDistribution = async () => {
+  const response = await api.post('/revoke_profit_distribution/')
+  return response.data
+}
+
 
 
 import FileSaver from 'file-saver';

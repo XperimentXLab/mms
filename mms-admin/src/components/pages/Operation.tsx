@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import Buttons from "../props/Buttons"
 import { Inputss, InputwithVal } from "../props/Formss"
 import { SelectDay, SelectMonth, SelectYear } from "../props/DropDown"
-import { distribute_profit, get_profit, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
+import { distribute_profit, get_profit, revokeProfitDistribution, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
 import { FixedText } from "../props/Textt"
 import dayjs from "dayjs"
@@ -178,7 +178,6 @@ const Operation = () => {
         Profit Transactions Created: ${response.profit_tx_created}, \n
         Affiliate Transactions Created: ${response.affiliate_tx_created}
       `)
-      NotiInfoAlert(`Affiliate 1 Year Ended: ${response.affiliate_1y_ended}`)
       /*
       {
         "metrics": {
@@ -192,7 +191,6 @@ const Operation = () => {
         "affiliate_wallets_updated": ..,
         "profit_tx_created": ..,
         "affiliate_tx_created": ..,
-        "affiliate_1y_ended": ..,
       }
       */
     } catch (error: any) {
@@ -205,6 +203,42 @@ const Operation = () => {
       setLoading(false)
     }
   }
+
+
+  const [handleOpenRevoke, setHandleOpenRevoke] = useState<boolean>(false)
+  const toggleRevokeDistribution = async () => {
+    try {
+      setLoading(true)
+      const response = await revokeProfitDistribution()
+      NotiSuccessAlert(response.message)
+      NotiInfoAlert(`
+        Profit Reversed Count: ${response.profit_reversed_count}, \n
+        Affiliate Reversed Count: ${response.affiliate_reversed_count}
+      `)
+      NotiInfoAlert(`
+        Total Amount Reversed: ${response.total_amount_reversed}, \n
+        Sharing Profit Reversed Count: ${response.sharing_profit_reversed_count}
+      `)
+      const skippedNegBalRisk = response.skipped_negative_balance_risk || []
+      NotiInfoAlert(`
+        Skipped Already Reversed: ${response.skipped_already_reversed}, \n
+        Skipped Negative Balance Risk: ${
+          skippedNegBalRisk.length > 0 ? skippedNegBalRisk.join(', ') : 'None'
+        }
+      `)
+      setHandleOpenRevoke(false)
+    } catch (error: any) {
+      if (error.response && error.response.status === 400 ) {
+        NotiErrorAlert(error.response.data.error)
+      } else {
+        NotiErrorAlert('Failed to revoke profit distribution.')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
 
   /*
   const [amountShare, setAmountShare] = useState<number>(0)
@@ -307,6 +341,15 @@ const Operation = () => {
           <FixedText label="Today Profit" text={String(todayProfitRate)}/>
           <Buttons type="submit">Distribute</Buttons>
         </form>
+
+        
+        <Buttons type="button" onClick={() => setHandleOpenRevoke(!handleOpenRevoke)}>
+          {handleOpenRevoke ? 'Cancel Revoke' : 'Revoke Profit Distribution'}
+        </Buttons>
+        {handleOpenRevoke && <div className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-lg bg-red-300 shadow-red-800">
+          <span className="font-semibold">Revoke Profit Distribution for {todayY}-{todayM}-{todayD}</span>
+          <Buttons type="button" onClick={toggleRevokeDistribution}>Revoke</Buttons>
+        </div>}
 
         {/*
         <form onSubmit={toggleUpdateSharing} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">

@@ -1043,3 +1043,28 @@ def withdrawal_window(request):
   except Exception as e:
     logger.error(f"Exception Error: {str(e)}")
     return Response({'error': str(e)}, status=500)
+  
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def revoke_profit_distribution_view(request):
+  user = request.user
+
+  try:
+
+    if user.is_staff:
+      # target_date_str = request.data.get('target_date')  # e.g. "2026-07-08"
+      # target_date = datetime.strptime(target_date_str, '%Y-%m-%d').date() if target_date_str else None
+      # result = revoke_profit_distribution(target_date=target_date)
+      result = revoke_profit_distribution()
+      print(f"Profit distribution revoked: {result}")
+      return Response(result, status=200)
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  
+  except ValidationError as e:
+    logger.error(f"Validation Error: {str(e)}")
+    return Response({'error': str(e)}, status=400)
+  except Exception as e:
+    logger.error(f"Exception Error: {str(e)}")
+    return Response({'error': str(e)}, status=500)

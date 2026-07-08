@@ -368,7 +368,8 @@ def distribute_profit_manually():
 
             sharing_profit(daily_rate_percentage)
         
-        logger.info(f"Manual profit and affiliate distribution completed. Processed {processed_wallets_count} direct profit recipients.")
+        print(f"Manual profit and affiliate distribution completed. Processed {processed_wallets_count} direct profit recipients.")
+        print(f"Metrics: {metrics}")
         return {
             "message": "Profit and affiliate bonuses distributed successfully.",
             'metrics': metrics,
@@ -385,6 +386,128 @@ def distribute_profit_manually():
     except Exception as e:
         logger.error(f"Error during manual profit/affiliate distribution: {e}", exc_info=True)
         raise Exception(f"An error occurred: {e}")
+    
+
+# --------------------- REVOKE PROFIT DISTRIBUTION ---------------------------------------
+
+def revoke_profit_distribution(target_date=None):
+    """
+    Reverses ALL profit and affiliate bonus distributions for a given date.
+    Does NOT delete original transactions — creates offsetting negative
+    transactions instead, so the ledger stays fully auditable.
+
+    Safe to call only if funds haven't been withdrawn/converted yet.
+    """
+    if target_date is None:
+        target_date = timezone.localdate()
+
+    metrics = {
+        'profit_reversed_count': 0,
+        'affiliate_reversed_count': 0,
+        'sharing_profit_reversed_count': 0,
+        'total_amount_reversed': Decimal('0.00'),
+        'skipped_already_reversed': 0,
+        'skipped_negative_balance_risk': [],
+    }
+
+    with db_transaction.atomic():
+        # Pull every distribution-related transaction created that day
+        original_txns = Transaction.objects.filter(
+            transaction_type__in=['DISTRIBUTION', 'AFFILIATE_BONUS', 'SHARING_PROFIT'],
+            created_at__date=target_date,
+        ).select_related('wallet', 'user')
+
+        if not original_txns.exists():
+            return {"status": "skipped", "message": f"No distributions found for {target_date}."}
+
+        # Idempotency guard: find reversals already created for this date's txns
+        already_reversed_refs = set(
+            Transaction.objects.filter(
+                reference__startswith='REVOKE_',
+                created_at__date__gte=target_date,  # reversal could run later than target_date
+            ).values_list('reference', flat=True)
+        )
+
+        wallets_to_update = {}  # {wallet_id: wallet_instance}
+        reversal_txns_to_create = []
+        current_time = timezone.now()
+
+        for txn in original_txns:
+            revoke_ref = f"REVOKE_{txn.id}"
+            if revoke_ref in already_reversed_refs:
+                metrics['skipped_already_reversed'] += 1
+                continue
+
+            wallet = txn.wallet
+            if not wallet:
+                continue
+
+            # Determine which balance field this transaction touched
+            if txn.point_type == 'PROFIT':
+                balance_field = 'profit_point_balance'
+            elif txn.point_type == 'COMMISSION':
+                balance_field = 'affiliate_point_balance'
+            else:
+                continue  # not a distribution-affecting point type, skip
+
+            current_balance = getattr(wallet, balance_field)
+            if current_balance - txn.amount < Decimal('0.00'):
+                # Balance already moved (e.g. converted) — don't blindly go negative
+                metrics['skipped_negative_balance_risk'].append(txn.id)
+                continue
+
+            # Use a cached wallet instance so repeated reversals for the
+            # same wallet accumulate correctly before bulk_update
+            wallet_key = wallet.pk
+            if wallet_key not in wallets_to_update:
+                wallets_to_update[wallet_key] = wallet
+            cached_wallet = wallets_to_update[wallet_key]
+            setattr(cached_wallet, balance_field, getattr(cached_wallet, balance_field) - txn.amount)
+
+            reversal_txns_to_create.append(
+                Transaction(
+                    user=txn.user,
+                    wallet=wallet,
+                    transaction_type=txn.transaction_type,
+                    point_type=txn.point_type,
+                    amount=-txn.amount,  # negative = reversal
+                    description=f"REVOKED: {txn.description} (original txn id={txn.id})",
+                    reference=revoke_ref,
+                )
+            )
+
+            metrics['total_amount_reversed'] += txn.amount
+            if txn.transaction_type == 'DISTRIBUTION':
+                metrics['profit_reversed_count'] += 1
+            elif txn.transaction_type == 'AFFILIATE_BONUS':
+                metrics['affiliate_reversed_count'] += 1
+            elif txn.transaction_type == 'SHARING_PROFIT':
+                metrics['sharing_profit_reversed_count'] += 1
+
+        # Apply wallet balance updates
+        if wallets_to_update:
+            for w in wallets_to_update.values():
+                w.updated_at = current_time
+            Wallet.objects.bulk_update(
+                list(wallets_to_update.values()),
+                ['profit_point_balance', 'affiliate_point_balance', 'updated_at']
+            )
+
+        if reversal_txns_to_create:
+            Transaction.objects.bulk_create(reversal_txns_to_create)
+
+        logger.info(
+            f"Revoked distributions for {target_date}: "
+            f"{len(reversal_txns_to_create)} reversal transactions, "
+            f"{len(wallets_to_update)} wallets updated."
+        )
+
+    return {
+        "message": f"Reversed distributions for {target_date}.",
+        "metrics": metrics,
+    }
+
+# ----------------------------------------------------------------------------------------
 
 class UserService:
     @staticmethod

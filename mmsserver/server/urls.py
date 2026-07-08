@@ -91,5 +91,6 @@ urlpatterns = [
   path('process_verification/', process_verification, name='process_verification'),
   path('manage_performance/', manage_performance, name='manage_performance'),
   path('toggle_withdrawal_window/', withdrawal_window, name='toggle_withdrawal_window'), 
+  path('revoke_profit_distribution/', revoke_profit_distribution_view, name='revoke_profit_distribution'),
 
 ]

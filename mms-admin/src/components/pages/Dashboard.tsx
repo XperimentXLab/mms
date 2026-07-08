@@ -154,7 +154,7 @@ interface AssetProps {
 const AssetChart = ({ data }: { data: AssetProps}) => {
 
   const chartData = {
-    labels: [`Asset Sharing (80:20) - ${data.user_asset_above_10k}`, `Asset Sharing (70:30) - ${data.user_asset_below_10k}`],
+    labels: [`Asset Sharing (75:35) - ${data.user_asset_above_10k}`, `Asset Sharing (65:25) - ${data.user_asset_below_10k}`],
     
     datasets: [
       {
