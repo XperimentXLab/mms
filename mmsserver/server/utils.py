@@ -507,6 +507,85 @@ def revoke_profit_distribution(target_date=None):
         "metrics": metrics,
     }
 
+
+def remove_welcome_bonus_100():
+    """
+    Remove welcome_bonus 100 from profit_point_balance and asset for users who:
+    - have a free-campro asset
+    - never made an asset placement (no deposit at all)
+    - received the welcome bonus 1+ year ago
+    Neutralizes the associated free-campro DepositLock (kept, not deleted, for
+    withdrawal-verification / audit trail integrity).
+    This is a one-time operation for a specific business case.
+    """
+    one_year_ago = timezone.now() - timedelta(days=365)
+
+    welcome_bonus_users_1y_old = Transaction.objects.filter( # Transaction record who received welcome bonus 1 year ago
+        transaction_type='WELCOME_BONUS',
+        created_at__lte=one_year_ago,
+    ).values_list('user_id', flat=True)
+
+    expired_100_users = Asset.objects.filter( # Users who have free-campro asset and received welcome bonus 1 year ago but never made an asset placement
+        is_free_campro=True,
+        user_id__in=welcome_bonus_users_1y_old
+    ).exclude(
+        user_id__in=Transaction.objects.filter(
+            transaction_type='ASSET_PLACEMENT', point_type='MASTER'
+        ).values_list('user_id', flat=True)
+    ).values_list('user_id', flat=True).distinct()
+
+    deposit_locks = DepositLock.objects.filter( # DepositLock records for those users, to neutralize the free-campro lock
+        is_free_campro=True,
+        deposit_id__in=Transaction.objects.filter(
+            transaction_type='WELCOME_BONUS', user_id__in=expired_100_users
+        ).values_list('id', flat=True)
+    )
+
+    with db_transaction.atomic():
+        assets = Asset.objects.filter(user_id__in=expired_100_users, is_free_campro=True)
+        wallets = Wallet.objects.filter(user_id__in=expired_100_users)
+
+        if not assets.exists() and not deposit_locks.exists():
+            return {"message": "No eligible users found for WELCOME BONUS 100 removal."}
+
+        for wallet in wallets:
+            before_balance = wallet.profit_point_balance
+            if before_balance > Decimal('0.00'):
+                wallet.profit_point_balance = Decimal('0.00')
+                #wallet.save()
+
+                #Transaction.objects.create(
+                #    user=wallet.user,
+                #    wallet=wallet,
+                #    transaction_type='EXPIRATION',
+                #    point_type='PROFIT',
+                #    amount=-before_balance,
+                #    description="Expiration: WELCOME BONUS 100 USDT profit removed",
+                #    reference=f"EXPIRATION_WELCOME_BONUS_{wallet.user_id}_{timezone.now().strftime('%Y%m%d%H%M%S')}"
+                #)
+
+        for deposit_lock in deposit_locks:
+            deposit_lock.amount_1y_locked = Decimal('0.00')
+            #deposit_lock.save()
+
+        for asset in assets:
+            if asset.amount >= Decimal('100.00'):
+                asset.amount -= Decimal('100.00')
+                #asset.save()
+
+                #Transaction.objects.create(
+                #    user=asset.user,
+                #    asset=asset,
+                #    transaction_type='EXPIRATION',
+                #    point_type='ASSET',
+                #    amount=-Decimal('100.00'),
+                #    description="Expiration: WELCOME BONUS 100 USDT #removed",
+                #    reference=f"EXPIRATION_WELCOME_BONUS_{asset.#user_id}_{timezone.now().strftime('%Y%m%d%H%M%S')}#"
+                #)
+
+    return {"message": f"THIS IS A TEST -- Expired WELCOME BONUS 100 USDT removed from eligible users. {assets.count()} ASSETS updated, {wallets.count()} WALLETS updated, {deposit_locks.count()} DEPOSIT LOCKS neutralized."}
+
+
 # ----------------------------------------------------------------------------------------
 
 class UserService:

@@ -77,6 +77,7 @@ urlpatterns = [
   path('update_user_info/', update_user_info, name='update_user_info'),
   path('ops_profit_calender/', get_ops_profit_calender, name='get_ops_profit_calender'),
   path('get_withdrawal_window/', withdrawal_window, name='get_withdrawal_window'), 
+  path('get_remove_welcome_bonus/', remove_welcome_bonus, name='get_remove_welcome_bonus'),
 
 
   #admin - functionalities
@@ -92,5 +93,6 @@ urlpatterns = [
   path('manage_performance/', manage_performance, name='manage_performance'),
   path('toggle_withdrawal_window/', withdrawal_window, name='toggle_withdrawal_window'), 
   path('revoke_profit_distribution/', revoke_profit_distribution_view, name='revoke_profit_distribution'),
+  path('remove_welcome_bonus/', remove_welcome_bonus, name='remove_welcome_bonus'),
 
 ]

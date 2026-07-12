@@ -514,7 +514,15 @@ export const revokeProfitDistribution = async () => {
   return response.data
 }
 
+export const removeWelcomeBonus = async () => {
+  const response = await api.post('/remove_welcome_bonus/')
+  return response.data
+}
 
+export const getRemoveWelcomeBonusCount = async () => {
+  const response = await api.get('/get_remove_welcome_bonus/')
+  return response.data
+}
 
 import FileSaver from 'file-saver';
 

@@ -583,7 +583,7 @@ def update_profit_sharing(request):
   try:
     if user.is_staff:
       userSuper = User.objects.get(is_superuser=True)
-      wallet, created = Wallet.objects.get_or_create(user=userSuper)
+      wallet, _ = Wallet.objects.get_or_create(user=userSuper)
       wallet.profit_point_balance += Decimal(amount)
       wallet.save()
       Transaction.objects.create(
@@ -659,6 +659,48 @@ def grant_welcome_bonus(request):
     return Response({'error': list(e.messages)}, status=400)
   except Exception as e:
     logger.error(f"Error granting welcome bonus: {str(e)}")
+    return Response({'error': str(e)}, status=500)
+  
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def remove_welcome_bonus(request):
+  user = request.user
+
+  try:
+    if user.is_staff:
+
+      if request.method == 'GET':
+        one_year_ago = timezone.now() - timedelta(days=365)
+        welcome_bonus_users_1y_old = Transaction.objects.filter( # Transaction record who received welcome bonus 1 year ago
+            transaction_type='WELCOME_BONUS',
+            created_at__lte=one_year_ago,
+        ).values_list('user_id', flat=True)
+        expired_100_users = Asset.objects.filter( # Users who have free-campro asset and received welcome bonus 1 year ago but never made an asset placement
+          is_free_campro=True,
+          user_id__in=welcome_bonus_users_1y_old
+        ).exclude(
+          user_id__in=Transaction.objects.filter(
+            transaction_type='ASSET_PLACEMENT', point_type='MASTER'
+          ).values_list('user_id', flat=True)
+        ).values_list('user_id', flat=True).distinct()
+
+        return Response({'message': len(expired_100_users)}, status=200)
+        
+      elif request.method == 'POST':
+        result = remove_welcome_bonus_100()
+        return Response(result, status=200)
+      else:
+        return Response({'error': 'Method not allowed'}, status=405)
+      
+    else:
+      return Response({'error': 'Permission denied'}, status=403)
+  
+  except ValidationError as e:
+    logger.error(f"Validation error removing welcome bonus: {str(e)}")
+    return Response({'error': list(e.messages)}, status=400)
+  except Exception as e:
+    logger.error(f"Error removing welcome bonus: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
 

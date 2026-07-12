@@ -316,6 +316,7 @@ class Transaction(models.Model):
     ('WELCOME_BONUS', 'Welcome Bonus'), # Admin > Asset
     ('SHARING_PROFIT', 'Sharing Profit'), # > Profit Point
     ('WITHDRAWAL_FEE', 'Withdrawal Fee'), # > Profit Point
+    ('EXPIRATION', 'Expiration'), # - Profit Point
     ('MIGRATION', 'Migration')
   )
     
