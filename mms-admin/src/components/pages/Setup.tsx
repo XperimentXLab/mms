@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Inputss } from "../props/Formss"
 import Loading from "../props/Loading"
 import Buttons from "../props/Buttons"
-import { getUserInfo, getWithdrawalWindow, putPerformance, setupUser, updateUserInfo, updateWithdrawalWindow } from "../auth/endpoints"
+import { getRemoveWelcomeBonusCount, getUserInfo, getWithdrawalWindow, putPerformance, removeWelcomeBonus, setupUser, updateUserInfo, updateWithdrawalWindow } from "../auth/endpoints"
 import dayjs from "dayjs";
 import utc from "dayjs";
 import timezone from "dayjs/plugin/timezone";
@@ -229,12 +229,15 @@ const Setup = () => {
     }
   }
 
+  const [expiredWelcomeBonusCount, setExpiredWelcomeBonusCount] = useState<number>(0)
   const [getWdWin, setGetWdWin] = useState<{is_active: boolean, date: string}>({is_active: false, date: ''})
   const on = getWdWin.is_active === true
   const withdrawalDate = getWdWin.date
   const fetchWindow = async ()=>{
     const resStatus = await getWithdrawalWindow()
     setGetWdWin(resStatus)
+    const expiredWelcomeBonus = await getRemoveWelcomeBonusCount()
+    setExpiredWelcomeBonusCount(expiredWelcomeBonus.message || 0)
   }
   useEffect(()=>{
     fetchWindow()
@@ -250,6 +253,26 @@ const Setup = () => {
     } finally {
       setLoading(false)
       fetchWindow()
+    }
+  }
+
+  const handleRemoveWelcomBonus = async () => {
+    try {
+      setLoading(true)
+      const response = await removeWelcomeBonus()
+      NotiSuccessAlert(response.message)
+    } catch (error: any) {
+      if (error.response && error.response.status === 400 ) {
+        if (error.response.data.message) {
+          NotiErrorAlert(error.response.data.message)
+        } else {
+          NotiErrorAlert(error.response.data.error)
+        }
+      } else {
+        NotiErrorAlert('Failed to remove welcome bonus.')
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -411,6 +434,13 @@ const Setup = () => {
           />
           <Buttons type="button" onClick={()=>toggleUpdateUserIC()}>Save</Buttons>
         </div>
+      </div>
+
+      <div className="flex flex-row justify-between gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
+        <FixedText label="Users with Expired Welcome Bonus" text={String(expiredWelcomeBonusCount)}/>
+        <Buttons type="button" onClick={handleRemoveWelcomBonus}>
+          Remove Welcome Bonus
+        </Buttons>
       </div>
 
       {/*

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import Buttons from "../props/Buttons"
 import { Inputss, InputwithVal } from "../props/Formss"
 import { SelectDay, SelectMonth, SelectYear } from "../props/DropDown"
-import { distribute_profit, get_profit, getRemoveWelcomeBonusCount, removeWelcomeBonus, revokeProfitDistribution, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
+import { distribute_profit, get_profit, revokeProfitDistribution, update_monthly_finalized_profit, update_profit } from "../auth/endpoints"
 import Loading from "../props/Loading"
 import { FixedText } from "../props/Textt"
 import dayjs from "dayjs"
@@ -38,7 +38,6 @@ const Operation = () => {
   const todayD: number = date.getDate()
   const todayM: number = date.getMonth()+1
   const todayY: number = date.getFullYear()
-  const [expiredWelcomeBonusCount, setExpiredWelcomeBonusCount] = useState<number>(0)
   const dataRes = async ()=>{
     const res = await get_profit({
       activeDayProfit: todayD,
@@ -46,8 +45,6 @@ const Operation = () => {
       activeYearProfit: todayY,
     })
     setTodayProfitRate(res.daily_profit_rate || 0)
-    const expiredWelcomeBonus = await getRemoveWelcomeBonusCount()
-    setExpiredWelcomeBonusCount(expiredWelcomeBonus.message || 0)
   }
   useEffect (()=>{
     dataRes()
@@ -241,27 +238,6 @@ const Operation = () => {
     }
   }
 
-  const handleRemoveWelcomBonus = async () => {
-    try {
-      setLoading(true)
-      const response = await removeWelcomeBonus()
-      NotiSuccessAlert(response.message)
-    } catch (error: any) {
-      if (error.response && error.response.status === 400 ) {
-        if (error.response.data.message) {
-          NotiErrorAlert(error.response.data.message)
-        } else {
-          NotiErrorAlert(error.response.data.error)
-        }
-      } else {
-        NotiErrorAlert('Failed to remove welcome bonus.')
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-
 
   /*
   const [amountShare, setAmountShare] = useState<number>(0)
@@ -373,13 +349,6 @@ const Operation = () => {
           <span className="font-semibold">Revoke Profit Distribution for {todayY}-{todayM}-{todayD}</span>
           <Buttons type="button" onClick={toggleRevokeDistribution}>Revoke</Buttons>
         </div>}
-
-        <div className="flex flex-row justify-between gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
-          <FixedText label="Users with Expired Welcome Bonus" text={String(expiredWelcomeBonusCount)}/>
-          <Buttons type="button" onClick={handleRemoveWelcomBonus}>
-            Remove Welcome Bonus
-          </Buttons>
-        </div>
 
         {/*
         <form onSubmit={toggleUpdateSharing} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
