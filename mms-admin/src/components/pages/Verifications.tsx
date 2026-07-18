@@ -117,10 +117,14 @@ const Verifications = () => {
       accessorKey: 'id',
       cell: info => {
         const row = info.row.original
-        if (!row) return null;
+        if (!row) return null
 
         if (row.verification_status === 'REQUIRES_ACTION') {
-          return 'User needs to upload document first.';
+          return 'User needs to upload document first.'
+        }
+
+        if (row.verification_status === 'APPROVED') {
+          return <span className="text-gray-500">No action needed</span>
         }
 
         return (

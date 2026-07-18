@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { TxTable } from "../props/Tables"
 import dayjs from "dayjs";
 import utc from "dayjs";
@@ -76,35 +76,47 @@ const Transactionss = () => {
   
   const AllTx = () => {
     const [search, setSearch] = useState<string>("")
+    const [appliedSearch, setAppliedSearch] = useState<string>("")
     const [status, setStatus] = useState<string>("")
+    const [appliedStatus, setAppliedStatus] = useState<string>("")
     const [transactionType, setTransactionType] = useState<string>("")
+    const [appliedTransactionType, setAppliedTransactionType] = useState<string>("")
     const [pointType, setPointType] = useState<string>("")
+    const [appliedPointType, setAppliedPointType] = useState<string>("")
     const [startDate, setStartDate] = useState<string>("")
+    const [appliedStartDate, setAppliedStartDate] = useState<string>("")
     const [endDate, setEndDate] = useState<string>("")
+    const [appliedEndDate, setAppliedEndDate] = useState<string>("")
     const [selectedMonthYear, setSelectedMonthYear] = useState<Date | undefined>()
     const [selectedMonth, setSelectedMonth] = useState<number>(0)
     const [selectedYear, setSelectedYear] = useState<number>(0)
 
-    // Debounced search to avoid excessive API calls
-    const [debouncedSearch, setDebouncedSearch] = useState(search)
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        setDebouncedSearch(search)
-      }, 300)
-      return () => clearTimeout(timer)
-    }, [search])
     const handleClearFilters = () => {
       setSearch("")
+      setAppliedSearch("")
       setStatus("")
+      setAppliedStatus("")
       setTransactionType("")
+      setAppliedTransactionType("")
       setStartDate("")
+      setAppliedStartDate("")
       setEndDate("")
+      setAppliedEndDate("")
       setPointType("")
+      setAppliedPointType("")
       setSelectedMonthYear(undefined)
       setSelectedMonth(0)
       setSelectedYear(0)
     }
 
+    const handleSearch = () => {
+      setAppliedSearch(search.trim())
+      setAppliedStatus(status)
+      setAppliedTransactionType(transactionType)
+      setAppliedPointType(pointType)
+      setAppliedStartDate(startDate)
+      setAppliedEndDate(endDate)
+    }
     const hasActiveFilters = search || status || transactionType || startDate || endDate || pointType || selectedMonthYear
 
     return (
@@ -119,6 +131,17 @@ const Transactionss = () => {
               onChange={e => setSearch(e.target.value)}
               placeholder="Search user id or username"
             />
+              <Buttons type="button" onClick={handleSearch}>
+                Search
+              </Buttons>
+              {hasActiveFilters && (
+                <button
+                  onClick={handleClearFilters}
+                  className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer text-nowrap"
+                >
+                  Clear Filters
+                </button>
+              )}
             <Buttons type="button" onClick={()=>downloadExcelTx({status, search, transactionType, pointType, startDate, endDate})}>Export</Buttons>
           </div>
 
@@ -217,25 +240,16 @@ const Transactionss = () => {
             />
 
           </div>
-        
-        {hasActiveFilters && (
-          <button
-            onClick={handleClearFilters}
-            className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer w-full"
-          >
-            Clear Filters
-          </button>
-        )}
         </div>
 
         <TxTable
           columns={columns}
-          search={debouncedSearch}
-          status={status}
-          transactionType={transactionType}
-          pointType={pointType}
-          startDate={startDate}
-          endDate={endDate}
+          search={appliedSearch}
+          status={appliedStatus}
+          transactionType={appliedTransactionType}
+          pointType={appliedPointType}
+          startDate={appliedStartDate}
+          endDate={appliedEndDate}
           month={selectedMonth}
           year={selectedYear}
         />

@@ -65,6 +65,7 @@ export const Tables = ({
   return (
     <div className="w-full overflow-x-auto flex flex-col gap-2 p-2 bg-white rounded-xl shadow-md shadow-blue-800">
 
+      <div className="w-full max-h-[70vh] overflow-auto">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -104,8 +105,8 @@ export const Tables = ({
             </tr>
           )}
         </tbody>
-
       </table>
+      </div>
 
     </div>
   );
@@ -266,6 +267,8 @@ export const CommissionTxTable = ({
   return (
     <div className="w-full overflow-x-auto flex flex-col gap-2 p-3 bg-white rounded-xl">
       {loading && <Loading />}
+
+      <div className="w-full max-h-[70vh] overflow-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map(headerGroup => (
@@ -306,6 +309,7 @@ export const CommissionTxTable = ({
             )))}
           </tbody>
         </table>
+        </div>
 
       {/* Pagination */}
       <div className="flex justify-end mt-4 space-x-2">
@@ -527,7 +531,6 @@ export const NewTable = ({
         </div>
       )}
 
-
       {hasActiveFilters && (
         <button
           onClick={handleClearFilters}
@@ -537,6 +540,7 @@ export const NewTable = ({
         </button>
       )}
 
+      <div className="w-full max-h-[70vh] overflow-auto">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           {table.getHeaderGroups().map(headerGroup => (
@@ -577,6 +581,7 @@ export const NewTable = ({
           )))}
         </tbody>
       </table>
+      </div>
 
     {/* Pagination */}
     <div className="flex justify-end mt-4 space-x-2">

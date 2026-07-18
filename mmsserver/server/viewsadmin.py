@@ -381,19 +381,17 @@ def get_all_transaction(request):
       if point_type_filter:
         query &= Q(point_type__icontains=point_type_filter)
 
-      if month and year:
+      if start_date and end_date:
+        # Apply date filter
+        query &= date_filter_q('created_at', start_date, end_date)
+      elif month and year:
         start_date = make_aware(datetime(int(year), int(month), 1))
         last_day = calendar.monthrange(int(year), int(month))[1]
         end_date = make_aware(datetime(int(year), int(month), last_day, 23, 59, 59))
-
       # ✅ Fallback: last 30 days if no valid range_type
       else:
         end_date = timezone.now()
         start_date = end_date - timedelta(days=30)
-
-      # Apply date filter
-      query &= date_filter_q('created_at', start_date, end_date)
-
 
       transactions = Transaction.objects.filter(query).order_by('-created_at')
 
@@ -684,6 +682,7 @@ def remove_welcome_bonus(request):
             transaction_type='ASSET_PLACEMENT', point_type='MASTER'
           ).values_list('user_id', flat=True)
         ).values_list('user_id', flat=True).distinct()
+        print(f"Users eligible for welcome bonus removal: {list(expired_100_users)}")
 
         return Response({'message': len(expired_100_users)}, status=200)
         

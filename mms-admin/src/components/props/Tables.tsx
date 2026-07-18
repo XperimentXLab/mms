@@ -96,7 +96,7 @@ export const Tables = ({
   });
 
   return (
-    <div className="w-full overflow-x-auto flex flex-col gap-2 p-3 bg-white rounded-xl">
+    <div className="w-full overflow-auto max-h-[70vh] flex flex-col gap-2 p-3 bg-white rounded-xl">
 
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
@@ -288,7 +288,7 @@ export const TxTable = ({
     getFilteredRowModel: getFilteredRowModel(),
     state: { 
       sorting, 
-      globalFilter: globalFilter || search 
+      globalFilter
     },
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
@@ -301,6 +301,7 @@ export const TxTable = ({
     <div className="w-full overflow-x-auto flex flex-col gap-2 p-3 bg-white rounded-xl">
       {loading && <Loading />}
       
+        <div className="w-full max-h-[70vh] overflow-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map(headerGroup => (
@@ -341,6 +342,7 @@ export const TxTable = ({
             )))}
           </tbody>
         </table>
+        </div>
 
       {/* Pagination */}
       <div className="flex justify-end mt-4 space-x-2">
@@ -486,17 +488,30 @@ export const NewTable = ({
     }
   }, [search, status, startDate, endDate, page, pageSize, month, year, isCampro, sortBy, order])
 
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setPage(1)
-  }, [fetchData, search, status, startDate, endDate, month, year, isCampro, sortBy, order])
+  const [tableRefreshTrigger, setTableRefreshTrigger] = useState(0)
 
   // Fetch data when dependencies change
   useEffect(() => {
     loadData()
-    console.log(order, sortBy)
     setErrorMessage("")
-  }, [fetchData, search, status, startDate, endDate, page, pageSize, month, year, isCampro, sortBy, order])
+  }, [fetchData, tableRefreshTrigger, page, pageSize, month, year, sortBy, order])
+
+  const handleSearch = () => {
+    setPage(1)
+    loadData()
+    setErrorMessage("")
+  }
+
+  const handleClearFilters = () => {
+    setSearch("")
+    setStatus("")
+    setStartDate("")
+    setEndDate("")
+    setIsCampro("")
+    setTableRefreshTrigger(prev => prev + 1)
+  }
+
+  const hasActiveFilters = search || status || startDate || endDate || isCampro
 
   const table = useReactTable({
     data,
@@ -504,7 +519,7 @@ export const NewTable = ({
     getFilteredRowModel: getFilteredRowModel(),
     state: { 
       sorting, 
-      globalFilter: globalFilter || search 
+      globalFilter
     },
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: (updaterOrValue) => {
@@ -531,16 +546,6 @@ export const NewTable = ({
     manualPagination: true,
   })
 
-    const handleClearFilters = () => {
-      setSearch("")
-      setStatus("")
-      setStartDate("")
-      setEndDate("")
-      setIsCampro("")
-      }
-
-    const hasActiveFilters = search || status || startDate || endDate || isCampro
-
   return (
     <div className="w-full overflow-x-auto flex flex-col gap-2 p-3 bg-white rounded-xl">
       {loading && <Loading />}
@@ -553,6 +558,17 @@ export const NewTable = ({
           onChange={e => setSearch(e.target.value)}
           placeholder="Search user id or username"
         />}
+        <Buttons type="button" onClick={handleSearch}>
+          Search
+        </Buttons>
+        {hasActiveFilters && (
+          <button
+            onClick={handleClearFilters}
+            className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer text-nowrap"
+          >
+            Clear Filters
+          </button>
+        )}
         {enableExport && <Buttons type="button" onClick={downloadExcel}>Export</Buttons>}
       </div>
 
@@ -608,16 +624,7 @@ export const NewTable = ({
         </select>
       </div>}
 
-
-      {hasActiveFilters && (
-        <button
-          onClick={handleClearFilters}
-          className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer w-full"
-        >
-          Clear Filters
-        </button>
-      )}
-
+      <div className="w-full max-h-[70vh] overflow-auto">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           {table.getHeaderGroups().map(headerGroup => (
@@ -658,6 +665,7 @@ export const NewTable = ({
           )))}
         </tbody>
       </table>
+      </div>
 
     {/* Pagination */}
     <div className="flex justify-end mt-4 space-x-2">

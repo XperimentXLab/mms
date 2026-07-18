@@ -282,7 +282,7 @@ const Operation = () => {
           <InputwithVal 
             label="Today Profit"
             type="number"
-            placeholder="Please fill in today profit manually"
+            placeholder="Fill in today profit manually"
             currentValue={dailyProfitRate}
             onChange={(e) => setTodayProfit(e.target.value)}
             value={todayProfit}
@@ -291,7 +291,7 @@ const Operation = () => {
           <InputwithVal
             label="Weekly Profit"
             type="number"
-            placeholder="Please fill in weekly profit manually"
+            placeholder="Fill in weekly profit manually"
             currentValue={weeklyProfitRate}
             onChange={(e) => setWeeklyProfit(e.target.value)}
             value={weeklyProfit}
@@ -300,7 +300,7 @@ const Operation = () => {
           <InputwithVal
             label="Monthly Profit"
             type="number"
-            placeholder="Please set monthly profit manually"
+            placeholder="Set monthly profit manually"
             currentValue={currentMonthProfit}
             onChange={(e) => setMonthlyProfit(e.target.value)}
             value={monthlyProfit}
@@ -337,7 +337,7 @@ const Operation = () => {
 
         <form onSubmit={toggleDistributeProfit} className="grid grid-cols-1 gap-3 items-center w-full p-4 border rounded-xl shadow-md bg-white shadow-red-800">
           <span className="font-semibold">Profit Distribution </span>
-          <FixedText label="Today Profit" text={String(todayProfitRate)}/>
+          <FixedText label="Today Profit" text={String(todayProfitRate) || '0'}/>
           <Buttons type="submit">Distribute</Buttons>
         </form>
 
