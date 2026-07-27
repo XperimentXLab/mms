@@ -525,9 +525,10 @@ def remove_welcome_bonus_100():
         created_at__lte=one_year_ago,
     ).values_list('user_id', flat=True)
 
-    expired_100_users = Asset.objects.filter( # Users who have free-campro asset and received welcome bonus 1 year ago but never made an asset placement
+    expired_100_users = Asset.objects.filter( # Users who have free-campro asset, received welcome bonus 1 year ago but never made an asset placement and have less than or equal to 100 USDT in asset
         is_free_campro=True,
-        user_id__in=welcome_bonus_users_1y_old
+        user_id__in=welcome_bonus_users_1y_old,
+        amount__lte=Decimal('100.00')
     ).exclude(
         user_id__in=Transaction.objects.filter(
             transaction_type='ASSET_PLACEMENT', point_type='MASTER'
@@ -542,7 +543,7 @@ def remove_welcome_bonus_100():
     )
 
     with db_transaction.atomic():
-        assets = Asset.objects.filter(user_id__in=expired_100_users, is_free_campro=True)
+        assets = Asset.objects.filter(user_id__in=expired_100_users, is_free_campro=True, amount__lte=Decimal('100.00'))
         wallets = Wallet.objects.filter(user_id__in=expired_100_users)
 
         if not assets.exists() and not deposit_locks.exists():
@@ -552,38 +553,38 @@ def remove_welcome_bonus_100():
             before_balance = wallet.profit_point_balance
             if before_balance > Decimal('0.00'):
                 wallet.profit_point_balance = Decimal('0.00')
-                #wallet.save()
+                wallet.save()
 
-                #Transaction.objects.create(
-                #    user=wallet.user,
-                #    wallet=wallet,
-                #    transaction_type='EXPIRATION',
-                #    point_type='PROFIT',
-                #    amount=-before_balance,
-                #    description="Expiration: WELCOME BONUS 100 USDT profit removed",
-                #    reference=f"EXPIRATION_WELCOME_BONUS_{wallet.user_id}_{timezone.now().strftime('%Y%m%d%H%M%S')}"
-                #)
+                Transaction.objects.create(
+                    user=wallet.user,
+                    wallet=wallet,
+                    transaction_type='EXPIRATION',
+                    point_type='PROFIT',
+                    amount=-before_balance,
+                    description="Expiration: WELCOME BONUS 100 USDT profit removed",
+                    reference=f"EXPIRATION_WELCOME_BONUS_{wallet.user_id}_{timezone.now().strftime('%Y%m%d%H%M%S')}"
+                )
 
         for deposit_lock in deposit_locks:
             deposit_lock.amount_1y_locked = Decimal('0.00')
-            #deposit_lock.save()
+            deposit_lock.save()
 
         for asset in assets:
             if asset.amount >= Decimal('100.00'):
                 asset.amount -= Decimal('100.00')
-                #asset.save()
+                asset.save()
 
-                #Transaction.objects.create(
-                #    user=asset.user,
-                #    asset=asset,
-                #    transaction_type='EXPIRATION',
-                #    point_type='ASSET',
-                #    amount=-Decimal('100.00'),
-                #    description="Expiration: WELCOME BONUS 100 USDT #removed",
-                #    reference=f"EXPIRATION_WELCOME_BONUS_{asset.#user_id}_{timezone.now().strftime('%Y%m%d%H%M%S')}#"
-                #)
+                Transaction.objects.create(
+                    user=asset.user,
+                    asset=asset,
+                    transaction_type='EXPIRATION',
+                    point_type='ASSET',
+                    amount=-Decimal('100.00'),
+                    description="Expiration: WELCOME BONUS 100 USDT",
+                    reference=f"EXPIRATION_WELCOME_BONUS_{asset.user_id}_{timezone.now().strftime('%Y%m%d%H%M%S')}"
+                )
 
-    return {"message": f"THIS IS A TEST -- Expired WELCOME BONUS 100 USDT removed from eligible users. {assets.count()} ASSETS updated, {wallets.count()} WALLETS updated, {deposit_locks.count()} DEPOSIT LOCKS neutralized."}
+    return {"message": f"Expired WELCOME BONUS 100 USDT removed from eligible users. {assets.count()} ASSETS updated, {wallets.count()} WALLETS updated, {deposit_locks.count()} DEPOSIT LOCKS neutralized."}
 
 
 # ----------------------------------------------------------------------------------------
