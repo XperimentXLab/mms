@@ -332,11 +332,11 @@ class Transaction(models.Model):
   asset = models.ForeignKey(Asset, on_delete=models.CASCADE, related_name='transactions', null=True)
   transaction_type = models.CharField(max_length=40, choices=TRANSACTION_TYPES, db_index=True)
   point_type = models.CharField(max_length=40, choices=POINT_TYPES, db_index=True)
-  request_status = models.CharField(max_length=40, choices=RequestStatus.choices, verbose_name="Request Status", null=True)
+  request_status = models.CharField(max_length=40, choices=RequestStatus.choices, verbose_name="Request Status", null=True, db_index=True)
   amount = models.DecimalField(max_digits=15, decimal_places=2, default=Decimal('0.00'))
   description = models.TextField(blank=True)
   reference = models.CharField(max_length=100, blank=True)
-  created_at = models.DateTimeField(auto_now_add=True)
+  created_at = models.DateTimeField(auto_now_add=True, db_index=True)
   
   # For Transfers
   target_point_type = models.CharField(max_length=40, choices=POINT_TYPES, blank=True, null=True)

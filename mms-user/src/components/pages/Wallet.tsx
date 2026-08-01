@@ -254,7 +254,7 @@ const Wallet = () => {
               required={false}
               type="text"
             />
-            <Buttons type="submit">Transfer</Buttons>
+            <Buttons type="submit" disabled={true}>Transfer</Buttons>
           </form>
 
           {/*<form className="flex flex-row gap-1.5" onSubmit={handleDeposit}>
@@ -294,7 +294,7 @@ const Wallet = () => {
               value={String(convertProfit)}
               required={true}
             />
-            <Buttons type="submit">Covert To RP</Buttons>
+            <Buttons type="submit" disabled={true}>Covert To RP</Buttons>
           </form>
         </div>
 
@@ -324,7 +324,7 @@ const Wallet = () => {
               value={String(convertCommision)}
               required={true}
             />
-            <Buttons type="submit">Covert To RP</Buttons>
+            <Buttons type="submit"  disabled={true}>Covert To RP</Buttons>
           </form>
 
           {bonusUpDown && 

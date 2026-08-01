@@ -676,7 +676,9 @@ def remove_welcome_bonus(request):
         ).values_list('user_id', flat=True)
         expired_100_users = Asset.objects.filter( # Users who have free-campro asset and received welcome bonus 1 year ago but never made an asset placement
           is_free_campro=True,
-          user_id__in=welcome_bonus_users_1y_old
+          user_id__in=welcome_bonus_users_1y_old,
+          amount__gt=0,
+          amount__lte=100,
         ).exclude(
           user_id__in=Transaction.objects.filter(
             transaction_type='ASSET_PLACEMENT', point_type='MASTER'

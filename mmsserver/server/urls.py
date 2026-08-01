@@ -40,6 +40,8 @@ urlpatterns = [
   path('user_deposit_lock/', get_deposit_lock, name='user_deposit_lock'),
   path('user_daily_total_profit/', get_daily_total_profit, name="user_daily_total_profit"),
   path('withdrawal_window_status/', withdrawal_window_status, name="withdrawal_window_status"),
+  path('user_withdrawal_total/', get_profit_commission_wd_total, name="get_profit_commission_wd_total"),
+  path('user_asset_available_balance/', get_asset_available_balance, name="get_asset_available_balance"),
 
   #updating
   path('update_password/', update_password, name='update_password'),

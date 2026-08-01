@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CommissionTxTable, NewTable, Tables } from "../props/Tables";
 import Spannn from "../props/Textt"
-import { getWallet, getCommissionDailyTx, getProfitTx, getTransferTx, getConvertTx, getProfitCommissionWDTx } from "../auth/endpoints";
+import { getWallet, getCommissionDailyTx, getProfitTx, getTransferTx, getConvertTx, getProfitCommissionWDTx, getWDTotal } from "../auth/endpoints";
 import Loading from "../props/Loading";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -64,9 +64,9 @@ export const ProfitStatement = () => {
   return (
     <div className="flex flex-col gap-2">
       {loading && <Loading />}
-      <div className="flex flex-row justify-between gap-2 bg-white p-2 rounded-lg">
-        <span className="font-semibold ">Profit Statement </span>
-        <Spannn label="Profit Balance">{profitBal}</Spannn>
+      <div className="flex flex-row justify-between gap-2 font-semibold bg-white p-2 rounded-lg">
+        <span> Profit Statement </span>
+        <span className="bg-slate-200 px-1.5 py-0.5 rounded-lg"> Profit Balance: <b>{profitBal}</b> </span>
       </div>
 
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
@@ -196,7 +196,7 @@ export const CommissionStatement = () => {
       <Tables columns={columnComTx} data={data} />
 
       {selectedDay !== null &&
-        <div className="flex flex-col gap-2 p-3 translate-y-10 absolute border rounded-lg backdrop-blur-sm bg-white/30 max-w-full">
+        <div className="flex flex-col gap-2 p-3 translate-y-10 absolute border rounded-lg backdrop-blur-sm bg-white/30 min-w-full max-h-[70vh] max-w-full overflow-auto">
           <Buttons
             type="button"
             onClick={() => setSelectedDay(null)}
@@ -247,6 +247,27 @@ export const ConvertStatement = () => {
 
 export const WithdrawalWalletStatement = () => {
 
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [withdrawalBal, setWithdrawalBal] = useState<number>(0)
+
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const resWDTotal = await getWDTotal()
+        setWithdrawalBal( resWDTotal.total_amount || 0)
+      } catch (error: any) {
+        if (error.response && error.response.status === 400) {
+          setErrorMessage(error.response.data.error)
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
   const columnsTableWD: ColumnDef<any, any>[] = [
     { header: "Date", 
       accessorKey: "created_datetime",
@@ -269,10 +290,14 @@ export const WithdrawalWalletStatement = () => {
   return (
     <div className="flex flex-col gap-2">
 
-      <span className="font-semibold bg-white p-2 rounded-lg">
-        Withdrawal Statement
-      </span>
+      {loading && <Loading />}
 
+      <aside className="font-semibold bg-white p-2 rounded-lg justify-between flex flex-row">
+        <span> Withdrawal Statement</span>
+        <span className="bg-slate-200 px-1.5 py-0.5 rounded-lg"> Total Withdrawal: <b>{withdrawalBal.toFixed(2)}</b> </span>
+        {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
+      </aside>
+      
       <NewTable
         columns={columnsTableWD}
         fetchData={getProfitCommissionWDTx}

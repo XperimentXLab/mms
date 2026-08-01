@@ -12,6 +12,7 @@ const MainLayout = () => {
 
   const date = new Date().toLocaleDateString()
   const time = new Date().toLocaleTimeString()
+  const year = new Date().getFullYear()
 
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
@@ -151,7 +152,7 @@ const MainLayout = () => {
 
 
       <footer className="fixed flex bottom-0 p-1 bg-white">
-        <h1>&copy; 2025 MMS All rights reserved.</h1>
+        <h1>&copy; {year} MMS All rights reserved.</h1>
       </footer>
 
       {loading && <Loading />}

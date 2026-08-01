@@ -18,6 +18,7 @@ import Loading from "./Loading";
 import { Inputss } from "./Formss";
 import utc from 'dayjs/plugin/utc'
 import timezone from "dayjs/plugin/timezone";
+import { Search, FilterX } from "lucide-react";
 
 dayjs.extend(utc);
 dayjs.extend(timezone)
@@ -194,8 +195,8 @@ interface CommissionTxData {
 interface ApiResponse {
   results: CommissionTxData[]
   totalCount: number
-  hasNextPage: boolean
-  hasPreviousPage: boolean
+  next: string | null
+  previous: string | null
 }
 
 export const CommissionTxTable = ({
@@ -213,6 +214,7 @@ export const CommissionTxTable = ({
   const [pageSize, setPageSize] = useState(30)
   const [sorting, setSorting] = useState<SortingState>([])
 
+  const [nextPage, setNextPage] = useState<string | null>(null)
 
   const fetchData = useCallback( async () => {
     const formattedStartDate = startDate ? dayjs(startDate).format("YYYY-MM-DD") : ""
@@ -230,6 +232,7 @@ export const CommissionTxTable = ({
         year: year,
       })
 
+      setNextPage(res.next)
       const processedData = res.results.map(tx => ({
         ...tx,
         created_datetime: dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur").format("DD/MM/YYYY HH:mm:ss"),
@@ -316,19 +319,20 @@ export const CommissionTxTable = ({
         <button
           disabled={page === 1}
           onClick={() => setPage(p => Math.max(p - 1, 1))}
-          className="px-3 py-1 border rounded disabled:opacity-50 cursor-pointer"
+          className="px-3 py-1 border rounded disabled:opacity-50 hover:cursor-pointer focus:border-2"
         >
           Prev
         </button>
         <span className="px-3 py-1">Page {page}</span>
         <button
           onClick={() => setPage(p => p + 1)}
-          className="px-3 py-1 border rounded cursor-pointer"
+          className="px-3 py-1 border rounded disabled:opacity-50 hover:cursor-pointer focus:border-2"
+          disabled={nextPage === null}
         >
           Next
         </button>
         <select
-          className="border rounded px-2 py-1 text-xs cursor-pointer"
+          className="border rounded px-2 py-1 text-xs hover:cursor-pointer focus:border-2"
           value={pageSize}
           onChange={e => {
             const newSize = Number(e.target.value);
@@ -392,8 +396,8 @@ interface TableProps {
 interface ApiResponseTable {
   results: TableData[]
   totalCount: number
-  hasNextPage: boolean
-  hasPreviousPage: boolean
+  next: string | null
+  previous: string | null
 }
 
 export const NewTable = ({
@@ -405,11 +409,13 @@ export const NewTable = ({
   refreshCounter = 0
 }: TableProps) => {
 
+  const today = new Date().toLocaleDateString('en-CA') // Today's date
+
   const [data, setData] = useState<TableData[]>([])
   const [search, setSearch] = useState("")
   const [status] = useState("")
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
+  const [startDate, setStartDate] = useState("2025-07-01")
+  const [endDate, setEndDate] = useState(today)
   const [month] = useState<string>()
   const [year] = useState<string>()
   const [page, setPage] = useState(1)
@@ -418,7 +424,9 @@ export const NewTable = ({
   const [globalFilter, setGlobalFilter] = useState<string>("")
 
   const [loading, setLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("")
+
+  const [nextPage, setNextPage] = useState<string | null>(null)
 
   const loadData = useCallback( async () => {
     const formattedStartDate = startDate ? dayjs(startDate, "DD/MM/YYYY").format("YYYY-MM-DD") : ""
@@ -438,6 +446,7 @@ export const NewTable = ({
         year,
       })
 
+      setNextPage(res.next)
       const processedData = res.results.map(tx => ({
         ...tx,
         created_datetime: dayjs.utc(tx.created_at).tz("Asia/Kuala_Lumpur").format("DD/MM/YYYY HH:mm:ss"),
@@ -460,12 +469,17 @@ export const NewTable = ({
   // Reset to page 1 when filters change
   useEffect(() => {
     setPage(1)
-  }, [fetchData, search, status, startDate, endDate, month, year])
+  }, [fetchData, status, startDate, endDate, month, year])
 
   // Fetch data when dependencies change
   useEffect(() => {
     loadData()
-  }, [fetchData, search, status, startDate, endDate, page, pageSize, month, year, refreshCounter])
+  }, [fetchData, status, startDate, endDate, page, pageSize, month, year, refreshCounter])
+
+  const handleSearch = () => {
+    setPage(1)
+    loadData()
+  }
 
   const table = useReactTable({
     data,
@@ -473,7 +487,7 @@ export const NewTable = ({
     getFilteredRowModel: getFilteredRowModel(),
     state: { 
       sorting, 
-      globalFilter: globalFilter || search 
+      globalFilter: globalFilter 
     },
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
@@ -482,29 +496,49 @@ export const NewTable = ({
     manualPagination: true,
   })
 
-    const handleClearFilters = () => {
-      setSearch("")
-      //setStatus("")
-      setStartDate("")
-      setEndDate("")
-      }
+  const handleClearFilters = () => {
+    setSearch("")
+    //setStatus("")
+    }
 
-    const hasActiveFilters = search || status || startDate || endDate
+  const hasActiveFilters = search || status
 
   return (
     <div className="w-full overflow-x-auto flex flex-col gap-2 p-3 bg-white rounded-xl">
       {loading && <Loading />}
       {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
 
-      {enableFilters && <Inputss
-        type="text"
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        placeholder="Search user id or username"
-      />}
+      {enableFilters && (
+        <div className="flex flex-row gap-2 justify-center items-end min-w-full">
+          <Inputss
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search user id or username"
+            className="border py-1 px-2 rounded-md w-55"
+          />
+          <button
+            type="button"
+            onClick={handleSearch}
+            className="px-2 py-1 bg-black text-white rounded-md hover:bg-slate-900 hover:cursor-pointer"
+          >
+            <Search className="w-6 h-6"/>
+          </button>
+          {hasActiveFilters && (
+            <button
+              onClick={handleClearFilters}
+              className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer"
+            >
+              <FilterX className="w-4 h-4"/>
+            </button>
+          )}
+        </div>
+      )}
 
-      {enableDatePicker && (
-        <div className="flex flex-row gap-2 justify-center items-center">
+      
+        <div className="flex flex-row gap-2 justify-center items-center min-w-full">
+        {enableDatePicker && (
+          <div className="flex md:flex-row flex-col gap-2 items-center">
           <div className="flex flex-row items-center gap-2">
             <label className="text-sm font-medium text-gray-700 text-nowrap w-full">
               Start Date :
@@ -513,6 +547,7 @@ export const NewTable = ({
               type="date"
               value={startDate}
               onChange={e => setStartDate(e.target.value)}
+              disabled={true}
               className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -525,20 +560,16 @@ export const NewTable = ({
               type="date"
               value={endDate}
               onChange={e => setEndDate(e.target.value)}
+              disabled={true}
               className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-        </div>
-      )}
+          </div>
+          )}
 
-      {hasActiveFilters && (
-        <button
-          onClick={handleClearFilters}
-          className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer w-full"
-        >
-          Clear Filters
-        </button>
-      )}
+          
+        </div>
+      
 
       <div className="w-full max-h-[70vh] overflow-auto">
       <table className="min-w-full divide-y divide-gray-200">
@@ -588,14 +619,15 @@ export const NewTable = ({
       <button
         disabled={page === 1}
         onClick={() => setPage(p => Math.max(p - 1, 1))}
-        className="px-3 py-1 border rounded disabled:opacity-50"
+        className="px-3 py-1 border rounded focus:border-2 hover:cursor-pointer disabled:opacity-50"
       >
         Prev
       </button>
       <span className="px-3 py-1">Page {page}</span>
       <button
         onClick={() => setPage(p => p + 1)}
-        className="px-3 py-1 border rounded"
+        className="px-3 py-1 border rounded focus:border-2 hover:cursor-pointer disabled:opacity-50"
+        disabled={nextPage === null}
       >
         Next
       </button>

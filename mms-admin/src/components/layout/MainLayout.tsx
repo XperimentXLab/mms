@@ -14,6 +14,7 @@ const MainLayout = () => {
 
   const date = new Date().toLocaleDateString()
   const time = new Date().toLocaleTimeString()
+  const year = new Date().getFullYear()
 
   const navigate = useNavigate()
   const [loading, setLoading] = useState<boolean>(false)
@@ -81,7 +82,7 @@ const MainLayout = () => {
     return (
       <div className="inset-0 flex fixed justify-center items-baseline mt-50">
         <div className="flex">
-          <div className="flex flex-col gap-3 p-8 z-30 border rounded-lg backdrop-blur-sm bg-white/30">
+          <div className="flex flex-col gap-3 p-8 z-100 border rounded-lg backdrop-blur-sm bg-white/30">
             <h1 className="font-bold text-md">Are you sure to logout</h1>
             <button type="button" onClick={confirmLogout}
               className="cursor-pointer hover:bg-black hover:text-white active:bg-black active:text-white py-1 px-3 rounded-lg border"          
@@ -98,6 +99,7 @@ const MainLayout = () => {
 
   return (
     <div className="flex flex-col relative">
+      {loading && <Loading />}
 
       <div className="fixed top-0 left-0 right-0 z-20">
         <header className="flex justify-between items-center border border-black py-2 px-3 bg-linear-to-r from-blue-800 to-red-500 bg-linear">
@@ -152,10 +154,8 @@ const MainLayout = () => {
 
 
       <footer className="fixed flex bottom-0 p-1 bg-white">
-        <h1>&copy; 2025 MMS All rights reserved.</h1>
+        <h1>&copy; {year} MMS All rights reserved.</h1>
       </footer>
-
-      {loading && <Loading />}
 
     </div>
   )

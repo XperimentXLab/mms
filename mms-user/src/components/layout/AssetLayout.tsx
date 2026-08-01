@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom"
 import { NavLinkss } from "../props/theLinks"
 import Buttons from "../props/Buttons"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 
 const AssetLayout = () => {
@@ -10,6 +10,22 @@ const AssetLayout = () => {
   const toggleOpen = () => {
     setOpen(!open)
   }
+
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    const handleClickOutside = (event: Event) => {
+       if (menuRef.current && event.target && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [])
 
   return (
     <div className="flex flex-col items-center p-4 relative">
@@ -20,7 +36,8 @@ const AssetLayout = () => {
         >Statement</Buttons>
       </nav>
 
-      {open && <nav className="absolute mt-9 flex items-center justify-centerflex-wrap bg-gray-200 p-2 rounded-2xl gap-2 z-10">
+      {open && <nav ref={menuRef}
+      className="absolute mt-9 flex items-center justify-centerflex-wrap bg-gray-200 p-2 rounded-2xl gap-2 z-10">
         <NavLinkss to='statement'>Asset</NavLinkss>
         <NavLinkss to='statement/withdrawal'>Withdrawal</NavLinkss>
       </nav>}

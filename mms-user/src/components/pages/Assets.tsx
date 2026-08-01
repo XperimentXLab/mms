@@ -76,7 +76,7 @@ const Assets = () => {
             onChange={e => setPlaceAssetPoint(Number(e.target.value))}
             value={String(placeAssetPoint)}
           />
-          <Buttons type="submit" >Place Asset</Buttons>
+          <Buttons type="submit" disabled={true}>Place Asset</Buttons>
         </form>
         <InfoPlaceAsset />
       </div>

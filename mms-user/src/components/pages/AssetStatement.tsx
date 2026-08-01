@@ -1,11 +1,11 @@
 import { NewTable } from "../props/Tables"
-import {getAssetTx, getDepositLock, withdrawAsset } from "../auth/endpoints"
+import {getAssetAvailableBalance, getAssetTx, getDepositLock, withdrawAsset } from "../auth/endpoints"
 import Buttons from "../props/Buttons"
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import type { ColumnDef } from "@tanstack/react-table"
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NotiErrorAlert, NotiSuccessAlert } from "../props/Noti";
 import Loading from "../props/Loading";
 dayjs.extend(utc);
@@ -21,10 +21,10 @@ export const WithdrawalAssetStatement = () => {
   const today = dayjs().tz('Asia/Kuala_Lumpur').startOf('day');
   const daysSinceLead = today.diff(LEAD_DATE, 'day');
   const isWithdrawDay = daysSinceLead >= 0 && daysSinceLead % 14 === 0;
-  const cyclesPassed = Math.floor(daysSinceLead / 14);
-  const nextAllowedDate = daysSinceLead < 0
+  //const cyclesPassed = Math.floor(daysSinceLead / 14);
+  /*const nextAllowedDate = daysSinceLead < 0
     ? LEAD_DATE
-    : LEAD_DATE.add((cyclesPassed + 1) * 14, 'day');
+    : LEAD_DATE.add((cyclesPassed + 1) * 14, 'day');*/
 
   const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
@@ -94,7 +94,7 @@ export const WithdrawalAssetStatement = () => {
             { 
               isWithdrawDay ? 
               'Withdraw' : 
-              `Next Withdraw: ${nextAllowedDate.format('YYYY-MM-DD')}`
+              `Withdraw` /*Next Withdraw: ${nextAllowedDate.format('YYYY-MM-DD')}*/
             }
           </Buttons>
         </div>
@@ -151,6 +151,33 @@ export const WithdrawalAssetStatement = () => {
 
 export const AssetStatement = () => {
 
+  const today = dayjs().tz('Asia/Kuala_Lumpur').startOf('day');
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [availableBal, setAvailableBal] = useState<number>(0)
+  const [totalCompounding, setTotalCompounding] = useState<number>(0)
+
+  useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const resAvailable = await getAssetAvailableBalance({
+          startDate: '2025-07-01',
+          endDate: today.format('YYYY-MM-DD')
+        })
+        setAvailableBal(resAvailable.total_available_balance || 0)
+        setTotalCompounding(resAvailable.total_compounding || 0)
+      } catch (error: any) {
+        if (error.response && error.response.status === 400) {
+          setErrorMessage(error.response.data.error)
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
   const columnsTable: ColumnDef<any, any>[] = [
   { header: "Date", 
     accessorKey: "created_datetime",
@@ -158,7 +185,16 @@ export const AssetStatement = () => {
   },
   { header: "Status", 
     accessorKey: "request_status",
-    cell: info => info.getValue() ?? '-'
+    cell: info => {
+      const status = info.getValue()
+      let statusColor = "text-gray-500"
+      if (status === "APPROVED") {
+        statusColor = "text-green-500"
+      } else if (status === "REJECTED") {
+        statusColor = "text-red-500"
+      } 
+      return <span className={statusColor}>{status}</span>
+    }
   },
   { header: "Transaction Type",
     accessorKey: "transaction_type",
@@ -173,9 +209,19 @@ export const AssetStatement = () => {
   return (
     <div className="flex flex-col gap-2">
 
-      <span className="font-semibold bg-white p-2 rounded-lg">
-        Asset Statement
-      </span>
+      {loading && <Loading />}
+
+      <aside className="font-semibold bg-white p-2 rounded-lg gap-2 items-center flex flex-col">
+        
+        <span> Asset Statement </span>
+        <div className="flex flex-row justify-between items-center gap-3">
+          <span className="bg-slate-200 px-1.5 py-0.5 rounded-lg"> Available Balance: <b>{availableBal.toFixed(2)}</b> </span>
+          
+          <span className="bg-slate-200 px-1.5 py-0.5 rounded-lg"> Total Compounding: <b>{totalCompounding.toFixed(2)}</b> </span>
+        </div>
+        {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
+      </aside>
+      
 
       <NewTable
         columns={columnsTable}

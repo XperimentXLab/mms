@@ -551,7 +551,7 @@ def get_profit_commission_wd_transaction(request):
     month = request.GET.get('month')
     year = request.GET.get('year')
 
-    query = Q(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type__in=['WITHDRAWAL', 'ASSET_WITHDRAWAL'])
+    query = Q(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type__in=['WITHDRAWAL'])
     if start_date:
       if end_date:
         query &= date_filter_q('created_at', start_date, end_date)
@@ -578,6 +578,31 @@ def get_profit_commission_wd_transaction(request):
   except Exception as e:
     logger.error(f"Error retrieving profit/commission withdrawal transaction for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profit_commission_wd_total(request):
+  user = request.user
+  try:
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    query = Q(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type__in=['WITHDRAWAL'])
+    if start_date:
+      if end_date:
+        query &= date_filter_q('created_at', start_date, end_date)
+      else:
+        query &= date_filter_q('created_at', start_date)
+
+    profit_commission_wd_total = Transaction.objects.filter(query).aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+    return Response({'total_amount': profit_commission_wd_total}, status=200)
+
+  except Transaction.DoesNotExist:
+    return Response({'error': 'Profit/Commission Withdrawal Transaction not found'}, status=404)
+  except Exception as e:
+    logger.error(f"Error retrieving profit/commission withdrawal transaction for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=500)
+
   
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -617,6 +642,41 @@ def get_asset_transaction(request):
     return Response({'error': 'Asset Transaction not found'}, status=404)
   except Exception as e:
     logger.error(f"Error retrieving asset transaction for {user.username}: {str(e)}")
+    return Response({'error': str(e)}, status=500)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_asset_available_balance(request):
+  user = request.user
+  try:
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    queryCompund = Q(user=user, point_type__in=['PROFIT', 'COMMISSION'], transaction_type__in=['CONVERT'])
+    query = Q(user=user, point_type__in=['ASSET', 'MASTER'], request_status__in=['APPROVED'])
+    if start_date:
+      if end_date:
+        query &= date_filter_q('created_at', start_date, end_date)
+        queryCompund &= date_filter_q('created_at', start_date, end_date)
+      else:
+        query &= date_filter_q('created_at', start_date)
+        queryCompund &= date_filter_q('created_at', start_date)
+
+    total_asset_place = Transaction.objects.filter(query, transaction_type='ASSET_PLACEMENT').aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+    total_asset_withdrawal = Transaction.objects.filter(query, transaction_type='ASSET_WITHDRAWAL').aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+
+    total_compounding = Transaction.objects.filter(queryCompund).aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+
+    total_available_balance = total_asset_place - (total_asset_withdrawal + total_compounding)
+    return Response({
+      'total_available_balance': total_available_balance,
+      'total_compounding': total_compounding,
+    }, status=200)
+
+  except Transaction.DoesNotExist:
+    return Response({'error': 'Profit/Commission Withdrawal Transaction not found'}, status=404)
+  except Exception as e:
+    logger.error(f"Error retrieving profit/commission withdrawal transaction for {user.username}: {str(e)}")
     return Response({'error': str(e)}, status=500)
 
   

@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom"
 import { NavLinkss } from "../props/theLinks"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Buttons from "../props/Buttons"
 
 
@@ -11,6 +11,22 @@ const WalletLayout = () => {
     setOpen(!open);
   }
 
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    const handleClickOutside = (event: Event) => {
+       if (menuRef.current && event.target && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [])
+
   return (
     <div className="flex flex-col items-center p-4 relative">
       <nav className="flex gap-2 bg-white rounded-xl py-1 w-full justify-center items-center">
@@ -20,7 +36,8 @@ const WalletLayout = () => {
           >Statement</Buttons>
       </nav>
 
-      {open && <nav className="absolute flex flex-col sm:flex-row bg-gray-200 p-2 rounded-2xl gap-2 justify-center w-fit mt-9 z-10">
+      {open && <nav ref={menuRef}
+      className="absolute flex flex-col sm:flex-row bg-gray-200 p-2 rounded-2xl gap-2 justify-center w-fit mt-9 z-10">
         <NavLinkss to="statement/profit">Personal Profit</NavLinkss>
         <NavLinkss to="statement/commission">Commission</NavLinkss>
         <NavLinkss to="statement/transfer">Transfer</NavLinkss>

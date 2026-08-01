@@ -26,7 +26,7 @@ interface FixedTextProps {
 
 export const FixedText: React.FC<FixedTextProps> = ({ text, label, className, assetAmount = 200 }) => {
   return (
-    <div className={className ? className : 'flex gap-2 bg-gray-200 border p-2 rounded-md'}>
+    <div className={className ? className : 'flex gap-2 bg-gray-200 border p-2 rounded-md flex-wrap'}>
       <span className='font-bold'>{label}: </span>
       <span className={`font-mono ${assetAmount < 200 ? 'text-slate-400' : 'text-black' }`}>{text}</span>
     </div>

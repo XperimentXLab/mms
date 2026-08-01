@@ -593,3 +593,19 @@ export const withdrawalWindowStatus = async () => {
   const response = await api.get('/withdrawal_window_status/')
   return response.data
 }
+
+export const getWDTotal = async () => {
+  const response = await api.get('/user_withdrawal_total/')
+  return response.data
+}
+
+export const getAssetAvailableBalance = async (params: txParams) => {
+  const { startDate, endDate } = params
+  const queryParams =  new URLSearchParams()
+  if (startDate && endDate) {
+    queryParams.append('start_date', startDate)
+    queryParams.append('end_date', endDate)
+  }
+  const response = await api.get(`/user_asset_available_balance/?${queryParams.toString()}`)
+  return response.data
+}
