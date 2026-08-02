@@ -17,10 +17,10 @@ export const WithdrawalAssetStatement = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const [refreshCounter, setRefreshCounter] = useState<number>(0);
 
-  const LEAD_DATE = dayjs.tz('2026-07-05', 'Asia/Kuala_Lumpur').startOf('day');
-  const today = dayjs().tz('Asia/Kuala_Lumpur').startOf('day');
-  const daysSinceLead = today.diff(LEAD_DATE, 'day');
-  const isWithdrawDay = daysSinceLead >= 0 && daysSinceLead % 14 === 0;
+  //const LEAD_DATE = dayjs.tz('2026-07-05', 'Asia/Kuala_Lumpur').startOf('day');
+  //const today = dayjs().tz('Asia/Kuala_Lumpur').startOf('day');
+  //const daysSinceLead = today.diff(LEAD_DATE, 'day');
+  const isWithdrawDay = false //daysSinceLead >= 0 && daysSinceLead % 14 === 0;
   //const cyclesPassed = Math.floor(daysSinceLead / 14);
   /*const nextAllowedDate = daysSinceLead < 0
     ? LEAD_DATE
